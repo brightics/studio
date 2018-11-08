@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+option java_outer_classname = "TaskProto";
+option java_multiple_files = true;
+
+import "google/protobuf/any.proto";
+import "common.proto";
+
+package com.samsung.sds.brightics.common.network.proto.task;
+
+message ExecuteTaskMessage {
+    string taskId = 1;
+    string user = 2;
+    string name = 3;
+    string parameters = 4;
+    string attributes = 5;
+}
+
+message StopTaskMessage {
+    string targetTaskId = 1;
+    string user = 2;
+    string name = 3;
+    string context = 4;
+}
+
+message ResultTaskMessage {
+    string clientId = 1;
+    string taskId = 2;
+    string user = 3;
+    MessageStatus messageStatus = 5;
+    google.protobuf.Any result = 7;
+}
+
+service TaskService {
+    rpc receiveAsyncTask (ExecuteTaskMessage) returns (ExecuteTaskMessage) {}
+    rpc receiveSyncTask (ExecuteTaskMessage) returns (ResultTaskMessage) {}
+    rpc stopTask (StopTaskMessage) returns (ResultTaskMessage) {}
+
+    rpc receiveTaskResult (ResultTaskMessage) returns (ExecuteTaskMessage) {}
+}

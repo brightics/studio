@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" charset="UTF-8">
+	<title>Brightics v3.1 Suite Installer</title>
+	<!--<meta name="description" content="">-->
+	<!--<meta name="viewport" content="width=device-width, initial-scale=1">-->
+	<!--<link rel="apple-touch-icon" href="apple-touch-icon.png">-->
+	<!-- Place favicon.ico in the root directory -->
+	<!--<link type="text/css" rel="stylesheet" href="/static/css/normalize.css">-->
+
+	<!--<link type="text/css" rel="stylesheet" href="/static/jqwidgets/styles/jqx.base.css">-->
+	<!--<link type="text/css" rel="stylesheet" href="/static/jqwidgets/styles/jqx.office.css">-->
+	<!--<link type="text/css" rel="stylesheet" href="/static/css/login.css">-->
+	<!--<link type="text/css" rel="stylesheet" href="/static/css/popup.css">-->
+
+	<link type="text/css" rel="stylesheet" href="static/css/aui-package/aui-widgets-1.12.20.min.css">
+	<link type="text/css" rel='stylesheet' href='static/css/aui-package/aui-widgets-1.9.0.brightics.css'/>
+	<link type="text/css" rel="stylesheet" href="static/css/normalize.css">
+	<link type="text/css" rel="stylesheet" href="static/css/login.css">
+	<link type="text/css" rel="stylesheet" href="static/css/popup.css">
+
+	<script src="static/js/jquery-1.12.0.min.js"></script>
+
+	<!-- AUI -->
+	<script src="static/js/plugins/aui-package/globalization/globalize.js"></script>
+	<script src="static/js/plugins/aui-package/aui-core-1.6.4.min.js"></script>
+	<script src="static/js/plugins/aui-package/aui-widgets-1.12.20.min.js"></script>
+
+	<!--<script>-->
+	<!--window.jQuery || document.write('<script src="js/vendor/jquery-1.12.0.min.js"><\/script>')-->
+	<!--</script>-->
+	<!--<script src="/static/jqwidgets/jqxcore.js"></script>-->
+	<!--<script src="/static/jqwidgets/jqxbuttons.js"></script>-->
+	<!--<script src="/static/jqwidgets/jqxinput.js"></script>-->
+	<!--<script src="/static/jqwidgets/jqxdata.js"></script>-->
+	<!--<script src="/static/jqwidgets/jqxpanel.js"></script>-->
+	<!--<script src="/static/jqwidgets/jqxscrollbar.js"></script>-->
+	<!--<script src="/static/jqwidgets/jqxlistbox.js"></script>-->
+	<!--<script src="/static/jqwidgets/jqxtabs.js"></script>-->
+	<!--<script src="/static/jqwidgets/jqxcheckbox.js"></script>-->
+	<!--<script src="/static/jqwidgets/jqxradiobutton.js"></script>-->
+	<!--<script src="/static/jqwidgets/jqxswitchbutton.js"></script>-->
+	<!--<script src="/static/jqwidgets/jqxexpander.js"></script>-->
+	<!--<script src="/static/jqwidgets/jqxmenu.js"></script>-->
+	<!--<script src="/static/jqwidgets/jqxdatatable.js"></script>-->
+	<!--<script src="/static/jqwidgets/jqxdropdownlist.js"></script>-->
+	<!--<script src="/static/jqwidgets/jqxtooltip.js"></script>-->
+	<!--<script src="/static/jqwidgets/jqxslider.js"></script>-->
+	<!--<script src="/static/jqwidgets/jqxprogressbar.js"></script>-->
+	<!--<script src="./static/jqwidgets/jqxnumberinput.js"></script>-->
+	<script type="text/javascript">
+
+			$(document).ready(function(){
+			    /*jqx widgets*/
+				$(".btn").jqxButton({
+				    theme: "office",
+					height: 41
+				});
+				$('#userid').jqxInput({
+					theme: 'office',
+					height: 23
+            	});
+            	$('#password').jqxPasswordInput({
+                theme: 'office',
+                height: 23
+           		 });
+				$("#loginBtn").click(function(){
+					fmSubmit();
+                });
+                if($(location).attr('search') == "?error"){
+				    layer_open('invalidInput');
+			    }
+			    $('#password').keydown(function(e) {
+    				if (e.keyCode == 13) {
+    					fmSubmit();
+					}
+				});
+			});
+			function fmSubmit(){
+				var result = txtFieldCheck() == true ? true : false;
+				if(result) {
+				layer_open('emptyInput');
+				$("#emptyInput").attr("tabindex", -1).focus();
+				}
+				else $('#loginFm').submit();
+			}
+			function txtFieldCheck(){
+                var txtEle = $("#loginFm input[type=text], input[type=password]");
+                for(var i = 0; i < txtEle.length; i ++){
+                    if("" == $(txtEle[i]).val() || null == $(txtEle[i]).val()){
+                    var ele_id = $(txtEle[i]).attr("id");
+                    var label_txt = $("label[for='" + ele_id +"']").text();
+                    return true;
+                    }
+                }
+            }
+            function layer_open(el) {
+                var temp = $('#' + el);
+				if (temp.outerHeight() < $(document).height()) temp.css('margin-top', '-' + temp.outerHeight() / 2 + 'px');
+                else temp.css('top', '0px');
+                if (temp.outerWidth() < $(document).width()) temp.css('margin-left', '-' + temp.outerWidth() / 2 + 'px');
+                else temp.css('left', '0px');
+				temp.css('display','');
+				temp.fadeIn();
+            }
+			function layer_close(el) {
+				$('#' + el).fadeOut();
+            }
+		</script>
+</head>
+
+<body>
+<article>
+	<div class="popup-login-wrapper">
+		<div class="popup login">
+			<div class="content"><!--팝업 content 영역-->
+				<img class="logo" alt="" src="static/images/login_logo.png"></img>
+				<form id="loginFm" th:action="@{/login}" method="post">
+					<input class="pop-input" type="text" id="userid" name="userid" placeholder="User ID" maxlength="50"/>
+					<input class="pop-input" type="password" id="password" name="password" placeholder="Password" maxlength="50"/>
+				</form>
+			</div>
+			<div class="bottom"><!--팝업 bottom 영역-->
+				<!--버튼 스타일 :: cancle, ok, close-->
+				<button class="btn ok" id="loginBtn">LOG IN</button>
+			</div>
+		</div>
+	</div>
+</article>
+<article>
+	<div class="popup-wrapper" id="emptyInput" >
+		<div class="popup confirm common">
+			<a href="javascript:layer_close('emptyInput');" class="close"><button class="btn close"></button></a>
+			<div class="empty-title">
+				<p></p>
+			</div>
+			<div class="content cont-width">
+				<span class="icon pop alerttype"></span>
+				<div class="content-text">
+					<p class="pop-text">
+						Please enter User ID and Password
+					</p>
+				</div>
+			</div>
+			<div class="bottom">
+				<a href="javascript:layer_close('emptyInput');" class="close"><button class="btn ok">OK</button></a>
+			</div>
+		</div>
+	</div>
+</article>
+<article>
+	<div class="popup-wrapper" id="invalidInput" >
+		<div class="popup confirm common">
+			<a href="javascript:layer_close('invalidInput');" class="close"><button class="btn close"></button></a>
+			<div class="empty-title">
+				<p></p>
+			</div>
+			<div class="content cont-width">
+				<span class="icon pop alerttype"></span>
+				<div class="content-text">
+					<p class="pop-text">
+						Invalid User ID and Password.
+					</p>
+				</div>
+			</div>
+			<div class="bottom">
+				<a href="javascript:layer_close('invalidInput');" class="close"><button class="btn ok">OK</button></a>
+			</div>
+		</div>
+	</div>
+</article>
+</body>
+</html>
