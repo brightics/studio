@@ -45,7 +45,18 @@ Unzip the downloaded file in somewhere.
 	/brightics-studio/visual-analytics : GUI home
 	/brightics-studio/lib : external libs
 
-Create brightics python environment. If you use stable release(full package), you can skip this process.<br>
+### Launch
+Go to unzipped directory and run.
+
+	start-brightics.cmd : for windows
+	start-brightics.sh : for linux and mac
+	
+### Create python environment (Optional)
+When you use stable release, you can skip this process.<br>
+Because our package has all required python libraries in its own environment.<br>
+
+If for some reasons that the files are crashed, you should remove and reconstruct a environment directory under lib/brightics\_python\_env.<br>
+This guide covers setting up python environment from the beginning.<br> 
 Some of python packages need Microsoft Visual C++ Build Tools.<br>
 Please make sure [Microsoft Visual C++ 14.0](https://go.microsoft.com/fwlink/?LinkId=691126) installed when you run a setup command in windows.<br>
 Reference : [Python wiki for WindowsCompilers](https://wiki.python.org/moin/WindowsCompilers)
@@ -53,11 +64,6 @@ Reference : [Python wiki for WindowsCompilers](https://wiki.python.org/moin/Wind
     setup.cmd <pip options> : for windows
     setup.sh <pip options> : for linux and mac
     
-### Launch
-Go to unzipped directory and run.
-
-	start-brightics.cmd : for windows
-	start-brightics.sh : for linux and mac
 
 ## Development
 ### Extend
