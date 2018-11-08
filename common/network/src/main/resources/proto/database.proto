@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+option java_outer_classname = "DataBaseProto";
+option java_multiple_files = true;
+
+import "common.proto";
+
+package com.samsung.sds.brightics.common.network.proto.database;
+
+message ConnectionInfo {
+    string url = 1;
+    string user = 2;
+    string password = 3;
+    string driver = 4;
+}
+
+message ExecuteDBMessage {
+    ConnectionInfo connectionInfo = 1;
+    string parameters = 2;
+    DBActionType actionType = 3;
+    enum DBActionType {
+        VAILD = 0;
+        SCHEMA = 1;
+        TABLE = 2;
+        COLUMN = 3;
+        SQL = 4;
+    };
+    string user = 4;
+}
+
+message ResultDBMessage {
+    string result = 1;
+    string message = 2;
+    string detailMessage = 3;
+    MessageStatus messageStatus = 4;
+}
+
+service DatabaseService {
+    rpc receiveDatabaseInfo (ExecuteDBMessage) returns (ResultDBMessage) {}
+}

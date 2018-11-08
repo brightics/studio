@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+option java_outer_classname = "StreamProto";
+option java_multiple_files = true;
+
+package com.samsung.sds.brightics.common.network.proto.stream;
+
+message ReadMessage {
+    string user = 1;
+	string key = 2;
+	string delimiter =3;
+}
+
+message WriteMessage {
+	string user =1;
+	string path = 2;
+	string tempKey = 3;
+	string parameters =4;
+	string errorMessage =5;
+}
+
+message ByteStreamMessage {
+	bytes data = 1;
+	string tempKey = 2;
+}
+
+service StreamService {
+  rpc writeStreaminitializer(WriteMessage) returns (WriteMessage) {}
+  rpc readStream(ReadMessage) returns (stream ByteStreamMessage) {}
+  rpc writeStream(stream ByteStreamMessage) returns (stream WriteMessage) {}
+}
+

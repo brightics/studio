@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_outer_classname = "CommonProto";
+
+package com.samsung.sds.brightics.common.network.proto;
+
+enum ContextType {
+    option allow_alias = true;
+    SCALA = 0;
+    PYTHON = 1;
+    FILESYSTEM = 2;
+    REDIS = 3[deprecated = true];
+    KV_STORE = 3;
+};
+
+enum MessageStatus {
+    SUCCESS = 0;
+    FAIL = 1;
+};
+
+message SuccessResult {
+    string result = 1;
+    string elapsedTime = 2;
+}
+
+message FailResult {
+    string message = 1;
+    string detailMessage = 2;
+}
+
+message ClientReadyMessage {
+    string clientId = 1;
+    string clientHost = 2;
+    int32 clientPort = 3;
+    string core = 4;
+    string memory = 5;
+    ClientType clientType = 6;
+    enum ClientType {
+        SPARK = 0;
+        PYTHON = 1;
+    };
+}
+
+message HeartbeatMessage {
+    string clientId = 1;
+}
+
+service CommonService {
+    rpc receiveClientReady (ClientReadyMessage) returns (ClientReadyMessage) {}
+    rpc receiveHeartbeat (HeartbeatMessage) returns (HeartbeatMessage) {}
+}

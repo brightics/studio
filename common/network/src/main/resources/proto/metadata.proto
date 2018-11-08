@@ -1,0 +1,104 @@
+syntax = "proto3";
+
+option java_outer_classname = "MetaDataProto";
+option java_multiple_files = true;
+
+import "google/protobuf/any.proto";
+import "common.proto";
+
+package com.samsung.sds.brightics.common.network.proto.metadata;
+
+enum DataStatusType {
+    ALL = 0;
+    UPLOAD = 1;
+    TABLE = 2;
+};
+
+message DataStatusListMessage {
+    string user = 1;
+    DataStatusType dataType = 5;
+}
+
+message DataPermissionMessage {
+    string user = 1;
+    repeated DataKey target = 2;
+    string permission = 3;
+}
+
+message DataKey {
+    string mid = 1;
+    string tid = 2;
+}
+
+message ExecuteDataMessage {
+    string user = 1;
+    string key = 2;
+    string parameters = 3;
+    DataActionType actionType = 5;
+    enum DataActionType {
+        SCHEMA = 0;
+        DATA = 1;
+        MOVE = 2;
+        COPY = 3;
+        DELETE = 4;
+    };
+}
+
+message ImportDataMessage {
+    string user = 1;
+    string parameters = 3;
+    ImportActionType actionType = 5;
+    enum ImportActionType {
+        IMPORT = 0;
+        DATA = 1;
+    };
+}
+
+message AliasMessage {
+    string alias = 1;
+    string key = 2;
+}
+
+message ExecuteSqlMessage {
+    string user = 1;
+    repeated AliasMessage alias = 2;
+    string limit = 3;
+    string sql = 4;
+}
+
+message ResultDataMessage {
+    MessageStatus messageStatus = 1;
+    google.protobuf.Any result = 2;
+}
+
+message DataAliasMessage {
+    string user = 1;
+    string mid = 2;
+    string sourceTid = 3;
+    string aliasTid = 4;
+}
+
+message DataAliasByDataKeyMessage {
+    string user = 1;
+    string sourceDataKey = 2;
+    string aliasDataKey = 3;
+}
+
+message RemoveDataAliasMessage {
+    string user = 1;
+    repeated string aliasDataKey = 2;
+}
+
+service MetaDataService {
+    rpc dataStatusList (DataStatusListMessage) returns (ResultDataMessage) {}
+    rpc changeDataPermission (DataPermissionMessage) returns (ResultDataMessage) {}
+
+    rpc sqlData (ExecuteSqlMessage) returns (ResultDataMessage) {}
+
+    rpc manipulateData (ExecuteDataMessage) returns (ResultDataMessage) {}
+    rpc manipulateImportData (ImportDataMessage) returns (ResultDataMessage) {}
+
+    rpc addDataAlias (DataAliasMessage) returns (ResultDataMessage) {}
+    rpc addDataAliasByDataKey (DataAliasByDataKeyMessage) returns (ResultDataMessage) {}
+    rpc removeDataAlias (RemoveDataAliasMessage) returns(ResultDataMessage) {}
+}

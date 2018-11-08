@@ -1,0 +1,103 @@
+package com.samsung.sds.brightics.server.common.flowrunner.model.impl;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import com.samsung.sds.brightics.common.core.exception.AbsBrighticsException;
+import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
+import com.samsung.sds.brightics.common.variable.Variable;
+import com.samsung.sds.brightics.common.variable.context.VariableContext;
+import com.samsung.sds.brightics.common.variable.resolver.IVariableResolver;
+import com.samsung.sds.brightics.common.variable.resolver.impl.DefaultVariableResolver;
+import com.samsung.sds.brightics.common.workflow.context.WorkContext;
+import com.samsung.sds.brightics.common.workflow.context.parameter.ParametersBuilder;
+import com.samsung.sds.brightics.common.workflow.model.Work;
+import com.samsung.sds.brightics.server.common.flowrunner.status.JobContextHolder;
+import com.samsung.sds.brightics.server.common.flowrunner.status.JobStatusTracker;
+import com.samsung.sds.brightics.server.common.flowrunner.status.Status;
+import com.samsung.sds.brightics.server.common.util.JsonObjectUtil;
+import com.samsung.sds.brightics.server.common.util.LoggerUtil;
+
+public class SetValueFunction extends Work {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SetValueFunction.class);
+    private final JsonObject functionInfo;
+    private final String label;
+    private final String functionName;
+    private final JsonArray variables;
+
+
+    public SetValueFunction(JsonObject functionInfo) {
+        super(JsonObjectUtil.getAsString(functionInfo, "fid"), new ParametersBuilder().build());
+        this.functionInfo = functionInfo;
+        this.label = JsonObjectUtil.getAsString(functionInfo, "label");
+        this.functionName = JsonObjectUtil.getAsString(functionInfo, "name");
+        this.variables = functionInfo.getAsJsonObject("param").getAsJsonArray("variables");
+    }
+
+    @Override
+    public void start(WorkContext context) {
+        JobStatusTracker tracker = JobContextHolder.getJobStatusTracker();
+
+        try {
+            LoggerUtil.pushMDC("fid", name);
+
+            LOGGER.info("[FUNCTION START] [{}] {}", label, functionInfo);
+            tracker.startFunction(this.name, label, functionName);
+
+            setValues(tracker.getCurrentModelMid(false), context.getVariableContext());
+
+            tracker.endFunctionWith(Status.SUCCESS);
+            LOGGER.info("[FUNCTION SUCCESS] [{}]", label);
+        } catch (AbsBrighticsException e) {
+            tracker.endFunctionWith(Status.FAIL);
+            LOGGER.error("[FUNCTION ERROR] [{}]", label);
+            throw e;
+        } finally {
+            LoggerUtil.popMDC("fid");
+        }
+    }
+
+    private void setValues(String scope, VariableContext context) {
+        IVariableResolver resolver = new DefaultVariableResolver(context);
+        LOGGER.info("[SET VALUE] set values on scope[{}]", scope);
+        for (JsonElement elem : variables) {
+            Variable variable = getVariable(elem.getAsJsonObject());
+            JsonElement resolvedValue = resolver.resolve(variable.getValue());
+            variable.setValue(resolvedValue);
+
+            context.setVariable(scope, variable);
+            String name = JsonObjectUtil.getAsString(elem.getAsJsonObject(), "name");
+
+            LOGGER.info("[SET VALUE] resolved value for \"{}\" is \"{}\"", name, context.getValue(name));
+        }
+    }
+
+    private Variable getVariable(JsonObject variable) {
+        String mode = JsonObjectUtil.getAsString(variable.getAsJsonObject(), "mode");
+        if ("value".equals(mode)) {
+            return getValueVariable(variable);
+        } else if ("cell".equals(mode)) {
+            return getCellVariable(variable);
+        } else {
+            throw new BrighticsCoreException("3102", "Unsupported SetValue mode : " + mode);
+        }
+    }
+
+    private Variable getValueVariable(JsonObject variable) {
+        return new Variable(JsonObjectUtil.getAsString(variable, "name"), variable.getAsJsonObject("param").get("value"));
+    }
+
+    private Variable getCellVariable(JsonObject variable) {
+        JsonObject param = variable.getAsJsonObject("param");
+        String inData = JsonObjectUtil.getAsString(param, "inData");
+        String column = JsonObjectUtil.getAsString(param, "column");
+        Integer rowIndex = JsonObjectUtil.getAsInt(param, "rowIndex");
+
+        return new Variable(JsonObjectUtil.getAsString(variable,"name"), new JsonPrimitive(String.format("${=getCellValue('%s', '%s', %d)}", inData, column, rowIndex)));
+    }
+}
