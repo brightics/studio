@@ -67,8 +67,8 @@ Reference : [Python wiki for WindowsCompilers](https://wiki.python.org/moin/Wind
 
 ## Development
 ### Extend
-To extend functions, see the user manual about Brightics Toolkit.
-http://www.brightics.ai
+To extend functions, see the user manual section 5.7 about Brightics Toolkit.<br>
+http://www.brightics.ai/docs/en-us/ai/v3.6/user_guide/05_tasks
     
 ### Build
 Build core packages with maven.
