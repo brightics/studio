@@ -1,11 +1,14 @@
 package com.samsung.sds.brightics.server.model.entity.repository;
 
-import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
 import java.io.Serializable;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.PagingAndSortingRepository;
+
+import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
 
 @NoRepositoryBean
 public interface BrtcRepository<T, ID extends Serializable> extends PagingAndSortingRepository<T, ID> {
@@ -39,10 +42,32 @@ public interface BrtcRepository<T, ID extends Serializable> extends PagingAndSor
 
 	default void delete(ID paramID, String serviceName) {
 		try {
-			delete(paramID);
+			deleteById(paramID);
 		} catch (Exception e) {
 			LOGGER.error("delete error", e);
 			throw new BrighticsCoreException("3006", serviceName);
 		}
+	}
+
+	default void delete(ID paramID) {
+		try {
+			deleteById(paramID);
+		} catch (Exception e) {
+			LOGGER.error("delete error", e);
+			throw new BrighticsCoreException("3006", paramID.toString());
+		}
+	}
+	
+	default T findOne(ID paramID) {
+		Optional<T> opt = findById(paramID);
+		if(!opt.isPresent()) {
+			return null;
+		}else {
+			return opt.get();
+		}
+	}
+	
+	default boolean exists(ID paramID) {
+		return existsById(paramID);
 	}
 }

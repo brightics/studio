@@ -10,12 +10,13 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
+import com.samsung.sds.brightics.common.core.GrpcMode;
 import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
 import com.samsung.sds.brightics.common.core.util.SystemEnvUtil;
 import com.samsung.sds.brightics.common.network.NetworkContext;
-import com.samsung.sds.brightics.common.core.GrpcMode;
 import com.samsung.sds.brightics.common.network.config.NetworkConfig;
 import com.samsung.sds.brightics.common.network.sender.MessageSender;
 import com.samsung.sds.brightics.common.network.server.NetworkServer;
@@ -24,6 +25,7 @@ import com.samsung.sds.brightics.server.common.network.receiver.CommonReceiver;
 import com.samsung.sds.brightics.server.common.network.receiver.TaskReceiver;
 
 @Component
+@PropertySource("classpath:application.properties")
 public class BrighticsNetworkManager {
 
     private static final Logger logger = LoggerFactory.getLogger(BrighticsNetworkManager.class);
