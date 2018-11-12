@@ -85,6 +85,9 @@ The purpose of personal use for commercial or non-commercial is allowed but only
 See [the documentation about this license](BRIGHTICS_VA_LICENSE) for more details.<br>
 We work hard to solve these issues and soon it will be public.
 
+## Addtional Info
+DO NOT USE Alzip for extracting. Use 7zip or Bandizip instead.
+
 ## Contact us
 If you like to use brightics studio, please let us know your usage and feedback.<br>
 Or you have questions while using brightics studio, don't hesitate and feel free to contact brightics@samsung.com.
