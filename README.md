@@ -22,19 +22,19 @@ Please visit our web site http://www.brightics.ai
  * Python 3.6 (64bit)
 
 ### Setting up the environment variables
-Make sure java, python and node are executable.
+Make sure java and python are executable.
 
 Example for windows:
 
     SET JAVA_HOME=<Your Java installation path>
     SET PYTHON_HOME=<Your Python installation path>
-    SET PATH=%PATH;%PYTHON_HOME%\bin;%JAVA_HOME%\bin;%NODE_HOME%\bin
+    SET PATH=%PATH;%PYTHON_HOME%\bin;%JAVA_HOME%\bin
 
 Example for linux like systems:
 
     export JAVA_HOME=<Your Java installation path>
     export PYTHON_HOME=<Your Python installation path>
-    export PATH=$PATH:$PYTHON_HOME/bin:$JAVA_HOME/bin:$NODE_HOME/bin
+    export PATH=$PATH:$PYTHON_HOME/bin:$JAVA_HOME/bin
     
 Most common cases you don't need to set above parameters because those projects automatically add paths during installation. 
 
