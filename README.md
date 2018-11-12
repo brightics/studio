@@ -44,6 +44,10 @@ Unzip the downloaded file in somewhere.
 	/brightics-studio/brightics-server : core home
 	/brightics-studio/visual-analytics : GUI home
 	/brightics-studio/lib : external libs
+	
+### Addtional Info
+DO NOT USE Alzip for extracting because it does not support directory name longer than 256chars.<br>
+Please use 7zip or Bandizip instead.
 
 ### Launch
 Go to unzipped directory and run.
