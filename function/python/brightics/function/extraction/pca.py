@@ -5,6 +5,8 @@ from brightics.common.report import ReportBuilder, strip_margin, pandasDF2MD, pl
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+import seaborn as sns
+import numpy as np
 
 
 def pca(table, group_by=None, **params):
@@ -16,13 +18,13 @@ def pca(table, group_by=None, **params):
     
     
 def _pca(table, input_cols, new_column_name='projected_', n_components=None, copy=True, whiten=False, svd_solver='auto',
-            tol=0.0, iterated_power='auto', random_state=None):
+            tol=0.0, iterated_power='auto', random_state=None, hue=None):
                     
     num_feature_cols = len(input_cols)
     if n_components is None:
         n_components = num_feature_cols
         
-    pca = PCA(n_components, copy, whiten, svd_solver, tol, iterated_power, random_state)
+    pca = PCA(None, copy, whiten, svd_solver, tol, iterated_power, random_state)
     pca_model = pca.fit(table[input_cols])
         
     column_names = []
@@ -31,10 +33,13 @@ def _pca(table, input_cols, new_column_name='projected_', n_components=None, cop
     # print(column_names)
 
     pca_result = pca_model.transform(table[input_cols])
-    out_df = pd.DataFrame(data=pca_result, columns=[column_names])
+    out_df = pd.DataFrame(data=pca_result[:, :n_components], columns=[column_names])
+    
+    out_df = pd.concat([table.reset_index(drop=True), out_df], axis=1)
+    out_df.columns = table.columns.values.tolist() + column_names
         
     res_components = pca_model.components_
-    res_components_df = pd.DataFrame(data=res_components, columns=[input_cols])
+    res_components_df = pd.DataFrame(data=res_components[:n_components], columns=[input_cols])
     res_explained_variance = pca_model.explained_variance_
     res_explained_variance_ratio = pca_model.explained_variance_ratio_
     res_singular_values = pca_model.singular_values_
@@ -48,44 +53,42 @@ def _pca(table, input_cols, new_column_name='projected_', n_components=None, cop
             
     # visualization
     plt.figure()
-    if res_n_components == 1:
-        plt.scatter(pca_result[:, 0], pca_result[:, 0])
+    if n_components == 1:
+        sns.scatterplot(column_names[0], column_names[0], hue=hue, data=out_df)
+        plt_two = plt2MD(plt)
+        plt.clf()
     else:
-        plt.scatter(pca_result[:, 0], pca_result[:, 1])
-    # plt.title('PCA result with two components')
-    # plt.show()
-    plt_two = plt2MD(plt)
-    plt.clf()
+        plt_two = _biplot(0, 1, pc_columns=column_names, columns=input_cols, singular_values=res_singular_values, 
+                          components=res_components, explained_variance_ratio=res_explained_variance_ratio, alpha=0, 
+                          hue=hue, data=out_df, ax=plt.gca())
+
+    plt.figure()
+    fig_scree = _screeplot(res_explained_variance, res_explained_variance_ratio, n_components)
+    
+    table_explained_variance = pd.DataFrame(res_explained_variance, columns=['explained_variance'])
+    table_explained_variance['explained_variance_ratio'] = res_explained_variance_ratio
+    table_explained_variance['cum_explained_variance_ratio'] = res_explained_variance_ratio.cumsum()
                 
     rb = ReportBuilder()
     rb.addMD(strip_margin("""
     | 
     | ### Plot
-    | The x-axis and y-axis of the following plot is projected0 and projected1, respectively.    
     | {image1}
     |
-    | ### Result
-    | {table1}
-    | only showing top 20 rows
-    |
-    | ### Parameters
-    | {parameter1}
+    | ### Explained Variance
+    | {fig_scree}
+    | {table_explained_variance}    
     |
     | ### Components
     | {table2}
-    | 
-    | ### Mean
-    | {array1}
-    | 
-    | ### Explained Variance 
-    | {array2}
     |
-    """.format(table1=pandasDF2MD(out_df, 20),
-               image1=plt_two,
+    | ### Parameters
+    | {parameter1}
+    """.format(image1=plt_two,
+               fig_scree=fig_scree,
+               table_explained_variance=pandasDF2MD(table_explained_variance),
                parameter1=dict2MD(res_get_param),
-               table2=pandasDF2MD(res_components_df),
-               array1=res_mean,
-               array2=res_explained_variance            
+               table2=pandasDF2MD(res_components_df)
                )))        
     
     model = _model_dict('pca')
@@ -103,10 +106,66 @@ def _pca(table, input_cols, new_column_name='projected_', n_components=None, cop
     model['pca_model'] = pca_model
     model['input_cols'] = input_cols
     
-    out_df = pd.concat([table.reset_index(drop=True), out_df], axis=1)
-    out_df.columns = table.columns.values.tolist() + column_names
-        
     return {'out_table': out_df, 'model' : model}
+
+
+def _screeplot(explained_variance, explained_variance_ratio, n_components, ax=None):
+    if ax is None:
+        ax = plt.gca()
+    
+    n_components_range = range(1, len(explained_variance) + 1)
+    cum_explained_variance = explained_variance_ratio.cumsum()
+    plt.xticks(n_components_range, n_components_range)
+    ax.plot(n_components_range, explained_variance, 'o--')
+    ax.set_ylabel('Explained Variance')
+    
+    ax2 = ax.twinx()
+    ax2.plot(n_components_range, cum_explained_variance, 'x-')
+    ax2.set_ylim([0, 1.05])
+    ax2.set_ylabel('Cumulative Explained Variance Ratio')
+    ax2.text(n_components, cum_explained_variance[n_components - 1] - 0.05, '%0.4f' % cum_explained_variance[n_components - 1], va='center', ha='center')
+    fig_scree = plt2MD(plt)
+    plt.clf()
+    return fig_scree
+
+
+def _biplot(xidx, yidx, hue, data, pc_columns, columns, singular_values, components, explained_variance_ratio, alpha=0, ax=None):
+    if ax is None:
+        ax = plt.gca()
+    
+    sqrt_singular_values = np.sqrt(singular_values)
+    
+    xs = data[pc_columns[xidx]] * sqrt_singular_values[xidx] ** alpha
+    ys = data[pc_columns[yidx]] * sqrt_singular_values[yidx] ** alpha
+    
+    sns.scatterplot(xs, ys, hue=data[hue], data=data, ax=ax)
+    ax.set_xlabel('%s (%0.4f)'%(pc_columns[xidx],explained_variance_ratio[xidx]))
+    ax.set_ylabel('%s (%0.4f)'%(pc_columns[yidx],explained_variance_ratio[yidx]))
+    
+    axs = components[xidx] * sqrt_singular_values[xidx] ** (1-alpha)
+    ays = components[yidx] * sqrt_singular_values[yidx] ** (1-alpha)
+    
+    for i, col in enumerate(columns):
+        x, y = axs[i], ays[i]
+        ax.arrow(0, 0, x, y, color='r', width=0.001, head_width=0.05)
+        ax.text(x * 1.3, y * 1.3, col, color='r', ha='center', va='center')
+        ys,ye = ax.get_ylim()
+        xs,xe = ax.get_xlim()
+        if x*1.5 > xe:
+            ax.set_xlim(xs,x*1.5)
+        elif x*1.5 < xs:
+            ax.set_xlim(x*1.5,xe)
+        elif y*1.5 > ye:
+            ax.set_ylim(ys,y*1.5)
+        elif y*1.5 < ys:
+            ax.set_ylim(y*1.5,ye)
+    
+    # plt.title('PCA result with two components')
+    # plt.show()
+    plt_two = plt2MD(plt)
+    plt.clf()
+    
+    return plt_two
 
 
 def pca_with_model(table, model, group_by=None, **params):
@@ -117,7 +176,7 @@ def pca_with_model(table, model, group_by=None, **params):
         return _pca_with_model(table, model, **params)
     
 
-def _pca_with_model(table, model, new_column_name = 'projected_'):
+def _pca_with_model(table, model, new_column_name='projected_'):
     new_col_names = []
     for i in range(0, model['n_components']):
         new_col_names.append(new_column_name + str(i))
