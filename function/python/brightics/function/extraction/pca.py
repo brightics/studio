@@ -18,7 +18,7 @@ def pca(table, group_by=None, **params):
     
     
 def _pca(table, input_cols, new_column_name='projected_', n_components=None, copy=True, whiten=False, svd_solver='auto',
-            tol=0.0, iterated_power='auto', random_state=None, hue=None):
+            tol=0.0, iterated_power='auto', random_state=None, hue=None, alpha=0):
                     
     num_feature_cols = len(input_cols)
     if n_components is None:
@@ -59,7 +59,7 @@ def _pca(table, input_cols, new_column_name='projected_', n_components=None, cop
         plt.clf()
     else:
         plt_two = _biplot(0, 1, pc_columns=column_names, columns=input_cols, singular_values=res_singular_values, 
-                          components=res_components, explained_variance_ratio=res_explained_variance_ratio, alpha=0, 
+                          components=res_components, explained_variance_ratio=res_explained_variance_ratio, alpha=alpha, 
                           hue=hue, data=out_df, ax=plt.gca())
 
     plt.figure()
