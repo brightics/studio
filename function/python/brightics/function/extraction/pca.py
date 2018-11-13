@@ -109,15 +109,15 @@ def _pca(table, input_cols, new_column_name='projected_', n_components=None, cop
     return {'out_table': out_df, 'model' : model}
 
 
-def pca_with_model(table, model, group_by=None, **params):
-    check_required_parameters(_pca_with_model, params, ['table', 'model'])
+def pca_model(table, model, group_by=None, **params):
+    check_required_parameters(_pca_model, params, ['table', 'model'])
     if group_by is not None:
-        return _function_by_group(_pca_with_model, table, model, group_by=group_by, **params)
+        return _function_by_group(_pca_model, table, model, group_by=group_by, **params)
     else:
-        return _pca_with_model(table, model, **params)
+        return _pca_model(table, model, **params)
     
 
-def _pca_with_model(table, model, new_column_name = 'projected_'):
+def _pca_model(table, model, new_column_name = 'projected_'):
     new_col_names = []
     for i in range(0, model['n_components']):
         new_col_names.append(new_column_name + str(i))

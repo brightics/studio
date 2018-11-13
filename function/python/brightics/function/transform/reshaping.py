@@ -3,13 +3,13 @@ import numpy as np
 from brightics.common.groupby import _function_by_group
 
 
-def melt(table, value_vars, var_name=None, value_name='value', col_level=None):
+def unpivot(table, value_vars, var_name=None, value_name='value', col_level=None):
     id_vars = [column for column in table.columns if column not in value_vars]
     out_table = pd.melt(table, id_vars=id_vars, value_vars=value_vars, var_name=var_name, value_name=value_name, col_level=col_level)
     return {'out_table': out_table}
 
 
-def pivot_table(table, values, aggfunc, index=None, columns=None):  # TODO
+def pivot(table, values, aggfunc, index=None, columns=None):  # TODO
 
     def count(x): return len(x)
 
