@@ -1,7 +1,5 @@
 package com.samsung.sds.brightics.server;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -20,8 +18,6 @@ public class Application {
     @Bean(name = "InitBrighticsAgent", initMethod = "startAgent")
     @DependsOn("brighticsNetworkManager")
     public InitBrighticsAgent initBrighticsAgent() {
-    	Logger logger = LoggerFactory.getLogger("JB");
-    	logger.info("#############START");
         return new InitBrighticsAgent();
     }
 }
