@@ -14,12 +14,9 @@ export BRIGHTICS_DATA_ROOT=$BRIGHTICS_SERVER_HOME/data
 
 PIDFILE=brightics-server.pid
 
-GC_OPTS="-XX:+UseConcMarkSweepGC
-         -verbose:gc -XX:+PrintGCTimeStamps -Xloggc:$appdir/gc.out
-         -XX:MaxMetaspaceSize=512m
-         -XX:+CMSClassUnloadingEnabled "
+GC_OPTS="-XX:+UseConcMarkSweepGC -verbose:gc -XX:+PrintGCTimeStamps -Xloggc:$appdir/gc.out -XX:+CMSClassUnloadingEnabled "
 
-JAVA_OPTS="-Xms1g -Xmx2g -XX:+HeapDumpOnOutOfMemoryError -Djava.net.preferIPv4Stack=true -Djava.io.tmpdir=$BRIGHTICS_SERVER_HOME/tmp -Dbrightics.local.user=$1 -Dbrightics.local.token=$2"
+JAVA_OPTS="-Xms1g -Xmx2g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError -Djava.net.preferIPv4Stack=true -Djava.io.tmpdir=$BRIGHTICS_SERVER_HOME/tmp -Dbrightics.local.user=$1 -Dbrightics.local.token=$2"
 
 DEBUG_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=6007"
 
@@ -35,6 +32,6 @@ if [ -f "$PIDFILE" ] && kill -0 $(cat "$PIDFILE"); then
    exit 1
 fi
 
-exec java $GC_OPTS $JAVA_OPTS $MAIN &>/dev/null &
+exec java $JAVA_OPTS $MAIN &>/dev/null &
 
 echo $! > $PIDFILE

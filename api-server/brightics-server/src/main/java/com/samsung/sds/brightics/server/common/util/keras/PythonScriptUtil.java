@@ -7,7 +7,7 @@ import com.google.gson.JsonPrimitive;
 import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
 import com.samsung.sds.brightics.server.common.util.keras.model.KerasParameterConstant;
 import com.samsung.sds.brightics.server.common.util.keras.model.KerasParameters;
-import org.apache.commons.collections.ListUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;

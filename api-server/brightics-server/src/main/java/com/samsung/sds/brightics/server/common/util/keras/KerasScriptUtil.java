@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
 import com.samsung.sds.brightics.server.common.util.keras.model.KerasParameterConstant;
-import org.apache.commons.collections.ListUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.JsonObject;
@@ -338,9 +338,8 @@ public class KerasScriptUtil {
     }
 
     private static String makeModelFitArgumentsString(JsonObject args) throws Exception {
-        @SuppressWarnings("unchecked")
         String arguments = PythonScriptUtil.makePythonArgumentsString(
-                ListUtils.EMPTY_LIST
+                new ArrayList<>()
                 , Arrays.asList(KerasParameterConstant.BATCH_SIZE, KerasParameterConstant.EPOCHS)
                 , args);
 
@@ -352,9 +351,8 @@ public class KerasScriptUtil {
     }
 
     private static String makeModelFitGeneratorArgumentsString(JsonObject args) throws Exception {
-        @SuppressWarnings("unchecked")
         String arguments = PythonScriptUtil.makePythonArgumentsString(
-                ListUtils.EMPTY_LIST
+        		new ArrayList<>()
                 , Arrays.asList(KerasParameterConstant.STEPS_PER_EPOCH, KerasParameterConstant.EPOCHS, KerasParameterConstant.VALIDATION_STEPS)
                 , args);
 
