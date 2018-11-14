@@ -49,6 +49,12 @@ Go to unzipped directory and run.
 
 	start-brightics.cmd : for windows
 	start-brightics.sh : for linux and mac
+	
+### Migration from the older versions
+Move these files to newer version of brightics-studio to maintain data and projects.
+
+	/brightics-studio/visual-analytics/brightics.db
+	/brightics-studio/brightics-server/data/*
     
 ## Development
 ### Extend
