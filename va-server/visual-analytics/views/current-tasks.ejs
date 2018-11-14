@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" charset="UTF-8">
+
+    <title>Brightics Visual Analytics</title>
+
+    <script src="js/plugins/babel-polyfill/polyfill.js"></script>
+    <script src="js/plugins/css.escape/css.escape.js"></script>
+
+    <link type="text/css" rel="stylesheet" href="css/plugins/normalize.css/normalize.css">
+    <link type="text/css" rel="stylesheet" href="font-awesome/4.5.0/css/font-awesome.min.css">
+    <link type="text/css" rel="stylesheet" href="css/plugins/bootstrap-3.3.7/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="css/plugins/aui-package/aui-widgets-1.16.8.css">
+    <link type="text/css" rel='stylesheet' href='css/plugins/aui-package/aui-widgets-1.9.0.office.css'/>
+
+    <!-- perfect-scrollbar css -->
+    <link type="text/css" rel='stylesheet' href='css/plugins/perfect-scrollbar/perfect-scrollbar.css'/>
+
+    <!-- jquery-ui css -->
+    <link type="text/css" rel='stylesheet' href='css/plugins/jquery-ui/jquery-ui.css'/>
+
+    <!-- brightics chart css -->
+    <link type="text/css" rel="stylesheet" href="css/plugins/bcharts/bcharts-all.css">
+    <link type="text/css" rel="stylesheet" href="css/plugins/bcharts/bcharts-adonis-all.css">
+    <link type="text/css" rel='stylesheet' href='css/plugins/bcharts/bcharts-tethys-all.css'/>
+    <link type="text/css" rel='stylesheet' href='css/va/brightics-va.css'/>
+
+
+    <!-- jQuery JS -->
+    <script src="js/plugins/jquery/jquery-3.3.1.min.js"></script>
+    <script src="js/plugins/jquery-hotkeys/jquery.hotkeys.js"></script>
+    <script src="js/plugins/jquery-cookie/jquery.cookie.js"></script>
+    <script src="js/plugins/jquery-appear/jquery.appear.js"></script>
+    <!-- jquery-ui  -->
+    <script src="js/plugins/jquery-ui/jquery-ui.min.js"></script>
+    <!-- bootstrap JS -->
+    <script src="js/plugins/bootstrap-3.3.7-dist/bootstrap.min.js"></script>
+
+    <script src="js/plugins/numeral/numeral.min.js"></script>
+    <script src="js/plugins/lodash/lodash.min.js"></script>
+    <!-- moment.js -->
+    <script src="js/plugins/moment/moment.min.js"></script>
+    <!-- AUI -->
+    <script src="js/plugins/aui-package/globalization/globalize.js"></script>
+    <script src="js/plugins/aui-package/aui-camellia-1.0.24.js"></script>
+    <script src="js/plugins/aui-package/aui-widgets-1.16.8.min.js"></script>
+
+    <!-- perfect-scrollbar JS -->
+    <script src="js/plugins/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="js/plugins/perfect-scrollbar/perfect-scrollbar.jquery.js"></script>
+    <!-- joint JS -->
+    <script src="js/plugins/backbone/backbone-min.js"></script>
+    <script src="js/plugins/joint/joint.js"></script>
+
+    <script src="js/va/brightics-va-core.js"></script>
+
+    <!-- Functions -->
+    <script src="js/va/brightics-va-functions.js"></script>
+    <!--<script type="text/javascript" src='js/va/brightics-va-commons.js'></script>-->
+    <!--<script type="text/javascript" src='js/admin/brightics-admin.js'></script>-->
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+        }
+
+        #brightics {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #brightics > div {
+            z-index: 2;
+        }
+
+        .brtc-va-main {
+            display: block;
+            position: absolute;
+            height: auto;
+            bottom: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            margin: 0;
+            min-width: 1280px;
+            min-height: 900px;
+            z-index: 1;
+        }
+
+        body > .ps-scrollbar-x-rail, body > .ps-scrollbar-y-rail {
+            z-index: 1;
+        }
+
+        .brtc-mc-contents {
+            width: 100%;
+            height: calc(100% - 67px);
+            position: absolute;
+            left: 0;
+            top: 57px;
+            padding: 5px;
+        }
+
+        .brtc-mc-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, .2);
+        }
+
+        .brtc-mc-progress > span {
+            position: absolute;
+            top: calc((100% - 20px) / 2);
+            left: calc((100% - 500px) / 2);
+            font-size: 25px;
+            width: 500px;
+            height: 20px;
+            text-align: center;
+        }
+
+        .brtc-mc-progress > i {
+            position: absolute;
+            top: 40%;
+            left: calc(50% - 50px);
+            width: initial;
+        }
+
+    </style>
+</head>
+<body>
+<div id="brightics">
+    <div class="brtc-va-main">
+        <div class="brtc-va-studio-top-area">
+            <div class="brtc-va-tools-menubar" style="width: 100%; height: 100%;">
+                <div class="brtc-va-tools-menubar-left-area">
+                    <div class="brtc-va-tools-menubar-logo"></div>
+                </div>
+            </div>
+        </div>
+        <div class="brtc-mc-contents">
+            <div class="brtc-mc-agent-tasks-list"></div>
+        </div>
+        <div class="brtc-mc-progress"><i class="fa fa-circle-o-notch fa-spin fa-5x fa-fw"></i><span></span></div>
+    </div>
+</div>
+</body>
+<script>
+    const MSG_LOADING = 'Loading...';
+
+    function showProgress(message) {
+        $('.brtc-mc-progress > span').text(message);
+        $('.brtc-mc-progress').show();
+    }
+
+    function hideProgress() {
+        $('.brtc-mc-progress').hide();
+    }
+
+    window.onload = function () {
+        var loggedInUser = '<%- userId %>';
+        Brightics.VA.Env.Session.userId = loggedInUser;
+        $('#brightics').perfectScrollbar();
+        $('.brtc-mc-agent-tasks-list').jqxGrid({
+            theme: Brightics.VA.Env.Theme,
+            width: '99%',
+            height: 600,
+            columnsheight: 34,
+            rowsheight: 32,
+            filterable: false,
+            showfiltercolumnbackground: false,
+            showfiltermenuitems: true,
+            autoshowfiltericon: true,
+            altrows: false,
+            sortable: true,
+            showsortcolumnbackground: false,
+            showsortmenuitems: false,
+            columnsresize: false,
+            autoheight: true,
+            columns: [{
+                text: 'Task ID',
+                datafield: 'taskId',
+                width: '300',
+                align: 'center',
+                rendered: Brightics.VA.Core.Utils.WidgetUtils.tooltiprenderer,
+                cellsrenderer: Brightics.VA.Core.Utils.WidgetUtils.cellRenderer
+            }, {
+                text: 'User ID',
+                datafield: 'userId',
+                width: '200',
+                align: 'center',
+                rendered: Brightics.VA.Core.Utils.WidgetUtils.tooltiprenderer,
+                cellsrenderer: Brightics.VA.Core.Utils.WidgetUtils.cellRenderer
+            }, {
+                text: 'Agent',
+                datafield: 'agentId',
+                width: '100',
+                align: 'center',
+                rendered: Brightics.VA.Core.Utils.WidgetUtils.tooltiprenderer,
+                cellsrenderer: Brightics.VA.Core.Utils.WidgetUtils.cellRenderer
+            }, {
+                text: 'Start Time',
+                datafield: 'startTime',
+                width: '200',
+                align: 'center',
+                rendered: Brightics.VA.Core.Utils.WidgetUtils.tooltiprenderer,
+                cellsrenderer: Brightics.VA.Core.Utils.WidgetUtils.cellRenderer
+            }, {
+                text: 'Message',
+                datafield: 'message',
+                width: 'auto',
+                align: 'center',
+                rendered: Brightics.VA.Core.Utils.WidgetUtils.tooltiprenderer,
+                cellsrenderer: Brightics.VA.Core.Utils.WidgetUtils.cellRenderer
+            }]
+        });
+        var callBack = function (data) {
+            hideProgress();
+            var source = {
+                localdata: data,
+                datafields: [{
+                    name: 'taskId',
+                    type: 'string'
+                }, {
+                    name: 'userId',
+                    type: 'string'
+                }, {
+                    name: 'agentId',
+                    type: 'string'
+                }, {
+                    name: 'startTime',
+                    type: 'string'
+                }, {
+                    name: 'message',
+                    type: 'string'
+                }],
+                datatype: "array"
+            };
+            var adapter = new $.jqx.dataAdapter(source);
+            $('.brtc-mc-agent-tasks-list').jqxGrid('source', adapter);
+
+        };
+        showProgress(MSG_LOADING);
+        var option = {
+            url: '/api/va/v2/analytics/current-tasks',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8'
+        };
+        $.ajax(option).done(function (result) {
+            callBack(result);
+        })
+//        $.ajax(option).done(function (data) {
+//            callBack(data);
+//        }).fail(function (err) {
+//            Brightics.VA.Core.Utils.WidgetUtils.openBadRequestErrorDialog(err);
+//        })
+
+        $(window).on('resize', function () {
+            $('#brightics > .ps-scrollbar-x-rail').remove();
+            $('#brightics > .ps-scrollbar-y-rail').remove();
+            $('#brightics').perfectScrollbar('update');
+        });
+
+        hideProgress();
+
+        $(document).bind('contextmenu', function (e) {
+            return false;
+        });
+
+    };
+</script>
+</html>

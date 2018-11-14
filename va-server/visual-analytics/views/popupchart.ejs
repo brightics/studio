@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" charset="UTF-8">
+
+    <title>Brightics Visual Analytics</title>
+
+    <script src="js/plugins/babel-polyfill/polyfill.js"></script>
+    <script src="js/plugins/css.escape/css.escape.js"></script>
+
+    <link type="text/css" rel="stylesheet" href="css/plugins/normalize.css/normalize.css">
+    <link type="text/css" rel="stylesheet" href="font-awesome/4.5.0/css/font-awesome.min.css">
+    <link type="text/css" rel="stylesheet" href="css/plugins/bootstrap-3.3.7/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="css/plugins/aui-package/aui-widgets-1.16.8.css">
+    <link type="text/css" rel='stylesheet' href='css/plugins/aui-package/aui-widgets-1.9.0.office.css'/>
+
+    <!-- perfect-scrollbar css -->
+    <link type="text/css" rel='stylesheet' href='css/plugins/perfect-scrollbar/perfect-scrollbar.css'/>
+
+    <!-- jquery-ui css -->
+    <link type="text/css" rel='stylesheet' href='css/plugins/jquery-ui/jquery-ui.css'/>
+
+    <!-- brightics chart css -->
+    <link type="text/css" rel="stylesheet" href="css/plugins/bcharts/bcharts-all.css">
+    <link type="text/css" rel="stylesheet" href="css/plugins/bcharts/bcharts-adonis-all.css">
+    <link type="text/css" rel='stylesheet' href='css/plugins/bcharts/bcharts-tethys-all.css'/>
+    <link type="text/css" rel='stylesheet' href='css/va/brightics-va.css'/>
+
+    <!-- jQuery JS -->
+    <script src="js/plugins/jquery/jquery-3.3.1.min.js"></script>
+    <script src="js/plugins/jquery-hotkeys/jquery.hotkeys.js"></script>
+    <script src="js/plugins/jquery-cookie/jquery.cookie.js"></script>
+    <script src="js/plugins/jquery-appear/jquery.appear.js"></script>
+    <!-- jquery-ui  -->
+    <script src="js/plugins/jquery-ui/jquery-ui.min.js"></script>
+    <!-- bootstrap JS -->
+    <script src="js/plugins/bootstrap-3.3.7-dist/bootstrap.min.js"></script>
+
+    <script src="js/plugins/numeral/numeral.min.js"></script>
+    <script src="js/plugins/lodash/lodash.min.js"></script>
+
+    <!-- AUI -->
+    <script src="js/plugins/aui-package/globalization/globalize.js"></script>
+    <script src="js/plugins/aui-package/aui-camellia-1.0.24.js"></script>
+    <script src="js/plugins/aui-package/aui-widgets-1.16.8.min.js"></script>
+
+    <!-- perfect-scrollbar JS -->
+    <script src="js/plugins/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="js/plugins/perfect-scrollbar/perfect-scrollbar.jquery.js"></script>
+
+    <!-- moment.js -->
+    <script src="js/plugins/jquery/moment.min.js"></script>
+
+    <!-- Ace Editor -->
+    <script src="js/plugins/ace/ace.js"></script>
+    <script src="js/plugins/ace/ext-language_tools.js"></script>
+
+    <!-- EChart JS -->
+    <script src="js/plugins/echarts/echarts.js"></script>
+    <script src="js/plugins/echarts-stat/ecStat.js"></script>
+
+    <!-- D3.js v4-->
+    <script src="js/plugins/d3/d3.js"></script>
+    <script src="js/plugins/d3-tip/index.js"></script>
+
+    <!-- jStat -->
+    <script src="js/plugins/jstat/jstat.js"></script>
+
+    <!-- Bcharts -->
+    <script src="js/plugins/bcharts/bcharts-all.js"></script>
+    <script src="js/plugins/bcharts/bcharts-adonis-all.js"></script>
+    <script src="js/plugins/bcharts/bcharts-module-all.js"></script>
+
+    <!-- joint JS -->
+    <script src="js/plugins/backbone/backbone-min.js"></script>
+    <script src="js/plugins/joint/joint.js"></script>
+
+    <script src="js/va/brightics-va-core.js"></script>
+
+    <!-- Functions -->
+    <script src="js/va/brightics-va-functions.js"></script>
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+        }
+
+        #brightics {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #brightics > div {
+            z-index: 2;
+        }
+
+        .brtc-va-main {
+            display: block;
+            position: absolute;
+            height: auto;
+            bottom: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            margin: 0;
+            min-width: 1280px;
+            min-height: 900px;
+            z-index: 1;
+        }
+
+        body > .ps-scrollbar-x-rail, body > .ps-scrollbar-y-rail {
+            z-index: 1;
+        }
+
+        .brtc-mc-contents {
+            width: 100%;
+            height: calc(100% - 57px);
+            position: absolute;
+            left: 0;
+            top: 57px;
+        }
+
+        .brtc-mc-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, .2);
+        }
+
+        .brtc-mc-progress > span, .brtc-mc-notification > span {
+            position: absolute;
+            top: calc((100% - 20px) / 2);
+            left: calc((100% - 500px) / 2);
+            font-size: 25px;
+            width: 500px;
+            height: 20px;
+            text-align: center;
+        }
+
+        .brtc-mc-progress > i {
+            position: absolute;
+            top: 40%;
+            left: calc(50% - 50px);
+            width: initial;
+        }
+
+    </style>
+</head>
+<body>
+<div id="brightics">
+    <div class="brtc-va-main">
+        <div class="brtc-va-studio-top-area">
+            <div class="brtc-va-tools-menubar" style="width: 100%; height: 100%;">
+                <div class="brtc-va-tools-menubar-left-area">
+                    <div class="brtc-va-tools-menubar-logo"></div>
+                </div>
+            </div>
+        </div>
+        <div class="brtc-mc-contents"></div>
+        <div class="brtc-mc-progress"><i class="fa fa-circle-o-notch fa-spin fa-5x fa-fw"></i><span></span></div>
+        <div class="brtc-mc-notification"><span></span></div>
+    </div>
+</div>
+</body>
+<script>
+    var FnUnitUtils = brtc_require('FnUnitUtils');
+    const MSG_LOADING = 'Loading...';
+    const MSG_ERROR = 'No data found';
+    var noDataList = [];
+
+    var globalOptions = {};
+
+    function getParameterByName(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+    }
+
+    function retrieveFile(params) {
+        showProgress(MSG_LOADING);
+        var option = {
+            url: 'api/va/v2/ws/projects/' + params.pid + '/files/' + params.mid,
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',
+            blocking: true
+        };
+
+        return $.ajax(option).done(function (data) {
+            var migrator = new Brightics.VA.Core.Tools.ModelMigrator.Executor();
+            hideProgress();
+            var file = data[0];
+            if (!file) {
+                alert('Could not found model.');
+                return;
+            }
+            migrator.migrate(file.contents);
+            retrieveChartOptions(params, file.contents);
+        }).fail(function (err) {
+            showNotification(MSG_ERROR);
+        });
+    }
+
+    function retrieveChartOptions(params, fileContents) {
+        var defaultWorksheet = {
+            'panel': [
+                {
+                    id: 'default-' + Date.now(),
+                    chartOption: {
+                        chart: {
+                            type: 'table'
+                        },
+                        plotOptions:{
+                            map: {
+                                geoData: {
+                                    url: function(mapName){
+                                        return 'api/va/v2/map/' + mapName
+                                    }
+                                }
+                            },
+                            table: {
+                              formatter: []
+                            }
+                        }
+                    }
+                }],
+            'layout': {}
+        };
+
+        var funcList = fileContents.functions;
+        if ($.isArray(funcList) && funcList.length > 0) {
+            var _getFnUnitByOutTable = function (table) {
+                for (var i in funcList) {
+                    var fnUnit = funcList[i];
+                    if ($.inArray(table, FnUnitUtils.getOutData(fnUnit)) > -1) {
+                        return fnUnit;
+                    }
+                }
+            };
+            var foundFunc = funcList.find(function (funcElem) {
+                return funcElem.fid == params.fid
+            })
+            params.dataList = [];
+            //get data from found function sheet
+            params.tids.split(',').forEach(function (tableId, tableIdx, tidArr) {
+                var foundWorksheet = $.extend(true, {}, foundFunc.display.sheet);
+                var inIdx = $.inArray(tableId, FnUnitUtils.getInData(foundFunc));
+                var outIdx = $.inArray(tableId, FnUnitUtils.getOutData(foundFunc));
+                var dataLabel = _getFnUnitByOutTable(tableId).display.label;
+                if (inIdx > -1) {
+                    //in-table
+                    params.worksheet = $.extend(true, {}, defaultWorksheet, foundWorksheet['in']['partial'][0]);
+                } else if (outIdx > -1) {
+                    params.worksheet = $.extend(true, {}, defaultWorksheet, foundWorksheet['out']['partial'][0]);
+                    dataLabel = (tidArr.length > 1) ? dataLabel + '-' + (tableIdx + 1) : dataLabel;
+                } else {
+                    showNotification(MSG_ERROR);
+                    return;
+                }
+                params.dataList[tableIdx] = {
+                    value: tableId,
+                    label: dataLabel,
+                    dataSourceIndex: tableIdx
+                }
+            })
+        } else {
+            showNotification(MSG_ERROR);
+        }
+    }
+
+    function retrieveDataSource(params) {
+        showProgress(MSG_LOADING);
+        var promises = [];
+        params.datasources = [];
+        params.dataList.forEach(function (paramData, index) {
+            var arg = {
+                user: params.user,
+                mid: params.mid,
+                tab: paramData.value,
+                offset: params.offsetArr.split(',')[index],
+                limit: params.limitArr.split(',')[index]
+            }
+            var args = $.map(arg, function (value, key) {
+                return key + '=' + value;
+            }).join('&');
+            var option = {
+                url: 'api/va/v2/data/staging/query?' + args,
+                type: 'GET',
+                contentType: 'application/json; charset=utf-8',
+                blocking: true
+            };
+            var request = $.ajax(option).done(function (data) {
+                hideProgress();
+                data.name = paramData.label;
+                data.tid = paramData.value;
+                params.datasources[index] = data;
+            }).fail(function (err) {
+                noDataList.push(paramData.label);
+                showNotification(MSG_ERROR + ': ' + noDataList.toString());
+            });
+            promises.push(request);
+        })
+        return $.when.apply(null, promises);
+    }
+
+    function renderProperties(params) {
+        var _getSrcByDataSourceIdx = function (changedDataSource) {
+            return {
+                columns: params.datasources[changedDataSource.dataSourceIndex].columns,
+                data: function (prepare) {
+                    setTimeout(function () {
+                        var filter = new Brightics.Chart.Helper.SelectionFilterHelper(prepare.filters);
+                        var filteredData = filter.filter(params.datasources[changedDataSource.dataSourceIndex].columns, params.datasources[changedDataSource.dataSourceIndex].data);
+                        var data = {
+                            columns: params.datasources[changedDataSource.dataSourceIndex].columns,
+                            data: filteredData
+                        };
+                        prepare.done(data);
+                    }, 300);
+                },
+                id: {
+                    label: changedDataSource.label,
+                    value: changedDataSource.value
+                }
+            }
+        };
+
+        var _setChangedDatasource = function (originSrc, dataSource) {
+            originSrc.lazyData[dataSource.targetIdx] = _getSrcByDataSourceIdx(dataSource);
+        };
+
+        var _getSrcListByTableIdxes = function (dataSourceList, tableIdxes) {
+            var lazyData = [];
+            for (var tIdx in tableIdxes) {
+                var changedDataSource = dataSourceList[tableIdxes[tIdx]];
+                lazyData.push(_getSrcByDataSourceIdx(changedDataSource));
+            }
+            return {
+                dataType: 'lazy',
+                lazyData: lazyData
+            }
+        }
+
+
+        if (params.worksheet && params.worksheet.panel) {
+            params.worksheet.panel.forEach(function (panelObj) {
+                panelObj.tableIndexes = (panelObj.tableIndexes) ? panelObj.tableIndexes : [0];
+                var propertyOptions = {
+                    chartOption: {
+                        source: _getSrcListByTableIdxes(params.dataList, panelObj.tableIndexes)
+                    },
+                    chartTypeSelectable: true,
+                    callBack: {
+                        onExtendedDataSourceChanged: function (changedDataSource, panelId) {
+                            panelObj.tableIndexes[changedDataSource.targetIdx] = changedDataSource.dataSourceIndex;
+                            _setChangedDatasource(panelObj.chartOption.source, changedDataSource);
+                            $('.brtc-mc-contents').bchartsAdonis('setDataSource', panelId, panelObj.chartOption.source);
+                        }
+                    },
+                    dataSource: {
+                        selectable: true,
+                        getDataSourceList: function () {
+                            return params.dataList;
+                        },
+                        getDataSourceColumnList: function (id) {
+                            return params.datasources.find(function (dataSrc) {
+                                return dataSrc.tid == id;
+                            }).columns
+                        }
+                    }
+                };
+                panelObj = $.extend(true, panelObj, propertyOptions);
+            })
+        } else {
+            throw new Error(MSG_ERROR);
+        }
+    }
+
+    function showProgress(message) {
+        $('.brtc-mc-progress > span').text(message);
+        $('.brtc-mc-progress').show();
+    }
+
+    function hideProgress() {
+        $('.brtc-mc-progress').hide();
+    }
+
+    function showNotification(message) {
+        hideProgress();
+        $('.brtc-mc-notification > span').text(message);
+        $('.brtc-mc-notification').show();
+    }
+
+    function renderPopupchart() {
+        $('.brtc-mc-contents').bchartsAdonis('destroy');
+        $('.brtc-mc-contents').empty();
+
+        var chartOptions = $.extend(true, {}, {
+            component: {
+                left: {
+                    dataSource: true
+                },
+                right: {
+                    chartOption: true,
+                    filter: true
+                }
+            },
+            style: {
+                width: '100%',
+                height: '100%'
+            },
+            datasources: globalOptions.params.datasources,
+            worksheet: $.extend(true, {}, globalOptions.params.worksheet, {
+                toolbar: {
+                    menu: {
+                        duplicate: {},
+                        details: {},
+                        close: {}
+                    }
+                },
+                onAddChart: this.onAddChart.bind(this),
+                onRemoveChart: this.onRemoveChart.bind(this)
+            })
+        })
+
+        var removeGuideOption = function () {
+            for (var i in chartOptions.worksheet.panel) {
+                var panel = chartOptions.worksheet.panel[i];
+
+                delete panel.chartOption.guide;
+            }
+        };
+
+        removeGuideOption();
+
+        $('.brtc-mc-contents').bchartsAdonis(chartOptions);
+    }
+
+    function onAddChart(panelOption) {
+        var existPanels = globalOptions.params.worksheet.panel.some(function (element) {
+            return element.id == panelOption.id;
+        })
+        if (!existPanels) {
+            var newPanelOption = $.extend(true, {}, panelOption);
+            globalOptions.params.worksheet.panel.push(newPanelOption);
+        }
+    }
+
+    function onRemoveChart(panelOption, layout) {
+        for (var p in  globalOptions.params.worksheet.layout) {
+            delete globalOptions.params.worksheet.layout[p];
+        }
+        $.extend(true, globalOptions.params.worksheet.layout, layout);
+    }
+
+    function createHeaderToolbar() {
+        var $toolbar = $('' +
+                '<div class="brtc-va-editors-sheet-panels-window-toolbar"/>');
+        $('.brtc-va-tools-menubar').append($toolbar);
+
+        createArrangeToolItem($toolbar);
+    }
+
+    function createArrangeToolItem($toolbar) {
+        var _this = this;
+        var $arrangeEvenly = $('<div class="brtc-va-editors-sheet-panels-toolitem" item-type="evenly" title="Evenly"></div>');
+        $toolbar.append($arrangeEvenly);
+        $arrangeEvenly.on('click', function (event) {
+            $('.brtc-mc-contents').bchartsAdonis('layout', 'evenly');
+        });
+
+        var $arrangeStacked = $('<div class="brtc-va-editors-sheet-panels-toolitem" item-type="stacked" title="Horizontal"></div>');
+        $toolbar.append($arrangeStacked);
+        $arrangeStacked.on('click', function (event) {
+            $('.brtc-mc-contents').bchartsAdonis('layout', 'horizontal');
+        });
+
+        var $arrangeSideBySide = $('<div class="brtc-va-editors-sheet-panels-toolitem" item-type="side-by-side" title="Vertical"></div>');
+        $toolbar.append($arrangeSideBySide);
+        $arrangeSideBySide.on('click', function (event) {
+            $('.brtc-mc-contents').bchartsAdonis('layout', 'vertical');
+        });
+    }
+
+    window.onload = function () {
+        $.ajax({
+            type: 'GET',
+            url: 'api/va/v2/map'
+        }).done(function (data) {
+            Brightics.Chart.Adonis.BChartsAdonis.setupMapList(data);
+        });
+        $('#brightics').perfectScrollbar();
+
+        $(window).on('resize', function () {
+            $('#brightics > .ps-scrollbar-x-rail').remove();
+            $('#brightics > .ps-scrollbar-y-rail').remove();
+            $('#brightics').perfectScrollbar('update');
+        });
+
+        new window.Brightics.VA.Preference();
+
+        createHeaderToolbar();
+
+        hideProgress();
+
+        globalOptions.params = {
+            user: getParameterByName('user'),
+            pid: getParameterByName('pid'),
+            mid: getParameterByName('mid'),
+            fid: getParameterByName('fid'),
+            tids: getParameterByName('tids'),
+            offsetArr: getParameterByName('offsetArr'),
+            limitArr: getParameterByName('limitArr')
+        };
+
+        $(document).bind('contextmenu', function (e) {
+            return false;
+        });
+
+        try {
+            noDataList = [];
+            retrieveFile(globalOptions.params).done(function () {
+                retrieveDataSource(globalOptions.params).done(function () {
+                    try {
+                        renderProperties(globalOptions.params);
+                        renderPopupchart();
+                    } catch (ex) {
+                        showNotification(ex.message);
+                    }
+                });
+            });
+        } catch (ex) {
+            showNotification(ex.message);
+        }
+    };
+</script>
+</html>

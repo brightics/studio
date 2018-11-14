@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" charset="UTF-8">
+    <base href="<%- baseUrl %>" target="_blank">
+    <title>Brightics Visual Analytics</title>
+    <link href="favicon.ico" rel="icon" type="image/x-icon">
+
+    <script>
+        if (!window.Brightics) window.Brightics = {};
+        if (!window.Brightics.VA) window.Brightics.VA = {};
+        if (!window.Brightics.VA.Core) window.Brightics.VA.Core = {};
+        if (!window.Brightics.VA.Core.Utils) window.Brightics.VA.Core.Utils = {};
+        if (!window.Brightics.VA.Core.Functions) window.Brightics.VA.Core.Functions = {};
+        
+        if (!window.Brightics.VA.Implementation) window.Brightics.VA.Implementation = {};
+        if (!window.Brightics.VA.Implementation.Visual) window.Brightics.VA.Implementation.Visual = {};
+
+        Brightics.VA.Implementation.Visual.DATASOURCE_TYPE = {
+            STAGING: 'loadFromStaging',
+            ALLUXIO: 'loadFromAlluxio',
+            LOCAL: 'loadFromLocal',
+            HDFS: 'loadFromHdfs',
+            SCHEDULE: 'loadFormSchedule'
+        };
+    </script>
+
+    <script src="js/plugins/babel-polyfill/polyfill.js"></script>
+    <script src="js/plugins/css.escape/css.escape.js"></script>
+
+    <link type="text/css" rel="stylesheet" href="css/plugins/aui-package/aui-widgets-1.16.8.css">
+    <link type="text/css" rel='stylesheet' href='css/plugins/aui-package/aui-widgets-1.9.0.office.css'/>
+    <link type="text/css" rel="stylesheet" href="css/plugins/bootstrap-3.3.7/bootstrap.min.css">
+
+    <!-- brightics chart css -->
+    <link type="text/css" rel="stylesheet" href="css/plugins/bcharts/bcharts-all.css">
+
+    <!-- font-awesome css -->
+    <link type="text/css" rel="stylesheet" href="font-awesome/4.5.0/css/font-awesome.min.css">
+
+    <!-- perfect-scrollbar css -->
+    <link type="text/css" rel='stylesheet' href='css/plugins/perfect-scrollbar/perfect-scrollbar.css'/>
+
+    <script src="js/plugins/jquery/jquery-3.3.1.js"></script>
+
+    <!-- EChart JS -->
+    <script src="js/plugins/echarts/echarts.js"></script>
+    <script src="js/plugins/echarts-stat/ecStat.js"></script>
+
+    <!-- D3.js v4-->
+    <script src="js/plugins/d3/d3.js"></script>
+    <script src="js/plugins/d3-tip/index.js"></script>
+
+    <script src="js/plugins/lodash/lodash.min.js"></script>
+
+
+    <!-- moment.js -->
+    <script src="js/plugins/jquery/moment.min.js"></script>
+    <!-- jquery-ui  -->
+    <script src="js/plugins/jquery-ui/jquery-ui.js"></script>
+
+    <!-- Bcharts -->
+    <script src="js/plugins/bcharts/bcharts-all.js"></script>
+    <script src="js/plugins/bcharts/bcharts-adonis-all.js"></script>
+    <script src="js/plugins/bcharts/bcharts-module-all.js"></script>
+
+    <script src="js/va/brightics-va-publish.js"></script>
+
+    <!-- perfect-scrollbar JS -->
+    <script src="js/plugins/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="js/plugins/perfect-scrollbar/perfect-scrollbar.jquery.js"></script>
+
+    <!-- AUI -->
+    <script src="js/plugins/aui-package/aui-camellia-1.0.24.js"></script>
+    <script src="js/plugins/aui-package/aui-widgets-1.16.8.min.js"></script>
+
+    <script src="js/plugins/numeral/numeral.min.js"></script>
+
+    <script>
+        Brightics.VA.Implementation.Visual.VisualModelLauncher.prototype.launchUnit = function (fnUnit, args, options, listeners) {
+            var launchOptions = {
+                mode: 'unit',
+                clazz: Brightics.VA.Implementation.Visual.Clazz,
+                expectedUnitCount: 1,
+                originalModels: [{
+                    mid: options.mid || fnUnit.parent().mid,
+                    title:'',
+                    type: Brightics.VA.Implementation.Visual.Clazz,
+                    functions: [$.extend(true, {}, fnUnit)],
+                    getFnUnitById: function () {
+                        return;
+                    }
+                }],
+                runnable: this._createUnitRunnable(fnUnit, args, options)
+            };
+            this._launch(launchOptions, options, listeners);
+        };
+
+        Brightics.VA.Core.Utils.ModelUtils.isControlFunction = function (fnUnit, persist) {return false;};
+
+        Brightics.VA.Core.Utils.ModelUtils.deleteEmptyArray = function (fnUnit, parent) {
+        }
+
+        Brightics.VA.Core.Utils.ModelUtils.carvePersist = function (fnUnit, persist) {
+            var persistMode = false;
+            var defaultPersist;
+
+            if (!Brightics.VA.Core.Functions.Library[fnUnit.func]) {
+                defaultPersist = persistMode;
+            } else {
+                defaultPersist = Brightics.VA.Core.Functions.Library[fnUnit.func].defaultFnUnit.persist;
+            }
+
+            var  basePersist = false;
+
+            if (persistMode === 'user-mode') {
+                if (fnUnit['persist-mode'] === 'true') {
+                    fnUnit.persist = true;
+                } else if (fnUnit['persist-mode'] === 'false') {
+                    fnUnit.persist = false;
+                } else {
+                    if (basePersist === 'true') {
+                        fnUnit.persist = true;
+                    } else if (basePersist === 'false') {
+                        fnUnit.persist = false;
+                    } else { // auto
+                        fnUnit.persist = true;
+                    }
+                }
+            }
+            if (persistMode === 'system-mode') {
+                // do nothing
+            }
+            if (persistMode === 'performance-mode') {
+                if (defaultPersist !== undefined) {
+                    fnUnit.persist = defaultPersist;
+                } else {
+                    fnUnit.persist = false;
+                }
+            }
+            if (persistMode === 'storage-mode') {
+                fnUnit.persist = true;
+            }
+
+            // subflow 마지막 함수는 persist = true 공통 적용
+            if (fnUnit[FUNCTION_NAME] === 'Subflow' && fnUnit.param.functions.length > 0) {
+                fnUnit.param.functions[fnUnit.param.functions.length - 1].persist = true; //fnUnit.persist;
+            }
+        }
+    </script>
+
+    <script>
+        const EMPTY_DATA = {
+            columns: [],
+            data: []
+        };
+        
+        const IN_DATA = 'inData';
+        const OUT_DATA = 'outData';
+
+        const spark = '<%- useSpark %>' === 'true' ? true : false;
+
+        var ChartContentUnit = spark ? (function () { 
+            function ChartContentUnit($parent, options) {
+                this.$parent = $parent;
+                this.options = options;
+                this.init();
+                this.createControls();
+            }
+
+            ChartContentUnit.prototype.init = function () {
+                this.modelLauncher = Brightics.VA.Implementation.Visual.VisualModelLauncher.instance();
+
+                this.pageOptions = {
+                    pageNum: 1,
+                    pageSize: 1000,
+                    totalCount: 0
+                };
+            };
+
+            ChartContentUnit.prototype.createControls = function () {
+                this.createChartControl();
+                this.refreshPaginationStatus();
+
+                this.adjustBackground();
+                this.adjustArrange();
+            };
+
+            ChartContentUnit.prototype.createChartControl = function () {
+                var _this = this;
+                var chartOptions = $.extend(true, {}, this.options.options),
+                    dataSource = this.getDataSource();
+                
+                $.extend(true, chartOptions,{
+                    plotOptions:{
+                        map: {
+                            geoData: {
+                                url: function(mapName){
+                                    return 'api/va/v2/map/' + mapName
+                                    }
+                            }
+                        }
+                    }
+                });
+                
+                chartOptions.source = {
+                    dataType: 'local',
+                    localData: [{
+                        id: {
+                            value: dataSource ? dataSource.fid : '',
+                            label: dataSource && dataSource.display ? dataSource.display.label : ''
+                        },
+                        dataType: 'rawdata',
+                        columns: [],
+                        data: []
+                    }]
+                };
+
+                //todo : report의 interaction toolbar 기능 제한, 그룹 설정 정책이 결정되면 추후 적용
+                chartOptions.toolbar = {
+                    type: 'custom', show: false
+                };
+
+                this.chart = new Brightics.Chart.BCharts(this.$parent, chartOptions);
+
+                if (chartOptions.chart.type === 'table') {
+                    this.pagination = new Brightics.Chart.Component.Pagination(this.$parent, {
+                        pageNum: 1,
+                        pageSize: 1000,
+                        changed: function (info) {
+                            _this.pageOptions.pageNum = info.pageNum;
+                            _this.pageOptions.pageSize = info.pageSize;
+
+                            if (_this.chart) _this.chart.render(true);
+                        }
+                    });
+
+                    this._updatePagination(0);
+                }
+
+            };
+
+            ChartContentUnit.prototype._updatePagination = function (currentRowCount) {
+                if (this.pagination) {
+                    this.pagination.setTotalCount(this.pageOptions.totalCount);
+                    var begin = (this.pageOptions.pageNum - 1) * this.pageOptions.pageSize + 1;
+                    var end = begin + currentRowCount - 1;
+                    this.pagination.setPageRows(begin, end);
+                }
+            };
+
+            ChartContentUnit.prototype.bindEvents = function () {
+                Brightics.VA.Implementation.Visual.Editors.Diagram.Figures.BaseContentUnit.prototype.bindEvents.call(this);
+                this.bindDroppableEvent();
+            };
+
+            ChartContentUnit.prototype.show = function (force) {
+                if (force) {
+                    this.rendered = false;
+                }
+                if (!this.rendered) {
+                    this.resetDataSource(true);
+                    this.rendered = true;
+                }
+            };
+
+            ChartContentUnit.prototype.hide = function () {
+
+            };
+
+            ChartContentUnit.prototype.refreshChart = function () {
+                var _this = this;
+                if (this.chart) {
+                    clearTimeout(this._redrawLayoutJob);
+                    this._redrawLayoutJob = setTimeout(function () {
+                        if (_this.chart) _this.chart.render(true);
+                    }, 500);
+                    this.refreshPaginationStatus();
+                }
+            };
+
+            ChartContentUnit.prototype.refreshPaginationStatus = function () {
+            };
+
+            ChartContentUnit.prototype.getDataSource = function () {
+                return this.options.dataSource;
+            };
+
+            ChartContentUnit.prototype.resetDataSource = function (reloadData) {
+                var _this = this, dataSource = this.getDataSource();
+
+                var chartOptions = {
+                    source: {
+                        dataType: 'lazy',
+                        localData: [EMPTY_DATA],
+                        lazyData: [{
+                            id: {
+                                value: dataSource ? dataSource.fid : '',
+                                label: dataSource && dataSource.display ? dataSource.display.label : ''
+                            },
+                            columns: function () {
+                                return _this._querySchema();
+                            },
+                            data: function (prepare) {
+                                _this._queryData(prepare);
+                            }
+                        }]
+                    }
+                };
+
+                if (!reloadData) delete chartOptions.source.lazyData[0].data;
+
+                this.setChartOption(chartOptions);
+            };
+
+            ChartContentUnit.prototype.getChartOption = function () {
+                if (this.chart) return this.chart.getOptions();
+            };
+
+            ChartContentUnit.prototype.setChartOption = function (chartOption) {
+                if (this.chart) this.chart.setOptions(chartOption);
+                this.refreshPaginationStatus();
+            };
+
+            ChartContentUnit.prototype._querySchema = function () {
+                var _this = this,
+                    dataSource = this.getDataSource(),
+                    schema = [];
+
+                if (!dataSource) {
+                    return schema;
+                }
+                else return dataSource.display.columns;
+
+                var mid = dataSource.param.modelId;
+                var tid = this._getTableIdFromDataSource(dataSource);
+
+                schema = Brightics.VA.Core.DataQueryTemplate.getSchema(mid, tid);
+                schema = schema || ($.extend(true, [], dataSource.display.columns) || []);
+                return schema;
+            };
+
+            ChartContentUnit.prototype._queryData = function (prepare) {
+                var _this = this,
+                    dataSource = this.getDataSource();
+
+                if (!dataSource) {
+                    prepare.done(EMPTY_DATA);
+                    // _this.triggerChangedContentStatus('rendered');
+                    return;
+                }
+
+                var fnUnit = this._createBigDataChartFnUnit();
+                var options = {
+                    fnUnit: fnUnit,
+                    mid: fnUnit.getModelId(),
+                    tid: prepare.options.chart.type == 'table' ? fnUnit[IN_DATA] : fnUnit[OUT_DATA][0],
+                    hideDialog: true,
+                    publish: true,
+                    offset: prepare.options.chart.type == 'table' ? (this.pageOptions.pageNum - 1) * this.pageOptions.pageSize : 0,
+                    limit: prepare.options.chart.type == 'table' ? this.pageOptions.pageSize : 1000
+                };
+
+                _this.processing = true;
+
+                prepare.aborted = function () {
+                    if (this.jid) {
+                        _this.modelLauncher.terminate(this.jid);
+                    }
+                };
+
+                if (dataSource.param.scheduleId) {
+                    options.user = dataSource.param.scheduleId
+                } else if (dataSource.param.publishId) {
+                    options.user = dataSource.param.publishId;
+                }
+
+                if (prepare.options.chart.type == 'table') _this._queryTableData(prepare, options);
+                else _this._queryChartData(prepare, options);
+            };
+
+            ChartContentUnit.prototype._done = function (type, prepare, result) {
+                var input = result || EMPTY_DATA;
+                if (type == 'table') input.offset = (this.pageOptions.pageNum - 1) * this.pageOptions.pageSize;
+                prepare.done(input);
+
+                this.processing = false;
+
+                if (type == 'table') {
+                    this.pageOptions.totalCount = input.count;
+                    this._updatePagination(input.data.length);
+                    this.pagination.setPageNumber(this.pageOptions.pageNum);
+                    this.pagination.setPageSize(this.pageOptions.pageSize);
+                }
+            };
+
+            ChartContentUnit.prototype._fail = function (type, prepare, err) {
+                if (type == 'table') this.pageOptions.totalCount = 0;
+                if (type == 'table') this._updatePagination(0);
+            };
+
+            ChartContentUnit.prototype._queryTableData = function (prepare, options) {
+                var _this = this;
+                Brightics.VA.Core.DataQueryTemplate.queryTable(options.mid, options.tid, function (data, table) {
+                    _this._done('table', prepare, data);
+                }, function (data, table, err) {
+                    _this._fail('table', prepare, err);
+                }, false, {
+                    offset: options.offset,
+                    limit: options.limit,
+                    user: options.user,
+                    publish: true
+                });
+            };
+
+            ChartContentUnit.prototype._queryChartData = function (prepare, options) {
+                var _this = this;
+                Brightics.VA.Core.Utils.FullRenderingUtils.getRenderedData(options.fnUnit, _this.modelLauncher, {
+                    mid: options.mid,
+                    user: options.user,
+                    publish: true,
+                    hideDialog: options.hideDialog
+                }, function (data) {
+                    try {
+                        _this._done('chart', prepare, data);
+                    } catch (e) {
+                        _this._fail('chart', prepare, e.message);
+                        Logger.error(e.stack, {category: 'Chart'});
+                    }
+                }, function (data, tableId, err) {
+                    _this._fail('chart', prepare, err);
+                }, function (jid) {
+                    prepare.jid = jid;
+                });
+            };
+
+            ChartContentUnit.prototype.setContentSize = function (size) {
+                // Brightics.VA.Implementation.Visual.Editors.Diagram.Figures.BaseContentUnit.prototype.setContentSize.call(this, size);
+                if (this.chart) this.chart.render();
+            };
+
+            ChartContentUnit.prototype._createBigDataChartFnUnit = function () {
+                var _this = this,
+                    fnUnit = Brightics.VA.Core.Utils.FullRenderingUtils.getFnUnit(this.getChartOption()),
+                    dataSource = this.getDataSource();
+
+                var inTable = this._getTableIdFromDataSource();
+                fnUnit[IN_DATA].push(inTable);
+                fnUnit[OUT_DATA].push(inTable + fnUnit.fid);
+                fnUnit.getModelId = function () {
+                    return dataSource.func === Brightics.VA.Implementation.Visual.DATASOURCE_TYPE.STAGING ? dataSource.param.modelId : dataSource.mid;
+                };
+                return fnUnit;
+            };
+
+            ChartContentUnit.prototype._getTableIdFromDataSource = function (dataSource) {
+                var dataSource = dataSource || this.getDataSource();
+                if (dataSource.param.tableId) {
+                    return dataSource.param.tableId;
+                }
+                if (dataSource.param.functions) {
+                    return dataSource.param.functions[0][OUT_DATA][0];
+                }
+                if (dataSource[OUT_DATA]) {
+                    return dataSource[OUT_DATA][0];
+                }
+                if (dataSource.outputs) {
+                    return dataSource.outputs.table;
+                }
+            };
+
+            ChartContentUnit.prototype.adjustArrange = function () {
+                if (this.options.options.style && this.options.options.style['z-index']) {
+                    this.setContentArrange(this.options.options.style['z-index'] || 1);
+                }
+            };
+
+            ChartContentUnit.prototype.adjustBackground = function () {
+                if (this.options.options.style && this.options.options.style.background) {
+                    this.setContentBackground(this.options.options.style.background);
+                }
+            };
+
+
+            return ChartContentUnit;
+        }()) :
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        (function () {
+            const EMPTY_DATA = {
+                columns: [],
+                data: []
+            };
+            const REFRESH_TYPE = {
+                CHART_TYPE: 'chartTypeChanged',
+                CHART_OPTION: 'chartOptionChanged',
+                DATA_SOURCE: 'dataSourceChanged'
+            };
+
+                   function ChartContentUnit($parent, options) {
+                this.$parent = $parent;
+                this.options = options;
+                this.init();
+                this.createControls();
+            }
+
+            ChartContentUnit.prototype.init = function () {
+                this.modelLauncher = Brightics.VA.Implementation.Visual.VisualModelLauncher.instance();
+
+                this.pageOptions = {
+                    pageNum: 1,
+                    pageSize: 1000,
+                    totalCount: 0
+                };
+            };
+
+            ChartContentUnit.prototype.createControls = function () {
+                this.createChartControl();
+                this.refreshPaginationStatus();
+
+                this.adjustBackground();
+                this.adjustArrange();
+            };
+
+            ChartContentUnit.prototype.createChartControl = function () {
+                var _this = this;
+                var chartOptions = $.extend(true, {}, this.options.options),
+                    dataSource = this.getDataSource();
+                
+                $.extend(true, chartOptions,{
+                    plotOptions:{
+                        map: {
+                            geoData: {
+                                url: function(mapName){
+                                    return 'api/va/v2/map/' + mapName
+                                    }
+                            }
+                        }
+                    }
+                });
+                
+                chartOptions.source = {
+                    dataType: 'local',
+                    localData: [{
+                        id: {
+                            value: dataSource ? dataSource.fid : '',
+                            label: dataSource && dataSource.display ? dataSource.display.label : ''
+                        },
+                        dataType: 'rawdata',
+                        columns: [],
+                        data: []
+                    }]
+                };
+
+                //todo : report의 interaction toolbar 기능 제한, 그룹 설정 정책이 결정되면 추후 적용
+                chartOptions.toolbar = {
+                    type: 'custom', show: false
+                };
+
+                this.chart = new Brightics.Chart.BCharts(this.$parent, chartOptions);
+
+                if (chartOptions.chart.type === 'table') {
+                    this.pagination = new Brightics.Chart.Component.Pagination(this.$parent, {
+                        pageNum: 1,
+                        pageSize: 1000,
+                        changed: function (info) {
+                            _this.pageOptions.pageNum = info.pageNum;
+                            _this.pageOptions.pageSize = info.pageSize;
+
+                            if (_this.chart) _this.chart.render(true);
+                        }
+                    });
+
+                    this._updatePagination(0);
+                }
+
+            };
+
+            ChartContentUnit.prototype._updatePagination = function (currentRowCount) {
+                if (this.pagination) {
+                    this.pagination.setTotalCount(this.pageOptions.totalCount);
+                    var begin = (this.pageOptions.pageNum - 1) * this.pageOptions.pageSize + 1;
+                    var end = begin + currentRowCount - 1;
+                    this.pagination.setPageRows(begin, end);
+                }
+            };
+
+            ChartContentUnit.prototype.bindEvents = function () {
+                Brightics.VA.Implementation.Visual.Editors.Diagram.Figures.BaseContentUnit.prototype.bindEvents.call(this);
+                this.bindDroppableEvent();
+            };
+
+            ChartContentUnit.prototype.show = function (force) {
+                if (force) {
+                    this.rendered = false;
+                }
+                if (!this.rendered) {
+                    this.resetDataSource(true);
+                    this.rendered = true;
+                }
+            };
+
+            ChartContentUnit.prototype.hide = function () {
+
+            };
+
+            ChartContentUnit.prototype.refreshChart = function () {
+                var _this = this;
+                if (this.chart) {
+                    clearTimeout(this._redrawLayoutJob);
+                    this._redrawLayoutJob = setTimeout(function () {
+                        if (_this.chart) _this.chart.render(true);
+                    }, 500);
+                    this.refreshPaginationStatus();
+                }
+            };
+
+            ChartContentUnit.prototype.refreshPaginationStatus = function () {
+            };
+
+            ChartContentUnit.prototype.getDataSource = function () {
+                return this.options.dataSource;
+            };
+
+            ChartContentUnit.prototype.resetDataSource = function (reloadData) {
+                var _this = this, dataSource = this.getDataSource();
+
+                var chartOptions = {
+                    source: {
+                        dataType: 'lazy',
+                        localData: [EMPTY_DATA],
+                        lazyData: [{
+                            id: {
+                                value: dataSource ? dataSource.fid : '',
+                                label: dataSource && dataSource.display ? dataSource.display.label : ''
+                            },
+                            columns: function () {
+                                return _this._querySchema();
+                            },
+                            data: function (prepare) {
+                                _this._queryData(prepare);
+                            }
+                        }]
+                    }
+                };
+
+                if (!reloadData) delete chartOptions.source.lazyData[0].data;
+
+                this.setChartOption(chartOptions);
+            };
+
+            ChartContentUnit.prototype.getChartOption = function () {
+                if (this.chart) return this.chart.getOptions();
+            };
+
+            ChartContentUnit.prototype.setChartOption = function (chartOption) {
+                if (this.chart) this.chart.setOptions(chartOption);
+                this.refreshPaginationStatus();
+            };
+
+            ChartContentUnit.prototype._querySchema = function () {
+                var _this = this,
+                    dataSource = this.getDataSource(),
+                    schema = [];
+
+                if (!dataSource) {
+                    return schema;
+                }
+                else return dataSource.display.columns;
+
+                var mid = dataSource.param.modelId;
+                var tid = this._getTableIdFromDataSource(dataSource);
+
+                schema = Brightics.VA.Core.DataQueryTemplate.getSchema(mid, tid);
+                schema = schema || ($.extend(true, [], dataSource.display.columns) || []);
+                return schema;
+            };
+
+            ChartContentUnit.prototype._getTableIdFromDataSource = function (dataSource) {
+                var dataSource = dataSource || this.getDataSource();
+                if (dataSource.param.tableId) {
+                    return dataSource.param.tableId;
+                }
+                if (dataSource.param.functions) {
+                    return dataSource.param.functions[0][OUT_DATA][0];
+                }
+                if (dataSource[OUT_DATA]) {
+                    return dataSource[OUT_DATA][0];
+                }
+                if (dataSource.outputs) {
+                    return dataSource.outputs.table;
+                }
+            };
+
+            ChartContentUnit.prototype._queryData = function (prepare) {
+                var _this = this,
+                    dataSource = this.getDataSource();
+
+                if (!dataSource) {
+                    prepare.done(EMPTY_DATA);
+                    // _this.triggerChangedContentStatus('rendered');
+                    return;
+                }
+
+                var fnUnit = this._createBigDataChartFnUnit();
+                var options = {
+                    fnUnit: fnUnit,
+                    mid: fnUnit.getModelId(),
+                    tid: prepare.options.chart.type == 'table' ? fnUnit[IN_DATA] : fnUnit[OUT_DATA][0],
+                    hideDialog: true,
+                    publish: true,
+                    offset: prepare.options.chart.type == 'table' ? (this.pageOptions.pageNum - 1) * this.pageOptions.pageSize : 0,
+                    limit: prepare.options.chart.type == 'table' ? this.pageOptions.pageSize : 1000
+                };
+
+                _this.processing = true;
+
+                prepare.aborted = function () {
+                    if (this.jid) {
+                        _this.modelLauncher.terminate(this.jid);
+                    }
+                };
+
+                if (dataSource.param.scheduleId) {
+                    options.user = dataSource.param.scheduleId
+                } else {
+                    options.user = publishId;
+                }
+
+                if (prepare.options.chart.type == 'table') _this._queryTableData(prepare, options);
+                else _this._queryChartData(prepare, options);
+            };
+
+            ChartContentUnit.prototype._done = function (type, prepare, result) {
+                var input = result || EMPTY_DATA;
+                if (type == 'table') input.offset = (this.pageOptions.pageNum - 1) * this.pageOptions.pageSize;
+                prepare.done(input);
+
+                this.processing = false;
+
+                if (type == 'table') {
+                    this.pageOptions.totalCount = input.count;
+                    this._updatePagination(input.data.length);
+                    this.pagination.setPageNumber(this.pageOptions.pageNum);
+                    this.pagination.setPageSize(this.pageOptions.pageSize);
+                }
+            };
+
+            ChartContentUnit.prototype._fail = function (type, prepare, err) {
+                if (type == 'table') this.pageOptions.totalCount = 0;
+                if (type == 'table') this._updatePagination(0);
+            };
+
+            ChartContentUnit.prototype._queryTableData = function (prepare, options) {
+                var _this = this;
+                Brightics.VA.Core.DataQueryTemplate.queryTable(options.mid, options.tid, function (data, table) {
+                    _this._done('table', prepare, data);
+                }, function (data, table, err) {
+                    _this._fail('table', prepare, err);
+                }, false, {
+                    offset: options.offset,
+                    limit: options.limit,
+                    user: options.user,
+                    publish: true
+                });
+            };
+
+            ChartContentUnit.prototype._queryChartData = function (prepare, options) {
+                var _this = this;
+                Brightics.VA.Core.Utils.FullRenderingUtils.getRenderedData(options.fnUnit, _this.modelLauncher, {
+                    mid: options.mid,
+                    user: options.user,
+                    publish: true,
+                    hideDialog: options.hideDialog
+                }, function (data) {
+                    try {
+                        _this._done('chart', prepare, data);
+                    } catch (e) {
+                        _this._fail('chart', prepare, e.message);
+                        Logger.error(e.stack, {category: 'Chart'});
+                    }
+                }, function (data, tableId, err) {
+                    _this._fail('chart', prepare, err);
+                }, function (jid) {
+                    prepare.jid = jid;
+                });
+            };
+
+            ChartContentUnit.prototype.setContentSize = function (size) {
+                // Brightics.VA.Implementation.Visual.Editors.Diagram.Figures.BaseContentUnit.prototype.setContentSize.call(this, size);
+                if (this.chart) this.chart.render();
+            };
+
+            ChartContentUnit.prototype._createBigDataChartFnUnit = function () {
+                var _this = this,
+                    fnUnit = Brightics.VA.Core.Utils.FullRenderingUtils.getFnUnit(this.getChartOption()),
+                    dataSource = this.getDataSource();
+
+                var inTable = this._getTableIdFromDataSource();
+                if (!fnUnit[IN_DATA]) fnUnit[IN_DATA] = [];
+                if (!fnUnit[OUT_DATA]) fnUnit[OUT_DATA] = [];
+                fnUnit[IN_DATA].push(inTable);
+                fnUnit[OUT_DATA].push(inTable + fnUnit.fid);
+                fnUnit.getModelId = function () {
+                    return dataSource.func.toLowerCase() === 'loadFromStaging'.toLowerCase() ? dataSource.param.modelId : dataSource.mid;
+                };
+                return fnUnit;
+            };
+
+            ChartContentUnit.prototype.adjustArrange = function () {
+                if (this.options.options.style && this.options.options.style['z-index']) {
+                    this.setContentArrange(this.options.options.style['z-index'] || 1);
+                }
+            };
+
+            ChartContentUnit.prototype.adjustBackground = function () {
+                if (this.options.options.style && this.options.options.style.background) {
+                    this.setContentBackground(this.options.options.style.background);
+                }
+            };
+
+
+            return ChartContentUnit;
+        }());
+    
+    </script>
+    
+    <style>
+        *
+        {
+            box-sizing: content-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+        }
+
+        body
+        {
+            overflow: auto;
+        }
+
+        .brtc-va-main-publishreport {
+            width: 100%;
+            background-color: #e5e9ef;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            overflow: auto;
+        }
+
+        body > .ps-scrollbar-x-rail, body > .ps-scrollbar-y-rail {
+             z-index: 1;
+        }
+
+        .brtc-style-content-wrapper {
+            outline: none !important;
+        }
+
+        .ui-resizable-handle.ui-resizable-se.ui-icon.ui-icon-gripsmall-diagonal-se {
+            display: none !important;
+        }
+
+        .brtc-style-page .brtc-style-content-wrapper.ui-selected {
+            outline: none !important;
+        }
+
+        .brtc-va-main-publishreport .brtc-style-min-full {
+            min-width: auto;
+            min-height: auto;
+        }
+
+        .brtc-va-main-publishreport .brtc-va-visual-page {
+            margin: 5px 10px;
+        }
+
+        .brtc-va-main-publishreport-page
+        {
+            margin: 5px 10px;
+            display: none;
+            position: relative;
+            background-color: white;
+            box-shadow: 0 0 10px 0 rgba(0, 0, 0, .08);
+        }
+        .brtc-va-main-publishreport-page-unit
+        {
+            position: absolute;
+            padding: 7px;
+            line-height: 1;
+            color: #000;
+            font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+            display: flex;
+            flex-direction: column;
+            /* box-sizing: border-box; */
+        }
+        .brtc-va-main-publishreport-page-unit-text
+        {
+            padding: 10px;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            box-sizing: border-box;
+        }
+
+        .brtc-va-main-publishreport-page-unit .bcharts-pagination
+        {
+            overflow: hidden;
+            min-height: 30px;
+            /* padding-right: 5px;
+            padding-left: 5px; */
+
+            border: 1px solid #d4d4d4;
+            border-top: none;
+            background-color: #fff;
+
+            font-family: 'Arial', Dotum, Tahoma, sans-serif;
+            color: rgba(0, 0, 0, .7);
+            font-size: 13px;
+        }
+        .brtc-va-main-error
+        {
+            display: none;
+            width: 100%;
+            height: 100%;
+
+            margin: 11px 0 22px;
+            overflow: hidden;
+            text-align: center;
+
+            color: red;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 25px;
+        }
+
+        .jqx-widget
+        {
+            font-family: Arial, Dotum, Tahoma, sans-serif;
+            font-size: 12px;
+
+            color: rgba(0, 0, 0, .8);
+        }
+
+        .jqx-widget-header-office
+        {
+            font-family: 'Arial', Dotum, Tahoma, sans-serif;
+
+            color: rgba(0, 0, 0, .7);
+        }
+
+        .jqx-widget-office .jqx-grid-column-header-office,
+        .jqx-grid-cell-office,
+        .jqx-widget-office .jqx-grid-cell-office,
+        .jqx-widget-office .jqx-grid-group-cell-office,
+        .jqx-grid-group-cell-office
+        {
+            font-family: 'Arial', Dotum, Tahoma, sans-serif;
+        }
+
+        .jqx-fill-state-hover-office
+        {
+            border-color: #ccc;
+            background-color: #e5e5e5;
+        }
+
+        .jqx-grid-cell-hover-office
+        {
+            color: #626fdb !important;
+            background: transparent;
+        }
+
+        .jqx-fill-state-focus-office,
+        .jqx-combobox-content-focus-office,
+        .jqx-numberinput-focus,
+        .jqx-datetimeinput-office .jqx-fill-state-hover-office,
+        .jqx-datetimeinput-office .jqx-fill-state-pressed-office
+        {
+            border-color: #626fdb;
+        }
+
+        .jqx-fill-state-pressed-office
+        {
+            border-color: #626fdb;
+            background-color: #eff1fd;
+        }
+
+        .jqx-grid-content-office .jqx-fill-state-pressed-office
+        {
+            color: #626fdb !important;
+        }
+
+        .jqx-widget-content-office 
+        {
+            font-family: 'Arial', Dotum, Tahoma, sans-serif;
+            color: rgba(0, 0, 0, .7);
+        }
+
+        .brtc-va-visual-content
+        {
+            display: flex;
+            flex-direction: column;
+
+            box-sizing: border-box;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .brtc-va-visual-content .bcharts-container
+        {
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+<div class="brtc-va-main-publishreport">
+    <div class="brtc-va-main-publishreport-page" page-index="0"></div>
+    <div class="brtc-va-main-publishreport-page" page-index="1"></div>
+    <div class="brtc-va-main-publishreport-page" page-index="2"></div>
+    <div class="brtc-va-main-publishreport-page" page-index="3"></div>
+    <div class="brtc-va-main-publishreport-page" page-index="4"></div>
+    <div class="brtc-va-main-publishreport-page" page-index="5"></div>
+    <div class="brtc-va-main-publishreport-page" page-index="6"></div>
+    <div class="brtc-va-main-publishreport-page" page-index="7"></div>
+    <div class="brtc-va-main-publishreport-page" page-index="8"></div>
+    <div class="brtc-va-main-publishreport-page" page-index="9"></div>
+</div>
+<div class="brtc-va-main-error">
+    <p style="font-size: 100px; line-height: 200px; width: 100%">Brightics
+    <p><ins id="status-message">Wrong URL : Please, Check publish link URL</ins></p>
+</div>
+</body>
+<script>
+    var user = 'admin';
+    var permissions = '{}';
+    var logLevel = '';
+    var isPublish = true;
+</script>
+<script>
+    window.onload = function () {
+        $.ajax({
+            type: 'GET',
+            url: 'api/va/v2/map'
+        }).done(function (data) {
+            Brightics.Chart.Adonis.BChartsAdonis.setupMapList(data);
+        });
+        window.publishId = '<%- publishId %>';
+        var isCustom = '<%- isCustom %>';
+        var url = '<%- url %>';
+
+        var publishOption = {
+            publishId: publishId,
+            userId: '',
+            url: url,
+            isCustom: isCustom
+        };
+
+        $(document).bind('contextmenu', function (e) {
+            return false;
+        });
+
+        var setDisableToTextUnits = function () {
+            var textUnits = $('.brtc-va-main-publishreport-page .brtc-va-widget-note-control');
+
+            for (var i=0; i<textUnits.length; i++ ) {
+                $(textUnits[i]).summernote('disable');
+            }
+
+            $('.brtc-va-visual-page-wrapper').focus();
+        };
+
+        try {
+            var opt = {
+                url: 'publish/'+ publishOption.publishId,
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(publishOption),
+                async: false
+            };
+
+            $.ajax(opt).done(function (result) {
+                console.log(result);
+                
+                var pages = result.reportContent.contents.report.pages;
+                var display = result.reportContent.contents.report.display;
+                var functions = result.reportContent.contents.functions;
+
+                for (var index in pages) {
+                    //create page
+                    var page = pages[index];
+                    var $page = $('body').find('.brtc-va-main-publishreport .brtc-va-main-publishreport-page[page-index=' + index + ']')
+                    $page.show();
+                    $page.css({
+                        'width': display.width,
+                        'height': display.height,
+                        'background-color': display.backgroundColor,
+                    });
+
+                    //create contents
+                    var contents = page.contents;
+
+                    for (var rid in contents) {
+                        var content = contents[rid];
+                        var type = content.type;
+
+                        var $unit = $('<div class="brtc-va-main-publishreport-page-unit"></div>');
+                        var $innerContent = $('<div class="brtc-va-visual-content"></div>');
+                        $page.append($unit);
+                        $unit.append($innerContent);
+
+                        $unit.width(content.size.width);
+                        $unit.height(content.size.height);
+                        $unit.css({
+                            'top': content.position.top,
+                            'left': content.position.left
+                        })
+
+                        for (var i in functions) {
+                            if (functions[i].fid === content.dataSourceId) {
+                                content.dataSource = functions[i];
+
+                                if(functions[i].func === 'loadFromAlluxio' || functions[i].name === 'brightics.function.io$load') {
+                                    content.dataSource.mid = result.reportContent.contents.mid;
+                                }
+                                break;
+                            }
+                        }
+
+                        if (type === 'chart') {
+                            var  chart = new ChartContentUnit($innerContent, content);
+                            chart.show();
+                        } else {
+                            var $text = $('<div class="brtc-va-main-publishreport-page-unit-text"></div>');
+                            $innerContent.append($text);
+                            $text.html(content.options.html);
+                        }
+
+                    }
+                }
+            }, function (e) {
+                console.log(e);
+            });
+        } catch (err) {
+            console.error(err);
+            $('.brtc-va-main-publishreport').hide();
+            $('.brtc-va-main-publishreport').show();
+        }
+    };
+</script>
+</html>
