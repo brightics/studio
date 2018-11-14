@@ -136,10 +136,8 @@ def _biplot(xidx, yidx, data, pc_columns, columns, singular_values, components,
     if ax is None:
         ax = plt.gca()
     
-    sqrt_singular_values = np.sqrt(singular_values)
-    
-    xs = data[pc_columns[xidx]] * sqrt_singular_values[xidx] ** alpha
-    ys = data[pc_columns[yidx]] * sqrt_singular_values[yidx] ** alpha
+    xs = data[pc_columns[xidx]] * singular_values[xidx] ** alpha
+    ys = data[pc_columns[yidx]] * singular_values[yidx] ** alpha
     
     if key_col is not None and hue is not None:
         groups = data[hue].unique()
@@ -161,8 +159,8 @@ def _biplot(xidx, yidx, data, pc_columns, columns, singular_values, components,
     ax.set_xlabel('%s (%0.4f)' % (pc_columns[xidx], explained_variance_ratio[xidx]))
     ax.set_ylabel('%s (%0.4f)' % (pc_columns[yidx], explained_variance_ratio[yidx]))
     
-    axs = components[xidx] * sqrt_singular_values[xidx] ** (1 - alpha)
-    ays = components[yidx] * sqrt_singular_values[yidx] ** (1 - alpha)
+    axs = components[xidx] * singular_values[xidx] ** (1 - alpha)
+    ays = components[yidx] * singular_values[yidx] ** (1 - alpha)
     
     xmax = np.amax(np.concatenate((xs, axs * 1.5)))
     xmin = np.amin(np.concatenate((xs, axs * 1.5)))
