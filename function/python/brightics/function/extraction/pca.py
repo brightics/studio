@@ -10,6 +10,7 @@ import numpy as np
 import matplotlib.cm as cm
 from matplotlib.patches import Patch
 
+
 def pca(table, group_by=None, **params):
     check_required_parameters(_pca, params, ['table'])
     if group_by is not None:
@@ -140,22 +141,18 @@ def _biplot(xidx, yidx, data, pc_columns, columns, singular_values, components,
     xs = data[pc_columns[xidx]] * sqrt_singular_values[xidx] ** alpha
     ys = data[pc_columns[yidx]] * sqrt_singular_values[yidx] ** alpha
     
-    
     if key_col is not None and hue is not None:
         groups = data[hue].unique()
         k = len(data[hue].unique())
         colors = cm.viridis(np.arange(k).astype(float) / k)
         for j, color in zip(range(k), colors):
-            group_data = data[data[hue]==groups[j]]
+            group_data = data[data[hue] == groups[j]]
             for idx in group_data.index:
-                ax.text(xs[idx], ys[idx], data[key_col][idx], color=color)
-        ax.legend([Patch(color=colors[i]) for i,_ in enumerate(groups)],groups.tolist())
-        
-        
-        
+                ax.text(xs[idx], ys[idx], data[key_col][idx], color=color, va='center', ha='center')
+        ax.legend([Patch(color=colors[i]) for i, _ in enumerate(groups)], groups.tolist())
     elif key_col is not None and hue is None:
         for i in range(data.shape[0]):
-            ax.text(xs[i], ys[i], data[key_col][i], color='black')
+            ax.text(xs[i], ys[i], data[key_col][i], color='black', va='center', ha='center')
     elif hue is not None:
         sns.scatterplot(xs, ys, hue=data[hue], data=data, ax=ax)
     else:
@@ -167,10 +164,10 @@ def _biplot(xidx, yidx, data, pc_columns, columns, singular_values, components,
     axs = components[xidx] * sqrt_singular_values[xidx] ** (1 - alpha)
     ays = components[yidx] * sqrt_singular_values[yidx] ** (1 - alpha)
     
-    xmax = np.amax(np.concatenate((xs,axs*1.5)))
-    xmin = np.amin(np.concatenate((xs,axs*1.5)))
-    ymax = np.amax(np.concatenate((ys,ays*1.5)))
-    ymin = np.amin(np.concatenate((ys,ays*1.5)))
+    xmax = np.amax(np.concatenate((xs, axs * 1.5)))
+    xmin = np.amin(np.concatenate((xs, axs * 1.5)))
+    ymax = np.amax(np.concatenate((ys, ays * 1.5)))
+    ymin = np.amin(np.concatenate((ys, ays * 1.5)))
     
     for i, col in enumerate(columns):
         x, y = axs[i], ays[i]
@@ -181,8 +178,8 @@ def _biplot(xidx, yidx, data, pc_columns, columns, singular_values, components,
     xs, xe = ax.get_xlim()
 
     m = 1.2
-    ax.set_xlim(xmin*m, xmax*m)
-    ax.set_ylim(ymin*m, ymax*m)
+    ax.set_xlim(xmin * m, xmax * m)
+    ax.set_ylim(ymin * m, ymax * m)
     
     # plt.title('PCA result with two components')
     # plt.show()
