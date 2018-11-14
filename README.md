@@ -12,7 +12,6 @@ Using Brightics Studio, both citizen data scientists and professional data scien
 Using the Brightics Toolkit, user interfaces for custom functions can be generated and they will be usable in the Brightics workflow.<br>
 Charts and report generators are also provided to visualize data in various ways.
 
-
 ## Documentation
 Please visit our web site http://www.brightics.ai
 
@@ -54,8 +53,18 @@ Go to unzipped directory and run.
 
 	start-brightics.cmd : for windows
 	start-brightics.sh : for linux and mac
-	
-### Create python environment (Optional)
+    
+## Development
+### Extend
+To extend functions, see the user manual section 5.7 about Brightics Toolkit.<br>
+http://www.brightics.ai/docs/en-us/ai/v3.6/user_guide/05_tasks
+    
+### Build
+Build core packages with maven.
+
+	mvn clean package -DskipTests [Options] -Popensource
+
+### Create python environment
 When you use stable release, you can skip this process.<br>
 Because our package has all required python libraries in its own environment.<br>
 
@@ -67,17 +76,6 @@ Reference : [Python wiki for WindowsCompilers](https://wiki.python.org/moin/Wind
 
     setup.cmd <pip options> : for windows
     setup.sh <pip options> : for linux and mac
-    
-
-## Development
-### Extend
-To extend functions, see the user manual section 5.7 about Brightics Toolkit.<br>
-http://www.brightics.ai/docs/en-us/ai/v3.6/user_guide/05_tasks
-    
-### Build
-Build core packages with maven.
-
-	mvn clean package -DskipTests [Options] -Popensource
 
 ## License
 Visual Analytics(Web GUI) project is licensed under the terms of the Brightics Visual Analytics LICENSE, please check Notice below.<br>
