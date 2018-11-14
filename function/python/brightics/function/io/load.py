@@ -45,5 +45,5 @@ def read_parquet_or_csv(path):
     return {'table': table_reader.read_parquet_or_csv(path)}
 
 
-def load(partial_path):
+def load(partial_path==['/brightics@samsung.com/upload/sample_iris.csv']):
     return {'table': table_reader.read_parquet(util.make_data_path_from_key(partial_path[0]))}
