@@ -7,7 +7,8 @@ from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 import seaborn as sns
 import numpy as np
-
+import matplotlib.cm as cm
+from matplotlib.patches import Patch
 
 def pca(table, group_by=None, **params):
     check_required_parameters(_pca, params, ['table'])
@@ -18,7 +19,7 @@ def pca(table, group_by=None, **params):
     
     
 def _pca(table, input_cols, new_column_name='projected_', n_components=None, copy=True, whiten=False, svd_solver='auto',
-            tol=0.0, iterated_power='auto', random_state=None, hue=None, alpha=0):
+            tol=0.0, iterated_power='auto', random_state=None, hue=None, alpha=0, key_col=None):
                     
     num_feature_cols = len(input_cols)
     if n_components is None:
@@ -58,9 +59,9 @@ def _pca(table, input_cols, new_column_name='projected_', n_components=None, cop
         plt_two = plt2MD(plt)
         plt.clf()
     else:
-        plt_two = _biplot(0, 1, pc_columns=column_names, columns=input_cols, singular_values=res_singular_values, 
-                          components=res_components, explained_variance_ratio=res_explained_variance_ratio, alpha=alpha, 
-                          hue=hue, data=out_df, ax=plt.gca())
+        plt_two = _biplot(0, 1, pc_columns=column_names, columns=input_cols, singular_values=res_singular_values,
+                          components=res_components, explained_variance_ratio=res_explained_variance_ratio, alpha=alpha,
+                          hue=hue, data=out_df, ax=plt.gca(), key_col=key_col)
 
     plt.figure()
     fig_scree = _screeplot(res_explained_variance, res_explained_variance_ratio, n_components)
@@ -71,7 +72,7 @@ def _pca(table, input_cols, new_column_name='projected_', n_components=None, cop
                 
     rb = ReportBuilder()
     rb.addMD(strip_margin("""
-    | 
+    | ## PCA Result
     | ### Plot
     | {image1}
     |
@@ -129,7 +130,8 @@ def _screeplot(explained_variance, explained_variance_ratio, n_components, ax=No
     return fig_scree
 
 
-def _biplot(xidx, yidx, hue, data, pc_columns, columns, singular_values, components, explained_variance_ratio, alpha=0, ax=None):
+def _biplot(xidx, yidx, data, pc_columns, columns, singular_values, components,
+            explained_variance_ratio, alpha=1, ax=None, hue=None, key_col=None):
     if ax is None:
         ax = plt.gca()
     
@@ -138,27 +140,49 @@ def _biplot(xidx, yidx, hue, data, pc_columns, columns, singular_values, compone
     xs = data[pc_columns[xidx]] * sqrt_singular_values[xidx] ** alpha
     ys = data[pc_columns[yidx]] * sqrt_singular_values[yidx] ** alpha
     
-    sns.scatterplot(xs, ys, hue=data[hue], data=data, ax=ax)
-    ax.set_xlabel('%s (%0.4f)'%(pc_columns[xidx],explained_variance_ratio[xidx]))
-    ax.set_ylabel('%s (%0.4f)'%(pc_columns[yidx],explained_variance_ratio[yidx]))
     
-    axs = components[xidx] * sqrt_singular_values[xidx] ** (1-alpha)
-    ays = components[yidx] * sqrt_singular_values[yidx] ** (1-alpha)
+    if key_col is not None and hue is not None:
+        groups = data[hue].unique()
+        k = len(data[hue].unique())
+        colors = cm.viridis(np.arange(k).astype(float) / k)
+        for j, color in zip(range(k), colors):
+            group_data = data[data[hue]==groups[j]]
+            for idx in group_data.index:
+                ax.text(xs[idx], ys[idx], data[key_col][idx], color=color)
+        ax.legend([Patch(color=colors[i]) for i,_ in enumerate(groups)],groups.tolist())
+        
+        
+        
+    elif key_col is not None and hue is None:
+        for i in range(data.shape[0]):
+            ax.text(xs[i], ys[i], data[key_col][i], color='black')
+    elif hue is not None:
+        sns.scatterplot(xs, ys, hue=data[hue], data=data, ax=ax)
+    else:
+        sns.scatterplot(xs, ys, data=data, ax=ax)
+        
+    ax.set_xlabel('%s (%0.4f)' % (pc_columns[xidx], explained_variance_ratio[xidx]))
+    ax.set_ylabel('%s (%0.4f)' % (pc_columns[yidx], explained_variance_ratio[yidx]))
+    
+    axs = components[xidx] * sqrt_singular_values[xidx] ** (1 - alpha)
+    ays = components[yidx] * sqrt_singular_values[yidx] ** (1 - alpha)
+    
+    xmax = np.amax(np.concatenate((xs,axs*1.5)))
+    xmin = np.amin(np.concatenate((xs,axs*1.5)))
+    ymax = np.amax(np.concatenate((ys,ays*1.5)))
+    ymin = np.amin(np.concatenate((ys,ays*1.5)))
     
     for i, col in enumerate(columns):
         x, y = axs[i], ays[i]
         ax.arrow(0, 0, x, y, color='r', width=0.001, head_width=0.05)
         ax.text(x * 1.3, y * 1.3, col, color='r', ha='center', va='center')
-        ys,ye = ax.get_ylim()
-        xs,xe = ax.get_xlim()
-        if x*1.5 > xe:
-            ax.set_xlim(xs,x*1.5)
-        elif x*1.5 < xs:
-            ax.set_xlim(x*1.5,xe)
-        elif y*1.5 > ye:
-            ax.set_ylim(ys,y*1.5)
-        elif y*1.5 < ys:
-            ax.set_ylim(y*1.5,ye)
+    
+    ys, ye = ax.get_ylim()
+    xs, xe = ax.get_xlim()
+
+    m = 1.2
+    ax.set_xlim(xmin*m, xmax*m)
+    ax.set_ylim(ymin*m, ymax*m)
     
     # plt.title('PCA result with two components')
     # plt.show()
