@@ -18,8 +18,8 @@ Please visit our web site http://www.brightics.ai
 
 ## Getting started
 ### Prerequisite
- * JDK 1.8+ (64bit)
- * Python 3.6 (64bit)
+ * JDK 1.8, 1.9 (64bit)
+ * Python 3.6.x (64bit)
 
 ### Setting up the environment variables
 Make sure java and python are executable.
