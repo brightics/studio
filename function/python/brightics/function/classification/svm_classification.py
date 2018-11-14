@@ -7,15 +7,15 @@ from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 
 
-def svc_train(table, group_by=None, **params):
-    check_required_parameters(_svc_train, params, ['table'])
+def svm_classification_train(table, group_by=None, **params):
+    check_required_parameters(_svm_classification_train, params, ['table'])
     if group_by is not None:
-        return _function_by_group(_svc_train, table, group_by=group_by, **params)
+        return _function_by_group(_svm_classification_train, table, group_by=group_by, **params)
     else:
-        return _svc_train(table, **params)
+        return _svm_classification_train(table, **params)
 
 
-def _svc_train(table, feature_cols, label_col, c=1.0, kernel='rbf', degree=3, gamma='auto', coef0=0.0, shrinking=True,
+def _svm_classification_train(table, feature_cols, label_col, c=1.0, kernel='rbf', degree=3, gamma='auto', coef0=0.0, shrinking=True,
               probability=True, tol=1e-3, max_iter=-1, random_state=None):
     _table = table.copy()
     
@@ -45,15 +45,15 @@ def _svc_train(table, feature_cols, label_col, c=1.0, kernel='rbf', degree=3, ga
     return {'model':_model}
 
 
-def svc_predict(table, model, group_by=None, **params):
-    check_required_parameters(_svc_predict, params, ['table', 'model'])
+def svm_classification_predict(table, model, group_by=None, **params):
+    check_required_parameters(_svm_classification_predict, params, ['table', 'model'])
     if group_by is not None:
-        return _function_by_group(_svc_predict, table, model, group_by=group_by, **params)
+        return _function_by_group(_svm_classification_predict, table, model, group_by=group_by, **params)
     else:
-        return _svc_predict(table, model, **params)
+        return _svm_classification_predict(table, model, **params)
 
 
-def _svc_predict(table, model, prediction_col='prediction', probability_col='probability', log_probability_col='log_probability', thresholds=None, suffix='index'):
+def _svm_classification_predict(table, model, prediction_col='prediction', probability_col='probability', log_probability_col='log_probability', thresholds=None, suffix='index'):
     _table = table.copy()
     
     feature_cols = model['features']

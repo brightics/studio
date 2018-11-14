@@ -85,3 +85,14 @@ class AddFunctionColumnIfTest(unittest.TestCase):
                                      [1.0, 2.0], 
                                      0.0)['out_table']
         print(out['encoded_species'][48:102])
+        
+    def test3(self):
+        #df = df_iris.copy().query(''' species != 'setosa' ''')
+        df = df_iris.copy()
+        print(df)
+        out = add_expression_column_if(df,
+                                     'encoded_species', 
+                                     ['''species == 'setosa' ''', '''species == 'virginica' '''],
+                                     ['1.0', '2.0'], 
+                                     '0.0')['out_table']
+        print(out['encoded_species'][48:102])

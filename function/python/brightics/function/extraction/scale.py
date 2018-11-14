@@ -48,15 +48,15 @@ def _scale(table, input_cols, scaler, suffix=None):
     return {'out_table' : out_table, 'model' : out_model}
 
 
-def scale_with_model(table, model, group_by=None, **params):
-    check_required_parameters(_scale_with_model, params, ['table', 'model'])
+def scale_model(table, model, group_by=None, **params):
+    check_required_parameters(_scale_model, params, ['table', 'model'])
     if group_by is not None:
-        return _function_by_group(_scale_with_model, table, model, group_by=group_by, **params)
+        return _function_by_group(_scale_model, table, model, group_by=group_by, **params)
     else:
-        return _scale_with_model(table, model, **params)
+        return _scale_model(table, model, **params)
     
     
-def _scale_with_model(table, model):        
+def _scale_model(table, model):        
     scaled_cols = []
     for col in model['input_cols']:
         scaled_cols.append(col + model['suffix'])
