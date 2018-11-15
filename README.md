@@ -37,6 +37,14 @@ Example for linux like systems:
     
 Most common cases you don't need to set above parameters because those projects automatically add paths during installation. 
 
+for macOS system:  
+* Graphviz 
+
+You have to install [graphviz](http://graphviz.org/download/) using [Homebrew](https://brew.sh/)
+```
+brew install graphviz
+```
+
 ### Installation
 Unzip the downloaded file in somewhere.
 
