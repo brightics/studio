@@ -1,15 +1,20 @@
 package com.samsung.sds.brightics.server.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.tomcat.util.http.fileupload.FileItemIterator;
-import org.apache.tomcat.util.http.fileupload.FileItemStream;
-import org.apache.tomcat.util.http.fileupload.FileUploadException;
-import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.FileCleanerCleanup;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.FileCleaningTracker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -124,20 +129,25 @@ public class DataController {
 	}
 	
 	@RequestMapping(value = "/data/upload", method = RequestMethod.POST)
-	public void fileUpload(HttpServletRequest request,
+	public void fileUpload(HttpServletRequest  request,
 			@RequestHeader(value = "path", required = true) String path,
 			@RequestHeader(value = "delimiter", required = true) String delimiter,
 			@RequestHeader(value = "column-type", required = true) String columnTypeJson,
 			@RequestHeader(value = "column-name", required = true) String columnNameJson)
 			throws FileUploadException, IOException {
+		
+		DiskFileItemFactory factory = new DiskFileItemFactory();
+		factory.setFileCleaningTracker(
+				FileCleanerCleanup.getFileCleaningTracker(request.getSession().getServletContext()));
 
-		ServletFileUpload upload = new ServletFileUpload();
-		FileItemIterator iterator = upload.getItemIterator(request);
-		// we support only one file per request
+		ServletFileUpload upload = new ServletFileUpload(factory);
+		List<FileItem> parseRequest = upload.parseRequest(request);
+		Iterator<FileItem> iterator = parseRequest.iterator();
 		if (iterator.hasNext()) {
-			FileItemStream item = iterator.next();
+			// we support only one file per request
+			FileItem item = iterator.next();
 			if (!item.isFormField()) {
-				InputStream is = item.openStream();
+				InputStream is = item.getInputStream();
 				dataService.fileUpload(is, path, delimiter.replace("\"", ""), columnTypeJson, columnNameJson);
 			}
 		}

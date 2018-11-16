@@ -87,7 +87,7 @@ public class StreamServiceTest {
 			
 			StreamService.writeData("test00001", ByteString.copyFrom(data));
 			itemBuffer.clear();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			e.printStackTrace();
 		}
 	}
