@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" charset="UTF-8">
+    <base href="<%- baseUrl %>" target="_blank">
+
+    <title>Brightics Visual Analytics</title>
+    <link href="favicon.ico" rel="icon" type="image/x-icon">
+
+    <script src="js/plugins/babel-polyfill/polyfill.js"></script>
+    <script src="js/plugins/css.escape/css.escape.js"></script>
+
+    <link type="text/css" rel="stylesheet" href="css/plugins/normalize.css/normalize.css">
+    <link type="text/css" rel="stylesheet" href="font-awesome/4.5.0/css/font-awesome.min.css">
+    <link type="text/css" rel="stylesheet" href="css/plugins/bootstrap-3.3.7/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="css/plugins/aui-package/aui-widgets-1.12.20.min.css">
+    <link type="text/css" rel='stylesheet' href='css/plugins/aui-package/aui-widgets-1.9.0.office.css'/>
+
+    <!-- perfect-scrollbar css -->
+    <link type="text/css" rel='stylesheet' href='css/plugins/perfect-scrollbar/perfect-scrollbar.css'/>
+
+    <!-- jquery-ui css -->
+    <link type="text/css" rel='stylesheet' href='css/plugins/jquery-ui/jquery-ui.css'/>
+
+    <!-- brightics chart css -->
+    <link type="text/css" rel="stylesheet" href="css/plugins/bcharts/bcharts-all.css">
+    <link type="text/css" rel="stylesheet" href="css/plugins/bcharts/bcharts-adonis-all.css">
+    <link type="text/css" rel='stylesheet' href='css/plugins/bcharts/bcharts-tethys-all.css'/>
+
+    <!--FIXME: 개발완료후 빌드버전으로 수정-->
+    <link type="text/css" rel='stylesheet' href='css/va/brightics-va.css'/>
+    <!--<link type="text/css" rel="stylesheet" href="css/va/source/brtc-style-window-chart.css">-->
+
+    <!-- jQuery JS -->
+    <script src="js/plugins/jquery/jquery-3.3.1.min.js"></script>
+    <script src="js/plugins/jquery-hotkeys/jquery.hotkeys.js"></script>
+    <script src="js/plugins/jquery-cookie/jquery.cookie.js"></script>
+    <script src="js/plugins/jquery-appear/jquery.appear.js"></script>
+    <!-- jquery-ui  -->
+    <script src="js/plugins/jquery-ui/jquery-ui.min.js"></script>
+    <!-- bootstrap JS -->
+    <script src="js/plugins/bootstrap-3.3.7-dist/bootstrap.min.js"></script>
+
+    <script src="js/plugins/numeral/numeral.min.js"></script>
+    <script src="js/plugins/lodash/lodash.min.js"></script>
+
+    <!-- AUI -->
+    <script src="js/plugins/aui-package/globalization/globalize.js"></script>
+    <script src="js/plugins/aui-package/aui-core-1.6.4.min.js"></script>
+    <script src="js/plugins/aui-package/aui-widgets-1.12.20.min.js"></script>
+
+    <!-- perfect-scrollbar JS -->
+    <script src="js/plugins/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="js/plugins/perfect-scrollbar/perfect-scrollbar.jquery.js"></script>
+
+    <!-- moment.js -->
+    <script src="js/plugins/jquery/moment.min.js"></script>
+
+    <!-- Ace Editor -->
+    <script src="js/plugins/ace/ace.js"></script>
+    <script src="js/plugins/ace/ext-language_tools.js"></script>
+
+    <!-- EChart JS -->
+    <script src="js/plugins/echarts/echarts.js"></script>
+    <script src="js/plugins/echarts-stat/ecStat.js"></script>
+
+    <!-- D3.js v4-->
+    <script src="js/plugins/d3/d3.js"></script>
+    <script src="js/plugins/d3-tip/index.js"></script>
+
+    <!-- jStat -->
+    <script src="js/plugins/jstat/jstat.js"></script>
+
+    <!-- Bcharts -->
+    <script src="js/plugins/bcharts/bcharts-all.js"></script>
+    <script src="js/plugins/bcharts/bcharts-adonis-all.js"></script>
+    <script src="js/plugins/bcharts/bcharts-tethys-all.js"></script>
+    <script src="js/plugins/bcharts/bcharts-module-all.js"></script>
+
+    <!-- joint JS -->
+    <script src="js/plugins/backbone/backbone-min.js"></script>
+    <script src="js/plugins/joint/joint.js"></script>
+
+    <script src="js/va/brightics-va-core.js"></script>
+
+    <!-- Functions -->
+    <script src="js/va/brightics-va-functions.js"></script>
+
+    <script src="js/va/brightics-va-windowchart.js"></script>
+
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        #brightics {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #brightics > div {
+            z-index: 2;
+        }
+
+        .brtc-va-main {
+            position: absolute;
+            z-index: 1;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+
+            display: block;
+
+            min-width: 1280px;
+            height: auto;
+            min-height: 900px;
+            margin: 0;
+        }
+
+        body > .ps-scrollbar-x-rail,
+        body > .ps-scrollbar-y-rail {
+            z-index: 1;
+        }
+
+    </style>
+</head>
+<body>
+<div id="brightics">
+    <div class="brtc-va-main"></div>
+</div>
+</body>
+<script>
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+            if (settings && settings.blocking) {
+                var dim = {
+                    open: function (xhr, settings) {
+                        this.$el = $('<div class="brtc-dim"><div class="brtc-dim-text brtc-style-appear-1sendond"><i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i></div></div>');
+                        $('body').append(this.$el);
+                    },
+                    close: function (data, textStatus, xhr) {
+                        this.$el.remove();
+                    }
+                }
+                dim.open();
+                xhr.done(dim.close.bind(dim));
+                xhr.fail(dim.close.bind(dim));
+            }
+        },
+        error: function (x, status, error) {
+            var messages = {
+                'errors': [
+                    {
+                        'message': 'Sorry! An unexpected error occurred. Please contact administrator.',
+                        'code': 400,
+                        'contentType': x.getResponseHeader('Content-Type')
+                    }
+                ]
+            };
+            if (x.status == 401) {
+                $(window).unbind('beforeunload');
+                // The session has expired and now you are taken to the login page.
+                messages = {
+                    'errors': [
+                        {
+                            'message': 'The session has expired and the last operation was not applied. Please login again to continue.',
+                            'code': 401
+                        }
+                    ]
+                };
+                Brightics.VA.Core.Utils.WidgetUtils.openErrorDialog(messages, function () {
+                    window.location.href = "/";
+                });
+            } else if (x.status === 403) {
+                messages.errors[0].code = 403;
+                if (x.responseJSON && x.responseJSON.errors) {
+                    messages = x.responseJSON;
+                    messages.errors[0].contentType = x.getResponseHeader('Content-Type');
+                } else {
+                    messages.errors[0].message = 'Maximum file length exceeded.'
+                    messages.errors[0].detailMessage = x.responseText;
+                }
+
+                Brightics.VA.Core.Utils.WidgetUtils.openErrorDialog(messages);
+            } else if (x.status !== 400) {
+                messages.errors[0].code = x.status;
+                if (x.responseJSON && x.responseJSON.errors) {
+                    messages = x.responseJSON;
+                    messages.errors[0].contentType = x.getResponseHeader('Content-Type');
+                } else if (x.responseText) {
+                    messages.errors[0].detailMessage = x.responseText;
+                }
+
+                Brightics.VA.Core.Utils.WidgetUtils.openErrorDialog(messages);
+            }
+        }
+    });
+</script>
+<script>
+    window.onload = function () {
+        $.ajax({
+            type: 'GET',
+            url: 'api/va/v2/map'
+        }).done(function (data) {
+            Brightics.Chart.Adonis.BChartsAdonis.setupMapList(data);
+        });
+
+        new Brightics.VA.Window.MultiChart($(".brtc-va-main"), {url: window.location.href});
+        $('#brightics').perfectScrollbar();
+
+        $(window).on('resize', function () {
+            $('#brightics > .ps-scrollbar-x-rail').remove();
+            $('#brightics > .ps-scrollbar-y-rail').remove();
+            $('#brightics').perfectScrollbar('update');
+        });
+    };
+</script>
+</html>
