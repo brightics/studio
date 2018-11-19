@@ -1,20 +1,11 @@
 package com.samsung.sds.brightics.server.controller;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.FileCleanerCleanup;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.io.FileCleaningTracker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.samsung.sds.brightics.common.network.proto.metadata.DataStatusType;
 import com.samsung.sds.brightics.server.model.param.DataLinkParam;
@@ -129,27 +122,17 @@ public class DataController {
 	}
 	
 	@RequestMapping(value = "/data/upload", method = RequestMethod.POST)
-	public void fileUpload(HttpServletRequest  request,
+	public void fileUpload(MultipartHttpServletRequest request,
 			@RequestHeader(value = "path", required = true) String path,
 			@RequestHeader(value = "delimiter", required = true) String delimiter,
 			@RequestHeader(value = "column-type", required = true) String columnTypeJson,
-			@RequestHeader(value = "column-name", required = true) String columnNameJson)
-			throws FileUploadException, IOException {
+			@RequestHeader(value = "column-name", required = true) String columnNameJson) throws Exception {
 		
-		DiskFileItemFactory factory = new DiskFileItemFactory();
-		factory.setFileCleaningTracker(
-				FileCleanerCleanup.getFileCleaningTracker(request.getSession().getServletContext()));
-
-		ServletFileUpload upload = new ServletFileUpload(factory);
-		List<FileItem> parseRequest = upload.parseRequest(request);
-		Iterator<FileItem> iterator = parseRequest.iterator();
-		if (iterator.hasNext()) {
-			// we support only one file per request
-			FileItem item = iterator.next();
-			if (!item.isFormField()) {
-				InputStream is = item.getInputStream();
-				dataService.fileUpload(is, path, delimiter.replace("\"", ""), columnTypeJson, columnNameJson);
-			}
+		Iterator<String> fileNames = request.getFileNames();
+		if (fileNames.hasNext()) {
+			MultipartFile file = request.getFile(fileNames.next());
+			InputStream is = file.getInputStream();
+			dataService.fileUpload(is, path, delimiter.replace("\"", ""), columnTypeJson, columnNameJson);
 		}
 	}
 	
