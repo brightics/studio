@@ -1,15 +1,11 @@
 package com.samsung.sds.brightics.server.controller;
 
-import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.tomcat.util.http.fileupload.FileItemIterator;
-import org.apache.tomcat.util.http.fileupload.FileItemStream;
-import org.apache.tomcat.util.http.fileupload.FileUploadException;
-import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.samsung.sds.brightics.common.network.proto.metadata.DataStatusType;
 import com.samsung.sds.brightics.server.model.param.DataLinkParam;
@@ -124,22 +122,17 @@ public class DataController {
 	}
 	
 	@RequestMapping(value = "/data/upload", method = RequestMethod.POST)
-	public void fileUpload(HttpServletRequest request,
+	public void fileUpload(MultipartHttpServletRequest request,
 			@RequestHeader(value = "path", required = true) String path,
 			@RequestHeader(value = "delimiter", required = true) String delimiter,
 			@RequestHeader(value = "column-type", required = true) String columnTypeJson,
-			@RequestHeader(value = "column-name", required = true) String columnNameJson)
-			throws FileUploadException, IOException {
-
-		ServletFileUpload upload = new ServletFileUpload();
-		FileItemIterator iterator = upload.getItemIterator(request);
-		// we support only one file per request
-		if (iterator.hasNext()) {
-			FileItemStream item = iterator.next();
-			if (!item.isFormField()) {
-				InputStream is = item.openStream();
-				dataService.fileUpload(is, path, delimiter.replace("\"", ""), columnTypeJson, columnNameJson);
-			}
+			@RequestHeader(value = "column-name", required = true) String columnNameJson) throws Exception {
+		
+		Iterator<String> fileNames = request.getFileNames();
+		if (fileNames.hasNext()) {
+			MultipartFile file = request.getFile(fileNames.next());
+			InputStream is = file.getInputStream();
+			dataService.fileUpload(is, path, delimiter.replace("\"", ""), columnTypeJson, columnNameJson);
 		}
 	}
 	
