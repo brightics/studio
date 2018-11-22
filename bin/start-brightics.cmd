@@ -30,7 +30,7 @@ IF ERRORLEVEL 1 (
     ECHO Python is missing. Ensure it is installed and placed in your PATH.
     EXIT /B
 )
-IF NOT EXIST "%BRIGHTICS_HOME%lib\nodejs\node.exe" (
+IF NOT EXIST "%BRIGHTICS_HOME%lib\node\node.exe" (
     ECHO Node.js is missing. Ensure Visual-analytics is installed.
     EXIT /B
 )
@@ -63,7 +63,7 @@ ping -n 30 127.0.0.1 > nul
 
 :: Visual Analytics
 CD /d "%BRIGHTICS_HOME%visual-analytics"
-START /B CMD /C "%BRIGHTICS_HOME%lib\nodejs\node.exe" app.js --user_id %USER_ID% --access_token %ACCESS_TOKEN%
+START /B CMD /C "%BRIGHTICS_HOME%lib\node\node.exe" app.js --user_id %USER_ID% --access_token %ACCESS_TOKEN%
 
 If Not Exist "%USERPROFILE%\Desktop\Brightics Studio.lnk" (
   "%BRIGHTICS_HOME%lib\shortcut\Shortcut.exe" /f:"%USERPROFILE%\Desktop\Brightics Studio.lnk" /a:c /t:"%BRIGHTICS_HOME%start-brightics.cmd" /I:"%BRIGHTICS_HOME%\lib\shortcut\favicon.ico"
