@@ -11,15 +11,6 @@ IF NOT EXIST "%BRIGHTICS_HOME%lib\brightics_python_env\Scripts\activate" (
     EXIT /B
 )
 
-IF EXIST "%BRIGHTICS_HOME%lib\brightics_python_env\build.info" (
-    SET /p BRIGHTICS_PYTHON_BUILD_INFO=<%BRIGHTICS_HOME%lib\brightics_python_env\build.info
-)
-
-IF NOT "%BRIGHTICS_PYTHON_BUILD_INFO%"=="%BRIGHTICS_HOME%" (
-    call "%BRIGHTICS_HOME%setup-python-env.cmd"
-)
-SET "BRIGHTICS_PYTHON_BUILD_INFO="
-
 where /q java
 IF ERRORLEVEL 1 (
     ECHO Java is missing. Ensure it is installed and placed in your PATH.
