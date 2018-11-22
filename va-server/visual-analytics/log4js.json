@@ -1,0 +1,60 @@
+{
+  "appenders": {
+    "console": {
+      "type": "console",
+      "layout": {
+        "type": "pattern",
+        "pattern": "[%d] %c %[[%p]%] %m"
+      },
+      "level": "debug"
+    },
+    "httpLog": {
+      "type": "dateFile",
+      "filename": "visual-analytics.log",
+      "pattern": "-yyyy-MM-dd",
+      "layout": {
+        "type": "pattern",
+        "pattern": "[%d] %c [%p] %m"
+      },
+      "category": "http"
+    },
+    "errorLog": {
+      "type": "file",
+      "filename": "visual-analytics.error.log",
+      "layout": {
+        "type": "pattern",
+        "pattern": "[%d] %c [%p] %m"
+      },
+      "maxLogSize": 10485760,
+      "numBackups": 3
+    },
+    "clientFile": {
+      "type": "file",
+      "filename": "visual-analytics.client.log",
+      "layout": {
+        "type": "pattern",
+        "pattern": "[%d] %c [%p] %m"
+      },
+      "category": "weblog"
+    },
+    "justErrors": {
+      "type": "logLevelFilter",
+      "appender": "errorLog",
+      "level": "error"
+    }
+  },
+  "categories": {
+    "client":{
+      "appenders": ["clientFile", "console"],
+      "level": "info"
+    },
+    "default": {
+      "appenders": [
+        "console",
+        "httpLog",
+        "justErrors"
+      ],
+      "level": "trace"
+    }
+  }
+}

@@ -1,0 +1,1648 @@
+var express = require('express');
+var request = require('request');
+var router = express.Router();
+
+// prefix: /api/va/ext/
+
+var SERVICE_ID = 'catalog';
+
+var createRequestOptions = function (req) {
+    var options = {
+        url: 'http://cs.dep.io/catalog' + req.url,
+        strictSSL: false,  // url이 https인 경우, strictSSL: false 처리 가능합니다.
+        method: req.method,
+        proxy: '',
+        headers: {
+            //'User-Agent': '',  // 필요한 Headers Parameter는 추가하여 사용 가능합니다.
+            'Content-Type': 'application/json'
+        }
+    };
+    //if (req.body) options.form = req.body;  // form으로 전달하니까 'Content-Type': 'application/json'가 적용안되는 현상이 있음.
+    if (req.body) options.body = JSON.stringify(req.body);
+
+    // 옵션을 구성을 위한 추가 정보는 아래 사이트에서 확인할 수 있습니다.
+    // (https://www.npmjs.com/package/request)
+    return options;
+};
+
+var setBearerToken = function (options, token) {
+    if (token) {
+        options.headers['Authorization'] = 'Bearer ' + token;
+    }
+};
+
+router.use(function (req, res, next) {
+    var options = createRequestOptions(req);
+    setBearerToken(options, req.accessToken);
+    request(options).pipe(res);
+});
+
+router.get('/catalogwebpage', function (req, res, next) {
+    // TODO: Catalog Web address
+    res.redirect("http://www.naver.com");
+});
+
+router.get('/downloadtobrightics', function (req, res, next) {
+    // TODO: Download to brightics address
+    res.redirect("http://www.daum.net");
+});
+
+//--------------------------------------------------------------------------------------------------
+// GET /api/va/ext/catalog/catalog ==> /api/v1/catalog
+// 조회 가능한 Catalog 정보 리스트를 리턴합니다.
+// https://{dep-url}/api/v1/catalog
+//--------------------------------------------------------------------------------------------------
+/**
+{GET} /api/v1/catalog
+@apiParam {string} [query] (Optional) 통합 검색 질의
+@apiParam {List<String>} [states] Catalog state 지정, states: created | published (default: ALL)
+@apiParam {string} [provider] (Optional) 제공자 ID (Email)
+@apiParam {integer} [offset] (Optional) Page 지정 (default: 0)
+@apiParam {integer} [limit] (Optional) Page에 얻어올 item 개수 지정 (default: 10)
+@apiParam {string,string} [sort] (Optional) 정렬 대상 필드, sort: updatedTime || createdTime || name
+ 
+@apiParamExample
+GET https://{dep-url}/api/v1/catalog?limit=20&offset=0&sort=updatedTime,desc
+ 
+@apiSuccess {String} id            catalog service ID (GUID) catalog service 사용 요청시 사용하는 식별자
+@apiSuccess {String} name          catalog item 명
+@apiSuccess {String} version       catalog item 버전
+@apiSuccess {List<String>} tags    catalog tag 정보
+@apiSuccess {String} description   category 설명
+@apiSuccess {String} category      카테고리 타입 ( api | ui | datasrc | analytics_model )
+@apiSuccess {String} state         catalog 상태 정보 (Lifecycle)
+@apiSuccess {double} rating        Service 별점 (5.0 점 만점?)
+@apiSuccess {int} ratingCount         -
+@apiSuccess {Timestamp} createdTime   -
+@apiSuccess {Timestamp} updatedTime   -
+@apiSuccess {User} creator   	   등록 사용자 ID, User = { "id": 123, "name": "hong gil dong" }
+@apiSuccess {User} updater   	   업데이트 사용자 ID, User = { "id": 123, "name": "hong gil dong" }
+@apiSuccess {int} usage            Catalog 사용 중인 사람 수
+@apiSuccess {Object} mySubscription                  사용자가 해당 Catalog를 사용 중인지 여부에 따른 구독 정보 전달 (null 인경우, 사용 신청 하지 않는 상태)
+@apiSuccess {long} mySubscription.id                 Subscription 식별자 ID
+@apiSuccess {String} mySubscription.status           Subscription 상태, state:= INPROGRESS, INUSED
+@apiSuccess {User} mySubscription.creator            Subscription 요청자
+@apiSuccess {User} mySubscription.updator            Subscription 수정자
+@apiSuccess {Timestamp} mySubscription.createdTime   -
+@apiSuccess {Timestamp} mySubscription.updatedTime   -
+
+@apiSuccessExample
+{
+    "status": "success",
+    "code" : null,
+    "message": null,
+    "data": {
+        "limit": 20,
+        "offset": 0,
+        "total": 202,
+        "catalogs" : [
+            {
+                "id": 1085,
+                "name": "API CA Test",
+                "version": "v.1.0.0",
+                "tags": ["tag1", "tag2"],
+                "description": "Test CA",
+                "category": "api",
+                "state":"PUBLISHED",
+                "rating": 0,
+                "ratingCount": 0,
+                "createdTime": 1516345106804,
+                "updatedTime": 1516345106804,
+                "creator": {
+                    "id": 1,
+                    "name": "Gil dong Hong"
+                },
+                "updater": {
+                    "id": 1,
+                    "name": "Gil dong Hong"
+                },
+                "used": false,
+                "usage": 2,
+                "mySubscription": {
+                    "id": 1234,
+                    "status": "INUSED",
+                    "createdTime": 1516345106804,
+                    "updatedTime": 1516345106804,
+                    "creator": {
+                        "id": 1,
+                        "name": "Gil dong Hong"
+                    },
+                    "updater": {
+                        "id": 1,
+                        "name": "Gil dong Hong"
+                    }
+                },
+            },
+            { ...skip }
+        ]
+    }
+}
+*/
+
+router.get("/catalog", function (req, res, next) {
+    var sort = req.query.sort;
+    console.log("sort: "+ sort);
+    var sample = {
+        "status": "success",
+        "code": null,
+        "message": null,
+        "data": {
+            "limit": 20,
+            "offset": 0,
+            "total": 202,
+            "catalogs": [
+                {
+                    "id": 1085,
+                    "name": "API CA Test",
+                    "version": "v.1.0.0",
+                    "tags": ["tag1", "tag2"],
+                    "description": "Test CA",
+                    "category": "api",
+                    "state": "PUBLISHED",
+                    "rating": 0,
+                    "ratingCount": 0,
+                    "createdTime": 1516345106804,
+                    "updatedTime": 1516345106804,
+                    "creator": {
+                        "id": 1,
+                        "name": "Gil dong Hong"
+                    },
+                    "updater": {
+                        "id": 1,
+                        "name": "Gil dong Hong"
+                    },
+                    "used": false,
+                    "usage": 2,
+                    "mySubscription": {
+                        "id": 1234,
+                        "status": "INUSED",
+                        "createdTime": 1516345106804,
+                        "updatedTime": 1516345106804,
+                        "creator": {
+                            "id": 1,
+                            "name": "Gil dong Hong"
+                        },
+                        "updater": {
+                            "id": 1,
+                            "name": "Gil dong Hong"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+
+
+    // if (sort) {
+    //     if (sort.indexOf('desc') > -1) {
+    //         var data = [];
+    //         for (var i = 0; i < 100; i++) {
+    //             sample.data.catalogs[0].id++;
+    //             sample.data.catalogs[0].name = ("API CA Test " + (100 - i));
+    //             sample.data.catalogs[0].createdTime -= 1000000000;
+    //             sample.data.catalogs[0].updatedTime -= 1000000000;
+    //             data.push(JSON.parse(JSON.stringify(sample.data.catalogs[0])));
+    //         }
+    //         sample.data.total = data.length;
+    //         sample.data.catalogs = data;
+    //         res.json(sample);
+    //     } else {
+    //         var data = [];
+    //         for (var i = 0; i < 100; i++) {
+    //             sample.data.catalogs[0].id++;
+    //             sample.data.catalogs[0].name = ("API CA Test " + i);
+    //             sample.data.catalogs[0].createdTime += 1000000000;
+    //             sample.data.catalogs[0].updatedTime += 1000000000;
+    //             data.push(JSON.parse(JSON.stringify(sample.data.catalogs[0])));
+    //         }
+    //         sample.data.total = data.length;
+    //         sample.data.catalogs = data;
+    //         res.json(sample);
+    //     }
+    // } else {
+    //     var data = [];
+    //     for (var i = 0; i < 100; i++) {
+    //         sample.data.catalogs[0].id++;
+    //         sample.data.catalogs[0].name = ("API CA Test " + (100 - i));
+    //         sample.data.catalogs[0].createdTime -= 1000000000;
+    //         sample.data.catalogs[0].updatedTime -= 1000000000;
+    //         data.push(JSON.parse(JSON.stringify(sample.data.catalogs[0])));
+    //     }
+    //     sample.data.total = data.length;
+    //     sample.data.catalogs = data;
+    //     res.json(sample);
+    // }
+    var sample2 = {
+        "status": "SUCCESS",
+        "code": null,
+        "message": null,
+        "data": {
+          "catalogs": [
+            {
+              "id": 1255,
+              "priorId": -1,
+              "name": "TestORA_NULL_COLUMN_VIEW_TEST",
+              "version": "1.0",
+              "tags": null,
+              "description": "<p>Definitions and descriptions of the catalog should be written.<b>(Mandatory)</b></p><p><br /></p><p><b>Character of data (Mandatory)</b></p><ul><li style=\"line-height:1.5;\">Data category (master, log, transaction)</li><li style=\"line-height:1.5;\">Subject area – Sub subject area</li><li style=\"line-height:1.5;\">Domain – Sub domain</li></ul><p><br /></p><p><b>Data Usage Guidelines (Optional)</b></p><p>A detailed guide to how to use the Data should be written.</p><p>If you have related data catalog to using data catalog, should be written.</p><p>How to join both, should be written</p><p><br /></p><p><b>Contact</b></p><p>Name / abcd@samsung.com / 02-1234-5678</p><p><br /></p>",
+              "category": "datasrc",
+              "state": "suspended",
+              "rating": 4,
+              "ratingCount": null,
+              "createdTime": 1528622717075,
+              "updatedTime": 1528622717075,
+              "creator": {
+                "id": 206,
+                "name": "jinny2u.son",
+                "email": "jinny2u.son@samsung.com",
+                "epid": null,
+                "role": "User",
+                "tenant": "SDS"
+              },
+              "upgradable": true,
+              "usage": 0,
+              "mySubscription": null
+            },
+            {
+              "id": 1254,
+              "priorId": -1,
+              "name": "TestORA_IDX_REP",
+              "version": "1.0",
+              "tags": null,
+              "description": "<p>Definitions and descriptions of the catalog should be written.<b>(Mandatory)</b></p><p><br /></p><p><b>Character of data (Mandatory)</b></p><ul><li style=\"line-height:1.5;\">Data category (master, log, transaction)</li><li style=\"line-height:1.5;\">Subject area – Sub subject area</li><li style=\"line-height:1.5;\">Domain – Sub domain</li></ul><p><br /></p><p><b>Data Usage Guidelines (Optional)</b></p><p>A detailed guide to how to use the Data should be written.</p><p>If you have related data catalog to using data catalog, should be written.</p><p>How to join both, should be written</p><p><br /></p><p><b>Contact</b></p><p>Name / abcd@samsung.com / 02-1234-5678</p><p><br /></p>",
+              "category": "datasrc",
+              "state": "deprecated",
+              "rating": 4,
+              "ratingCount": null,
+              "createdTime": 1528622680296,
+              "updatedTime": 1528622680296,
+              "creator": {
+                "id": 206,
+                "name": "jinny2u.son",
+                "email": "jinny2u.son@samsung.com",
+                "epid": null,
+                "role": "User",
+                "tenant": "SDS"
+              },
+              "upgradable": true,
+              "usage": 2,
+              "mySubscription": null
+            },
+            {
+              "id": 1252,
+              "priorId": -1,
+              "name": "TestORA_ORACLE_ALL_DATATYPE",
+              "version": "1.1",
+              "tags": null,
+              "description": "<p>Definitions and descriptions of the catalog should be written.<b>(Mandatory)</b></p><p><br /></p><p><b>Character of data (Mandatory)</b></p><ul><li style=\"line-height:1.5;\">Data category (master, log, transaction)</li><li style=\"line-height:1.5;\">Subject area – Sub subject area</li><li style=\"line-height:1.5;\">Domain – Sub domain</li></ul><p><br /></p><p><b>Data Usage Guidelines (Optional)</b></p><p>A detailed guide to how to use the Data should be written.</p><p>If you have related data catalog to using data catalog, should be written.</p><p>How to join both, should be written</p><p><br /></p><p><b>Contact</b></p><p>Name / abcd@samsung.com / 02-1234-5678</p><p><br /></p>",
+              "category": "datasrc",
+              "state": "PUBLISHED",
+              "rating": 4,
+              "ratingCount": null,
+              "createdTime": 1528621722147,
+              "updatedTime": 1528621745442,
+              "creator": {
+                "id": 206,
+                "name": "jinny2u.son",
+                "email": "jinny2u.son@samsung.com",
+                "epid": null,
+                "role": "User",
+                "tenant": "SDS"
+              },
+              "upgradable": true,
+              "usage": 4,
+              "mySubscription": null
+            },
+            {
+              "id": 1207,
+              "priorId": -1,
+              "name": "Oraclejs_DATETIME_TEST",
+              "version": "1.0",
+              "tags": null,
+              "description": "<p>Oraclejs_DATETIME_TEST</p><p><br /></p><p>date, timestamp 조건 테스트용 테이블</p>",
+              "category": "datasrc",
+              "state": "PUBLISHED",
+              "rating": 4,
+              "ratingCount": null,
+              "createdTime": 1528599528213,
+              "updatedTime": 1528599528213,
+              "creator": {
+                "id": 207,
+                "name": "Jungsoo Kim",
+                "email": "jungsoo1004.kim@stage.samsungsds.com",
+                "epid": null,
+                "role": "User",
+                "tenant": "SDS"
+              },
+              "upgradable": true,
+              "usage": 1,
+              "mySubscription": null
+            },
+            {
+              "id": 1062,
+              "priorId": -1,
+              "name": "TestORA_TRANS_CONTENT_01",
+              "version": "1.0",
+              "tags": null,
+              "description": "<p>Definitions and descriptions of the catalog should be written.<b>(Mandatory)</b></p><p><br /></p><p><b>Character of data (Mandatory)</b></p><ul><li style=\"line-height:1.5;\">Data category (master, log, transaction)</li><li style=\"line-height:1.5;\">Subject area – Sub subject area</li><li style=\"line-height:1.5;\">Domain – Sub domain</li></ul><p><br /></p><p><b>Data Usage Guidelines (Optional)</b></p><p>A detailed guide to how to use the Data should be written.</p><p>If you have related data catalog to using data catalog, should be written.</p><p>How to join both, should be written</p><p><br /></p><p><b>Contact</b></p><p>Name / abcd@samsung.com / 02-1234-5678</p><p><br /></p>",
+              "category": "datasrc",
+              "state": "PUBLISHED",
+              "rating": 4,
+              "ratingCount": null,
+              "createdTime": 1528459931553,
+              "updatedTime": 1528459931553,
+              "creator": {
+                "id": 206,
+                "name": "jinny2u.son",
+                "email": "jinny2u.son@samsung.com",
+                "epid": null,
+                "role": "User",
+                "tenant": "SDS"
+              },
+              "upgradable": true,
+              "usage": 2,
+              "mySubscription": null
+            },
+            {
+              "id": 907,
+              "priorId": -1,
+              "name": "data cat",
+              "version": "1.0",
+              "tags": [
+                "api",
+                "data"
+              ],
+              "description": "<p>Definitions and descriptions of the catalog should be written.<b>(Mandatory)</b></p><p><br></p><p><b>Character of data (Mandatory)</b></p><ul><li style=\"line-height: 1.5;\">Data category (master, log, transaction)</li><li style=\"line-height: 1.5;\">Subject area – Sub subject area</li><li style=\"line-height: 1.5;\">Domain – Sub domain</li></ul><p><br></p><p><b>Data Usage Guidelines (Optional)</b></p><p>A detailed guide to how to use the Data should be written.</p><p>If you have related data catalog to using data catalog, should be written.</p><p>How to join both, should be written</p><p><br></p><p><b>Contact</b></p><p>Name / abcd@samsung.com / 02-1234-5678</p><p><br></p>",
+              "category": "datasrc",
+              "state": "PUBLISHED",
+              "rating": 4,
+              "ratingCount": null,
+              "createdTime": 1528253656732,
+              "updatedTime": 1528253656757,
+              "creator": {
+                "id": 140,
+                "name": "검증사용자11",
+                "email": "test.user11@samsung.com",
+                "epid": null,
+                "role": "User",
+                "tenant": "SDS"
+              },
+              "upgradable": true,
+              "usage": 0,
+              "mySubscription": null
+            },
+            {
+              "id": 801,
+              "priorId": null,
+              "name": "카탈로그 임시 저장 테스트",
+              "version": "1.1",
+              "tags": null,
+              "description": "<p>Definitions and descriptions of the catalog should be written.<b>(Mandatory)</b></p><p><br></p><p><b>Character of data (Mandatory)</b></p><ul><li style=\"line-height: 1.5;\">Data category (master, log, transaction)</li><li style=\"line-height: 1.5;\">Subject area – Sub subject area</li><li style=\"line-height: 1.5;\">Domain – Sub domain</li></ul><p><br></p><p><b>Data Usage Guidelines (Optional)</b></p><p>A detailed guide to how to use the Data should be written.</p><p>If you have related data catalog to using data catalog, should be written.</p><p>How to join both, should be written</p><p><br></p><p><b>Contact</b></p><p>Name / abcd@samsung.com / 02-1234-5678</p><p><br></p>",
+              "category": "datasrc",
+              "state": "PUBLISHED",
+              "rating": 4,
+              "ratingCount": null,
+              "createdTime": 1528114146802,
+              "updatedTime": 1528203202307,
+              "creator": {
+                "id": 26,
+                "name": "idp catalog service user",
+                "email": "idp.cs.user@samsung.com",
+                "epid": null,
+                "role": "User",
+                "tenant": "SDS"
+              },
+              "upgradable": true,
+              "usage": 0,
+              "mySubscription": null
+            },
+            {
+              "id": 871,
+              "priorId": -1,
+              "name": "Oraclejs_TRANS_CONTENT_03",
+              "version": "1.0",
+              "tags": null,
+              "description": "<p>email 연동 테스트용 Oraclejs_TRANS_CONTENT_03<br></p>",
+              "category": "datasrc",
+              "state": "PUBLISHED",
+              "rating": 4,
+              "ratingCount": null,
+              "createdTime": 1528197444205,
+              "updatedTime": 1528197458034,
+              "creator": {
+                "id": 207,
+                "name": "Jungsoo Kim",
+                "email": "jungsoo1004.kim@stage.samsungsds.com",
+                "epid": null,
+                "role": "User",
+                "tenant": "SDS"
+              },
+              "upgradable": true,
+              "usage": 1,
+              "mySubscription": null
+            },
+            {
+              "id": 335,
+              "priorId": -1,
+              "name": "han han han",
+              "version": "2.0",
+              "tags": null,
+              "description": "<p style=\"text-align: left;\"><span style=\"font-size: 24px;\"><b>Sample Template</b></span></p><p><span style=\"font-size: 14px;\">This is a <u>sample description template</u> of the Catalog.</span><br></p><p><br></p><p style=\"text-align: left;\"><span style=\"font-size: 18px;\"><b>Usage / Examples</b></span></p><ol><li style=\"line-height: 1.5;\"><span style=\"font-size: 14px;\">usage description</span></li><li style=\"line-height: 1.5;\"><span style=\"font-size: 14px;\">usage description</span></li></ol><p><span style=\"font-size: 14px;\"><br></span></p><p><span style=\"font-size: 18px;\"><b>Contact</b></span></p><ul><li>Name / abcd@samsung.com / 02-1234-5678</li></ul><p><br></p>",
+              "category": "datasrc",
+              "state": "PUBLISHED",
+              "rating": 4,
+              "ratingCount": null,
+              "createdTime": 1527141604519,
+              "updatedTime": 1528181120459,
+              "creator": {
+                "id": 198,
+                "name": "황신하",
+                "email": "shinha.hwang@samsung.com",
+                "epid": null,
+                "role": "User",
+                "tenant": "SDS"
+              },
+              "upgradable": true,
+              "usage": 0,
+              "mySubscription": null
+            },
+            {
+              "id": 261,
+              "priorId": -1,
+              "name": "4324",
+              "version": "1.0",
+              "tags": null,
+              "description": "<p style=\"text-align: left;\"><span style=\"font-size: 24px;\"><b>Sample Template</b></span></p><p><span style=\"font-size: 14px;\">This is a <u>sample description template</u> of the Catalog.</span><br></p><p><br></p><p style=\"text-align: left;\"><span style=\"font-size: 18px;\"><b>Usage / Examples</b></span></p><ol><li style=\"line-height: 1.5;\"><span style=\"font-size: 14px;\">usage description</span></li><li style=\"line-height: 1.5;\"><span style=\"font-size: 14px;\">usage description</span></li></ol><p><span style=\"font-size: 14px;\"><br></span></p><p><span style=\"font-size: 18px;\"><b>Contact</b></span></p><ul><li>Name / abcd@samsung.com / 02-1234-5678</li></ul><p><br></p>",
+              "category": "datasrc",
+              "state": "PUBLISHED",
+              "rating": 4,
+              "ratingCount": null,
+              "createdTime": 1527128179858,
+              "updatedTime": 1527139503335,
+              "creator": {
+                "id": 200,
+                "name": "윤여길",
+                "email": "yuhkil80@naver.com",
+                "epid": null,
+                "role": "User",
+                "tenant": "SDS"
+              },
+              "upgradable": true,
+              "usage": 1,
+              "mySubscription": null
+            },
+            {
+              "id": 253,
+              "priorId": -1,
+              "name": "data_test_gil",
+              "version": "1.0",
+              "tags": [
+                "gil"
+              ],
+              "description": "<p style=\"text-align: left;\"><span style=\"font-size: 24px;\"><b>Sample Template</b></span></p><p><span style=\"font-size: 14px;\">This is a <u>sample description template</u> of the Catalog.</span><br></p><p>데이터 스크립트</p><p><br></p><p style=\"text-align: left;\"><span style=\"font-size: 18px;\"><b>Usage / Examples</b></span></p><ol><li style=\"line-height: 1.5;\"><span style=\"font-size: 14px;\">usage description</span></li><li style=\"line-height: 1.5;\"><span style=\"font-size: 14px;\">usage description</span></li></ol><p><span style=\"font-size: 14px;\"><br></span></p><p><span style=\"font-size: 18px;\"><b>Contact</b></span></p><ul><li>Name / abcd@samsung.com / 02-1234-5678</li></ul><p><br></p>",
+              "category": "datasrc",
+              "state": "PUBLISHED",
+              "rating": 4,
+              "ratingCount": null,
+              "createdTime": 1527126174821,
+              "updatedTime": 1527126174824,
+              "creator": {
+                "id": 200,
+                "name": "윤여길",
+                "email": "yuhkil80@naver.com",
+                "epid": null,
+                "role": "User",
+                "tenant": "SDS"
+              },
+              "upgradable": true,
+              "usage": 0,
+              "mySubscription": null
+            },
+            {
+              "id": 193,
+              "priorId": -1,
+              "name": "test_gil",
+              "version": "1.0",
+              "tags": null,
+              "description": "<p style=\"text-align: left;\"><span style=\"font-size: 24px;\"><b>Sample Template</b></span></p><p><span style=\"font-size: 14px;\">This is a <u>sample description template</u> of the Catalog.</span><br></p><p><br></p><p style=\"text-align: left;\"><span style=\"font-size: 18px;\"><b>Usage / Examples</b></span></p><ol><li style=\"line-height: 1.5;\"><span style=\"font-size: 14px;\">usage description</span></li><li style=\"line-height: 1.5;\"><span style=\"font-size: 14px;\">usage description</span></li></ol><p><span style=\"font-size: 14px;\"><br></span></p><p><span style=\"font-size: 18px;\"><b>Contact</b></span></p><ul><li>Name / abcd@samsung.com / 02-1234-5678</li></ul><p><br></p>",
+              "category": "datasrc",
+              "state": "PUBLISHED",
+              "rating": 4,
+              "ratingCount": null,
+              "createdTime": 1527064652486,
+              "updatedTime": 1527064652489,
+              "creator": {
+                "id": 200,
+                "name": "윤여길",
+                "email": "yuhkil80@naver.com",
+                "epid": null,
+                "role": "User",
+                "tenant": "SDS"
+              },
+              "upgradable": true,
+              "usage": 0,
+              "mySubscription": null
+            }
+          ],
+          "offset": 0,
+          "limit": 12,
+          "total": 12
+        }
+      }
+      res.json(sample2);
+});
+
+
+//--------------------------------------------------------------------------------------------------
+// GET /api/va/ext/catalog/catalog/:id ==> /api/v1/catalog/{id}
+// 특정 Catalog 상세 정보를 전달합니다.
+// https://{dep-url}/api/v1/catalog/{id}
+//--------------------------------------------------------------------------------------------------
+/**
+{GET} /api/v1/catalog
+ 
+@apiParamExample
+GET https://{dep-url}/api/v1/catalog/1234
+ 
+@apiSuccess {String} id            catalog service ID (GUID) catalog service 사용 요청시 사용하는 식별자
+@apiSuccess {String} name          catalog item 명
+@apiSuccess {String} version       catalog item 버전
+@apiSuccess {List<String>} tags    catalog tag 정보
+@apiSuccess {String} description   category 설명
+@apiSuccess {String} category      카테고리 타입 ( api | ui | datasrc | analytics_model )
+@apiSuccess {String} state         catalog 상태 정보 (Lifecycle)
+@apiSuccess {double} rating        Service 별점 (5.0 점 만점?)
+@apiSuccess {int} ratingCount         -
+@apiSuccess {Timestamp} createdTime   -
+@apiSuccess {Timestamp} updatedTime   -
+@apiSuccess {User} creator   	   등록 사용자 ID, User = { "id": 123, "name": "hong gil dong" }
+@apiSuccess {User} updater   	   업데이트 사용자 ID, User = { "id": 123, "name": "hong gil dong" }
+@apiSuccess {String} subscriptionStatus             state:= INPROGRESS, INUSED, (null 인 경우는 사용신청 or 사용중이 아닌상태)
+@apiSuccess {int} usage                             Catalog 사용 중인 사람 수
+@apiSuccess {boolean} autoApproval                  자동 승인 옵션 (true/false)
+@apiSuccess {List<Object>} attachedFiles            {
+                                                        "fileId": 1234, 
+                                                        "fileName": "description.txt",
+                                                        "fileSize": 1234,
+                                                        "fileType": DOC // or FAQ
+                                                    }
+@apiSuccess {List<Object>} histories                {
+                                                        "id": 1234,
+                                                        "catalogId": 1234,
+                                                        "versoin": "1.0",
+                                                        "releaseNote": "version up to 1.0",
+                                                        "creator": { "id": 1, "name": "Gil dong Hong"},
+                                                        "updater": { "id": 1, "name": "Gil dong Hong"},
+                                                        "createTime": 123421424, // Timestamp
+                                                        "updatedTime": 12324243, // Timestamp
+                                                    }
+@apiSuccess {Object} metadata                       Catalog metadata
+@apiSuccess {String} passTicket                     passticket
+@apiSuccess {Object} mySubscription                 사용자가 해당 Catalog를 사용 중인지 여부에 따른 구독 정보 전달 (null 인경우, 사용 신청 하지 않는 상태)
+@apiSuccess {long} mySubscription.id                Subscription 식별자 ID
+@apiSuccess {String} mySubscription.status          Subscription 상태, state:= INPROGRESS, INUSED
+@apiSuccess {User} mySubscription.creator           Subscription 요청자
+@apiSuccess {User} mySubscription.updator           Subscription 수정자
+@apiSuccess {Timestamp} mySubscription.createdTime  -
+@apiSuccess {Timestamp} mySubscription.updatedTime  -
+
+@apiSuccessExample
+{
+    "status": "success",
+    "code" : null,
+    "message": null,
+    "data": {
+        "id": 1000,
+        "name": "Logging Api Server",
+        "version": "v0.1",
+        "tags": ["tag1", "tag2"],
+        "description": "log api for dep",
+        "category": "api",
+        "state":"PUBLISHED",
+        "rating": 0,
+        "ratingCount": 0,
+        "creator": {
+            "id": 1,
+            "name": "Gil dong Hong"
+        },
+        "updater": {
+            "id": 1,
+            "name": "Gil dong Hong"
+        },
+        "attachedFiles":[
+            {"fileId": 1, "fileName":"manual.pdf", "fileSize": 100201, "type":"DOC"},
+            {"fileId": 2, "fileName":"faq.pdf", "fileSize": 10001, "type":"FAQ"}
+         ],
+         "createdTime": 1515983015136,
+        "updatedTime": 1515983015136,
+        "metadata": {"key", "value"},
+        "passTicket": "ticket-001",      // 사용중인 경우, passticket 전달
+        "used": false,
+        "usage": 2,
+        "mySubscription": {
+             "id": 1234,
+             "status": "INUSED",
+             "createdTime": 1516345106804,
+             "updatedTime": 1516345106804,
+             "creator": {
+                   "id": 1,
+                   "name": "Gil dong Hong"
+             },
+             "updater": {
+                  "id": 1,
+                  "name": "Gil dong Hong"
+             }
+        },
+        "histories" :[
+            {
+            "id":"100001",
+            "catalogId":1000,
+            "version" : "1.1",
+            "releaseNote":" ",
+            "creator":{
+                    "id":1,
+                    "name": "Gil dong Hong"
+            },
+            "updater": {
+                     "id": 1,
+                     "name": "Gil dong Hong"
+            },
+             "createdTime": 1516345106804,
+             "updatedTime": 1516345106804,
+             }, { ...skip }
+        ],
+        "autoApproval: true
+    }
+}
+*/
+
+router.get("/catalog/:id", function (req, res, next) {
+    var sample = {
+        "status": "success",
+        "code": null,
+        "message": null,
+        "data": {
+            "id": 1000,
+            "name": "Logging Api Server",
+            "version": "v1.0.1",
+            "tags": ["tag11111111111111111111111111111111111111111111111111111111", 
+            "tag222222222222222222222222222222222222222", "tag1", "tag2", "tag1", "tag2","tag1", "tag2","tag1", "tag2", "tag2", "tag1", "tag2","tag1", "tag2","tag1", "tag2"
+            , "tag2", "tag1", "tag2","tag1", "tag2","tag1", "tag2"
+            , "tag2", "tag1", "tag2","tag1", "tag2","tag1", "tag2"],
+            "description": "Brightness AI is a big data analysis platform that allows you to quickly analyze and visualize vast amounts  of data. Brightness AI is a big data analysis platform that allows you to quickly analyze and visualize mounts of data. Brightness AI is a big data analysis platform that allows you to quickly analyze and visualize vast amounts of data. Brightness AI is a big data analysis platform that allows you to quickly analyze and visualize vast amounts of data. Brightness AI is a big data analysis platform that allows you to quickly analyze and visualize vast amounts of data.Brightness AI is a big data analysis platform that allows you to quickly analyze and visualize vast amounts of data.",
+            "category": "API",
+            "state": "PUBLISHED",
+            "rating": 0,
+            "ratingCount": 0,
+            "creator": {
+                "id": 1,
+                "name": "Gil dong Hong",
+                "email": "samsung@samsung.com",
+                "department": "CX",
+                "level": "Senior Engineer",
+            },
+            "updater": {
+                "id": 1,
+                "name": "Gil dong Hong"
+            },
+            "attachedFiles": [
+                { "fileId": 1, "fileName": "manual.pdf", "fileSize": 100201, "type": "DOC" },
+                { "fileId": 2, "fileName": "faq.pdf", "fileSize": 10001, "type": "FAQ" },
+                { "fileId": 1, "fileName": "manual.pdf", "fileSize": 100201, "type": "DOC" },
+                { "fileId": 2, "fileName": "faq.pdf", "fileSize": 10001, "type": "FAQ" },
+                { "fileId": 1, "fileName": "manual.pdf", "fileSize": 100201, "type": "DOC" },
+                { "fileId": 2, "fileName": "faq.pdf", "fileSize": 10001, "type": "FAQ" },
+                { "fileId": 1, "fileName": "manual.pdf", "fileSize": 100201, "type": "DOC" },
+                { "fileId": 2, "fileName": "faq.pdf", "fileSize": 10001, "type": "FAQ" },
+                { "fileId": 1, "fileName": "manual.pdf", "fileSize": 100201, "type": "DOC" },
+                { "fileId": 2, "fileName": "faq.pdf", "fileSize": 10001, "type": "FAQ" },
+                { "fileId": 1, "fileName": "manual.pdf", "fileSize": 100201, "type": "DOC" },
+                { "fileId": 2, "fileName": "faq.pdf", "fileSize": 10001, "type": "FAQ" },
+                { "fileId": 1, "fileName": "manual.pdf", "fileSize": 100201, "type": "DOC" },
+                { "fileId": 2, "fileName": "faq.pdf", "fileSize": 10001, "type": "FAQ" },
+                { "fileId": 1, "fileName": "manual.pdf", "fileSize": 100201, "type": "DOC" },
+                { "fileId": 2, "fileName": "faq.pdf", "fileSize": 10001, "type": "FAQ" },
+                { "fileId": 1, "fileName": "manual.pdf", "fileSize": 100201, "type": "DOC" },
+                { "fileId": 2, "fileName": "faq.pdf", "fileSize": 10001, "type": "FAQ" }
+            ],
+            "createdTime": 1515983015136,
+            "updatedTime": 1515983015136,
+            "metadata": "{\"key\", \"value\"}", // TODO: 여기 Object라고 되어 있는데 Object 형식이 아님.
+            "passTicket": "ticket-001",      // 사용중인 경우, passticket 전달
+            "used": false,
+            "usage": 2,
+            "mySubscription": {
+                "id": 1234,
+                "status": "INUSED",
+                "createdTime": 1516345106804,
+                "updatedTime": 1516345106804,
+                "creator": {
+                    "id": 1,
+                    "name": "Gil dong Hong"
+                },
+                "updater": {
+                    "id": 1,
+                    "name": "Gil dong Hong"
+                }
+            },
+            "histories": [
+                {
+                    "id": "100001",
+                    "catalogId": 1000,
+                    "version": "1.1",
+                    "releaseNote": " ",
+                    "creator": {
+                        "id": 1,
+                        "name": "Gil dong Hong"
+                    },
+                    "updater": {
+                        "id": 1,
+                        "name": "Gil dong Hong"
+                    },
+                    "createdTime": 1516345106804,
+                    "updatedTime": 1516345106804,
+                }
+            ],
+            "autoApproval": true
+        }
+    }
+
+    var sample2 = {
+        "status": "SUCCESS",
+        "code": null,
+        "message": null,
+        "data": {
+          "id": 1062,
+          "priorId": -1,
+          "name": "TestORA_TRANS_CONTENT_01",
+          "version": "1.0",
+          "tags": [],
+          "description": "<p>Definitions and descriptions of the catalog should be written.<b>(Mandatory)</b></p><p><br /></p><p><b>Character of data (Mandatory)</b></p><ul><li style=\"line-height:1.5;\">Data category (master, log, transaction)</li><li style=\"line-height:1.5;\">Subject area – Sub subject area</li><li style=\"line-height:1.5;\">Domain – Sub domain</li></ul><p><br /></p><p><b>Data Usage Guidelines (Optional)</b></p><p>A detailed guide to how to use the Data should be written.</p><p>If you have related data catalog to using data catalog, should be written.</p><p>How to join both, should be written</p><p><br /></p><p><b>Contact</b></p><p>Name / abcd@samsung.com / 02-1234-5678</p><p><br /></p>",
+          "category": "datasrc",
+          "state": "PUBLISHED",
+          "rating": 4,
+          "ratingCount": null,
+          "createdTime": 1528459931553,
+          "updatedTime": 1528459931553,
+          "creator": {
+            "id": 206,
+            "name": "jinny2u.son",
+            "email": "jinny2u.son@samsung.com",
+            "epid": null,
+            "role": "User",
+            "tenant": "SDS"
+          },
+          "upgradable": true,
+          "usage": 2,
+          "mySubscription": null,
+          "documentUrl": null,
+          "license": null,
+          "images": [
+            ""
+          ],
+          "metadata": {
+            "dataEncoding": "AL32UTF8",
+            "recordCount": 138599,
+            "description": null,
+            "changer": "206",
+            "datasrcConnectionId": 503,
+            "dataSubSubjectArea": null,
+            "catalogId": 1062,
+            "dataSubjectArea": null,
+            "dataCategory": null,
+            "accessInfoShowYn": "N",
+            "registrationDate": 1528459931566,
+            "changeDate": 1528459931566,
+            "registrator": "206",
+            "id": 400,
+            "serviceId": null,
+            "datasrcConnectionNickname": "TestORA",
+            "accessInfoOfferYn": "Y",
+            "objectAlias": null,
+            "dataType": null,
+            "sampleRecord": [
+              {
+                "TRT_DTM": "20140415204809",
+                "TRTR_ID": "jiwon48.seo",
+                "STND_KEY": "IV_INJC",
+                "TEST_NUM": null,
+                "CONTENT_XPLN": "정맥 내에 바늘을 꽂아 약액을 주입하는 방법. 약제의 전신 적응에 가장 빠른 효과를 ...",
+                "CONTENT": "Intravenous Injection",
+                "LOCALE_CD": "en_US",
+                "TRANS_VERIFY_YN": "Y",
+                "CLSSF_CD": "TERM",
+                "SEQ": "1"
+              },
+              {
+                "TRT_DTM": "20140415204809",
+                "TRTR_ID": "jiwon48.seo",
+                "STND_KEY": "IV_INJC",
+                "TEST_NUM": null,
+                "CONTENT_XPLN": "(약어) 정맥 내에 바늘을 꽂아 약액을 주입하는 방법. 약제의 전신 적응에 가장 빠른...",
+                "CONTENT": "IV",
+                "LOCALE_CD": "en_US",
+                "TRANS_VERIFY_YN": "Y",
+                "CLSSF_CD": "TERM",
+                "SEQ": "2"
+              },
+              {
+                "TRT_DTM": "20140415204871",
+                "TRTR_ID": null,
+                "STND_KEY": "ATFT-01099",
+                "TEST_NUM": null,
+                "CONTENT_XPLN": null,
+                "CONTENT": "Tree 에서 선택된 Episode 의 상세내역을 Episode Detail 에 조회한다.",
+                "LOCALE_CD": "ko_KR",
+                "TRANS_VERIFY_YN": "Y",
+                "CLSSF_CD": "ATFT",
+                "SEQ": "1"
+              },
+              {
+                "TRT_DTM": "20140415204873",
+                "TRTR_ID": null,
+                "STND_KEY": "ATFT-01099",
+                "TEST_NUM": null,
+                "CONTENT_XPLN": null,
+                "CONTENT": "Tree 에서 선택된 Episode 의 상세내역을 Episode Detail 에 조회한다.",
+                "LOCALE_CD": "en_US",
+                "TRANS_VERIFY_YN": "N",
+                "CLSSF_CD": "ATFT",
+                "SEQ": "1"
+              },
+              {
+                "TRT_DTM": "20140415204817",
+                "TRTR_ID": null,
+                "STND_KEY": "ATFT-01100",
+                "TEST_NUM": null,
+                "CONTENT_XPLN": null,
+                "CONTENT": "Tree 에서 선택된 Episode 의 Casenote  상세내역을 Casenote ...",
+                "LOCALE_CD": "ko_KR",
+                "TRANS_VERIFY_YN": "Y",
+                "CLSSF_CD": "ATFT",
+                "SEQ": "1"
+              },
+              {
+                "TRT_DTM": "20140415204819",
+                "TRTR_ID": null,
+                "STND_KEY": "ATFT-01100",
+                "TEST_NUM": null,
+                "CONTENT_XPLN": null,
+                "CONTENT": "Tree 에서 선택된 Episode 의 Casenote  상세내역을 Casenote ...",
+                "LOCALE_CD": "en_US",
+                "TRANS_VERIFY_YN": "N",
+                "CLSSF_CD": "ATFT",
+                "SEQ": "1"
+              },
+              {
+                "TRT_DTM": "20140328130000",
+                "TRTR_ID": "jiwon48.seo",
+                "STND_KEY": "ATMD",
+                "TEST_NUM": null,
+                "CONTENT_XPLN": "[抗眞劑] 자낭균류, 담자균류, 조균류 및 불완전 균류 따위의 번식을 막거나 제한하는 약제",
+                "CONTENT": "항진제",
+                "LOCALE_CD": "ko_KR",
+                "TRANS_VERIFY_YN": "Y",
+                "CLSSF_CD": "WORD",
+                "SEQ": "1"
+              },
+              {
+                "TRT_DTM": "20140328130000",
+                "TRTR_ID": "jiwon48.seo",
+                "STND_KEY": "ADDSC",
+                "TEST_NUM": null,
+                "CONTENT_XPLN": "[加算點數] 성적을 나타내는 숫자를 더하여 셈함. 보탬",
+                "CONTENT": "가점",
+                "LOCALE_CD": "ko_KR",
+                "TRANS_VERIFY_YN": "Y",
+                "CLSSF_CD": "WORD",
+                "SEQ": "1"
+              },
+              {
+                "TRT_DTM": "20140415205069",
+                "TRTR_ID": null,
+                "STND_KEY": "ATFT-01101",
+                "TEST_NUM": null,
+                "CONTENT_XPLN": null,
+                "CONTENT": "Episode Detail 의 내역을 입력한다.",
+                "LOCALE_CD": "ko_KR",
+                "TRANS_VERIFY_YN": "Y",
+                "CLSSF_CD": "ATFT",
+                "SEQ": "1"
+              },
+              {
+                "TRT_DTM": "20140415205069",
+                "TRTR_ID": null,
+                "STND_KEY": "ATFT-01101",
+                "TEST_NUM": null,
+                "CONTENT_XPLN": null,
+                "CONTENT": "Episode",
+                "LOCALE_CD": "en_US",
+                "TRANS_VERIFY_YN": "N",
+                "CLSSF_CD": "ATFT",
+                "SEQ": "1"
+              },
+              {
+                "TRT_DTM": "20140415204809",
+                "TRTR_ID": "jiwon48.seo",
+                "STND_KEY": "IV_INJC",
+                "TEST_NUM": null,
+                "CONTENT_XPLN": "정맥 내에 바늘을 꽂아 약액을 주입하는 방법. 약제의 전신 적응에 가장 빠른 효과를 ...",
+                "CONTENT": "Intravenous Injection",
+                "LOCALE_CD": "en_US",
+                "TRANS_VERIFY_YN": "Y",
+                "CLSSF_CD": "TERM",
+                "SEQ": "1"
+              },
+              {
+                "TRT_DTM": "20140415204809",
+                "TRTR_ID": "jiwon48.seo",
+                "STND_KEY": "IV_INJC",
+                "TEST_NUM": null,
+                "CONTENT_XPLN": "(약어) 정맥 내에 바늘을 꽂아 약액을 주입하는 방법. 약제의 전신 적응에 가장 빠른...",
+                "CONTENT": "IV",
+                "LOCALE_CD": "en_US",
+                "TRANS_VERIFY_YN": "Y",
+                "CLSSF_CD": "TERM",
+                "SEQ": "2"
+              },
+              {
+                "TRT_DTM": "20140415204871",
+                "TRTR_ID": null,
+                "STND_KEY": "ATFT-01099",
+                "TEST_NUM": null,
+                "CONTENT_XPLN": null,
+                "CONTENT": "Tree 에서 선택된 Episode 의 상세내역을 Episode Detail 에 조회한다.",
+                "LOCALE_CD": "ko_KR",
+                "TRANS_VERIFY_YN": "Y",
+                "CLSSF_CD": "ATFT",
+                "SEQ": "1"
+              },
+              {
+                "TRT_DTM": "20140415204873",
+                "TRTR_ID": null,
+                "STND_KEY": "ATFT-01099",
+                "TEST_NUM": null,
+                "CONTENT_XPLN": null,
+                "CONTENT": "Tree 에서 선택된 Episode 의 상세내역을 Episode Detail 에 조회한다.",
+                "LOCALE_CD": "en_US",
+                "TRANS_VERIFY_YN": "N",
+                "CLSSF_CD": "ATFT",
+                "SEQ": "1"
+              },
+              {
+                "TRT_DTM": "20140415204817",
+                "TRTR_ID": null,
+                "STND_KEY": "ATFT-01100",
+                "TEST_NUM": null,
+                "CONTENT_XPLN": null,
+                "CONTENT": "Tree 에서 선택된 Episode 의 Casenote  상세내역을 Casenote ...",
+                "LOCALE_CD": "ko_KR",
+                "TRANS_VERIFY_YN": "Y",
+                "CLSSF_CD": "ATFT",
+                "SEQ": "1"
+              },
+              {
+                "TRT_DTM": "20140415204819",
+                "TRTR_ID": null,
+                "STND_KEY": "ATFT-01100",
+                "TEST_NUM": null,
+                "CONTENT_XPLN": null,
+                "CONTENT": "Tree 에서 선택된 Episode 의 Casenote  상세내역을 Casenote ...",
+                "LOCALE_CD": "en_US",
+                "TRANS_VERIFY_YN": "N",
+                "CLSSF_CD": "ATFT",
+                "SEQ": "1"
+              },
+              {
+                "TRT_DTM": "20140328130000",
+                "TRTR_ID": "jiwon48.seo",
+                "STND_KEY": "ATMD",
+                "TEST_NUM": null,
+                "CONTENT_XPLN": "[抗眞劑] 자낭균류, 담자균류, 조균류 및 불완전 균류 따위의 번식을 막거나 제한하는 약제",
+                "CONTENT": "항진제",
+                "LOCALE_CD": "ko_KR",
+                "TRANS_VERIFY_YN": "Y",
+                "CLSSF_CD": "WORD",
+                "SEQ": "1"
+              },
+              {
+                "TRT_DTM": "20140328130000",
+                "TRTR_ID": "jiwon48.seo",
+                "STND_KEY": "ADDSC",
+                "TEST_NUM": null,
+                "CONTENT_XPLN": "[加算點數] 성적을 나타내는 숫자를 더하여 셈함. 보탬",
+                "CONTENT": "가점",
+                "LOCALE_CD": "ko_KR",
+                "TRANS_VERIFY_YN": "Y",
+                "CLSSF_CD": "WORD",
+                "SEQ": "1"
+              },
+              {
+                "TRT_DTM": "20140415205069",
+                "TRTR_ID": null,
+                "STND_KEY": "ATFT-01101",
+                "TEST_NUM": null,
+                "CONTENT_XPLN": null,
+                "CONTENT": "Episode Detail 의 내역을 입력한다.",
+                "LOCALE_CD": "ko_KR",
+                "TRANS_VERIFY_YN": "Y",
+                "CLSSF_CD": "ATFT",
+                "SEQ": "1"
+              },
+              {
+                "TRT_DTM": "20140415205069",
+                "TRTR_ID": null,
+                "STND_KEY": "ATFT-01101",
+                "TEST_NUM": null,
+                "CONTENT_XPLN": null,
+                "CONTENT": "Episode",
+                "LOCALE_CD": "en_US",
+                "TRANS_VERIFY_YN": "N",
+                "CLSSF_CD": "ATFT",
+                "SEQ": "1"
+              },
+              {
+                "TRT_DTM": "20140415204809",
+                "TRTR_ID": "jiwon48.seo",
+                "STND_KEY": "IV_INJC",
+                "TEST_NUM": null,
+                "CONTENT_XPLN": "정맥 내에 바늘을 꽂아 약액을 주입하는 방법. 약제의 전신 적응에 가장 빠른 효과를 ...",
+                "CONTENT": "Intravenous Injection",
+                "LOCALE_CD": "en_US",
+                "TRANS_VERIFY_YN": "Y",
+                "CLSSF_CD": "TERM",
+                "SEQ": "1"
+              },
+              {
+                "TRT_DTM": "20140415204809",
+                "TRTR_ID": "jiwon48.seo",
+                "STND_KEY": "IV_INJC",
+                "TEST_NUM": null,
+                "CONTENT_XPLN": "(약어) 정맥 내에 바늘을 꽂아 약액을 주입하는 방법. 약제의 전신 적응에 가장 빠른...",
+                "CONTENT": "IV",
+                "LOCALE_CD": "en_US",
+                "TRANS_VERIFY_YN": "Y",
+                "CLSSF_CD": "TERM",
+                "SEQ": "2"
+              },
+              {
+                "TRT_DTM": "20140415204871",
+                "TRTR_ID": null,
+                "STND_KEY": "ATFT-01099",
+                "TEST_NUM": null,
+                "CONTENT_XPLN": null,
+                "CONTENT": "Tree 에서 선택된 Episode 의 상세내역을 Episode Detail 에 조회한다.",
+                "LOCALE_CD": "ko_KR",
+                "TRANS_VERIFY_YN": "Y",
+                "CLSSF_CD": "ATFT",
+                "SEQ": "1"
+              },
+              {
+                "TRT_DTM": "20140415204873",
+                "TRTR_ID": null,
+                "STND_KEY": "ATFT-01099",
+                "TEST_NUM": null,
+                "CONTENT_XPLN": null,
+                "CONTENT": "Tree 에서 선택된 Episode 의 상세내역을 Episode Detail 에 조회한다.",
+                "LOCALE_CD": "en_US",
+                "TRANS_VERIFY_YN": "N",
+                "CLSSF_CD": "ATFT",
+                "SEQ": "1"
+              },
+              {
+                "TRT_DTM": "20140415204817",
+                "TRTR_ID": null,
+                "STND_KEY": "ATFT-01100",
+                "TEST_NUM": null,
+                "CONTENT_XPLN": null,
+                "CONTENT": "Tree 에서 선택된 Episode 의 Casenote  상세내역을 Casenote ...",
+                "LOCALE_CD": "ko_KR",
+                "TRANS_VERIFY_YN": "Y",
+                "CLSSF_CD": "ATFT",
+                "SEQ": "1"
+              },
+              {
+                "TRT_DTM": "20140415204819",
+                "TRTR_ID": null,
+                "STND_KEY": "ATFT-01100",
+                "TEST_NUM": null,
+                "CONTENT_XPLN": null,
+                "CONTENT": "Tree 에서 선택된 Episode 의 Casenote  상세내역을 Casenote ...",
+                "LOCALE_CD": "en_US",
+                "TRANS_VERIFY_YN": "N",
+                "CLSSF_CD": "ATFT",
+                "SEQ": "1"
+              },
+              {
+                "TRT_DTM": "20140328130000",
+                "TRTR_ID": "jiwon48.seo",
+                "STND_KEY": "ATMD",
+                "TEST_NUM": null,
+                "CONTENT_XPLN": "[抗眞劑] 자낭균류, 담자균류, 조균류 및 불완전 균류 따위의 번식을 막거나 제한하는 약제",
+                "CONTENT": "항진제",
+                "LOCALE_CD": "ko_KR",
+                "TRANS_VERIFY_YN": "Y",
+                "CLSSF_CD": "WORD",
+                "SEQ": "1"
+              },
+              {
+                "TRT_DTM": "20140328130000",
+                "TRTR_ID": "jiwon48.seo",
+                "STND_KEY": "ADDSC",
+                "TEST_NUM": null,
+                "CONTENT_XPLN": "[加算點數] 성적을 나타내는 숫자를 더하여 셈함. 보탬",
+                "CONTENT": "가점",
+                "LOCALE_CD": "ko_KR",
+                "TRANS_VERIFY_YN": "Y",
+                "CLSSF_CD": "WORD",
+                "SEQ": "1"
+              },
+              {
+                "TRT_DTM": "20140415205069",
+                "TRTR_ID": null,
+                "STND_KEY": "ATFT-01101",
+                "TEST_NUM": null,
+                "CONTENT_XPLN": null,
+                "CONTENT": "Episode Detail 의 내역을 입력한다.",
+                "LOCALE_CD": "ko_KR",
+                "TRANS_VERIFY_YN": "Y",
+                "CLSSF_CD": "ATFT",
+                "SEQ": "1"
+              },
+              {
+                "TRT_DTM": "20140415205069",
+                "TRTR_ID": null,
+                "STND_KEY": "ATFT-01101",
+                "TEST_NUM": null,
+                "CONTENT_XPLN": null,
+                "CONTENT": "Episode",
+                "LOCALE_CD": "en_US",
+                "TRANS_VERIFY_YN": "N",
+                "CLSSF_CD": "ATFT",
+                "SEQ": "1"
+              }
+            ],
+            "sourceSubDomain": "0001",
+            "removed": false,
+            "objectName": "TRANS_CONTENT_01",
+            "objectComment": null,
+            "attributes": [
+              {
+                "attributeOrderNumber": 1,
+                "attributeName": "STND_KEY",
+                "attributeDisplayName": "STND_KEY",
+                "attributeComment": "dasfasfdsdf",
+                "attributeDisplayComment": "dasfasfdsdf",
+                "attributeType": "VARCHAR2",
+                "attributePrecision": null,
+                "attributeScale": null,
+                "attributeNullableYn": "N",
+                "attributeLength": 60,
+                "attributeKeyYn": "Y",
+                "attributeDefaultValue": null,
+                "uniqueValueCount": null,
+                "min": null,
+                "max": null,
+                "avg": null,
+                "nullValueCount": null,
+                "registrationDate": 1528459931566,
+                "registrator": "206",
+                "changeDate": 1528459931566,
+                "changer": "206"
+              },
+              {
+                "attributeOrderNumber": 2,
+                "attributeName": "LOCALE_CD",
+                "attributeDisplayName": "LOCALE_CD",
+                "attributeComment": "이거뭘까?",
+                "attributeDisplayComment": "이거뭘까?",
+                "attributeType": "VARCHAR2",
+                "attributePrecision": null,
+                "attributeScale": null,
+                "attributeNullableYn": "N",
+                "attributeLength": 5,
+                "attributeKeyYn": "Y",
+                "attributeDefaultValue": null,
+                "uniqueValueCount": null,
+                "min": null,
+                "max": null,
+                "avg": null,
+                "nullValueCount": null,
+                "registrationDate": 1528459931566,
+                "registrator": "206",
+                "changeDate": 1528459931566,
+                "changer": "206"
+              },
+              {
+                "attributeOrderNumber": 3,
+                "attributeName": "CLSSF_CD",
+                "attributeDisplayName": "CLSSF_CD",
+                "attributeComment": "음....",
+                "attributeDisplayComment": "음....",
+                "attributeType": "VARCHAR2",
+                "attributePrecision": null,
+                "attributeScale": null,
+                "attributeNullableYn": "N",
+                "attributeLength": 5,
+                "attributeKeyYn": "Y",
+                "attributeDefaultValue": null,
+                "uniqueValueCount": null,
+                "min": null,
+                "max": null,
+                "avg": null,
+                "nullValueCount": null,
+                "registrationDate": 1528459931566,
+                "registrator": "206",
+                "changeDate": 1528459931566,
+                "changer": "206"
+              },
+              {
+                "attributeOrderNumber": 4,
+                "attributeName": "SEQ",
+                "attributeDisplayName": "SEQ",
+                "attributeComment": "?????",
+                "attributeDisplayComment": "?????",
+                "attributeType": "NUMBER",
+                "attributePrecision": 2,
+                "attributeScale": 0,
+                "attributeNullableYn": "N",
+                "attributeLength": 22,
+                "attributeKeyYn": "Y",
+                "attributeDefaultValue": null,
+                "uniqueValueCount": null,
+                "min": null,
+                "max": null,
+                "avg": null,
+                "nullValueCount": null,
+                "registrationDate": 1528459931566,
+                "registrator": "206",
+                "changeDate": 1528459931566,
+                "changer": "206"
+              },
+              {
+                "attributeOrderNumber": 5,
+                "attributeName": "CONTENT",
+                "attributeDisplayName": "CONTENT",
+                "attributeComment": "@.@",
+                "attributeDisplayComment": "@.@",
+                "attributeType": "VARCHAR2",
+                "attributePrecision": null,
+                "attributeScale": null,
+                "attributeNullableYn": "Y",
+                "attributeLength": 4000,
+                "attributeKeyYn": "N",
+                "attributeDefaultValue": null,
+                "uniqueValueCount": null,
+                "min": null,
+                "max": null,
+                "avg": null,
+                "nullValueCount": null,
+                "registrationDate": 1528459931566,
+                "registrator": "206",
+                "changeDate": 1528459931566,
+                "changer": "206"
+              },
+              {
+                "attributeOrderNumber": 6,
+                "attributeName": "CONTENT_XPLN",
+                "attributeDisplayName": "CONTENT_XPLN",
+                "attributeComment": "-.-;;",
+                "attributeDisplayComment": "-.-;;",
+                "attributeType": "VARCHAR2",
+                "attributePrecision": null,
+                "attributeScale": null,
+                "attributeNullableYn": "Y",
+                "attributeLength": 4000,
+                "attributeKeyYn": "N",
+                "attributeDefaultValue": null,
+                "uniqueValueCount": null,
+                "min": null,
+                "max": null,
+                "avg": null,
+                "nullValueCount": null,
+                "registrationDate": 1528459931566,
+                "registrator": "206",
+                "changeDate": 1528459931566,
+                "changer": "206"
+              },
+              {
+                "attributeOrderNumber": 7,
+                "attributeName": "TRTR_ID",
+                "attributeDisplayName": "TRTR_ID",
+                "attributeComment": "+.+",
+                "attributeDisplayComment": "+.+",
+                "attributeType": "VARCHAR2",
+                "attributePrecision": null,
+                "attributeScale": null,
+                "attributeNullableYn": "Y",
+                "attributeLength": 30,
+                "attributeKeyYn": "N",
+                "attributeDefaultValue": null,
+                "uniqueValueCount": null,
+                "min": null,
+                "max": null,
+                "avg": null,
+                "nullValueCount": null,
+                "registrationDate": 1528459931566,
+                "registrator": "206",
+                "changeDate": 1528459931566,
+                "changer": "206"
+              },
+              {
+                "attributeOrderNumber": 8,
+                "attributeName": "TRT_DTM",
+                "attributeDisplayName": "TRT_DTM",
+                "attributeComment": "",
+                "attributeDisplayComment": "",
+                "attributeType": "CHAR",
+                "attributePrecision": null,
+                "attributeScale": null,
+                "attributeNullableYn": "Y",
+                "attributeLength": 14,
+                "attributeKeyYn": "N",
+                "attributeDefaultValue": null,
+                "uniqueValueCount": null,
+                "min": null,
+                "max": null,
+                "avg": null,
+                "nullValueCount": null,
+                "registrationDate": 1528459931566,
+                "registrator": "206",
+                "changeDate": 1528459931566,
+                "changer": "206"
+              },
+              {
+                "attributeOrderNumber": 9,
+                "attributeName": "TRANS_VERIFY_YN",
+                "attributeDisplayName": "TRANS_VERIFY_YN",
+                "attributeComment": "",
+                "attributeDisplayComment": "",
+                "attributeType": "CHAR",
+                "attributePrecision": null,
+                "attributeScale": null,
+                "attributeNullableYn": "N",
+                "attributeLength": 1,
+                "attributeKeyYn": "N",
+                "attributeDefaultValue": null,
+                "uniqueValueCount": null,
+                "min": null,
+                "max": null,
+                "avg": null,
+                "nullValueCount": null,
+                "registrationDate": 1528459931566,
+                "registrator": "206",
+                "changeDate": 1528459931566,
+                "changer": "206"
+              },
+              {
+                "attributeOrderNumber": 10,
+                "attributeName": "TEST_NUM",
+                "attributeDisplayName": "TEST_NUM",
+                "attributeComment": "",
+                "attributeDisplayComment": "",
+                "attributeType": "NUMBER",
+                "attributePrecision": 5,
+                "attributeScale": 2,
+                "attributeNullableYn": "Y",
+                "attributeLength": 22,
+                "attributeKeyYn": "N",
+                "attributeDefaultValue": null,
+                "uniqueValueCount": null,
+                "min": null,
+                "max": null,
+                "avg": null,
+                "nullValueCount": null,
+                "registrationDate": 1528459931566,
+                "registrator": "206",
+                "changeDate": 1528459931566,
+                "changer": "206"
+              }
+            ],
+            "sourceDomain": "001",
+            "status": null,
+            "primaryKey": [
+              {
+                "attributeOrderNumber": 1,
+                "attributeName": "STND_KEY",
+                "attributeDisplayName": "STND_KEY",
+                "attributeComment": "dasfasfdsdf",
+                "attributeDisplayComment": "dasfasfdsdf",
+                "attributeType": "VARCHAR2",
+                "attributePrecision": null,
+                "attributeScale": null,
+                "attributeNullableYn": "N",
+                "attributeLength": 60,
+                "attributeKeyYn": "Y",
+                "attributeDefaultValue": null,
+                "uniqueValueCount": null,
+                "min": null,
+                "max": null,
+                "avg": null,
+                "nullValueCount": null,
+                "registrationDate": 1528459931566,
+                "registrator": "206",
+                "changeDate": 1528459931566,
+                "changer": "206"
+              },
+              {
+                "attributeOrderNumber": 2,
+                "attributeName": "LOCALE_CD",
+                "attributeDisplayName": "LOCALE_CD",
+                "attributeComment": "이거뭘까?",
+                "attributeDisplayComment": "이거뭘까?",
+                "attributeType": "VARCHAR2",
+                "attributePrecision": null,
+                "attributeScale": null,
+                "attributeNullableYn": "N",
+                "attributeLength": 5,
+                "attributeKeyYn": "Y",
+                "attributeDefaultValue": null,
+                "uniqueValueCount": null,
+                "min": null,
+                "max": null,
+                "avg": null,
+                "nullValueCount": null,
+                "registrationDate": 1528459931566,
+                "registrator": "206",
+                "changeDate": 1528459931566,
+                "changer": "206"
+              },
+              {
+                "attributeOrderNumber": 3,
+                "attributeName": "CLSSF_CD",
+                "attributeDisplayName": "CLSSF_CD",
+                "attributeComment": "음....",
+                "attributeDisplayComment": "음....",
+                "attributeType": "VARCHAR2",
+                "attributePrecision": null,
+                "attributeScale": null,
+                "attributeNullableYn": "N",
+                "attributeLength": 5,
+                "attributeKeyYn": "Y",
+                "attributeDefaultValue": null,
+                "uniqueValueCount": null,
+                "min": null,
+                "max": null,
+                "avg": null,
+                "nullValueCount": null,
+                "registrationDate": 1528459931566,
+                "registrator": "206",
+                "changeDate": 1528459931566,
+                "changer": "206"
+              },
+              {
+                "attributeOrderNumber": 4,
+                "attributeName": "SEQ",
+                "attributeDisplayName": "SEQ",
+                "attributeComment": "?????",
+                "attributeDisplayComment": "?????",
+                "attributeType": "NUMBER",
+                "attributePrecision": 2,
+                "attributeScale": 0,
+                "attributeNullableYn": "N",
+                "attributeLength": 22,
+                "attributeKeyYn": "Y",
+                "attributeDefaultValue": null,
+                "uniqueValueCount": null,
+                "min": null,
+                "max": null,
+                "avg": null,
+                "nullValueCount": null,
+                "registrationDate": 1528459931566,
+                "registrator": "206",
+                "changeDate": 1528459931566,
+                "changer": "206"
+              }
+            ]
+          },
+          "passTicket": null,
+          "autoApproval": false,
+          "attachedFiles": [
+            { "fileId": 1, "fileName": "manual.pdf", "fileSize": 100201, "type": "DOC" },
+            { "fileId": 2, "fileName": "faq.pdf", "fileSize": 10001, "type": "FAQ" },
+            { "fileId": 1, "fileName": "manual.pdf", "fileSize": 100201, "type": "DOC" },
+            { "fileId": 2, "fileName": "faq.pdf", "fileSize": 10001, "type": "FAQ" },
+            { "fileId": 1, "fileName": "manual.pdf", "fileSize": 100201, "type": "DOC" },
+            { "fileId": 2, "fileName": "faq.pdf", "fileSize": 10001, "type": "FAQ" },
+            { "fileId": 1, "fileName": "manual.pdf", "fileSize": 100201, "type": "DOC" },
+            { "fileId": 2, "fileName": "faq.pdf", "fileSize": 10001, "type": "FAQ" },
+            { "fileId": 1, "fileName": "manual.pdf", "fileSize": 100201, "type": "DOC" },
+            { "fileId": 2, "fileName": "faq.pdf", "fileSize": 10001, "type": "FAQ" },
+            { "fileId": 1, "fileName": "manual.pdf", "fileSize": 100201, "type": "DOC" },
+            { "fileId": 2, "fileName": "faq.pdf", "fileSize": 10001, "type": "FAQ" },
+            { "fileId": 1, "fileName": "manual.pdf", "fileSize": 100201, "type": "DOC" },
+            { "fileId": 2, "fileName": "faq.pdf", "fileSize": 10001, "type": "FAQ" },
+            { "fileId": 1, "fileName": "manual.pdf", "fileSize": 100201, "type": "DOC" },
+            { "fileId": 2, "fileName": "faq.pdf", "fileSize": 10001, "type": "FAQ" },
+            { "fileId": 1, "fileName": "manual.pdf", "fileSize": 100201, "type": "DOC" },
+            { "fileId": 2, "fileName": "faq.pdf", "fileSize": 10001, "type": "FAQ" }
+          ],
+          "histories": [
+            {
+              "id": 854,
+              "catalogId": 1062,
+              "version": "1.0",
+              "releaseNote": "Created The Catalog",
+              "creator": {
+                "id": 206,
+                "name": "jinny2u.son",
+                "email": "jinny2u.son@samsung.com",
+                "epid": null,
+                "role": "User",
+                "tenant": "SDS"
+              },
+              "updater": {
+                "id": 206,
+                "name": "jinny2u.son",
+                "email": "jinny2u.son@samsung.com",
+                "epid": null,
+                "role": "User",
+                "tenant": "SDS"
+              },
+              "createdTime": 1528459931572,
+              "updatedTime": 1528459931572
+            }
+          ]
+        }
+      };
+    res.json(sample2);
+});
+
+router.get('/search', function (req, res, next) {
+    var name = req.query.name;
+    console.log(name);
+
+    var sample = {
+        "status": "success",
+        "code": null,
+        "message": null,
+        "data": {
+            "limit": 20,
+            "offset": 0,
+            "total": 0,
+            "catalogs": [
+                {
+                    "id": 1085,
+                    "name": (name)?(name):("API CA Test"),
+                    "version": "v.1.0.0",
+                    "tags": ["tag1", "tag2"],
+                    "description": "Test CA",
+                    "category": "api",
+                    "state": "PUBLISHED",
+                    "rating": 0,
+                    "ratingCount": 0,
+                    "createdTime": 1516345106804,
+                    "updatedTime": 1516345106804,
+                    "creator": {
+                        "id": 1,
+                        "name": "Gil dong Hong"
+                    },
+                    "updater": {
+                        "id": 1,
+                        "name": "Gil dong Hong"
+                    },
+                    "used": false,
+                    "usage": 2,
+                    "mySubscription": {
+                        "id": 1234,
+                        "status": "INUSED",
+                        "createdTime": 1516345106804,
+                        "updatedTime": 1516345106804,
+                        "creator": {
+                            "id": 1,
+                            "name": "Gil dong Hong"
+                        },
+                        "updater": {
+                            "id": 1,
+                            "name": "Gil dong Hong"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+    res.json(sample);
+});
+
+router.get("/data-connections/:id", function (req, res, next) {
+    res.json({"status":"SUCCESS","code":null,"message":null,"data":{"id":503,"name":"TestORA","description":null,"sourceIp":null,"sourcePort":null,"sourceLocation":null,"sourceSchema":null,"sourceId":null,"sourcePw":null,"sourceType":"RDB","sourceSubType":"ORCL","sourceSubTypeVersion":"11.2","sourceEnviornment":null,"sourcePool":null,"sourceDomain":"001","sourceSubDomain":null,"changeDate":1528631229593}});
+});
+
+router.get('/files/:fileId', function (req, res, next) {
+  var options = {
+    url: 'http://70.70.170.87:8080/api/v1' + req.url,
+    strictSSL: false,  // url이 https인 경우, strictSSL: false 처리 가능합니다.
+    method: req.method,
+    proxy: '',
+    headers: {
+      //'User-Agent': '',  // 필요한 Headers Parameter는 추가하여 사용 가능합니다.
+      'Content-Type': 'application/json'
+    }
+  };  
+  request(options).pipe(res);
+});
+
+module.exports = {
+    serviceId: SERVICE_ID,
+    router: router
+};

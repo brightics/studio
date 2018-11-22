@@ -19,10 +19,12 @@
 		<target.server.path>${target.studio.path}/brightics-server</target.server.path>
 		<target.functions.path>${target.server.path}/functions/python</target.functions.path>
 		<target.lib.path>${target.studio.path}/lib</target.lib.path>
+		<target.va.path>${target.studio.path}/visual-analytics</target.va.path>
 		<origin.server.path>../api-server/brightics-server</origin.server.path>
 		<origin.functions.path>../function/python</origin.functions.path>
         <origin.lib.path>../lib</origin.lib.path>
         <origin.bin.path>../bin</origin.bin.path>
+		<origin.va.path>../va-server/visual-analytics</origin.va.path>
 	</properties>
 
 	<build>
@@ -74,6 +76,11 @@
                                 
 								<!-- create default directory -->
 								<mkdir dir="${target.server.path}/tmp"/>
+
+								<!--  copy visual analytics -->
+								<copy todir= "${target.va.path}">
+									<fileset dir="${origin.va.path}"/>
+								</copy>
 							</tasks>
 						</configuration>
 						<goals>
@@ -82,6 +89,46 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<plugin>
+				<groupId>com.github.eirslett</groupId>
+				<artifactId>frontend-maven-plugin</artifactId>
+				<version>1.6</version>
+
+				<configuration>
+					<nodeVersion>v8.9.4</nodeVersion>
+					<npmVersion>5.6.0</npmVersion>
+					<installDirectory>${target.lib.path}</installDirectory>
+					<workingDirectory>${target.va.path}</workingDirectory>
+				</configuration>
+				
+				<executions>
+					<execution>
+						<id>init-node-install</id>
+						<goals>
+							<goal>install-node-and-npm</goal>
+						</goals>
+						<configuration>
+							<nodeVersion>v8.9.4</nodeVersion>
+							<npmVersion>5.6.0</npmVersion>
+							<nodeDownloadRoot>http://nodejs.org/dist/</nodeDownloadRoot>
+							<npmDownloadRoot>http://registry.npmjs.org/npm/-/</npmDownloadRoot>				
+						</configuration>
+					</execution>
+					<execution>
+						<id>npm-install</id>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<environmentVariables>
+								<NODE_ENV>production</NODE_ENV>
+							</environmentVariables>
+							<arguments>install</arguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>			
 		</plugins>
 	</build>
 </project>

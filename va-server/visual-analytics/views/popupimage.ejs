@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" charset="UTF-8">
+
+    <title>Brightics Visual Analytics</title>
+
+    <link type="text/css" rel="stylesheet" href="css/plugins/normalize.css/normalize.css">
+    <link type="text/css" rel="stylesheet" href="font-awesome/4.5.0/css/font-awesome.min.css">
+    <link type="text/css" rel="stylesheet" href="css/plugins/bootstrap-3.3.7/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="css/plugins/aui-package/aui-widgets-1.16.8.css">
+    <link type="text/css" rel='stylesheet' href='css/plugins/aui-package/aui-widgets-1.9.0.office.css'/>
+
+    <!-- perfect-scrollbar css -->
+    <link type="text/css" rel='stylesheet' href='css/plugins/perfect-scrollbar/perfect-scrollbar.css'/>
+
+    <!-- jquery-ui css -->
+    <link type="text/css" rel='stylesheet' href='css/plugins/jquery-ui/jquery-ui.css'/>
+
+    <!-- brightics chart css -->
+    <link type="text/css" rel="stylesheet" href="css/plugins/bcharts/bcharts-all.css">
+    <link type="text/css" rel="stylesheet" href="css/plugins/bcharts/bcharts-adonis-all.css">
+    <link type="text/css" rel='stylesheet' href='css/plugins/bcharts/bcharts-tethys-all.css'/>
+    <link type="text/css" rel='stylesheet' href='css/va/brightics-va.css'/>
+
+    <!-- jQuery JS -->
+    <script src="js/plugins/jquery/jquery-3.3.1.min.js"></script>
+    <script src="js/plugins/jquery-hotkeys/jquery.hotkeys.js"></script>
+    <script src="js/plugins/jquery-cookie/jquery.cookie.js"></script>
+    <script src="js/plugins/jquery-appear/jquery.appear.js"></script>
+    <!-- jquery-ui  -->
+    <script src="js/plugins/jquery-ui/jquery-ui.min.js"></script>
+    <!-- bootstrap JS -->
+    <script src="js/plugins/bootstrap-3.3.7-dist/bootstrap.min.js"></script>
+
+    <script src="js/plugins/numeral/numeral.min.js"></script>
+    <script src="js/plugins/lodash/lodash.min.js"></script>
+
+    <!-- AUI -->
+    <script src="js/plugins/aui-package/globalization/globalize.js"></script>
+    <script src="js/plugins/aui-package/aui-camellia-1.0.24.js"></script>
+    <script src="js/plugins/aui-package/aui-widgets-1.16.8.min.js"></script>
+
+    <!-- perfect-scrollbar JS -->
+    <script src="js/plugins/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="js/plugins/perfect-scrollbar/perfect-scrollbar.jquery.js"></script>
+
+    <!-- moment.js -->
+    <script src="js/plugins/jquery/moment.min.js"></script>
+
+    <!-- Ace Editor -->
+    <script src="js/plugins/ace/ace.js"></script>
+    <script src="js/plugins/ace/ext-language_tools.js"></script>
+
+    <!-- EChart JS -->
+    <script src="js/plugins/echarts/echarts.js"></script>
+    <script src="js/plugins/echarts-stat/ecStat.js"></script>
+
+    <!-- D3.js v4-->
+    <script src="js/plugins/d3/d3.js"></script>
+    <script src="js/plugins/d3-tip/index.js"></script>
+
+    <!-- jStat -->
+    <script src="js/plugins/jstat/jstat.js"></script>
+
+    <!-- Bcharts -->
+    <script src="js/plugins/bcharts/bcharts-all.js"></script>
+    <script src="js/plugins/bcharts/bcharts-adonis-all.js"></script>
+    <script src="js/plugins/bcharts/bcharts-module-all.js"></script>
+
+    <!-- joint JS -->
+    <script src="js/plugins/backbone/backbone-min.js"></script>
+    <script src="js/plugins/joint/joint.js"></script>
+
+    <script src="js/va/brightics-va-core.js"></script>
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+        }
+
+        #brightics {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #brightics > div {
+            z-index: 2;
+        }
+
+        .brtc-va-main {
+            display: block;
+            position: absolute;
+            height: auto;
+            bottom: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            margin: 0;
+            min-width: 1280px;
+            min-height: 900px;
+            z-index: 1;
+        }
+
+        body > .ps-scrollbar-x-rail, body > .ps-scrollbar-y-rail {
+            z-index: 1;
+        }
+
+        .brtc-mc-contents {
+            width: 100%;
+            height: calc(100% - 57px);
+            position: absolute;
+            left: 0;
+            top: 57px;
+        }
+
+        .brtc-mc-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, .2);
+        }
+
+        .brtc-mc-progress > span, .brtc-mc-notification > span {
+            position: absolute;
+            top: calc((100% - 20px) / 2);
+            left: calc((100% - 500px) / 2);
+            font-size: 25px;
+            width: 500px;
+            height: 20px;
+            text-align: center;
+        }
+
+        .brtc-mc-progress > i {
+            position: absolute;
+            top: 40%;
+            left: calc(50% - 50px);
+            width: initial;
+        }
+
+    </style>
+</head>
+<body>
+<div id="brightics">
+    <div class="brtc-va-main">
+        <div class="brtc-va-studio-top-area">
+            <div class="brtc-va-tools-menubar" style="width: 100%; height: 100%;">
+                <div class="brtc-va-tools-menubar-left-area">
+                    <div class="brtc-va-tools-menubar-logo"></div>
+                </div>
+            </div>
+        </div>
+        <div class="brtc-mc-contents"></div>
+        <div class="brtc-mc-progress"><i class="fa fa-circle-o-notch fa-spin fa-5x fa-fw"></i><span></span></div>
+        <div class="brtc-mc-notification"><span></span></div>
+    </div>
+</div>
+</body>
+<script>
+    const MSG_LOADING = 'Loading...';
+    const MSG_ERROR = 'No data found';
+    var noDataList = [];
+
+    var globalOptions = {};
+
+    function getParameterByName(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+    }
+
+    var ImagePanel = Brightics.VA.Core.Editors.Sheet.Panels.ImagePanel;
+    var render = ImagePanel.prototype.render;
+    var renderFail = ImagePanel.prototype.renderFail;
+
+    function retrieveDataSource(params) {
+        showProgress(MSG_LOADING);
+        var arg = {
+            user: params.user,
+            mid: params.mid,
+            tab: params.tids,
+            offset: params.offsetArr,
+            limit: params.limitArr
+        }
+        var args = $.map(arg, function (value, key) {
+            return key + '=' + value;
+        }).join('&');
+        var option = {
+            url: 'api/va/v2/data/staging/query?' + args,
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',
+            blocking: true
+        };
+        var request = $.ajax(option).done(function (data) {
+            hideProgress();
+
+            render($('.brtc-mc-contents'), data);
+        }).fail(function (err) {
+            hideProgress();
+            renderFail($('.brtc-mc-contents'), 'There is No Image');
+        });
+    }
+
+    function showProgress(message) {
+        $('.brtc-mc-progress > span').text(message);
+        $('.brtc-mc-progress').show();
+    }
+
+    function hideProgress() {
+        $('.brtc-mc-progress').hide();
+    }
+
+    function showNotification(message) {
+        hideProgress();
+        $('.brtc-mc-notification > span').text(message);
+        $('.brtc-mc-notification').show();
+    }
+
+    function createHeaderToolbar() {
+        var $toolbar = $('' +
+                '<div class="brtc-va-editors-sheet-panels-window-toolbar"/>');
+        $('.brtc-va-tools-menubar').append($toolbar);
+    }
+
+
+    window.onload = function () {
+        $('.brtc-mc-contents').perfectScrollbar();
+
+        $(window).on('resize', function () {
+            $('#brightics > .ps-scrollbar-x-rail').remove();
+            $('#brightics > .ps-scrollbar-y-rail').remove();
+            $('.brtc-mc-contents').perfectScrollbar('update');
+        });
+
+        new window.Brightics.VA.Preference();
+
+        createHeaderToolbar();
+
+        hideProgress();
+
+        globalOptions.params = {
+            user: getParameterByName('user'),
+            pid: getParameterByName('pid'),
+            mid: getParameterByName('mid'),
+            fid: getParameterByName('fid'),
+            tids: getParameterByName('tids'),
+            offsetArr: getParameterByName('offsetArr'),
+            limitArr: getParameterByName('limitArr')
+        };
+
+        $(document).bind('contextmenu', function (e) {
+            return false;
+        });
+
+        try {
+            noDataList = [];
+            retrieveDataSource(globalOptions.params);
+
+        } catch (ex) {
+            showNotification(ex.message);
+        }
+    };
+</script>
+</html>

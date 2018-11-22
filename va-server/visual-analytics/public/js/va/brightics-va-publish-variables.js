@@ -1,0 +1,1 @@
+var user='admin';var permissions='{}';var logLevel='';var isPublish=true;

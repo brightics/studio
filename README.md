@@ -12,7 +12,6 @@ Using Brightics Studio, both citizen data scientists and professional data scien
 Using the Brightics Toolkit, user interfaces for custom functions can be generated and they will be usable in the Brightics workflow.<br>
 Charts and report generators are also provided to visualize data in various ways.
 
-
 ## Documentation
 Please visit our web site http://www.brightics.ai
 
@@ -38,16 +37,20 @@ Example for linux like systems:
     
 Most common cases you don't need to set above parameters because those projects automatically add paths during installation. 
 
+for macOS system:  
+* Graphviz 
+
+You have to install [graphviz](http://graphviz.org/download/) using [Homebrew](https://brew.sh/)
+```
+brew install graphviz
+```
+
 ### Installation
 Unzip the downloaded file in somewhere.
 
 	/brightics-studio/brightics-server : core home
 	/brightics-studio/visual-analytics : GUI home
 	/brightics-studio/lib : external libs
-	
-### Addtional Info
-DO NOT USE Alzip for extracting because it does not support directory name longer than 256chars.<br>
-Please use 7zip or Bandizip instead.
 
 ### Launch
 Go to unzipped directory and run.
@@ -55,7 +58,23 @@ Go to unzipped directory and run.
 	start-brightics.cmd : for windows
 	start-brightics.sh : for linux and mac
 	
-### Create python environment (Optional)
+### Migration from the older versions
+Move these files to newer version of brightics-studio to maintain data and projects.
+
+	/brightics-studio/visual-analytics/brightics.db
+	/brightics-studio/brightics-server/data/*
+    
+## Development
+### Extend
+To extend functions, see the user manual section 5.7 about Brightics Toolkit.<br>
+http://www.brightics.ai/docs/en-us/ai/v3.6/user_guide/05_tasks
+    
+### Build
+Build core packages with maven.
+
+	mvn clean package -DskipTests [Options] -Popensource
+
+### Create python environment
 When you use stable release, you can skip this process.<br>
 Because our package has all required python libraries in its own environment.<br>
 
@@ -67,17 +86,6 @@ Reference : [Python wiki for WindowsCompilers](https://wiki.python.org/moin/Wind
 
     setup.cmd <pip options> : for windows
     setup.sh <pip options> : for linux and mac
-    
-
-## Development
-### Extend
-To extend functions, see the user manual section 5.7 about Brightics Toolkit.<br>
-http://www.brightics.ai/docs/en-us/ai/v3.6/user_guide/05_tasks
-    
-### Build
-Build core packages with maven.
-
-	mvn clean package -DskipTests [Options] -Popensource
 
 ## License
 Visual Analytics(Web GUI) project is licensed under the terms of the Brightics Visual Analytics LICENSE, please check Notice below.<br>
@@ -88,6 +96,10 @@ Source codes of the Web GUI are not yet fully opened due to some license issues 
 The purpose of personal use for commercial or non-commercial is allowed but only the redistribution is prohibited.<br>
 See [the documentation about this license](BRIGHTICS_VA_LICENSE) for more details.<br>
 We work hard to solve these issues and soon it will be public.
+
+## Roadmap
+
+<img src="docs/images/roadmap.png" width="960px" height="481px" alt="Brightics Studio"></img>
 
 ## Contact us
 If you like to use brightics studio, please let us know your usage and feedback.<br>

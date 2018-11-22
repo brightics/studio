@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" charset="UTF-8">
+    <title>Scatter Chart - DataFinder</title>
+
+    <script src="js/plugins/babel-polyfill/polyfill.js"></script>
+    <script src="js/plugins/css.escape/css.escape.js"></script>
+
+    <link type="text/css" rel="stylesheet" href="font-awesome/4.5.0/css/font-awesome.min.css">
+
+    <!-- jQuery JS -->
+    <script src="js/plugins/jquery/jquery-3.3.1.min.js"></script>
+
+    <!-- Echart -->
+    <script src="js/plugins/echarts/echarts.js"></script>
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+        }
+
+        .chart-main {
+            display: block;
+            position: absolute;
+            height: auto;
+            bottom: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            margin: 0;
+            z-index: 1;
+        }
+
+        .chart-axis {
+            position: absolute;
+        }
+
+        .chart-axis.x {
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+        }
+        .chart-axis.y {
+            top: 50%;
+            width: 70px;
+            transform: rotate(-90deg);
+        }
+    </style>
+</head>
+<body>
+<div id="chart-container" class="chart-main">
+</div>
+<div id="chart-xaxis" class="chart-axis x"></div>
+<div id="chart-yaxis" class="chart-axis y"></div>
+<div id="chart-loading"
+     style="position: absolute; left: 0; top: calc(50% - 60px); width: 100%; height: 100%; text-align: center"><i
+            class="fa fa-circle-o-notch fa-spin fa-5x fa-fw" aria-hidden="true"></i></div>
+</body>
+<script>
+    function getParameterByName(name, url) {
+        if (!url) {
+            url = window.location.href;
+        }
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+    }
+
+    window.onload = function () {
+        var chartOption = {
+            title: {
+                text: '',
+                x: 'center'
+            },
+            tooltip: {
+                trigger: 'axis',
+                showDelay: 0,
+                axisPointer: {
+                    show: true,
+                    type: 'cross',
+                    lineStyle: {
+                        type: 'dashed',
+                        width: 1
+                    }
+                }
+            },
+            xAxis: [
+                {
+                    type: 'value',
+                    scale: true,
+                    axisLine: {show: false, onZero: false},
+                    splitLine: {show: false},
+                    name: '',
+                    nameLocation: 'end'
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                    scale: true,
+                    axisLine: {show: false, onZero: false},
+                    splitLine: {show: false},
+                    name: '',
+                    nameLocation: 'end'
+                }
+            ],
+            series: [
+                {
+                    type: 'scatter',
+                    large: true,
+                    data: [[0, 0]],
+                    itemStyle: {
+                        normal: {
+                            color: 'red'
+                        }
+                    }
+                }
+            ]
+        };
+
+        var myChart = echarts.init(document.getElementById('chart-container'));
+        myChart.setOption(chartOption);
+        var xAxis = document.getElementById('chart-xaxis');
+        var yAxis = document.getElementById('chart-yaxis');
+
+        window.onresize = function () {
+            myChart.resize();
+        };
+
+        var table = getParameterByName('table');
+        var columns = getParameterByName('columns');
+        var group = getParameterByName('group');
+        var limit = getParameterByName('limit');
+        var column = columns.split('|');
+
+        xAxis.innerText = column[0];
+        xAxis.setAttribute('title', column[0]);
+        yAxis.innerText = column[1];
+        yAxis.setAttribute('title', column[1]);
+
+        var opt = {
+            url: '/api/va/v2/datasources/staging/query-ref?table=' + table + '&group=' + group + '&columns=' + columns + '&limit=' + limit,
+            type: "GET",
+            contentType: "application/json; charset=utf-8"
+        };
+
+        $.ajax(opt).done(function (result) {
+            chartOption.series[0].data = result.data;
+            chartOption.title = {
+                text: group || 'Scatter Chart'
+            };
+            myChart.setOption(chartOption);
+
+            $('#chart-loading').hide();
+        }).fail(function (err) {
+            alert(JSON.stringify(err));
+        });
+    }
+</script>
+</html>
