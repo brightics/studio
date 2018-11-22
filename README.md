@@ -19,6 +19,7 @@ Please visit our web site http://www.brightics.ai
 ### Prerequisite
  * JDK 1.8, 1.9 (64bit)
  * Python 3.6.x (64bit)
+ * NodeJS 8.9.4 (64bit)
 
 ### Setting up the environment variables
 Make sure java and python are executable.
