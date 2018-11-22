@@ -21,16 +21,6 @@ command -v java >/dev/null 2>&1 || { echo >&2 "Java is missing. Ensure it is ins
 command -v python >/dev/null 2>&1 || { echo >&2 "Python is missing. Ensure it is installed and placed in your PATH."; exit 1; }
 command -v $BRIGHTICS_PACKAGES_HOME/lib/node/node >/dev/null 2>&1 || { echo >&2 "Node.js is missing. Ensure Visual-analytics is installed."; exit 1; }
 
-if [ -f "$BRIGHTICS_PACKAGES_HOME/lib/brightics_python_env/build.info" ]
-then
-    BRIGHTICS_PYTHON_BUILD_INFO=`head -1 $BRIGHTICS_PACKAGES_HOME/lib/brightics_python_env/build.info`
-    if [ "$BRIGHTICS_PACKAGES_HOME" != "$BRIGHTICS_PYTHON_BUILD_INFO" ]; then
-        $BRIGHTICS_PACKAGES_HOME/setup-python-env.sh
-    fi
-else
-    $BRIGHTICS_PACKAGES_HOME/setup-python-env.sh
-fi
-
 source $BRIGHTICS_PACKAGES_HOME/lib/brightics_python_env/bin/activate
 
 # Brightics Server
