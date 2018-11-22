@@ -170,7 +170,7 @@ exports.default = {
             return options.xAxis[0].selected;
         }
     },
-    //18.01.11 axisType을 selected 안으로 spec 변경(axisType과 일반 column을  multi 개로 입력 가능
+    // 18.01.11 axisType을 selected 안으로 spec 변경(axisType과 일반 column을  multi 개로 입력 가능
     getXAxisType: function getXAxisType(options) {
         return options.xAxis[0].axisType || options.xAxis[0].selected[0].axisType || 'default';
     },
@@ -301,7 +301,7 @@ exports.default = {
         var rtnStr = '';
         if (fmtObj.type === 'exponential') {
             rtnStr += '0.' + _zeroLoop('', fmtObj.digit) + 'e+0';
-        } else if (fmtObj.type === 'number') {
+        } else if (['number', 'double', 'integer'].includes(fmtObj.type)) {
             rtnStr += '0.' + _zeroLoop('', fmtObj.digit);
         } else {
             rtnStr = fmtObj.digit;
@@ -309,15 +309,31 @@ exports.default = {
         return rtnStr;
     },
     numericSortRule: function numericSortRule(a, b) {
-        if (!isFinite(a - b)) return !isFinite(a) ? 1 : -1;else if (typeof a === 'string') return Number(a) - Number(b);else return a - b;
+        if (!isFinite(a - b)) {
+            return !isFinite(a) ? 1 : -1;
+        } else if (typeof a === 'string') {
+            return Number(a) - Number(b);
+        } else {
+            return a - b;
+        }
     },
     timeSortRule: function timeSortRule(a, b) {
         var timeA = Date.parse(a);
         var timeB = Date.parse(b);
-        if (!isFinite(timeA - timeB)) return !isFinite(timeA) ? 1 : -1;else return timeA - timeB;
+        if (!isFinite(timeA - timeB)) {
+            return !isFinite(timeA) ? 1 : -1;
+        } else {
+            return timeA - timeB;
+        }
     },
     stringSortRule: function stringSortRule(a, b) {
-        if (typeof a !== 'string' || typeof b !== 'string') return typeof a !== 'string' ? 1 : -1;else if (a < b) return -1;else if (a == b) return 0;else return 1;
+        if (typeof a !== 'string' || typeof b !== 'string') {
+            return typeof a !== 'string' ? 1 : -1;
+        } else if (a < b) {
+            return -1;
+        } else if (a == b) {
+            return 0;
+        } else return 1;
     },
     dateFormatString: function dateFormatString(data, format) {
         var dateVal = new Date(data);
@@ -343,7 +359,7 @@ exports.default = {
                 val = String(val);
                 len = len || 2;
                 while (val.length < len) {
-                    val = "0" + val;
+                    val = '0' + val;
                 }return val;
             };
 
@@ -352,32 +368,32 @@ exports.default = {
                 var dF = dateFormat;
 
                 // You can't provide utc if you skip other args (use the "UTC:" mask prefix)
-                if (arguments.length == 1 && Object.prototype.toString.call(date) == "[object String]" && !/\d/.test(date)) {
+                if (arguments.length == 1 && Object.prototype.toString.call(date) == '[object String]' && !/\d/.test(date)) {
                     mask = date;
                     date = undefined;
                 }
 
                 // Passing date through Date applies Date.parse, if necessary
                 date = date ? new Date(date) : new Date();
-                if (isNaN(date)) throw SyntaxError("invalid date");
+                if (isNaN(date)) throw SyntaxError('invalid date');
 
-                mask = String(dF.masks[mask] || mask || dF.masks["default"]);
+                mask = String(dF.masks[mask] || mask || dF.masks.default);
 
                 // Allow setting the utc argument via the mask
-                if (mask.slice(0, 4) == "UTC:") {
+                if (mask.slice(0, 4) == 'UTC:') {
                     mask = mask.slice(4);
                     utc = true;
                 }
 
-                var _ = utc ? "getUTC" : "get",
-                    d = date[_ + "Date"](),
-                    D = date[_ + "Day"](),
-                    m = date[_ + "Month"](),
-                    y = date[_ + "FullYear"](),
-                    H = date[_ + "Hours"](),
-                    M = date[_ + "Minutes"](),
-                    s = date[_ + "Seconds"](),
-                    L = date[_ + "Milliseconds"](),
+                var _ = utc ? 'getUTC' : 'get',
+                    d = date[_ + 'Date'](),
+                    D = date[_ + 'Day'](),
+                    m = date[_ + 'Month'](),
+                    y = date[_ + 'FullYear'](),
+                    H = date[_ + 'Hours'](),
+                    M = date[_ + 'Minutes'](),
+                    s = date[_ + 'Seconds'](),
+                    L = date[_ + 'Milliseconds'](),
                     o = utc ? 0 : date.getTimezoneOffset(),
                     flags = {
                     d: d,
@@ -400,13 +416,13 @@ exports.default = {
                     ss: pad(s),
                     l: pad(L, 3),
                     L: pad(L > 99 ? Math.round(L / 10) : L),
-                    t: H < 12 ? "a" : "p",
-                    tt: H < 12 ? "am" : "pm",
-                    T: H < 12 ? "A" : "P",
-                    TT: H < 12 ? "AM" : "PM",
-                    Z: utc ? "UTC" : (String(date).match(timezone) || [""]).pop().replace(timezoneClip, ""),
-                    o: (o > 0 ? "-" : "+") + pad(Math.floor(Math.abs(o) / 60) * 100 + Math.abs(o) % 60, 4),
-                    S: ["th", "st", "nd", "rd"][d % 10 > 3 ? 0 : (d % 100 - d % 10 != 10) * d % 10]
+                    t: H < 12 ? 'a' : 'p',
+                    tt: H < 12 ? 'am' : 'pm',
+                    T: H < 12 ? 'A' : 'P',
+                    TT: H < 12 ? 'AM' : 'PM',
+                    Z: utc ? 'UTC' : (String(date).match(timezone) || ['']).pop().replace(timezoneClip, ''),
+                    o: (o > 0 ? '-' : '+') + pad(Math.floor(Math.abs(o) / 60) * 100 + Math.abs(o) % 60, 4),
+                    S: ['th', 'st', 'nd', 'rd'][d % 10 > 3 ? 0 : (d % 100 - d % 10 != 10) * d % 10]
                 };
 
                 return mask.replace(token, function ($0) {
@@ -417,24 +433,24 @@ exports.default = {
 
         // Some common format strings
         dateFormat.masks = {
-            "default": "ddd mmm dd yyyy HH:MM:ss",
-            shortDate: "m/d/yy",
-            mediumDate: "mmm d, yyyy",
-            longDate: "mmmm d, yyyy",
-            fullDate: "dddd, mmmm d, yyyy",
-            shortTime: "h:MM TT",
-            mediumTime: "h:MM:ss TT",
-            longTime: "h:MM:ss TT Z",
-            isoDate: "yyyy-mm-dd",
-            isoTime: "HH:MM:ss",
-            isoDateTime: "yyyy-mm-dd'T'HH:MM:ss",
-            isoUtcDateTime: "UTC:yyyy-mm-dd'T'HH:MM:ss'Z'"
+            'default': 'ddd mmm dd yyyy HH:MM:ss',
+            shortDate: 'm/d/yy',
+            mediumDate: 'mmm d, yyyy',
+            longDate: 'mmmm d, yyyy',
+            fullDate: 'dddd, mmmm d, yyyy',
+            shortTime: 'h:MM TT',
+            mediumTime: 'h:MM:ss TT',
+            longTime: 'h:MM:ss TT Z',
+            isoDate: 'yyyy-mm-dd',
+            isoTime: 'HH:MM:ss',
+            isoDateTime: 'yyyy-mm-dd\'T\'HH:MM:ss',
+            isoUtcDateTime: 'UTC:yyyy-mm-dd\'T\'HH:MM:ss\'Z\''
         };
 
         // Internationalization strings
         dateFormat.i18n = {
-            dayNames: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-            monthNames: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+            dayNames: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+            monthNames: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
         };
         return dateFormat(dateVal, format);
     },
@@ -905,7 +921,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _columnHelper2 = __webpack_require__(65);
+var _columnHelper2 = __webpack_require__(66);
 
 var _columnHelper3 = _interopRequireDefault(_columnHelper2);
 
@@ -1454,7 +1470,7 @@ var _chartOptionBuilder = __webpack_require__(34);
 
 var _chartOptionBuilder2 = _interopRequireDefault(_chartOptionBuilder);
 
-var _decoratorRegister = __webpack_require__(73);
+var _decoratorRegister = __webpack_require__(74);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1825,7 +1841,7 @@ var _optionUtils = __webpack_require__(1);
 
 var _optionUtils2 = _interopRequireDefault(_optionUtils);
 
-var _chartValidator = __webpack_require__(64);
+var _chartValidator = __webpack_require__(65);
 
 var _chartValidator2 = _interopRequireDefault(_chartValidator);
 
@@ -3959,7 +3975,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _baseError = __webpack_require__(63);
+var _baseError = __webpack_require__(64);
 
 var _baseError2 = _interopRequireDefault(_baseError);
 
@@ -4243,7 +4259,7 @@ Object.keys(_legend).forEach(function (key) {
   });
 });
 
-var _pagination = __webpack_require__(71);
+var _pagination = __webpack_require__(72);
 
 Object.keys(_pagination).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
@@ -4255,7 +4271,7 @@ Object.keys(_pagination).forEach(function (key) {
   });
 });
 
-var _title = __webpack_require__(70);
+var _title = __webpack_require__(71);
 
 Object.keys(_title).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
@@ -5105,7 +5121,7 @@ var _decorator = __webpack_require__(0);
 
 var _decorator2 = _interopRequireDefault(_decorator);
 
-var _utils = __webpack_require__(138);
+var _utils = __webpack_require__(47);
 
 var _optionUtils = __webpack_require__(1);
 
@@ -5255,7 +5271,7 @@ var _echartsAxisTypeOptionBuilder = __webpack_require__(13);
 
 var _echartsAxisTypeOptionBuilder2 = _interopRequireDefault(_echartsAxisTypeOptionBuilder);
 
-var _echartsPointByrowindexExtractor = __webpack_require__(47);
+var _echartsPointByrowindexExtractor = __webpack_require__(48);
 
 var _echartsPointByrowindexExtractor2 = _interopRequireDefault(_echartsPointByrowindexExtractor);
 
@@ -5369,7 +5385,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.donut = exports.map = exports.treemap = exports.table = exports.scatter = exports.roccurve = exports.qqplot = exports.pie = exports.pairwiseScatter = exports.network = exports.line = exports.histogram = exports.heatmapMatrix = exports.heatmap = exports.dendrogram = exports.decisiontree = exports.complex = exports.columnStacked100 = exports.columnStacked = exports.column = exports.card = exports.bubble = exports.boxplot = exports.biplot = exports.barStacked100 = exports.barStacked = exports.bar = exports.areaStacked100 = exports.areaStacked = exports.area = undefined;
 
-var _bchartArea = __webpack_require__(62);
+var _bchartArea = __webpack_require__(63);
 
 var _bchartArea2 = _interopRequireDefault(_bchartArea);
 
@@ -5409,7 +5425,7 @@ var _bchartCard = __webpack_require__(319);
 
 var _bchartCard2 = _interopRequireDefault(_bchartCard);
 
-var _bchartColumn = __webpack_require__(54);
+var _bchartColumn = __webpack_require__(55);
 
 var _bchartColumn2 = _interopRequireDefault(_bchartColumn);
 
@@ -5742,6 +5758,72 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+exports.range = range;
+exports.zip = zip;
+exports.isUndefined = isUndefined;
+exports.negate = negate;
+exports.compact = compact;
+exports.first = first;
+exports.isNull = isNull;
+/* -----------------------------------------------------
+ *  utils.js
+ *  Created by hyunseok.oh@samsung.com on 2018-08-17.
+ * ---------------------------------------------------- */
+
+function _range(from, to) {
+    var res = [];
+    for (var i = from; i < to; ++i) {
+        res.push(i);
+    }
+    return res;
+}
+
+function range(a, b) {
+    if (arguments.length > 1) return _range(a, b);
+    return _range(0, a);
+}
+
+function zip(a, b) {
+    return range(parseInt(Math.max(a.length, b.length))).map(function (i) {
+        return [a[i], b[i]];
+    });
+}
+
+function isUndefined(a) {
+    return typeof a === 'undefined';
+}
+
+function negate(a) {
+    return function () {
+        return !a.apply(undefined, arguments);
+    };
+}
+
+function compact(a) {
+    return a.filter(negate(isUndefined));
+}
+
+function first(a) {
+    return a[0];
+}
+
+function isNull(a) {
+    return !a && (typeof a === 'undefined' ? 'undefined' : _typeof(a)) === 'object';
+}
+
+/***/ }),
+/* 48 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
 var _echartsExtractor = __webpack_require__(29);
 
 var _echartsExtractor2 = _interopRequireDefault(_echartsExtractor);
@@ -5781,7 +5863,7 @@ PointByRowIndexDataExtractor.prototype.extract = function () {
 exports.default = PointByRowIndexDataExtractor;
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5848,7 +5930,7 @@ EChartsAxisTypeWithCategoryKeyOptionBuilder.prototype._newSeriesExtractor = func
 exports.default = EChartsAxisTypeWithCategoryKeyOptionBuilder;
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5914,7 +5996,7 @@ EChartsAreaCalculatedOptionBuilder.prototype.getSeriesKeyColumns = function () {
 exports.default = EChartsAreaCalculatedOptionBuilder;
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5990,7 +6072,7 @@ EChartsBarCalculatedOptionBuilder.prototype.getSeriesKeyColumns = function () {
 exports.default = EChartsBarCalculatedOptionBuilder;
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6041,7 +6123,7 @@ EChartsScatterCalculatedOptionBuilder.prototype.getSeriesKeyColumns = function (
 exports.default = EChartsScatterCalculatedOptionBuilder;
 
 /***/ }),
-/* 52 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6071,7 +6153,7 @@ var _echartsScatterByrowindexOptionBuilder = __webpack_require__(43);
 
 var _echartsScatterByrowindexOptionBuilder2 = _interopRequireDefault(_echartsScatterByrowindexOptionBuilder);
 
-var _echartsScatterCalculatedOptionBuilder = __webpack_require__(51);
+var _echartsScatterCalculatedOptionBuilder = __webpack_require__(52);
 
 var _echartsScatterCalculatedOptionBuilder2 = _interopRequireDefault(_echartsScatterCalculatedOptionBuilder);
 
@@ -6146,7 +6228,7 @@ EChartsScatter.prototype.getSeriesHelper = function () {
 exports.default = EChartsScatter;
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6215,7 +6297,7 @@ AggregationDataExtractor.prototype.extract = function (operator) {
 exports.default = AggregationDataExtractor;
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6310,13 +6392,13 @@ BColumnCharts.Attr = {
 exports.default = BColumnCharts;
 
 /***/ }),
-/* 55 */,
 /* 56 */,
 /* 57 */,
 /* 58 */,
 /* 59 */,
 /* 60 */,
-/* 61 */
+/* 61 */,
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6528,7 +6610,7 @@ BCharts.prototype._registerAPI = function () {
 exports.default = BCharts;
 
 /***/ }),
-/* 62 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6626,7 +6708,7 @@ BAreaCharts.Attr = {
 exports.default = BAreaCharts;
 
 /***/ }),
-/* 63 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6655,7 +6737,7 @@ BaseError.prototype.constructor = BaseError;
 exports.default = BaseError;
 
 /***/ }),
-/* 64 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6669,7 +6751,7 @@ var _chartValidatorBase = __webpack_require__(7);
 
 var _chartValidatorBase2 = _interopRequireDefault(_chartValidatorBase);
 
-var _chartValidatorRegister = __webpack_require__(66);
+var _chartValidatorRegister = __webpack_require__(67);
 
 var ChartValidatorRegister = _interopRequireWildcard(_chartValidatorRegister);
 
@@ -6703,7 +6785,7 @@ ChartValidator.prototype.getWarning = function () {
 exports.default = ChartValidator;
 
 /***/ }),
-/* 65 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6754,7 +6836,7 @@ ColumnHelper.prototype.getColumnConf = function () {
 exports.default = ColumnHelper;
 
 /***/ }),
-/* 66 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6815,7 +6897,7 @@ function createChartValidator(chartType, options) {
 }
 
 /***/ }),
-/* 67 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6860,7 +6942,7 @@ AreaStackedChartValidator.prototype.validateStripLineType = function (dataIdx) {
 exports.default = AreaStackedChartValidator;
 
 /***/ }),
-/* 68 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6911,7 +6993,7 @@ BarStackedChartValidator.prototype.validateScale = function (dataIdx) {
 exports.default = BarStackedChartValidator;
 
 /***/ }),
-/* 69 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6961,7 +7043,7 @@ ColumnStackedChartValidator.prototype.validateScale = function (dataIdx) {
 exports.default = ColumnStackedChartValidator;
 
 /***/ }),
-/* 70 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7194,7 +7276,7 @@ Title.prototype._adjustPosition = function (position, outerWidth, outerHeight) {
 exports.Title = Title;
 
 /***/ }),
-/* 71 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7452,7 +7534,7 @@ Pagination.prototype.hide = function () {
 exports.Pagination = Pagination;
 
 /***/ }),
-/* 72 */
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7474,7 +7556,7 @@ var _echartsAreaOptionBuilder = __webpack_require__(143);
 
 var _echartsAreaOptionBuilder2 = _interopRequireDefault(_echartsAreaOptionBuilder);
 
-var _echartsAreaCalculatedOptionBuilder = __webpack_require__(49);
+var _echartsAreaCalculatedOptionBuilder = __webpack_require__(50);
 
 var _echartsAreaCalculatedOptionBuilder2 = _interopRequireDefault(_echartsAreaCalculatedOptionBuilder);
 
@@ -7515,7 +7597,7 @@ EChartsArea.prototype.getLegendData = function () {
 exports.default = EChartsArea;
 
 /***/ }),
-/* 73 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7527,7 +7609,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.getDecorator = getDecorator;
 exports.createDecorator = createDecorator;
 
-var _decoratorIndex = __webpack_require__(74);
+var _decoratorIndex = __webpack_require__(75);
 
 var DecoratorFunc = _interopRequireWildcard(_decoratorIndex);
 
@@ -7560,7 +7642,7 @@ function createDecorator(decoratorType, builder, options) {
 }
 
 /***/ }),
-/* 74 */
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7571,23 +7653,23 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.TooltipTriggerForceItemDecorator = exports.tooltipBubbleCalculated = exports.trendline = exports.axisRange = exports.yAxisScaleFalse = exports.yAxisMin0Max100 = exports.yAxisMin0 = exports.xAxisScaleFalse = exports.xAxisRangeForHistogram = exports.xAxisMin0Max100 = exports.xAxisMin0 = exports.xAxisBoundaryGapFalse = exports.visualMap = exports.tooltipYAxisPercent = exports.tooltipYAxis = exports.tooltipXAxisPercent = exports.tooltipTriggerAxis = exports.tooltipMap = exports.tooltipTreemap = exports.tooltipQQPlot = exports.tooltipPie = exports.tooltipPieCalculated = exports.tooltipPairwiseScatter = exports.tooltipItemCalculated = exports.tooltipHistogram = exports.tooltipHeatmapMatrix = exports.tooltipHeatmap = exports.tooltipDendrogram = exports.tooltip = exports.tooltipComplex = exports.tooltipByRowIndex = exports.tooltipByColumnNames = exports.tooltipBubble = exports.tooltipBoxPlot = exports.tooltipBoxPlotByColumnNames = exports.tooltipAxisPointerShadow = exports.tooltipAxisPointerY = exports.tooltipAxisCalculated = exports.stripline = exports.seriesStacked = exports.seriesStacked100 = exports.seriesNameSet = exports.plotOptions = exports.pairwiseGrid = exports.pairwiseAxis = exports.mapStyle = exports.marker = exports.markerByType = exports.lineStyle = exports.lineBy = exports.itemOpacity7 = exports.dataZoom = exports.fillXCategoryValues = exports.xAxisFilterZoomMode = exports.bubbleSize = exports.brushRemoval = exports.brush = exports.boxPlotSeparateColorDecorator = exports.boxPlotByColumnNamesAxisDecorator = exports.axisLineOnZeroTrue = exports.axisLineOnZeroFalse = exports.axisTypeWithCategoryY = exports.axisTypeWithCategoryX = exports.axisTypeWithCategoryXY = exports.axisTypeValue = exports.axisTypeForDendrogram = exports.axisType = exports.axisTypeByRowIndex = exports.axisTypeByColumnNames = exports.axisRemoval = exports.axisLabelFormatter = exports.axisHidden = undefined;
 
-var _axisHiddenDecorator = __webpack_require__(75);
+var _axisHiddenDecorator = __webpack_require__(76);
 
 var _axisHiddenDecorator2 = _interopRequireDefault(_axisHiddenDecorator);
 
-var _axisLabelFormatterDecorator = __webpack_require__(76);
+var _axisLabelFormatterDecorator = __webpack_require__(77);
 
 var _axisLabelFormatterDecorator2 = _interopRequireDefault(_axisLabelFormatterDecorator);
 
-var _axisRemovalDecorator = __webpack_require__(77);
+var _axisRemovalDecorator = __webpack_require__(78);
 
 var _axisRemovalDecorator2 = _interopRequireDefault(_axisRemovalDecorator);
 
-var _axisTypeBycolumnnamesDecorator = __webpack_require__(78);
+var _axisTypeBycolumnnamesDecorator = __webpack_require__(79);
 
 var _axisTypeBycolumnnamesDecorator2 = _interopRequireDefault(_axisTypeBycolumnnamesDecorator);
 
-var _axisTypeByrowindexDecorator = __webpack_require__(79);
+var _axisTypeByrowindexDecorator = __webpack_require__(80);
 
 var _axisTypeByrowindexDecorator2 = _interopRequireDefault(_axisTypeByrowindexDecorator);
 
@@ -7595,151 +7677,151 @@ var _axisTypeDecorator = __webpack_require__(28);
 
 var _axisTypeDecorator2 = _interopRequireDefault(_axisTypeDecorator);
 
-var _axisTypeForDendrogramDecorator = __webpack_require__(80);
+var _axisTypeForDendrogramDecorator = __webpack_require__(81);
 
 var _axisTypeForDendrogramDecorator2 = _interopRequireDefault(_axisTypeForDendrogramDecorator);
 
-var _axisTypeValueDecorator = __webpack_require__(81);
+var _axisTypeValueDecorator = __webpack_require__(82);
 
 var _axisTypeValueDecorator2 = _interopRequireDefault(_axisTypeValueDecorator);
 
-var _axisTypeWithCategoryDecorator = __webpack_require__(82);
+var _axisTypeWithCategoryDecorator = __webpack_require__(83);
 
 var _axisTypeWithCategoryDecorator2 = _interopRequireDefault(_axisTypeWithCategoryDecorator);
 
-var _axisTypeWithCategoryXDecorator = __webpack_require__(83);
+var _axisTypeWithCategoryXDecorator = __webpack_require__(84);
 
 var _axisTypeWithCategoryXDecorator2 = _interopRequireDefault(_axisTypeWithCategoryXDecorator);
 
-var _axisTypeWithCategoryYDecorator = __webpack_require__(84);
+var _axisTypeWithCategoryYDecorator = __webpack_require__(85);
 
 var _axisTypeWithCategoryYDecorator2 = _interopRequireDefault(_axisTypeWithCategoryYDecorator);
 
-var _axislineOnzeroFalseDecorator = __webpack_require__(85);
+var _axislineOnzeroFalseDecorator = __webpack_require__(86);
 
 var _axislineOnzeroFalseDecorator2 = _interopRequireDefault(_axislineOnzeroFalseDecorator);
 
-var _axislineOnzeroTrueDecorator = __webpack_require__(86);
+var _axislineOnzeroTrueDecorator = __webpack_require__(87);
 
 var _axislineOnzeroTrueDecorator2 = _interopRequireDefault(_axislineOnzeroTrueDecorator);
 
-var _boxplotBycolumnnamesAxisDecorator = __webpack_require__(87);
+var _boxplotBycolumnnamesAxisDecorator = __webpack_require__(88);
 
 var _boxplotBycolumnnamesAxisDecorator2 = _interopRequireDefault(_boxplotBycolumnnamesAxisDecorator);
 
-var _boxplotSeparateColorDecorator = __webpack_require__(88);
+var _boxplotSeparateColorDecorator = __webpack_require__(89);
 
 var _boxplotSeparateColorDecorator2 = _interopRequireDefault(_boxplotSeparateColorDecorator);
 
-var _brushDecorator = __webpack_require__(89);
+var _brushDecorator = __webpack_require__(90);
 
 var _brushDecorator2 = _interopRequireDefault(_brushDecorator);
 
-var _brushRemovalDecorator = __webpack_require__(90);
+var _brushRemovalDecorator = __webpack_require__(91);
 
 var _brushRemovalDecorator2 = _interopRequireDefault(_brushRemovalDecorator);
 
-var _bubbleSizeDecorator = __webpack_require__(91);
+var _bubbleSizeDecorator = __webpack_require__(92);
 
 var _bubbleSizeDecorator2 = _interopRequireDefault(_bubbleSizeDecorator);
 
-var _complexDatazoomDecorator = __webpack_require__(92);
+var _complexDatazoomDecorator = __webpack_require__(93);
 
 var _complexDatazoomDecorator2 = _interopRequireDefault(_complexDatazoomDecorator);
 
-var _fillXCategoryValuesDecorator = __webpack_require__(93);
+var _fillXCategoryValuesDecorator = __webpack_require__(94);
 
 var _fillXCategoryValuesDecorator2 = _interopRequireDefault(_fillXCategoryValuesDecorator);
 
-var _heatmapDatazoomDecorator = __webpack_require__(94);
+var _heatmapDatazoomDecorator = __webpack_require__(95);
 
 var _heatmapDatazoomDecorator2 = _interopRequireDefault(_heatmapDatazoomDecorator);
 
-var _itemOpacity = __webpack_require__(95);
+var _itemOpacity = __webpack_require__(96);
 
 var _itemOpacity2 = _interopRequireDefault(_itemOpacity);
 
-var _lineByDecorator = __webpack_require__(96);
+var _lineByDecorator = __webpack_require__(97);
 
 var _lineByDecorator2 = _interopRequireDefault(_lineByDecorator);
 
-var _lineStyleDecorator = __webpack_require__(97);
+var _lineStyleDecorator = __webpack_require__(98);
 
 var _lineStyleDecorator2 = _interopRequireDefault(_lineStyleDecorator);
 
-var _markerByTypeDecorator = __webpack_require__(98);
+var _markerByTypeDecorator = __webpack_require__(99);
 
 var _markerByTypeDecorator2 = _interopRequireDefault(_markerByTypeDecorator);
 
-var _markerDecorator = __webpack_require__(99);
+var _markerDecorator = __webpack_require__(100);
 
 var _markerDecorator2 = _interopRequireDefault(_markerDecorator);
 
-var _mapStyleDecorator = __webpack_require__(100);
+var _mapStyleDecorator = __webpack_require__(101);
 
 var _mapStyleDecorator2 = _interopRequireDefault(_mapStyleDecorator);
 
-var _pairwiseAxisDecorator = __webpack_require__(101);
+var _pairwiseAxisDecorator = __webpack_require__(102);
 
 var _pairwiseAxisDecorator2 = _interopRequireDefault(_pairwiseAxisDecorator);
 
-var _pairwiseGridDecorator = __webpack_require__(102);
+var _pairwiseGridDecorator = __webpack_require__(103);
 
 var _pairwiseGridDecorator2 = _interopRequireDefault(_pairwiseGridDecorator);
 
-var _plotOptionsDecorator = __webpack_require__(103);
+var _plotOptionsDecorator = __webpack_require__(104);
 
 var _plotOptionsDecorator2 = _interopRequireDefault(_plotOptionsDecorator);
 
-var _seriesNameSetDecorator = __webpack_require__(104);
+var _seriesNameSetDecorator = __webpack_require__(105);
 
 var _seriesNameSetDecorator2 = _interopRequireDefault(_seriesNameSetDecorator);
 
-var _seriesStacked100Decorator = __webpack_require__(105);
+var _seriesStacked100Decorator = __webpack_require__(106);
 
 var _seriesStacked100Decorator2 = _interopRequireDefault(_seriesStacked100Decorator);
 
-var _seriesStackedDecorator = __webpack_require__(106);
+var _seriesStackedDecorator = __webpack_require__(107);
 
 var _seriesStackedDecorator2 = _interopRequireDefault(_seriesStackedDecorator);
 
-var _striplineDecorator = __webpack_require__(107);
+var _striplineDecorator = __webpack_require__(108);
 
 var _striplineDecorator2 = _interopRequireDefault(_striplineDecorator);
 
-var _tooltipAxisCalculatedDecorator = __webpack_require__(108);
+var _tooltipAxisCalculatedDecorator = __webpack_require__(109);
 
 var _tooltipAxisCalculatedDecorator2 = _interopRequireDefault(_tooltipAxisCalculatedDecorator);
 
-var _tooltipAxisPointerYDecorator = __webpack_require__(109);
+var _tooltipAxisPointerYDecorator = __webpack_require__(110);
 
 var _tooltipAxisPointerYDecorator2 = _interopRequireDefault(_tooltipAxisPointerYDecorator);
 
-var _tooltipAxispointerShadowDecorator = __webpack_require__(110);
+var _tooltipAxispointerShadowDecorator = __webpack_require__(111);
 
 var _tooltipAxispointerShadowDecorator2 = _interopRequireDefault(_tooltipAxispointerShadowDecorator);
 
-var _tooltipBoxplotBycolumnnamesDecorator = __webpack_require__(111);
+var _tooltipBoxplotBycolumnnamesDecorator = __webpack_require__(112);
 
 var _tooltipBoxplotBycolumnnamesDecorator2 = _interopRequireDefault(_tooltipBoxplotBycolumnnamesDecorator);
 
-var _tooltipBoxplotDecorator = __webpack_require__(112);
+var _tooltipBoxplotDecorator = __webpack_require__(113);
 
 var _tooltipBoxplotDecorator2 = _interopRequireDefault(_tooltipBoxplotDecorator);
 
-var _tooltipBubbleDecorator = __webpack_require__(113);
+var _tooltipBubbleDecorator = __webpack_require__(114);
 
 var _tooltipBubbleDecorator2 = _interopRequireDefault(_tooltipBubbleDecorator);
 
-var _tooltipBycolumnnamesDecorator = __webpack_require__(114);
+var _tooltipBycolumnnamesDecorator = __webpack_require__(115);
 
 var _tooltipBycolumnnamesDecorator2 = _interopRequireDefault(_tooltipBycolumnnamesDecorator);
 
-var _tooltipByrowindexDecorator = __webpack_require__(115);
+var _tooltipByrowindexDecorator = __webpack_require__(116);
 
 var _tooltipByrowindexDecorator2 = _interopRequireDefault(_tooltipByrowindexDecorator);
 
-var _tooltipComplexDecorator = __webpack_require__(116);
+var _tooltipComplexDecorator = __webpack_require__(117);
 
 var _tooltipComplexDecorator2 = _interopRequireDefault(_tooltipComplexDecorator);
 
@@ -7747,31 +7829,31 @@ var _tooltipDecorator = __webpack_require__(4);
 
 var _tooltipDecorator2 = _interopRequireDefault(_tooltipDecorator);
 
-var _tooltipDendrogramDecorator = __webpack_require__(117);
+var _tooltipDendrogramDecorator = __webpack_require__(118);
 
 var _tooltipDendrogramDecorator2 = _interopRequireDefault(_tooltipDendrogramDecorator);
 
-var _tooltipHeatmapDecorator = __webpack_require__(118);
+var _tooltipHeatmapDecorator = __webpack_require__(119);
 
 var _tooltipHeatmapDecorator2 = _interopRequireDefault(_tooltipHeatmapDecorator);
 
-var _tooltipHeatmapMatrixDecorator = __webpack_require__(119);
+var _tooltipHeatmapMatrixDecorator = __webpack_require__(120);
 
 var _tooltipHeatmapMatrixDecorator2 = _interopRequireDefault(_tooltipHeatmapMatrixDecorator);
 
-var _tooltipHistogramDecorator = __webpack_require__(120);
+var _tooltipHistogramDecorator = __webpack_require__(121);
 
 var _tooltipHistogramDecorator2 = _interopRequireDefault(_tooltipHistogramDecorator);
 
-var _tooltipItemCalculatedDecorator = __webpack_require__(121);
+var _tooltipItemCalculatedDecorator = __webpack_require__(122);
 
 var _tooltipItemCalculatedDecorator2 = _interopRequireDefault(_tooltipItemCalculatedDecorator);
 
-var _tooltipPairwiseScatterDecorator = __webpack_require__(122);
+var _tooltipPairwiseScatterDecorator = __webpack_require__(123);
 
 var _tooltipPairwiseScatterDecorator2 = _interopRequireDefault(_tooltipPairwiseScatterDecorator);
 
-var _tooltipPieCalculatedDecorator = __webpack_require__(123);
+var _tooltipPieCalculatedDecorator = __webpack_require__(124);
 
 var _tooltipPieCalculatedDecorator2 = _interopRequireDefault(_tooltipPieCalculatedDecorator);
 
@@ -7779,15 +7861,15 @@ var _tooltipPieDecorator = __webpack_require__(40);
 
 var _tooltipPieDecorator2 = _interopRequireDefault(_tooltipPieDecorator);
 
-var _tooltipQqplotDecorator = __webpack_require__(124);
+var _tooltipQqplotDecorator = __webpack_require__(125);
 
 var _tooltipQqplotDecorator2 = _interopRequireDefault(_tooltipQqplotDecorator);
 
-var _tooltipTreemapDecorator = __webpack_require__(125);
+var _tooltipTreemapDecorator = __webpack_require__(126);
 
 var _tooltipTreemapDecorator2 = _interopRequireDefault(_tooltipTreemapDecorator);
 
-var _tooltipMapDecorator = __webpack_require__(126);
+var _tooltipMapDecorator = __webpack_require__(127);
 
 var _tooltipMapDecorator2 = _interopRequireDefault(_tooltipMapDecorator);
 
@@ -7795,7 +7877,7 @@ var _tooltipTriggerAxisDecorator = __webpack_require__(39);
 
 var _tooltipTriggerAxisDecorator2 = _interopRequireDefault(_tooltipTriggerAxisDecorator);
 
-var _tooltipXaxisPercentDecorator = __webpack_require__(127);
+var _tooltipXaxisPercentDecorator = __webpack_require__(128);
 
 var _tooltipXaxisPercentDecorator2 = _interopRequireDefault(_tooltipXaxisPercentDecorator);
 
@@ -7803,43 +7885,43 @@ var _tooltipYaxisDecorator = __webpack_require__(41);
 
 var _tooltipYaxisDecorator2 = _interopRequireDefault(_tooltipYaxisDecorator);
 
-var _tooltipYaxisPercentDecorator = __webpack_require__(128);
+var _tooltipYaxisPercentDecorator = __webpack_require__(129);
 
 var _tooltipYaxisPercentDecorator2 = _interopRequireDefault(_tooltipYaxisPercentDecorator);
 
-var _visualmapDecorator = __webpack_require__(129);
+var _visualmapDecorator = __webpack_require__(130);
 
 var _visualmapDecorator2 = _interopRequireDefault(_visualmapDecorator);
 
-var _xaxisBoundarygapFalseDecorator = __webpack_require__(130);
+var _xaxisBoundarygapFalseDecorator = __webpack_require__(131);
 
 var _xaxisBoundarygapFalseDecorator2 = _interopRequireDefault(_xaxisBoundarygapFalseDecorator);
 
-var _xaxisMin0Decorator = __webpack_require__(131);
+var _xaxisMin0Decorator = __webpack_require__(132);
 
 var _xaxisMin0Decorator2 = _interopRequireDefault(_xaxisMin0Decorator);
 
-var _xaxisMin0Max100Decorator = __webpack_require__(132);
+var _xaxisMin0Max100Decorator = __webpack_require__(133);
 
 var _xaxisMin0Max100Decorator2 = _interopRequireDefault(_xaxisMin0Max100Decorator);
 
-var _xaxisRangeForHistogramDecorator = __webpack_require__(133);
+var _xaxisRangeForHistogramDecorator = __webpack_require__(134);
 
 var _xaxisRangeForHistogramDecorator2 = _interopRequireDefault(_xaxisRangeForHistogramDecorator);
 
-var _xaxisScaleFalseDecorator = __webpack_require__(134);
+var _xaxisScaleFalseDecorator = __webpack_require__(135);
 
 var _xaxisScaleFalseDecorator2 = _interopRequireDefault(_xaxisScaleFalseDecorator);
 
-var _yaxisMin0Decorator = __webpack_require__(135);
+var _yaxisMin0Decorator = __webpack_require__(136);
 
 var _yaxisMin0Decorator2 = _interopRequireDefault(_yaxisMin0Decorator);
 
-var _yaxisMin0Max100Decorator = __webpack_require__(136);
+var _yaxisMin0Max100Decorator = __webpack_require__(137);
 
 var _yaxisMin0Max100Decorator2 = _interopRequireDefault(_yaxisMin0Max100Decorator);
 
-var _yaxisScaleFalseDecorator = __webpack_require__(137);
+var _yaxisScaleFalseDecorator = __webpack_require__(138);
 
 var _yaxisScaleFalseDecorator2 = _interopRequireDefault(_yaxisScaleFalseDecorator);
 
@@ -7938,7 +8020,7 @@ exports.tooltipBubbleCalculated = _tooltipBubbleCalculatedDecorator2.default;
 exports.TooltipTriggerForceItemDecorator = _tooltipTriggerForceItemDecorator2.default;
 
 /***/ }),
-/* 75 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7986,7 +8068,7 @@ AxisHiddenDecorator.prototype.decorate = function () {
 exports.default = AxisHiddenDecorator;
 
 /***/ }),
-/* 76 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8032,7 +8114,7 @@ AxisLabelFormatterDecorator.prototype._setFmtFunc = function (axisNm) {
 exports.default = AxisLabelFormatterDecorator;
 
 /***/ }),
-/* 77 */
+/* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8063,7 +8145,7 @@ AxisRemovalDecorator.prototype.decorate = function () {
 exports.default = AxisRemovalDecorator;
 
 /***/ }),
-/* 78 */
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8095,7 +8177,7 @@ AxisTypeByColumnNamesDecorator.prototype.decorate = function () {
 exports.default = AxisTypeByColumnNamesDecorator;
 
 /***/ }),
-/* 79 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8125,7 +8207,7 @@ AxisTypeByRowIndexDecorator.prototype.decorate = function () {
 exports.default = AxisTypeByRowIndexDecorator;
 
 /***/ }),
-/* 80 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8156,7 +8238,7 @@ AxisTypeForDendrogram.prototype.decorate = function () {
 exports.default = AxisTypeForDendrogram;
 
 /***/ }),
-/* 81 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8187,7 +8269,7 @@ AxisTypeValueDecorator.prototype.decorate = function () {
 exports.default = AxisTypeValueDecorator;
 
 /***/ }),
-/* 82 */
+/* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8263,7 +8345,7 @@ AxisTypeWithCategoryDecorator.prototype.setAxisType = function () {
 exports.default = AxisTypeWithCategoryDecorator;
 
 /***/ }),
-/* 83 */
+/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8300,7 +8382,7 @@ AxisTypeWithCategoryXDecorator.prototype.setAxisType = function () {
 exports.default = AxisTypeWithCategoryXDecorator;
 
 /***/ }),
-/* 84 */
+/* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8339,7 +8421,7 @@ AxisTypeWithCategoryYDecorator.prototype.setAxisType = function () {
 exports.default = AxisTypeWithCategoryYDecorator;
 
 /***/ }),
-/* 85 */
+/* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8370,7 +8452,7 @@ AxisLineOnZeroFalseDecorator.prototype.decorate = function () {
 exports.default = AxisLineOnZeroFalseDecorator;
 
 /***/ }),
-/* 86 */
+/* 87 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8401,7 +8483,7 @@ AxisLineOnZeroTrueDecorator.prototype.decorate = function () {
 exports.default = AxisLineOnZeroTrueDecorator;
 
 /***/ }),
-/* 87 */
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8441,7 +8523,7 @@ BoxPlotByColumnNamesAxisDecorator.prototype.decorate = function () {
 exports.default = BoxPlotByColumnNamesAxisDecorator;
 
 /***/ }),
-/* 88 */
+/* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8508,7 +8590,7 @@ BoxPlotSeparateColorDecorator.prototype._separateOutlierColor = function (series
 exports.default = BoxPlotSeparateColorDecorator;
 
 /***/ }),
-/* 89 */
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8546,7 +8628,7 @@ BrushDecorator.prototype.decorate = function () {
 exports.default = BrushDecorator;
 
 /***/ }),
-/* 90 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8576,7 +8658,7 @@ BrushRemovalDecorator.prototype.decorate = function () {
 exports.default = BrushRemovalDecorator;
 
 /***/ }),
-/* 91 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8633,7 +8715,7 @@ BubbleSizeDecorator.prototype.decorate = function () {
 exports.default = BubbleSizeDecorator;
 
 /***/ }),
-/* 92 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8668,7 +8750,7 @@ ComplexDataZoomDecorator.prototype.decorate = function () {
 exports.default = ComplexDataZoomDecorator;
 
 /***/ }),
-/* 93 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8721,7 +8803,7 @@ FillXCategoryValuesDecorator.prototype.decorate = function () {
 exports.default = FillXCategoryValuesDecorator;
 
 /***/ }),
-/* 94 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8762,7 +8844,7 @@ HeatmapDataZoomDecorator.prototype.decorate = function () {
 exports.default = HeatmapDataZoomDecorator;
 
 /***/ }),
-/* 95 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8794,7 +8876,7 @@ ItemOpacity7Decorator.prototype.decorate = function () {
 exports.default = ItemOpacity7Decorator;
 
 /***/ }),
-/* 96 */
+/* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8842,7 +8924,7 @@ LineByDecorator.prototype.decorate = function () {
 exports.default = LineByDecorator;
 
 /***/ }),
-/* 97 */
+/* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8876,7 +8958,7 @@ LineStyleDecorator.prototype.decorate = function () {
 exports.default = LineStyleDecorator;
 
 /***/ }),
-/* 98 */
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8925,7 +9007,7 @@ MarkerByTypeDecorator.prototype.decorate = function () {
 exports.default = MarkerByTypeDecorator;
 
 /***/ }),
-/* 99 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8972,7 +9054,7 @@ MarkerDecorator.prototype.decorate = function () {
 exports.default = MarkerDecorator;
 
 /***/ }),
-/* 100 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9002,7 +9084,7 @@ MapStyleDecorator.prototype.decorate = function () {
 exports.default = MapStyleDecorator;
 
 /***/ }),
-/* 101 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9077,7 +9159,7 @@ PairwiseAxisDecorator.prototype.decorate = function () {
 exports.default = PairwiseAxisDecorator;
 
 /***/ }),
-/* 102 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9142,7 +9224,7 @@ PairwiseGridDecorator.prototype.decorate = function () {
 exports.default = PairwiseGridDecorator;
 
 /***/ }),
-/* 103 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9185,7 +9267,7 @@ PlotOptionsDecorator.prototype.decorate = function () {
 exports.default = PlotOptionsDecorator;
 
 /***/ }),
-/* 104 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9229,7 +9311,7 @@ SeriesNameSetDecorator.prototype.decorate = function () {
 exports.default = SeriesNameSetDecorator;
 
 /***/ }),
-/* 105 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9282,7 +9364,7 @@ SeriesStacked100Decorator.prototype.decorate = function () {
 exports.default = SeriesStacked100Decorator;
 
 /***/ }),
-/* 106 */
+/* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9347,7 +9429,7 @@ SeriesStackedDecorator.prototype.decorate = function () {
 exports.default = SeriesStackedDecorator;
 
 /***/ }),
-/* 107 */
+/* 108 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9435,7 +9517,7 @@ StripLineDecorator.prototype._buildLineSeries = function (type, lineObj) {
 exports.default = StripLineDecorator;
 
 /***/ }),
-/* 108 */
+/* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9481,7 +9563,7 @@ TooltipAxisCalculatedDecorator.prototype._getAxisKeyTooltip = function (param, d
 exports.default = TooltipAxisCalculatedDecorator;
 
 /***/ }),
-/* 109 */
+/* 110 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9521,7 +9603,7 @@ TooltipAxisPointerYDecorator.prototype.decorate = function () {
 exports.default = TooltipAxisPointerYDecorator;
 
 /***/ }),
-/* 110 */
+/* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9561,7 +9643,7 @@ TooltipAxisPointerShadowDecorator.prototype.decorate = function () {
 exports.default = TooltipAxisPointerShadowDecorator;
 
 /***/ }),
-/* 111 */
+/* 112 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9610,7 +9692,7 @@ TooltipBoxPlotByColumnNamesDecorator.prototype._getCalculatedTooltip = function 
 exports.default = TooltipBoxPlotByColumnNamesDecorator;
 
 /***/ }),
-/* 112 */
+/* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9659,7 +9741,7 @@ TooltipBoxPlotDecorator.prototype._getCalculatedTooltip = function (colName, act
 exports.default = TooltipBoxPlotDecorator;
 
 /***/ }),
-/* 113 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9728,7 +9810,7 @@ TooltipBubbleDecorator.prototype._getItemSizeByTooltip = function (params, dataC
 exports.default = TooltipBubbleDecorator;
 
 /***/ }),
-/* 114 */
+/* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9838,7 +9920,7 @@ TooltipByColumnNamesDecorator.prototype._buildAxisTooltip = function () {
 exports.default = TooltipByColumnNamesDecorator;
 
 /***/ }),
-/* 115 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9958,7 +10040,7 @@ TooltipByRowIndexDecorator.prototype._getAxisKeyTooltip = function (param, divis
 exports.default = TooltipByRowIndexDecorator;
 
 /***/ }),
-/* 116 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9984,7 +10066,7 @@ TooltipComplexDecorator.prototype.constructor = TooltipComplexDecorator;
 exports.default = TooltipComplexDecorator;
 
 /***/ }),
-/* 117 */
+/* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10056,7 +10138,7 @@ TooltipDendrogramDecorator.prototype._buildAxisTooltip = function () {
 exports.default = TooltipDendrogramDecorator;
 
 /***/ }),
-/* 118 */
+/* 119 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10095,7 +10177,7 @@ TooltipHeatmapDecorator.prototype._buildItemTooltip = function () {
 exports.default = TooltipHeatmapDecorator;
 
 /***/ }),
-/* 119 */
+/* 120 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10131,7 +10213,7 @@ TooltipHeatmapMatrixDecorator.prototype._buildItemTooltip = function () {
 exports.default = TooltipHeatmapMatrixDecorator;
 
 /***/ }),
-/* 120 */
+/* 121 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10173,7 +10255,7 @@ TooltipHistogramDecorator.prototype._getItemYTooltip = function (params, dataCol
 exports.default = TooltipHistogramDecorator;
 
 /***/ }),
-/* 121 */
+/* 122 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10209,7 +10291,7 @@ TooltipItemCalculatedDecorator.prototype._getItemKeyTooltip = function (params, 
 exports.default = TooltipItemCalculatedDecorator;
 
 /***/ }),
-/* 122 */
+/* 123 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10272,7 +10354,7 @@ TooltipPairwiseScatterDecorator.prototype._getItemDataTooltip = function (params
 exports.default = TooltipPairwiseScatterDecorator;
 
 /***/ }),
-/* 123 */
+/* 124 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10311,7 +10393,7 @@ TooltipPieCalculatedDecorator.prototype._getItemKeyTooltip = function (params, k
 exports.default = TooltipPieCalculatedDecorator;
 
 /***/ }),
-/* 124 */
+/* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10345,7 +10427,7 @@ TooltipQQPlotDecorator.prototype._getItemYTooltip = function (params, dataColumn
 exports.default = TooltipQQPlotDecorator;
 
 /***/ }),
-/* 125 */
+/* 126 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10388,7 +10470,7 @@ TooltipTreemapDecorator.prototype._buildItemTooltip = function () {
 exports.default = TooltipTreemapDecorator;
 
 /***/ }),
-/* 126 */
+/* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10468,7 +10550,7 @@ TooltipMapDecorator.prototype._getItemSizeByTooltip = function (params, dataColu
 exports.default = TooltipMapDecorator;
 
 /***/ }),
-/* 127 */
+/* 128 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10502,7 +10584,7 @@ TooltipXAxisPercentDecorator.prototype._getAxisValueTooltip = function (param, d
 exports.default = TooltipXAxisPercentDecorator;
 
 /***/ }),
-/* 128 */
+/* 129 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10536,7 +10618,7 @@ TooltipYAxisPercentDecorator.prototype._getAxisValueTooltip = function (param, d
 exports.default = TooltipYAxisPercentDecorator;
 
 /***/ }),
-/* 129 */
+/* 130 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10599,7 +10681,7 @@ VisualMapDecorator.prototype.decorate = function () {
 exports.default = VisualMapDecorator;
 
 /***/ }),
-/* 130 */
+/* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10629,7 +10711,7 @@ XAxisBoundaryGapFalseDecorator.prototype.decorate = function () {
 exports.default = XAxisBoundaryGapFalseDecorator;
 
 /***/ }),
-/* 131 */
+/* 132 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10666,7 +10748,7 @@ XAxisMin0Decorator.prototype.decorate = function () {
 exports.default = XAxisMin0Decorator;
 
 /***/ }),
-/* 132 */
+/* 133 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10699,7 +10781,7 @@ XAxisMin0Max100Decorator.prototype.decorate = function () {
 exports.default = XAxisMin0Max100Decorator;
 
 /***/ }),
-/* 133 */
+/* 134 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10740,7 +10822,7 @@ XAxisRangeForHistogramDecorator.prototype.decorate = function () {
 exports.default = XAxisRangeForHistogramDecorator;
 
 /***/ }),
-/* 134 */
+/* 135 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10770,7 +10852,7 @@ XAxisScaleFalseDecorator.prototype.decorate = function () {
 exports.default = XAxisScaleFalseDecorator;
 
 /***/ }),
-/* 135 */
+/* 136 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10814,7 +10896,7 @@ YAxisMin0Decorator.prototype.decorate = function () {
 exports.default = YAxisMin0Decorator;
 
 /***/ }),
-/* 136 */
+/* 137 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10847,7 +10929,7 @@ YAxisMin0Max100Decorator.prototype.decorate = function () {
 exports.default = YAxisMin0Max100Decorator;
 
 /***/ }),
-/* 137 */
+/* 138 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10875,55 +10957,6 @@ YAxisScaleFalseDecorator.prototype.decorate = function () {
 };
 
 exports.default = YAxisScaleFalseDecorator;
-
-/***/ }),
-/* 138 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-exports.range = range;
-exports.zip = zip;
-exports.isUndefined = isUndefined;
-exports.isNull = isNull;
-/* -----------------------------------------------------
- *  utils.js
- *  Created by hyunseok.oh@samsung.com on 2018-08-17.
- * ---------------------------------------------------- */
-
-function _range(from, to) {
-    var res = [];
-    for (var i = from; i < to; ++i) {
-        res.push(i);
-    }
-    return res;
-}
-
-function range(a, b) {
-    if (arguments.length > 1) return _range(a, b);
-    return _range(0, a);
-}
-
-function zip(a, b) {
-    return range(parseInt(Math.max(a.length, b.length))).map(function (i) {
-        return [a[i], b[i]];
-    });
-}
-
-function isUndefined(a) {
-    return typeof a === 'undefined';
-}
-
-function isNull(a) {
-    return !a && (typeof a === 'undefined' ? 'undefined' : _typeof(a)) === 'object';
-}
 
 /***/ }),
 /* 139 */
@@ -11215,7 +11248,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsAxisTypeWithCategorykeyOptionBuilder = __webpack_require__(48);
+var _echartsAxisTypeWithCategorykeyOptionBuilder = __webpack_require__(49);
 
 var _echartsAxisTypeWithCategorykeyOptionBuilder2 = _interopRequireDefault(_echartsAxisTypeWithCategorykeyOptionBuilder);
 
@@ -11273,7 +11306,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsArea = __webpack_require__(72);
+var _echartsArea = __webpack_require__(73);
 
 var _echartsArea2 = _interopRequireDefault(_echartsArea);
 
@@ -11379,7 +11412,7 @@ var _echartsBarOptionBuilder = __webpack_require__(147);
 
 var _echartsBarOptionBuilder2 = _interopRequireDefault(_echartsBarOptionBuilder);
 
-var _echartsBarCalculatedOptionBuilder = __webpack_require__(50);
+var _echartsBarCalculatedOptionBuilder = __webpack_require__(51);
 
 var _echartsBarCalculatedOptionBuilder2 = _interopRequireDefault(_echartsBarCalculatedOptionBuilder);
 
@@ -11474,7 +11507,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsAxisTypeWithCategorykeyOptionBuilder = __webpack_require__(48);
+var _echartsAxisTypeWithCategorykeyOptionBuilder = __webpack_require__(49);
 
 var _echartsAxisTypeWithCategorykeyOptionBuilder2 = _interopRequireDefault(_echartsAxisTypeWithCategorykeyOptionBuilder);
 
@@ -11891,7 +11924,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsAxisTypeWithCategorykeyOptionBuilder = __webpack_require__(48);
+var _echartsAxisTypeWithCategorykeyOptionBuilder = __webpack_require__(49);
 
 var _echartsAxisTypeWithCategorykeyOptionBuilder2 = _interopRequireDefault(_echartsAxisTypeWithCategorykeyOptionBuilder);
 
@@ -13141,7 +13174,7 @@ var _aggregationOperator = __webpack_require__(15);
 
 var _aggregationOperator2 = _interopRequireDefault(_aggregationOperator);
 
-var _d3AggregationExtractor = __webpack_require__(53);
+var _d3AggregationExtractor = __webpack_require__(54);
 
 var _d3AggregationExtractor2 = _interopRequireDefault(_d3AggregationExtractor);
 
@@ -13610,9 +13643,11 @@ var _preferenceOptions2 = _interopRequireDefault(_preferenceOptions);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/**
- * Created by sds on 2017-11-07.
- */
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * Created by sds on 2017-11-07.
+                                                                                                                                                                                                                   */
+
+
 function PreferenceUtils() {}
 
 /**
@@ -13633,12 +13668,12 @@ PreferenceUtils.setTableFormatter = function (prefOptArr) {
         return;
     }
     prefOptArr.forEach(function (prefOption) {
-        if (prefOption.type === 'number' || prefOption.type === 'exponential') {
+        if (['number', 'exponential', 'double', 'integer'].includes(prefOption.type)) {
             var parsedStr = _optionUtils2.default.parseFmtObjToStr(prefOption);
-            $.extend(true, _preferenceOptions2.default.table.formatter, { number: parsedStr });
+            $.extend(true, _preferenceOptions2.default.table.formatter, _defineProperty({}, prefOption.type === 'exponential' ? 'number' : prefOption.type, parsedStr));
         } else {
             console.warn('String type formatter is not implemented yet.');
-            //TODO: implement type == string, jQWidgetsTableOptionBuilder.prototype._createStringRenderer
+            // TODO: implement type == string, jQWidgetsTableOptionBuilder.prototype._createStringRenderer
         }
 
         if (prefOption.pivot) {
@@ -13680,7 +13715,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _bchartArea = __webpack_require__(62);
+var _bchartArea = __webpack_require__(63);
 
 var _bchartArea2 = _interopRequireDefault(_bchartArea);
 
@@ -13999,7 +14034,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _bchartColumn = __webpack_require__(54);
+var _bchartColumn = __webpack_require__(55);
 
 var _bchartColumn2 = _interopRequireDefault(_bchartColumn);
 
@@ -14356,7 +14391,7 @@ exports.default = BPieCharts;
 
 __webpack_require__(201);
 
-var _bcharts = __webpack_require__(61);
+var _bcharts = __webpack_require__(62);
 
 var _bcharts2 = _interopRequireDefault(_bcharts);
 
@@ -14404,7 +14439,7 @@ var _package = __webpack_require__(202);
 
 var _package2 = _interopRequireDefault(_package);
 
-var _bcharts = __webpack_require__(61);
+var _bcharts = __webpack_require__(62);
 
 var _bcharts2 = _interopRequireDefault(_bcharts);
 
@@ -14416,9 +14451,9 @@ var _bchartRegister = __webpack_require__(26);
 
 var Chart = _interopRequireWildcard(_bchartRegister);
 
-var _pagination = __webpack_require__(71);
+var _pagination = __webpack_require__(72);
 
-var _columnHelper = __webpack_require__(65);
+var _columnHelper = __webpack_require__(66);
 
 var _columnHelper2 = _interopRequireDefault(_columnHelper);
 
@@ -14442,7 +14477,7 @@ var _aggregationOperator = __webpack_require__(15);
 
 var _aggregationOperator2 = _interopRequireDefault(_aggregationOperator);
 
-var _chartValidator = __webpack_require__(64);
+var _chartValidator = __webpack_require__(65);
 
 var _chartValidator2 = _interopRequireDefault(_chartValidator);
 
@@ -14458,7 +14493,7 @@ var _wrapperRegister = __webpack_require__(3);
 
 var Wrapper = _interopRequireWildcard(_wrapperRegister);
 
-var _chartValidatorRegister = __webpack_require__(66);
+var _chartValidatorRegister = __webpack_require__(67);
 
 var Validator = _interopRequireWildcard(_chartValidatorRegister);
 
@@ -14478,7 +14513,7 @@ var _d3DecisiontreeExtractor = __webpack_require__(161);
 
 var _d3DecisiontreeExtractor2 = _interopRequireDefault(_d3DecisiontreeExtractor);
 
-var _d3AggregationExtractor = __webpack_require__(53);
+var _d3AggregationExtractor = __webpack_require__(54);
 
 var _d3AggregationExtractor2 = _interopRequireDefault(_d3AggregationExtractor);
 
@@ -14703,7 +14738,7 @@ var _chartValidatorArea = __webpack_require__(207);
 
 var _chartValidatorArea2 = _interopRequireDefault(_chartValidatorArea);
 
-var _chartValidatorAreaStacked = __webpack_require__(67);
+var _chartValidatorAreaStacked = __webpack_require__(68);
 
 var _chartValidatorAreaStacked2 = _interopRequireDefault(_chartValidatorAreaStacked);
 
@@ -14715,7 +14750,7 @@ var _chartValidatorBar = __webpack_require__(209);
 
 var _chartValidatorBar2 = _interopRequireDefault(_chartValidatorBar);
 
-var _chartValidatorBarStacked = __webpack_require__(68);
+var _chartValidatorBarStacked = __webpack_require__(69);
 
 var _chartValidatorBarStacked2 = _interopRequireDefault(_chartValidatorBarStacked);
 
@@ -14743,7 +14778,7 @@ var _chartValidatorColumn = __webpack_require__(215);
 
 var _chartValidatorColumn2 = _interopRequireDefault(_chartValidatorColumn);
 
-var _chartValidatorColumnStacked = __webpack_require__(69);
+var _chartValidatorColumnStacked = __webpack_require__(70);
 
 var _chartValidatorColumnStacked2 = _interopRequireDefault(_chartValidatorColumnStacked);
 
@@ -14906,7 +14941,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _chartValidatorAreaStacked = __webpack_require__(67);
+var _chartValidatorAreaStacked = __webpack_require__(68);
 
 var _chartValidatorAreaStacked2 = _interopRequireDefault(_chartValidatorAreaStacked);
 
@@ -14976,7 +15011,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _chartValidatorBarStacked = __webpack_require__(68);
+var _chartValidatorBarStacked = __webpack_require__(69);
 
 var _chartValidatorBarStacked2 = _interopRequireDefault(_chartValidatorBarStacked);
 
@@ -15234,7 +15269,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _chartValidatorColumnStacked = __webpack_require__(69);
+var _chartValidatorColumnStacked = __webpack_require__(70);
 
 var _chartValidatorColumnStacked2 = _interopRequireDefault(_chartValidatorColumnStacked);
 
@@ -16090,7 +16125,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.AxisTitle = undefined;
 
-var _title = __webpack_require__(70);
+var _title = __webpack_require__(71);
 
 /**
  *
@@ -16575,7 +16610,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.donut = exports.map = exports.treemap = exports.table = exports.scatter = exports.roccurve = exports.qqplot = exports.pie = exports.pairwiseScatter = exports.network = exports.line = exports.histogram = exports.heatmapMatrix = exports.heatmap = exports.dendrogram = exports.decisiontree = exports.complex = exports.columnStacked100 = exports.columnStacked = exports.column = exports.card = exports.bubble = exports.boxplot = exports.biplot = exports.barStacked100 = exports.barStacked = exports.bar = exports.areaStacked100 = exports.areaStacked = exports.area = undefined;
 
-var _echartsArea = __webpack_require__(72);
+var _echartsArea = __webpack_require__(73);
 
 var _echartsArea2 = _interopRequireDefault(_echartsArea);
 
@@ -16679,7 +16714,7 @@ var _echartsRoccurve = __webpack_require__(299);
 
 var _echartsRoccurve2 = _interopRequireDefault(_echartsRoccurve);
 
-var _echartsScatter = __webpack_require__(52);
+var _echartsScatter = __webpack_require__(53);
 
 var _echartsScatter2 = _interopRequireDefault(_echartsScatter);
 
@@ -16746,7 +16781,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsPointByrowindexExtractor = __webpack_require__(47);
+var _echartsPointByrowindexExtractor = __webpack_require__(48);
 
 var _echartsPointByrowindexExtractor2 = _interopRequireDefault(_echartsPointByrowindexExtractor);
 
@@ -17068,7 +17103,7 @@ var _echartsPointWithCategorykeyExtractor = __webpack_require__(19);
 
 var _echartsPointWithCategorykeyExtractor2 = _interopRequireDefault(_echartsPointWithCategorykeyExtractor);
 
-var _echartsAreaCalculatedOptionBuilder = __webpack_require__(49);
+var _echartsAreaCalculatedOptionBuilder = __webpack_require__(50);
 
 var _echartsAreaCalculatedOptionBuilder2 = _interopRequireDefault(_echartsAreaCalculatedOptionBuilder);
 
@@ -17251,7 +17286,7 @@ var _echartsPointWithCategorykeyExtractor = __webpack_require__(19);
 
 var _echartsPointWithCategorykeyExtractor2 = _interopRequireDefault(_echartsPointWithCategorykeyExtractor);
 
-var _echartsAreaCalculatedOptionBuilder = __webpack_require__(49);
+var _echartsAreaCalculatedOptionBuilder = __webpack_require__(50);
 
 var _echartsAreaCalculatedOptionBuilder2 = _interopRequireDefault(_echartsAreaCalculatedOptionBuilder);
 
@@ -17339,7 +17374,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsBarCalculatedOptionBuilder = __webpack_require__(50);
+var _echartsBarCalculatedOptionBuilder = __webpack_require__(51);
 
 var _echartsBarCalculatedOptionBuilder2 = _interopRequireDefault(_echartsBarCalculatedOptionBuilder);
 
@@ -17493,7 +17528,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsBarCalculatedOptionBuilder = __webpack_require__(50);
+var _echartsBarCalculatedOptionBuilder = __webpack_require__(51);
 
 var _echartsBarCalculatedOptionBuilder2 = _interopRequireDefault(_echartsBarCalculatedOptionBuilder);
 
@@ -18436,7 +18471,7 @@ var _echartsOptionBuilder = __webpack_require__(9);
 
 var _echartsOptionBuilder2 = _interopRequireDefault(_echartsOptionBuilder);
 
-var _echartsScatterCalculatedOptionBuilder = __webpack_require__(51);
+var _echartsScatterCalculatedOptionBuilder = __webpack_require__(52);
 
 var _echartsScatterCalculatedOptionBuilder2 = _interopRequireDefault(_echartsScatterCalculatedOptionBuilder);
 
@@ -19223,7 +19258,7 @@ var _echartsColumn = __webpack_require__(37);
 
 var _echartsColumn2 = _interopRequireDefault(_echartsColumn);
 
-var _echartsScatter = __webpack_require__(52);
+var _echartsScatter = __webpack_require__(53);
 
 var _echartsScatter2 = _interopRequireDefault(_echartsScatter);
 
@@ -19708,7 +19743,7 @@ var _d3PointExtractor = __webpack_require__(274);
 
 var _d3PointExtractor2 = _interopRequireDefault(_d3PointExtractor);
 
-var _d3AggregationExtractor = __webpack_require__(53);
+var _d3AggregationExtractor = __webpack_require__(54);
 
 var _d3AggregationExtractor2 = _interopRequireDefault(_d3AggregationExtractor);
 
@@ -22088,7 +22123,7 @@ exports.default = EChartsPieCalculatedOptionBuilder;
 
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 
 var _echartsWrapper = __webpack_require__(14);
@@ -22113,7 +22148,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 
 function EChartsQQPlot(parentId, options) {
-    _echartsWrapper2.default.call(this, parentId, options);
+  _echartsWrapper2.default.call(this, parentId, options);
 }
 
 EChartsQQPlot.prototype = Object.create(_echartsWrapper2.default.prototype);
@@ -22121,12 +22156,12 @@ EChartsQQPlot.prototype.constructor = EChartsQQPlot;
 
 EChartsQQPlot.prototype.render = function () {
 
-    this.seriesHelper = new _echartsQqplotOptionBuilder2.default();
+  this.seriesHelper = new _echartsQqplotOptionBuilder2.default();
 
-    var opt = this.seriesHelper.buildOptions(this.options);
-    this._bindInternalOptions(this.seriesHelper);
-    this._setEChartOption(opt);
-    this._backupItemStyles();
+  var opt = this.seriesHelper.buildOptions(this.options);
+  this._bindInternalOptions(this.seriesHelper);
+  this._setEChartOption(opt);
+  this._backupItemStyles();
 };
 
 // Alias['qqplot'] = EChartsQQPlot;
@@ -23033,6 +23068,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.jQWidgetsTableOptionBuilder = undefined;
 
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; /**
                                                                                                                                                                                                                                                                                * Source: jqwidgets-table.js
                                                                                                                                                                                                                                                                                * Created by daewon.park on 2017-04-23.
@@ -23049,6 +23086,8 @@ var _validationError2 = _interopRequireDefault(_validationError);
 var _chartUtils = __webpack_require__(17);
 
 var _chartUtils2 = _interopRequireDefault(_chartUtils);
+
+var _utils = __webpack_require__(47);
 
 var _chartOptionBuilder = __webpack_require__(34);
 
@@ -23117,8 +23156,8 @@ jQWidgetsTable.prototype._createContents = function ($parent) {
         _this.$mainControl.jqxGrid('setcolumnproperty', column, 'width', width);
     });
 
-    this.$mainControl.on("columnclick", function (event) {
-        if (event.args.column.text == "No.") {
+    this.$mainControl.on('columnclick', function (event) {
+        if (event.args.column.text == 'No.') {
             _this._autoResizeColumns();
         }
     });
@@ -23159,7 +23198,7 @@ jQWidgetsTable.prototype._copyColumns = function () {
     });
 
     var isChrome = !!window.chrome && !!window.chrome.webstore;
-    var isIE = /*@cc_on!@*/false || !!document.documentMode;
+    var isIE = /* @cc_on!@*/false || !!document.documentMode;
 
     if (isChrome) {
         var textField = document.createElement('textarea');
@@ -23169,7 +23208,7 @@ jQWidgetsTable.prototype._copyColumns = function () {
         document.execCommand('copy');
         textField.remove();
     } else if (isIE) {
-        window.clipboardData.setData("Text", columns.join(', '));
+        window.clipboardData.setData('Text', columns.join(', '));
     }
 };
 
@@ -23230,7 +23269,7 @@ jQWidgetsTable.prototype.clear = function () {};
 
 jQWidgetsTable.prototype.getDataURL = function (options) {
     // TODO 이미지 반환 로직 구현해야함 by daewon.park
-    //console.log(options);
+    // console.log(options);
     var theCanvas = '';
 
     // html2canvas(this.$mainControl).then(function(canvas) { cp(canvas); })
@@ -23319,11 +23358,11 @@ jQWidgetsTable.prototype.render = function () {
 };
 
 jQWidgetsTable.prototype.selectRange = function () {
-    //do nothing, interaction 추후 개발 필요 시 구현
+    // do nothing, interaction 추후 개발 필요 시 구현
 };
 
 jQWidgetsTable.prototype.getSelectedRange = function () {
-    //do nothing, interaction 추후 개발 필요 시 구현
+    // do nothing, interaction 추후 개발 필요 시 구현
 };
 
 jQWidgetsTable.prototype._openContextMenu = function (event) {
@@ -23364,7 +23403,7 @@ jQWidgetsTableOptionBuilder.prototype.buildOptions = function (options) {
     this.jqxOptions = this._defaultOptions();
     var convertToPivot = _preferenceUtils2.default.getTableFormatter('pivot');
 
-    if (convertToPivot == "true") {
+    if (convertToPivot == 'true') {
         if (this.bOptions.source.localData[0].data.length == 1) {
             this._buildPivotTableColumns();
             this._buildPivotSource();
@@ -23413,7 +23452,7 @@ jQWidgetsTableOptionBuilder.prototype._buildSource = function () {
         datatype: 'array',
         datafields: $.map(_this.bOptions.source.localData[0].columns, function (column, index) {
             return {
-                format: _this._getColumnFormat(column.type, column.name),
+                format: _this._getColumnFormat(column.type, column.name, column.internalType),
                 name: _this._toFieldName(column.name),
                 type: column.type,
                 map: '' + index
@@ -23446,7 +23485,7 @@ jQWidgetsTableOptionBuilder.prototype._buildPivotSource = function () {
         datatype: 'number',
         datafields: $.map(_this.jqxOptions.columns, function (column, index) {
             return {
-                format: _this._getColumnFormat(column.type, column.name),
+                format: _this._getColumnFormat(column.type, column.name, column.internalType),
                 name: _this._toFieldName(index),
                 type: column.type,
                 map: '' + index
@@ -23557,7 +23596,7 @@ jQWidgetsTableOptionBuilder.prototype._createArrayRenderer = function (idx) {
     return renderer;
 };
 
-jQWidgetsTableOptionBuilder.prototype._getColumnFormat = function (type, name) {
+jQWidgetsTableOptionBuilder.prototype._getColumnFormat = function (type, name, internalType) {
     for (var i in this.bOptions.plotOptions.table.formatter) {
         var formatter = this.bOptions.plotOptions.table.formatter[i];
         if (formatter.column === name) {
@@ -23565,8 +23604,23 @@ jQWidgetsTableOptionBuilder.prototype._getColumnFormat = function (type, name) {
         }
     }
     var prefFormatter = _preferenceUtils2.default.getTableFormatter();
-    if (prefFormatter && prefFormatter[type]) {
-        return prefFormatter[type];
+    var mappedInternalType = Object.entries({
+        'double': ['Double', 'Float'],
+        'integer': ['Integer', 'Long', 'Short']
+    }).filter(function (_ref) {
+        var _ref2 = _slicedToArray(_ref, 2),
+            foo = _ref2[0],
+            target = _ref2[1];
+
+        return target.includes(internalType);
+    }).map(function (_ref3) {
+        var _ref4 = _slicedToArray(_ref3, 1),
+            foo = _ref4[0];
+
+        return foo;
+    })[0];
+    if (prefFormatter) {
+        return (0, _utils.first)((0, _utils.compact)([prefFormatter[type], prefFormatter[mappedInternalType]]));
     }
 };
 
@@ -26386,7 +26440,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _bchartColumn = __webpack_require__(54);
+var _bchartColumn = __webpack_require__(55);
 
 var _bchartColumn2 = _interopRequireDefault(_bchartColumn);
 

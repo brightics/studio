@@ -307,7 +307,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _controlContainerPreview = __webpack_require__(58);
+var _controlContainerPreview = __webpack_require__(59);
 
 var ControlContainerPreview = _interopRequireWildcard(_controlContainerPreview);
 
@@ -516,7 +516,7 @@ var _widgetFactory = __webpack_require__(2);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
-var _controlContainerPreview = __webpack_require__(58);
+var _controlContainerPreview = __webpack_require__(59);
 
 var ControlContainerPreview = _interopRequireWildcard(_controlContainerPreview);
 
@@ -1690,7 +1690,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _filterControlFactory = __webpack_require__(60);
+var _filterControlFactory = __webpack_require__(61);
 
 var FilterControlFactory = _interopRequireWildcard(_filterControlFactory);
 
@@ -1846,7 +1846,8 @@ exports.default = FilterControl;
 /* 52 */,
 /* 53 */,
 /* 54 */,
-/* 55 */
+/* 55 */,
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1856,7 +1857,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _chartOptionRegister = __webpack_require__(56);
+var _chartOptionRegister = __webpack_require__(57);
 
 var ChartOptionRegistry = _interopRequireWildcard(_chartOptionRegister);
 
@@ -2085,7 +2086,7 @@ ChartOption.prototype.getOptions = function () {
 exports.default = ChartOption;
 
 /***/ }),
-/* 56 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2143,7 +2144,7 @@ function createChartOptionControl(chartType, parentId, options) {
 }
 
 /***/ }),
-/* 57 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2203,7 +2204,7 @@ AreaChartOption.prototype.getDefaultControlContainerList = function () {
 exports.default = AreaChartOption;
 
 /***/ }),
-/* 58 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2633,7 +2634,7 @@ function ToolTipTrigger() {
 }
 
 /***/ }),
-/* 59 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2651,7 +2652,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function ColumnChartOption(parentId, options) {
     _chartOptionBase2.default.call(this, parentId, options);
-} /**
+} 
+/**
    * Created by SDS on 2017-05-10.
    */
 
@@ -2688,7 +2690,7 @@ ColumnChartOption.prototype.getDefaultControlContainerList = function () {
 exports.default = ColumnChartOption;
 
 /***/ }),
-/* 60 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2727,7 +2729,6 @@ function getFilterTypes() {
 }
 
 /***/ }),
-/* 61 */,
 /* 62 */,
 /* 63 */,
 /* 64 */,
@@ -6106,9 +6107,7 @@ Object.defineProperty(exports, "__esModule", {
 var _chartOptionBase = __webpack_require__(6);
 
 var _chartOptionBase2 = _interopRequireDefault(_chartOptionBase);
-
-var _chartOptionArea = __webpack_require__(57);
-
+var _chartOptionArea = __webpack_require__(58);
 var _chartOptionArea2 = _interopRequireDefault(_chartOptionArea);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -7194,7 +7193,7 @@ var _bchartsAdonis = __webpack_require__(439);
 
 var _bchartsAdonis2 = _interopRequireDefault(_bchartsAdonis);
 
-var _chartOption = __webpack_require__(55);
+var _chartOption = __webpack_require__(56);
 
 var _chartOption2 = _interopRequireDefault(_chartOption);
 
@@ -7251,7 +7250,7 @@ var _package = __webpack_require__(341);
 
 var _package2 = _interopRequireDefault(_package);
 
-var _chartOption = __webpack_require__(55);
+var _chartOption = __webpack_require__(56);
 
 var _chartOption2 = _interopRequireDefault(_chartOption);
 
@@ -7259,7 +7258,7 @@ var _chartOptionBase = __webpack_require__(6);
 
 var _chartOptionBase2 = _interopRequireDefault(_chartOptionBase);
 
-var _chartOptionRegister = __webpack_require__(56);
+var _chartOptionRegister = __webpack_require__(57);
 
 var ChartOptionRegistry = _interopRequireWildcard(_chartOptionRegister);
 
@@ -7279,7 +7278,7 @@ var _controlContainerFactory = __webpack_require__(172);
 
 var ControlContainerFactory = _interopRequireWildcard(_controlContainerFactory);
 
-var _controlContainerPreview = __webpack_require__(58);
+var _controlContainerPreview = __webpack_require__(59);
 
 var ControlContainerPreview = _interopRequireWildcard(_controlContainerPreview);
 
@@ -7371,7 +7370,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _chartOptionArea = __webpack_require__(57);
+var _chartOptionArea = __webpack_require__(58);
 
 var _chartOptionArea2 = _interopRequireDefault(_chartOptionArea);
 
@@ -7411,7 +7410,7 @@ var _chartOptionCard = __webpack_require__(414);
 
 var _chartOptionCard2 = _interopRequireDefault(_chartOptionCard);
 
-var _chartOptionColumn = __webpack_require__(59);
+var _chartOptionColumn = __webpack_require__(60);
 
 var _chartOptionColumn2 = _interopRequireDefault(_chartOptionColumn);
 
@@ -14925,7 +14924,7 @@ var _chartOptionBase = __webpack_require__(6);
 
 var _chartOptionBase2 = _interopRequireDefault(_chartOptionBase);
 
-var _chartOptionArea = __webpack_require__(57);
+var _chartOptionArea = __webpack_require__(58);
 
 var _chartOptionArea2 = _interopRequireDefault(_chartOptionArea);
 
@@ -15353,7 +15352,7 @@ var _chartOptionBase = __webpack_require__(6);
 
 var _chartOptionBase2 = _interopRequireDefault(_chartOptionBase);
 
-var _chartOptionColumn = __webpack_require__(59);
+var _chartOptionColumn = __webpack_require__(60);
 
 var _chartOptionColumn2 = _interopRequireDefault(_chartOptionColumn);
 
@@ -15419,7 +15418,7 @@ var _chartOptionBase = __webpack_require__(6);
 
 var _chartOptionBase2 = _interopRequireDefault(_chartOptionBase);
 
-var _chartOptionColumn = __webpack_require__(59);
+var _chartOptionColumn = __webpack_require__(60);
 
 var _chartOptionColumn2 = _interopRequireDefault(_chartOptionColumn);
 
@@ -15490,7 +15489,7 @@ var _chartOptionBase = __webpack_require__(6);
 
 var _chartOptionBase2 = _interopRequireDefault(_chartOptionBase);
 
-var _chartOptionRegister = __webpack_require__(56);
+var _chartOptionRegister = __webpack_require__(57);
 
 var ChartOptionRegistry = _interopRequireWildcard(_chartOptionRegister);
 
@@ -18423,7 +18422,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _chartOption = __webpack_require__(55);
+var _chartOption = __webpack_require__(56);
 
 var _chartOption2 = _interopRequireDefault(_chartOption);
 
@@ -18570,7 +18569,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _filterControlFactory = __webpack_require__(60);
+var _filterControlFactory = __webpack_require__(61);
 
 var FilterControlFactory = _interopRequireWildcard(_filterControlFactory);
 
@@ -18938,12 +18937,12 @@ ListBoxFilter.prototype.createControlArea = function ($parent) {
 
     /*this._$listBox.on('checkChange', function (event) {
         if (!handleCheckChange) return;
-          if (event.args.label != '(Select All)') {
+         if (event.args.label != '(Select All)') {
             handleCheckChange = false;
             $(this).jqxListBox('checkIndex', 0);
             var checkedItems = $(this).jqxListBox('getCheckedItems');
             var items = $(this).jqxListBox('getItems');
-              if (checkedItems.length == 1) {
+             if (checkedItems.length == 1) {
                 $(this).jqxListBox('uncheckIndex', 0);
             }
             else if (items.length != checkedItems.length) {
@@ -19316,7 +19315,7 @@ var _chartOptionUtil = __webpack_require__(23);
 
 var ChartOptionUtil = _interopRequireWildcard(_chartOptionUtil);
 
-var _filterControlFactory = __webpack_require__(60);
+var _filterControlFactory = __webpack_require__(61);
 
 var FilterControlFactory = _interopRequireWildcard(_filterControlFactory);
 
