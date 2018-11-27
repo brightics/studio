@@ -7,6 +7,8 @@ import matplotlib.cm as cm
 from sklearn.metrics.cluster.unsupervised import silhouette_score, \
     silhouette_samples
 from brightics.function.utils import _model_dict
+from brightics.common.groupby import _function_by_group
+from brightics.common.utils import check_required_parameters
 
 
 def _kmeans_centers_plot(input_cols, cluster_centers):
@@ -60,9 +62,17 @@ def _kmeans_pca_plot(labels, cluster_centers, pca2_model, pca2):
     fig_pca = plt2MD(plt)
     plt.clf()
     return fig_pca
+
+
+def kmeans_train_predict(table, group_by=None, **params):
+    check_required_parameters(_kmeans_train_predict, params, ['table'])
+    if group_by is not None:
+        return _function_by_group(_kmeans_train_predict, table, group_by=group_by, **params)
+    else:
+        return _kmeans_train_predict(table, **params)
     
 
-def kmeans_train_predict(table, input_cols, n_clusters=3, prediction_col='prediction', init='k-means++', n_init=10,
+def _kmeans_train_predict(table, input_cols, n_clusters=3, prediction_col='prediction', init='k-means++', n_init=10,
              max_iter=300, tol=1e-4, precompute_distances='auto', seed=None,
              n_jobs=1, algorithm='auto', n_samples=None):
     inputarr = table[input_cols]
@@ -111,8 +121,16 @@ def kmeans_train_predict(table, input_cols, n_clusters=3, prediction_col='predic
     out_table[prediction_col] = labels
     return {'out_table':out_table, 'model':model}
 
+
+def kmeans_predict(table, model, group_by=None, **params):
+    check_required_parameters(_kmeans_predict, params, ['table', 'model'])
+    if group_by is not None:
+        return _function_by_group(_kmeans_predict, table, model, group_by=group_by, **params)
+    else:
+        return _kmeans_predict(table, model, **params)
+
     
-def kmeans_predict(table, model, prediction_col='prediction'):
+def _kmeans_predict(table, model, prediction_col='prediction'):
     if model['_context'] == 'python' and model['_type'] == 'kmeans':
         k_means = model['model']
         input_cols = model['input_cols']
@@ -131,7 +149,15 @@ def kmeans_predict(table, model, prediction_col='prediction'):
     return {'out_table':out_table}
 
 
-def kmeans_silhouette_train_predict(table, input_cols, n_clusters_list=range(2, 10), prediction_col='prediction', init='k-means++', n_init=10,
+def kmeans_silhouette_train_predict(table, group_by=None, **params):
+    check_required_parameters(_kmeans_silhouette_train_predict, params, ['table'])
+    if group_by is not None:
+        return _function_by_group(_kmeans_silhouette_train_predict, table, group_by=group_by, **params)
+    else:
+        return _kmeans_silhouette_train_predict(table, **params)
+    
+
+def _kmeans_silhouette_train_predict(table, input_cols, n_clusters_list=range(2, 10), prediction_col='prediction', init='k-means++', n_init=10,
              max_iter=300, tol=1e-4, precompute_distances='auto', seed=None,
              n_jobs=1, algorithm='auto', n_samples=None):
     if n_samples is None:
