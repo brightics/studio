@@ -17,33 +17,14 @@ Please visit our web site http://www.brightics.ai
 
 ## Getting started
 ### Prerequisite
- * JDK 1.8, 1.9 (64bit)
- * Python 3.6.x (64bit)
-
-### Setting up the environment variables
-Make sure java and python are executable.
-
-Example for windows:
-
-    SET JAVA_HOME=<Your Java installation path>
-    SET PYTHON_HOME=<Your Python installation path>
-    SET PATH=%PATH;%PYTHON_HOME%\bin;%JAVA_HOME%\bin
-
-Example for linux like systems:
-
-    export JAVA_HOME=<Your Java installation path>
-    export PYTHON_HOME=<Your Python installation path>
-    export PATH=$PATH:$PYTHON_HOME/bin:$JAVA_HOME/bin
-    
-Most common cases you don't need to set above parameters because those projects automatically add paths during installation. 
-
-for macOS system:  
-* Graphviz 
-
-You have to install [graphviz](http://graphviz.org/download/) using [Homebrew](https://brew.sh/)
+Mac OS users have to install [graphviz](http://graphviz.org/download/) using [Homebrew](https://brew.sh/)
 ```
 brew install graphviz
 ```
+
+### Download
+In a beta phase, the releases and patches would be updated everyweek.<br>
+Download release files are available from github release or our web site http://www.brightics.ai/downloads
 
 ### Installation
 Unzip the downloaded file in somewhere.
@@ -52,40 +33,61 @@ Unzip the downloaded file in somewhere.
 	/brightics-studio/visual-analytics : GUI home
 	/brightics-studio/lib : external libs
 
+※ for windows, running exe file will extract files automatically.
+
 ### Launch
+You don't need to prepare anything before running it. Our releases contain all requirements in a package itself.<br>
 Go to unzipped directory and run.
 
 	start-brightics.cmd : for windows
 	start-brightics.sh : for linux and mac
-	
-### Migration from the older versions
-Move these files to newer version of brightics-studio to maintain data and projects.
+
+### Patch
+If a new version is releases, You should move these files to newer version of brightics-studio to maintain data and projects.
 
 	/brightics-studio/visual-analytics/brightics.db
 	/brightics-studio/brightics-server/data/*
     
-## Development
-### Extend
-To extend functions, see the user manual section 5.7 about Brightics Toolkit.<br>
-http://www.brightics.ai/docs/en-us/ai/v3.6/user_guide/05_tasks
-    
-### Build
-Build core packages with maven.
+Or download "BrighticsStudio-\<version\>-\<os name\>-patch" and run this from the location of Brightics Studio installation.
 
-	mvn clean package -DskipTests [Options] -Popensource
+## Development
+### Prerequisite
+ * JDK 1.8, 1.9 (64bit)
+ * Python 3.6.x (64bit)
+ * Node.js 8.11.2 (64bit)
+
+### Setting up the environment variables
+for windows:
+
+    SET JAVA_HOME=<Your Java installation path>
+    SET PYTHON_HOME=<Your Python installation path>
+    SET NODEJS_HOME=<Your Node.js installation path>
+    SET PATH=%PATH;%PYTHON_HOME%\bin;%JAVA_HOME%\bin;%NODEJS_HOME%\bin
+
+for linux like systems:
+
+    export JAVA_HOME=<Your Java installation path>
+    export PYTHON_HOME=<Your Python installation path>
+    export NODEJS_HOME=<Your Node.js installation path>
+    export PATH=$PATH:$PYTHON_HOME/bin:$JAVA_HOME/bin:$NODEJS_HOME/bin
+    
+Most common cases you don't need to set above parameters because those projects automatically add paths during its installation process. 
+
+### Build
+Build a package with maven.
+
+	mvn clean package -DskipTests [Options]
+
+When the build process is finished, a distribution will be created under build/target/dist directory.
 
 ### Create python environment
-When you use stable release, you can skip this process.<br>
-Because our package has all required python libraries in its own environment.<br>
+```
+    pip -r brightics-studio\lib\requirements.txt
+```
 
-If for some reasons that the files are crashed, you should remove and reconstruct a environment directory under lib/brightics\_python\_env.<br>
-This guide covers setting up python environment from the beginning.<br> 
 Some of python packages need Microsoft Visual C++ Build Tools.<br>
 Please make sure [Microsoft Visual C++ 14.0](https://go.microsoft.com/fwlink/?LinkId=691126) installed when you run a setup command in windows.<br>
-Reference : [Python wiki for WindowsCompilers](https://wiki.python.org/moin/WindowsCompilers)
-
-    setup.cmd <pip options> : for windows
-    setup.sh <pip options> : for linux and mac
+Reference : [Python wiki for WindowsCompilers](https://wiki.python.org/moin/WindowsCompilers)<br>
 
 ## License
 Visual Analytics(Web GUI) project is licensed under the terms of the Brightics Visual Analytics LICENSE, please check Notice below.<br>
