@@ -2488,155 +2488,6 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsOptionBuilder = __webpack_require__(9);
-
-var _echartsOptionBuilder2 = _interopRequireDefault(_echartsOptionBuilder);
-
-var _optionUtils = __webpack_require__(1);
-
-var _optionUtils2 = _interopRequireDefault(_optionUtils);
-
-var _aggregationOperator = __webpack_require__(15);
-
-var _aggregationOperator2 = _interopRequireDefault(_aggregationOperator);
-
-var _echartsPointExtractor = __webpack_require__(10);
-
-var _echartsPointExtractor2 = _interopRequireDefault(_echartsPointExtractor);
-
-var _axisRangeDecorator = __webpack_require__(42);
-
-var _axisRangeDecorator2 = _interopRequireDefault(_axisRangeDecorator);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var _super = _echartsOptionBuilder2.default.prototype;
-
-function EChartsAxisTypeOptionBuilder() {
-    _super.constructor.call(this);
-}
-
-EChartsAxisTypeOptionBuilder.prototype = Object.create(_super);
-EChartsAxisTypeOptionBuilder.prototype.constructor = EChartsAxisTypeOptionBuilder;
-
-EChartsAxisTypeOptionBuilder.prototype._defaultOptions = function () {
-    var opt = _super._defaultOptions.call(this);
-    $.extend(true, opt, {
-        dataZoom: [{
-            id: 'insideZoomX',
-            type: 'inside',
-            filterMode: 'none',
-            xAxisIndex: [0],
-            disabled: true
-        }, {
-            id: 'insideZoomY',
-            type: 'inside',
-            filterMode: 'none',
-            yAxisIndex: [0],
-            disabled: true
-        }]
-    });
-    return opt;
-};
-
-EChartsAxisTypeOptionBuilder.prototype._newSeriesExtractor = function (option) {
-    option = option || {};
-    var xAxisIndex = option.xAxisIndex || 0;
-    var yAxisIndex = option.yAxisIndex || 0;
-
-    var localData = this.getLocalData(0);
-    var dataColumns = this.getSeriesDataColumns(0);
-    var aggregation = dataColumns[1 + yAxisIndex].aggregation;
-    var hasAggregation = aggregation && aggregation !== 'none';
-    var xIndexes = this.getColumnIndexes(this.bOptions.xAxis[0].selected, localData.columns);
-    var yIndexes = this.getColumnIndexes(this.bOptions.yAxis[0].selected, localData.columns);
-
-    var extractor = new _echartsPointExtractor2.default();
-
-    extractor.setTarget({
-        index: [xIndexes[xAxisIndex]],
-        type: _optionUtils2.default.getAxisType(localData.columns[xIndexes[0]]),
-        isKey: hasAggregation ? true : false
-    });
-
-    extractor.setTarget({
-        index: [yIndexes[yAxisIndex]],
-        type: aggregation ? 'value' : _optionUtils2.default.getAxisType(localData.columns[yIndexes[0]]),
-        isKey: false
-    });
-
-    if (hasAggregation) {
-        extractor.setExtractOperator(function (pointObject) {
-            var operator = new _aggregationOperator2.default(pointObject.value);
-            for (var i = 0; i < pointObject.indexList.length; i++) {
-                operator.add(pointObject.indexList[i], pointObject.point[i][1]);
-            }
-            return [{ value: pointObject.value.concat(operator.calc(aggregation)), dataIndexes: pointObject.indexList }];
-        });
-    }
-    return extractor;
-};
-
-EChartsAxisTypeOptionBuilder.prototype._buildSeriesData = function () {
-    var aggregation = this.filterNullColumn(this.bOptions.yAxis[0].selected)[0].aggregation;
-
-    for (var s in this.series) {
-        this.series[s].data = this.series[s].extractor.extract(aggregation);
-        if (this._seriesDataSortRule) {
-            this.series[s].data = this.series[s].data.sort(this._seriesDataSortRule);
-        }
-    }
-};
-
-EChartsAxisTypeOptionBuilder.prototype.getDistinctColorByList = function () {
-    var colorByList = [];
-    var colorByName;
-    for (var s in this.eOptions.series) {
-        if (this.eOptions.series[s].virtualSeries) continue;
-        colorByName = this.eOptions.series[s].name;
-        if (colorByList.indexOf(colorByName) === -1) colorByList.push(colorByName);
-    }
-    return colorByList.sort();
-};
-
-EChartsAxisTypeOptionBuilder.prototype._setSeriesDataSortRule = function () {
-    var xAxisType = this._getColumnDataType(this.filterNullColumn(this.bOptions.xAxis[0].selected));
-    var yAxisType = this._getColumnDataType(this.filterNullColumn(this.bOptions.yAxis[0].selected));
-
-    var sortRule = function sortRule(a, b) {
-        var xComp;
-        if (xAxisType === 'category') xComp = _optionUtils2.default.stringSortRule(a.value[0], b.value[0]);else if (xAxisType === 'time') xComp = _optionUtils2.default.timeSortRule(a.value[0], b.value[0]);else xComp = _optionUtils2.default.numericSortRule(a.value[0], b.value[0]);
-
-        if (xComp === 0) {
-            var yComp;
-            if (yAxisType === 'category') yComp = _optionUtils2.default.stringSortRule(a.value[1], b.value[1]);else if (yAxisType === 'time') yComp = _optionUtils2.default.timeSortRule(a.value[1], b.value[1]);else yComp = _optionUtils2.default.numericSortRule(a.value[1], b.value[1]);
-            return yComp;
-        } else {
-            return xComp;
-        }
-    };
-
-    this._seriesDataSortRule = sortRule;
-};
-
-EChartsAxisTypeOptionBuilder.prototype._decorate = function () {
-    new _axisRangeDecorator2.default(this).decorate();
-    _super._decorate.call(this);
-};
-
-exports.default = EChartsAxisTypeOptionBuilder;
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
 var _widget = __webpack_require__(20);
 
 var _widget2 = _interopRequireDefault(_widget);
@@ -3318,6 +3169,155 @@ EChartsWrapper.prototype.getLegendData = function () {
 exports.default = EChartsWrapper;
 
 /***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _echartsOptionBuilder = __webpack_require__(9);
+
+var _echartsOptionBuilder2 = _interopRequireDefault(_echartsOptionBuilder);
+
+var _optionUtils = __webpack_require__(1);
+
+var _optionUtils2 = _interopRequireDefault(_optionUtils);
+
+var _aggregationOperator = __webpack_require__(15);
+
+var _aggregationOperator2 = _interopRequireDefault(_aggregationOperator);
+
+var _echartsPointExtractor = __webpack_require__(10);
+
+var _echartsPointExtractor2 = _interopRequireDefault(_echartsPointExtractor);
+
+var _axisRangeDecorator = __webpack_require__(42);
+
+var _axisRangeDecorator2 = _interopRequireDefault(_axisRangeDecorator);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var _super = _echartsOptionBuilder2.default.prototype;
+
+function EChartsAxisTypeOptionBuilder() {
+    _super.constructor.call(this);
+}
+
+EChartsAxisTypeOptionBuilder.prototype = Object.create(_super);
+EChartsAxisTypeOptionBuilder.prototype.constructor = EChartsAxisTypeOptionBuilder;
+
+EChartsAxisTypeOptionBuilder.prototype._defaultOptions = function () {
+    var opt = _super._defaultOptions.call(this);
+    $.extend(true, opt, {
+        dataZoom: [{
+            id: 'insideZoomX',
+            type: 'inside',
+            filterMode: 'none',
+            xAxisIndex: [0],
+            disabled: true
+        }, {
+            id: 'insideZoomY',
+            type: 'inside',
+            filterMode: 'none',
+            yAxisIndex: [0],
+            disabled: true
+        }]
+    });
+    return opt;
+};
+
+EChartsAxisTypeOptionBuilder.prototype._newSeriesExtractor = function (option) {
+    option = option || {};
+    var xAxisIndex = option.xAxisIndex || 0;
+    var yAxisIndex = option.yAxisIndex || 0;
+
+    var localData = this.getLocalData(0);
+    var dataColumns = this.getSeriesDataColumns(0);
+    var aggregation = dataColumns[1 + yAxisIndex].aggregation;
+    var hasAggregation = aggregation && aggregation !== 'none';
+    var xIndexes = this.getColumnIndexes(this.bOptions.xAxis[0].selected, localData.columns);
+    var yIndexes = this.getColumnIndexes(this.bOptions.yAxis[0].selected, localData.columns);
+
+    var extractor = new _echartsPointExtractor2.default();
+
+    extractor.setTarget({
+        index: [xIndexes[xAxisIndex]],
+        type: _optionUtils2.default.getAxisType(localData.columns[xIndexes[0]]),
+        isKey: hasAggregation ? true : false
+    });
+
+    extractor.setTarget({
+        index: [yIndexes[yAxisIndex]],
+        type: aggregation ? 'value' : _optionUtils2.default.getAxisType(localData.columns[yIndexes[0]]),
+        isKey: false
+    });
+
+    if (hasAggregation) {
+        extractor.setExtractOperator(function (pointObject) {
+            var operator = new _aggregationOperator2.default(pointObject.value);
+            for (var i = 0; i < pointObject.indexList.length; i++) {
+                operator.add(pointObject.indexList[i], pointObject.point[i][1]);
+            }
+            return [{ value: pointObject.value.concat(operator.calc(aggregation)), dataIndexes: pointObject.indexList }];
+        });
+    }
+    return extractor;
+};
+
+EChartsAxisTypeOptionBuilder.prototype._buildSeriesData = function () {
+    var aggregation = this.filterNullColumn(this.bOptions.yAxis[0].selected)[0].aggregation;
+
+    for (var s in this.series) {
+        this.series[s].data = this.series[s].extractor.extract(aggregation);
+        if (this._seriesDataSortRule) {
+            this.series[s].data = this.series[s].data.sort(this._seriesDataSortRule);
+        }
+    }
+};
+
+EChartsAxisTypeOptionBuilder.prototype.getDistinctColorByList = function () {
+    var colorByList = [];
+    var colorByName;
+    for (var s in this.eOptions.series) {
+        if (this.eOptions.series[s].virtualSeries) continue;
+        colorByName = this.eOptions.series[s].name;
+        if (colorByList.indexOf(colorByName) === -1) colorByList.push(colorByName);
+    }
+    return colorByList.sort();
+};
+
+EChartsAxisTypeOptionBuilder.prototype._setSeriesDataSortRule = function () {
+    var xAxisType = this._getColumnDataType(this.filterNullColumn(this.bOptions.xAxis[0].selected));
+    var yAxisType = this._getColumnDataType(this.filterNullColumn(this.bOptions.yAxis[0].selected));
+
+    var sortRule = function sortRule(a, b) {
+        var xComp;
+        if (xAxisType === 'category') xComp = _optionUtils2.default.stringSortRule(a.value[0], b.value[0]);else if (xAxisType === 'time') xComp = _optionUtils2.default.timeSortRule(a.value[0], b.value[0]);else xComp = _optionUtils2.default.numericSortRule(a.value[0], b.value[0]);
+
+        if (xComp === 0) {
+            var yComp;
+            if (yAxisType === 'category') yComp = _optionUtils2.default.stringSortRule(a.value[1], b.value[1]);else if (yAxisType === 'time') yComp = _optionUtils2.default.timeSortRule(a.value[1], b.value[1]);else yComp = _optionUtils2.default.numericSortRule(a.value[1], b.value[1]);
+            return yComp;
+        } else {
+            return xComp;
+        }
+    };
+
+    this._seriesDataSortRule = sortRule;
+};
+
+EChartsAxisTypeOptionBuilder.prototype._decorate = function () {
+    new _axisRangeDecorator2.default(this).decorate();
+    _super._decorate.call(this);
+};
+
+exports.default = EChartsAxisTypeOptionBuilder;
+
+/***/ }),
 /* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -3898,7 +3898,7 @@ var _optionUtils = __webpack_require__(1);
 
 var _optionUtils2 = _interopRequireDefault(_optionUtils);
 
-var _echartsAxisTypeOptionBuilder = __webpack_require__(13);
+var _echartsAxisTypeOptionBuilder = __webpack_require__(14);
 
 var _echartsAxisTypeOptionBuilder2 = _interopRequireDefault(_echartsAxisTypeOptionBuilder);
 
@@ -4306,7 +4306,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsWrapper = __webpack_require__(14);
+var _echartsWrapper = __webpack_require__(13);
 
 var _echartsWrapper2 = _interopRequireDefault(_echartsWrapper);
 
@@ -4663,7 +4663,7 @@ var _aggregationOperator = __webpack_require__(15);
 
 var _aggregationOperator2 = _interopRequireDefault(_aggregationOperator);
 
-var _echartsAxisTypeOptionBuilder = __webpack_require__(13);
+var _echartsAxisTypeOptionBuilder = __webpack_require__(14);
 
 var _echartsAxisTypeOptionBuilder2 = _interopRequireDefault(_echartsAxisTypeOptionBuilder);
 
@@ -4841,7 +4841,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsWrapper = __webpack_require__(14);
+var _echartsWrapper = __webpack_require__(13);
 
 var _echartsWrapper2 = _interopRequireDefault(_echartsWrapper);
 
@@ -5267,7 +5267,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsAxisTypeOptionBuilder = __webpack_require__(13);
+var _echartsAxisTypeOptionBuilder = __webpack_require__(14);
 
 var _echartsAxisTypeOptionBuilder2 = _interopRequireDefault(_echartsAxisTypeOptionBuilder);
 
@@ -5626,7 +5626,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsAxisTypeOptionBuilder = __webpack_require__(13);
+var _echartsAxisTypeOptionBuilder = __webpack_require__(14);
 
 var _echartsAxisTypeOptionBuilder2 = _interopRequireDefault(_echartsAxisTypeOptionBuilder);
 
@@ -5873,7 +5873,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsAxisTypeOptionBuilder = __webpack_require__(13);
+var _echartsAxisTypeOptionBuilder = __webpack_require__(14);
 
 var _echartsAxisTypeOptionBuilder2 = _interopRequireDefault(_echartsAxisTypeOptionBuilder);
 
@@ -6133,7 +6133,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsWrapper = __webpack_require__(14);
+var _echartsWrapper = __webpack_require__(13);
 
 var _echartsWrapper2 = _interopRequireDefault(_echartsWrapper);
 
@@ -7544,7 +7544,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsWrapper = __webpack_require__(14);
+var _echartsWrapper = __webpack_require__(13);
 
 var _echartsWrapper2 = _interopRequireDefault(_echartsWrapper);
 
@@ -11400,7 +11400,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsWrapper = __webpack_require__(14);
+var _echartsWrapper = __webpack_require__(13);
 
 var _echartsWrapper2 = _interopRequireDefault(_echartsWrapper);
 
@@ -11702,7 +11702,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsAxisTypeOptionBuilder = __webpack_require__(13);
+var _echartsAxisTypeOptionBuilder = __webpack_require__(14);
 
 var _echartsAxisTypeOptionBuilder2 = _interopRequireDefault(_echartsAxisTypeOptionBuilder);
 
@@ -12080,7 +12080,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsAxisTypeOptionBuilder = __webpack_require__(13);
+var _echartsAxisTypeOptionBuilder = __webpack_require__(14);
 
 var _echartsAxisTypeOptionBuilder2 = _interopRequireDefault(_echartsAxisTypeOptionBuilder);
 
@@ -12197,7 +12197,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsAxisTypeOptionBuilder = __webpack_require__(13);
+var _echartsAxisTypeOptionBuilder = __webpack_require__(14);
 
 var _echartsAxisTypeOptionBuilder2 = _interopRequireDefault(_echartsAxisTypeOptionBuilder);
 
@@ -13430,7 +13430,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsAxisTypeOptionBuilder = __webpack_require__(13);
+var _echartsAxisTypeOptionBuilder = __webpack_require__(14);
 
 var _echartsAxisTypeOptionBuilder2 = _interopRequireDefault(_echartsAxisTypeOptionBuilder);
 
@@ -16718,9 +16718,9 @@ var _echartsScatter = __webpack_require__(53);
 
 var _echartsScatter2 = _interopRequireDefault(_echartsScatter);
 
-var _jqwidgetsTable = __webpack_require__(302);
+var _handsontableTable = __webpack_require__(302);
 
-var _jqwidgetsTable2 = _interopRequireDefault(_jqwidgetsTable);
+var _handsontableTable2 = _interopRequireDefault(_handsontableTable);
 
 var _echartsTreemap = __webpack_require__(304);
 
@@ -16737,6 +16737,7 @@ var _echartsDonut2 = _interopRequireDefault(_echartsDonut);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // import scattermap from '../wrapper/echarts/types/echarts-scattermap';
+//import table from '../wrapper/jqwidgets/jqwidgets-table'
 exports.area = _echartsArea2.default;
 exports.areaStacked = _echartsAreaStacked2.default;
 exports.areaStacked100 = _echartsAreaStacked4.default;
@@ -16763,7 +16764,7 @@ exports.pie = _echartsPie2.default;
 exports.qqplot = _echartsQqplot2.default;
 exports.roccurve = _echartsRoccurve2.default;
 exports.scatter = _echartsScatter2.default;
-exports.table = _jqwidgetsTable2.default;
+exports.table = _handsontableTable2.default;
 exports.treemap = _echartsTreemap2.default;
 exports.map = _echartsMap2.default;
 exports.donut = _echartsDonut2.default; /**
@@ -16989,7 +16990,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsAxisTypeOptionBuilder = __webpack_require__(13);
+var _echartsAxisTypeOptionBuilder = __webpack_require__(14);
 
 var _echartsAxisTypeOptionBuilder2 = _interopRequireDefault(_echartsAxisTypeOptionBuilder);
 
@@ -17594,7 +17595,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _echartsWrapper = __webpack_require__(14);
+var _echartsWrapper = __webpack_require__(13);
 
 var _echartsWrapper2 = _interopRequireDefault(_echartsWrapper);
 
@@ -17965,7 +17966,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsWrapper = __webpack_require__(14);
+var _echartsWrapper = __webpack_require__(13);
 
 var _echartsWrapper2 = _interopRequireDefault(_echartsWrapper);
 
@@ -18156,7 +18157,7 @@ var _echartsPointBycolumnnamesExtractor = __webpack_require__(36);
 
 var _echartsPointBycolumnnamesExtractor2 = _interopRequireDefault(_echartsPointBycolumnnamesExtractor);
 
-var _echartsAxisTypeOptionBuilder = __webpack_require__(13);
+var _echartsAxisTypeOptionBuilder = __webpack_require__(14);
 
 var _echartsAxisTypeOptionBuilder2 = _interopRequireDefault(_echartsAxisTypeOptionBuilder);
 
@@ -18287,7 +18288,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsWrapper = __webpack_require__(14);
+var _echartsWrapper = __webpack_require__(13);
 
 var _echartsWrapper2 = _interopRequireDefault(_echartsWrapper);
 
@@ -18345,7 +18346,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsAxisTypeOptionBuilder = __webpack_require__(13);
+var _echartsAxisTypeOptionBuilder = __webpack_require__(14);
 
 var _echartsAxisTypeOptionBuilder2 = _interopRequireDefault(_echartsAxisTypeOptionBuilder);
 
@@ -18559,7 +18560,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsWrapper = __webpack_require__(14);
+var _echartsWrapper = __webpack_require__(13);
 
 var _echartsWrapper2 = _interopRequireDefault(_echartsWrapper);
 
@@ -18809,7 +18810,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsAxisTypeOptionBuilder = __webpack_require__(13);
+var _echartsAxisTypeOptionBuilder = __webpack_require__(14);
 
 var _echartsAxisTypeOptionBuilder2 = _interopRequireDefault(_echartsAxisTypeOptionBuilder);
 
@@ -19238,7 +19239,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsWrapper = __webpack_require__(14);
+var _echartsWrapper = __webpack_require__(13);
 
 var _echartsWrapper2 = _interopRequireDefault(_echartsWrapper);
 
@@ -19392,7 +19393,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsAxisTypeOptionBuilder = __webpack_require__(13);
+var _echartsAxisTypeOptionBuilder = __webpack_require__(14);
 
 var _echartsAxisTypeOptionBuilder2 = _interopRequireDefault(_echartsAxisTypeOptionBuilder);
 
@@ -20140,7 +20141,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsWrapper = __webpack_require__(14);
+var _echartsWrapper = __webpack_require__(13);
 
 var _echartsWrapper2 = _interopRequireDefault(_echartsWrapper);
 
@@ -20183,7 +20184,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsAxisTypeOptionBuilder = __webpack_require__(13);
+var _echartsAxisTypeOptionBuilder = __webpack_require__(14);
 
 var _echartsAxisTypeOptionBuilder2 = _interopRequireDefault(_echartsAxisTypeOptionBuilder);
 
@@ -20451,7 +20452,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsWrapper = __webpack_require__(14);
+var _echartsWrapper = __webpack_require__(13);
 
 var _echartsWrapper2 = _interopRequireDefault(_echartsWrapper);
 
@@ -20505,7 +20506,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsAxisTypeOptionBuilder = __webpack_require__(13);
+var _echartsAxisTypeOptionBuilder = __webpack_require__(14);
 
 var _echartsAxisTypeOptionBuilder2 = _interopRequireDefault(_echartsAxisTypeOptionBuilder);
 
@@ -20639,7 +20640,7 @@ var _echartsPointWithCategorykeyExtractor = __webpack_require__(19);
 
 var _echartsPointWithCategorykeyExtractor2 = _interopRequireDefault(_echartsPointWithCategorykeyExtractor);
 
-var _echartsAxisTypeOptionBuilder = __webpack_require__(13);
+var _echartsAxisTypeOptionBuilder = __webpack_require__(14);
 
 var _echartsAxisTypeOptionBuilder2 = _interopRequireDefault(_echartsAxisTypeOptionBuilder);
 
@@ -20813,7 +20814,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsWrapper = __webpack_require__(14);
+var _echartsWrapper = __webpack_require__(13);
 
 var _echartsWrapper2 = _interopRequireDefault(_echartsWrapper);
 
@@ -20864,7 +20865,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsAxisTypeOptionBuilder = __webpack_require__(13);
+var _echartsAxisTypeOptionBuilder = __webpack_require__(14);
 
 var _echartsAxisTypeOptionBuilder2 = _interopRequireDefault(_echartsAxisTypeOptionBuilder);
 
@@ -21164,7 +21165,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsWrapper = __webpack_require__(14);
+var _echartsWrapper = __webpack_require__(13);
 
 var _echartsWrapper2 = _interopRequireDefault(_echartsWrapper);
 
@@ -21615,7 +21616,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsWrapper = __webpack_require__(14);
+var _echartsWrapper = __webpack_require__(13);
 
 var _echartsWrapper2 = _interopRequireDefault(_echartsWrapper);
 
@@ -21846,7 +21847,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsWrapper = __webpack_require__(14);
+var _echartsWrapper = __webpack_require__(13);
 
 var _echartsWrapper2 = _interopRequireDefault(_echartsWrapper);
 
@@ -22123,10 +22124,10 @@ exports.default = EChartsPieCalculatedOptionBuilder;
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 
-var _echartsWrapper = __webpack_require__(14);
+var _echartsWrapper = __webpack_require__(13);
 
 var _echartsWrapper2 = _interopRequireDefault(_echartsWrapper);
 
@@ -22148,7 +22149,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 
 function EChartsQQPlot(parentId, options) {
-  _echartsWrapper2.default.call(this, parentId, options);
+    _echartsWrapper2.default.call(this, parentId, options);
 }
 
 EChartsQQPlot.prototype = Object.create(_echartsWrapper2.default.prototype);
@@ -22156,12 +22157,12 @@ EChartsQQPlot.prototype.constructor = EChartsQQPlot;
 
 EChartsQQPlot.prototype.render = function () {
 
-  this.seriesHelper = new _echartsQqplotOptionBuilder2.default();
+    this.seriesHelper = new _echartsQqplotOptionBuilder2.default();
 
-  var opt = this.seriesHelper.buildOptions(this.options);
-  this._bindInternalOptions(this.seriesHelper);
-  this._setEChartOption(opt);
-  this._backupItemStyles();
+    var opt = this.seriesHelper.buildOptions(this.options);
+    this._bindInternalOptions(this.seriesHelper);
+    this._setEChartOption(opt);
+    this._backupItemStyles();
 };
 
 // Alias['qqplot'] = EChartsQQPlot;
@@ -23066,14 +23067,10 @@ exports.default = EChartsROCCurveCalculatedOptionBuilder;
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.jQWidgetsTableOptionBuilder = undefined;
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; /**
-                                                                                                                                                                                                                                                                               * Source: jqwidgets-table.js
-                                                                                                                                                                                                                                                                               * Created by daewon.park on 2017-04-23.
-                                                                                                                                                                                                                                                                               */
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _widget = __webpack_require__(20);
 
@@ -23083,170 +23080,185 @@ var _validationError = __webpack_require__(25);
 
 var _validationError2 = _interopRequireDefault(_validationError);
 
-var _chartUtils = __webpack_require__(17);
-
-var _chartUtils2 = _interopRequireDefault(_chartUtils);
-
-var _utils = __webpack_require__(47);
-
 var _chartOptionBuilder = __webpack_require__(34);
 
 var _chartOptionBuilder2 = _interopRequireDefault(_chartOptionBuilder);
+
+var _echartsWrapper = __webpack_require__(13);
+
+var _echartsWrapper2 = _interopRequireDefault(_echartsWrapper);
 
 var _preferenceUtils = __webpack_require__(165);
 
 var _preferenceUtils2 = _interopRequireDefault(_preferenceUtils);
 
+var _utils = __webpack_require__(47);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function jQWidgetsTable(parentId, options) {
+function handsontableTable(parentId, options) {
     _widget2.default.call(this, parentId, options);
 }
 
-jQWidgetsTable.prototype = Object.create(_widget2.default.prototype);
-jQWidgetsTable.prototype.constructor = jQWidgetsTable;
+handsontableTable.prototype = Object.create(_widget2.default.prototype);
+handsontableTable.prototype.constructor = handsontableTable;
 
-jQWidgetsTable.prototype.destroy = function () {
+handsontableTable.prototype.destroy = function () {
     try {
-        this.$mainControl.jqxGrid('destroy');
-    } catch (ex) {
-        // ignore exception
-    }
-    try {
-        this.$contextMenu.jqxMenu('destroy');
+        $(window).off('resize', this.resizeHandler);
+        this.table.destroy();
     } catch (ex) {
         // ignore exception
     }
 };
 
-jQWidgetsTable.prototype._createContents = function ($parent) {
+handsontableTable.prototype._createContents = function ($parent) {
     var _this = this;
-    _this.autoresizeFlag = false;
-    _this.columnWidth = {};
 
-    this.$mainControl = $('<div class="bcharts-chart" chart-vendor="jQWidgets"></div>');
+    this.$mainControl = $('<div class="bcharts-chart"></div>');
+    this.$tableControl = $('<div id="bchart-handson-table"></div>');
+    this.$mainControl.append(this.$tableControl);
     $parent.append(this.$mainControl);
 
     this.$mainControl.hide();
-    // Initiate jqxGrid
-    this.$mainControl.jqxGrid();
 
-    // Bind Grid Events
-    this.$mainControl.on('cellclick', function (event) {
-        var args = event.args;
-        if (args.rightclick) {
-            var value = _chartUtils2.default.parseString(args.owner.source._source.origindata[args.rowindex][args.columnindex - 1], true);
-            // value 가 null 혹은 undefined 일 경우 $.data 에 바로 넣고 빼면 동일하게 null 로 변해버린다.
-            // data 라는 키를 통해 Object 형태로 저장한다.
-            _this.$contextMenu.find('li[action="view_cell"]').data('cell_value', { data: value });
-            _this.$contextMenu.find('li[action="auto_resize_column"]').data('datafield', { data: args.datafield });
-            if (args.datafield !== '_no_') {
-                _this._openContextMenu(event.args.originalEvent);
+    this.resizeHandler = function () {
+        _this.redrawLayout();
+    };
+    $(window).resize(this.resizeHandler);
+};
+
+handsontableTable.prototype.clear = function () {};
+
+handsontableTable.prototype.render = function () {
+    var _this = this;
+    if (this.options.source.localData[0].data.length == 0) {
+        throw new _validationError2.default('No data to display');
+    }
+
+    if (this.options.plotOptions.table.border) {
+        this.$mainControl.css('border', this.options.plotOptions.table.border);
+    }
+
+    var builderOptions = {
+        columnWidth: _this.columnWidth
+    };
+
+    this.builder = new handsontableTableOptionBuilder();
+    this.builder.setBuilderOptions(builderOptions);
+
+    var opt = this.builder.buildOptions(this.options, this.$mainControl.width(), this.$mainControl.height(), this._makeContextMenu());
+
+    this.table = new Handsontable(this.$tableControl[0], opt);
+
+    this.$mainControl.show();
+};
+
+handsontableTable.prototype.redrawLayout = function () {
+    var _this = this;
+
+    clearTimeout(this._redrawLayoutJob);
+    this._redrawLayoutJob = setTimeout(function () {
+        if (_this.table && _this.$parent.attr('status') !== 'error') {
+            var updateOption = _this.table.getSettings();
+            updateOption.width = _this.$parent.width();
+            updateOption.height = _this.$parent.height();
+            _this.table.updateSettings(updateOption);
+        }
+    }, 300);
+};
+
+handsontableTable.prototype.selectRange = function () {
+    // do nothing, interaction 추후 개발 필요 시 구현
+};
+
+handsontableTable.prototype.getSelectedRange = function () {
+    // do nothing, interaction 추후 개발 필요 시 구현
+};
+
+handsontableTable.prototype._makeContextMenu = function () {
+    // OptionBuilder에 넣어야 되는데 사정상...
+    var _this = this;
+    var contextMenu = {
+        items: {
+            "option_1": {
+                name: 'View cell',
+                callback: function callback(key, selection, clickEvent) {
+                    _this._openCellViewDialog(this.getValue());
+                }
+            },
+            "option_2": {
+                name: 'Auto resize this column',
+                callback: function callback(key, selection, clickEvent) {
+                    var colHeaders = this.getColHeader();
+                    var plugin = this.getPlugin('manualColumnResize');
+                    var selectedCol = selection[0].start.col;
+                    plugin.setManualSize(selectedCol, colHeaders[selectedCol].length * 10 > 70 ? colHeaders[selectedCol].length * 10 : 70);
+                    this.updateSettings({});
+                }
+            },
+            "option_3": {
+                name: 'Auto resize all columns',
+                callback: function callback() {
+                    var colHeaders = this.getColHeader();
+                    var colWidths = [];
+                    var plugin = this.getPlugin('manualColumnResize');
+
+                    for (var i = 0; i < colHeaders.length; i++) {
+                        plugin.setManualSize(i, colHeaders[i].length * 10 > 70 ? colHeaders[i].length * 10 : 70);
+                    }
+                    // plugin.updatePlugin();
+                    // manual에서는 위에걸로 하라고 하는데 안먹어서 그냥 이걸로....
+                    this.updateSettings({});
+                }
+            },
+            "option_4": {
+                name: 'Copy columns to clipboard',
+                callback: function callback() {
+                    var columns = this.getColHeader();
+                    var isChrome = !!window.chrome && !!window.chrome.webstore;
+                    var isIE = /* @cc_on!@*/false || !!document.documentMode;
+
+                    if (isChrome) {
+                        var textField = document.createElement('textarea');
+                        textField.innerText = columns.join(', ');
+                        document.body.appendChild(textField);
+                        textField.select();
+                        document.execCommand('copy');
+                        textField.remove();
+                    } else if (isIE) {
+                        window.clipboardData.setData('Text', columns.join(', '));
+                    }
+                }
             }
         }
-    });
-    this.$mainControl.on('columnresized', function (event) {
-        var column = event.args.datafield;
-        var newwidth = event.args.newwidth;
-        var width = newwidth * 1.08;
-        var headerwidth = event.args.columntext.length * 7;
-        if (newwidth < headerwidth && _this.autoresizeFlag) width = newwidth;
-        if (width > 500 && _this.autoresizeFlag) width = 500;
-        _this.columnWidth[event.args.columntext] = width;
-        _this.$mainControl.jqxGrid('setcolumnproperty', column, 'width', width);
-    });
+    };
 
-    this.$mainControl.on('columnclick', function (event) {
-        if (event.args.column.text == 'No.') {
-            _this._autoResizeColumns();
-        }
-    });
-
-    $parent.append('' + '<div class="bcharts-grid-context-menu">' + '   <ul>' + '       <li action="view_cell">View cell</li>' + '       <li action="auto_resize_column">Auto resize this column</li>' + '       <li action="auto_resize_all_columns">Auto resize all columns</li>' + '       <li action="copy columns">Copy columns to clipboard</li>' + '   </ul>' + '</div>');
-    this.$contextMenu = $parent.find('.bcharts-grid-context-menu');
-    this.$contextMenu.jqxMenu({
-        theme: 'office',
-        autoOpenPopup: false,
-        mode: 'popup',
-        width: 200,
-        animationShowDuration: 0,
-        animationHideDuration: 0
-    });
-
-    this.$contextMenu.on('itemclick', function (event) {
-        // get the clicked LI element.
-        var $el = $(event.args);
-        if ($el.attr('action') == 'view_cell') {
-            _this._openCellViewDialog($el.data('cell_value'));
-        } else if ($el.attr('action') == 'auto_resize_all_columns') {
-            _this.autoresizeFlag = true;
-            _this._autoResizeColumns();
-            _this.autoresizeFlag = false;
-        } else if ($el.attr('action') == 'auto_resize_column') {
-            _this.autoresizeFlag = true;
-            _this._autoResizeColumns($el.data('datafield'));
-            _this.autoresizeFlag = false;
-        } else if ($el.attr('action') == 'copy columns') {
-            _this._copyColumns();
-        }
-    });
+    return contextMenu;
 };
 
-jQWidgetsTable.prototype._copyColumns = function () {
-    var columns = $.map(this.builder.jqxOptions.columns || [], function (n, i) {
-        if (i) return n.text; // index 0 번째는 No.
-    });
-
-    var isChrome = !!window.chrome && !!window.chrome.webstore;
-    var isIE = /* @cc_on!@*/false || !!document.documentMode;
-
-    if (isChrome) {
-        var textField = document.createElement('textarea');
-        textField.innerText = columns.join(', ');
-        document.body.appendChild(textField);
-        textField.select();
-        document.execCommand('copy');
-        textField.remove();
-    } else if (isIE) {
-        window.clipboardData.setData('Text', columns.join(', '));
-    }
-};
-
-jQWidgetsTable.prototype._autoResizeColumns = function (datafield) {
-    if (datafield) this.$mainControl.jqxGrid('autoresizecolumn', datafield.data);else this.$mainControl.jqxGrid('autoresizecolumns');
-};
-
-jQWidgetsTable.prototype._setContents = function ($dialog, contents) {
-    if ($.isPlainObject(contents)) {
-        $dialog.find('.bcharts-dialog-contents').append('<div class="bcharts-cell-viewer">' + JSON.stringify(contents, null, 4) + '</div>');
-    } else if ($.isArray(contents)) {
-        $dialog.find('.bcharts-dialog-contents').append('<div class="bcharts-cell-viewer">' + JSON.stringify(contents) + '</div>');
-    } else {
-        $dialog.find('.bcharts-dialog-contents').text(contents);
-    }
-};
-
-jQWidgetsTable.prototype._openCellViewDialog = function (cellValue) {
+handsontableTable.prototype._openCellViewDialog = function (cellValue) {
     var $dialog = $('<div class="bcharts-dialog">' + '   <div class="bcharts-dialog-header">Cell Viewer</div>' + '   <div class="bcharts-dialog-contents-wrapper">' + '       <div class="bcharts-dialog-contents cellviewer"></div>' + '   </div>' + '</div>');
     var dialogWidth = 300;
     var dialogHeight = 300;
-    if (cellValue.data) {
+    if (cellValue) {
         try {
-            var jsonObj = $.parseJSON(cellValue.data);
+            var jsonObj = $.parseJSON(cellValue);
             if ((typeof jsonObj === 'undefined' ? 'undefined' : _typeof(jsonObj)) === 'object') {
                 $dialog.find('.bcharts-dialog-contents').append('<div class="bcharts-cell-viewer">' + JSON.stringify(jsonObj, null, 4) + '</div>');
                 dialogWidth = 800;
                 dialogHeight = 800;
             } else {
-                this._setContents($dialog, cellValue.data);
+                this._setContents($dialog, cellValue);
             }
         } catch (err) {
-            this._setContents($dialog, cellValue.data);
+            this._setContents($dialog, cellValue);
         }
     } else {
-        $dialog.find('.bcharts-dialog-contents').append('<span style="color: #ff3333">' + cellValue.data + '</span>');
+        $dialog.find('.bcharts-dialog-contents').append('<span style="color: #ff3333">' + cellValue + '</span>');
     }
 
+    // TODO : AUI Widget 입니다. popup 만들면 변경 요망
     this.$parent.append($dialog);
     $dialog.find('.bcharts-dialog-contents').perfectScrollbar();
     $dialog.jqxWindow({
@@ -23265,338 +23277,108 @@ jQWidgetsTable.prototype._openCellViewDialog = function (cellValue) {
     $dialog.jqxWindow('focus');
 };
 
-jQWidgetsTable.prototype.clear = function () {};
-
-jQWidgetsTable.prototype.getDataURL = function (options) {
-    // TODO 이미지 반환 로직 구현해야함 by daewon.park
-    // console.log(options);
-    var theCanvas = '';
-
-    // html2canvas(this.$mainControl).then(function(canvas) { cp(canvas); })
-    // ; // here send canvas to cp
-    // var cp = function(canvas) {
-    //     var url = canvas.toDataURL("image/png");
-    //     console.log(url)
-    //     return url;
-    // };
-    // html2canvas(this.$mainControl, {
-    //     onrendered: function (canvas) {
-    //         theCanvas = canvas;
-    //         var url = canvas.toDataURL("image/png");
-    //         console.log(url)
-    //         return url;
-    //     }
-    // });
-
-    // var promise = $.Deferred();
-    // var invitationCard = new Image();
-    // var _this = this;
-    // var promise = new Promise(function (resolve) {
-    //     html2canvas(_this.$mainControl, {
-    //         onrendered: function (canvas) {
-    //             resolve(canvas.toDataURL('image/png'));
-    //         }
-    //     });
-    // }).then(function(url){
-    //     return url;
-    // });
-
-    // var promise = $.Deferred();
-    // // var invitationCard = new Image();
-    // html2canvas(this.$mainControl, {
-    //     onrendered: function (canvas) {
-    //         var convertedImage = canvas.toDataURL('image/png');
-    //         promise.resolve(convertedImage);
-    //         // invitationCard.onload = function () {
-    //         // };
-    //         // invitationCard.src = convertedImage;
-    //     }
-    // });
-    // return promise.then(function (url) {
-    //     return url
-    // });
-
-    // html2canvas(this.$mainControl, {
-    //     onrendered: function(canvas) {
-    //         var convertedImage = canvas.toDataURL('image/png');
-    //         resolve(canvas.toDataURL('image/png'));
-    //         //promise.resolve(convertedImage);
-    //         // invitationCard.onload = function () {
-    //         //     promise.resolve(invitationCard);
-    //         // };
-    //         // invitationCard.src = convertedImage;
-    //     }
-    // });
-    // return promise;
+handsontableTable.prototype._setContents = function ($dialog, contents) {
+    if ($.isPlainObject(contents)) {
+        $dialog.find('.bcharts-dialog-contents').append('<div class="bcharts-cell-viewer">' + JSON.stringify(contents, null, 4) + '</div>');
+    } else if ($.isArray(contents)) {
+        $dialog.find('.bcharts-dialog-contents').append('<div class="bcharts-cell-viewer">' + JSON.stringify(contents) + '</div>');
+    } else {
+        $dialog.find('.bcharts-dialog-contents').text(contents);
+    }
 };
 
-jQWidgetsTable.prototype.render = function () {
-    var _this = this;
-    if (this.options.source.localData[0].data.length == 0) {
-        throw new _validationError2.default('No data to display');
-    }
+exports.default = handsontableTable;
 
-    if (this.options.plotOptions.table.border) {
-        this.$mainControl.css('border', this.options.plotOptions.table.border);
-    }
 
-    var builderOptions = {
-        columnWidth: _this.columnWidth
-    };
-
-    this.builder = new jQWidgetsTableOptionBuilder();
-    this.builder.setBuilderOptions(builderOptions);
-
-    var opt = this.builder.buildOptions(this.options);
-    this.$mainControl.jqxGrid(opt);
-    for (var column in this.columnWidth) {
-        var dataFieldName = '__' + column;
-        var width = this.columnWidth[column];
-        this.$mainControl.jqxGrid('setcolumnproperty', dataFieldName, 'width', width);
-    }
-    this.$mainControl.show();
-};
-
-jQWidgetsTable.prototype.selectRange = function () {
-    // do nothing, interaction 추후 개발 필요 시 구현
-};
-
-jQWidgetsTable.prototype.getSelectedRange = function () {
-    // do nothing, interaction 추후 개발 필요 시 구현
-};
-
-jQWidgetsTable.prototype._openContextMenu = function (event) {
-    var _this = this;
-
-    var scrollTop = $(window).scrollTop();
-    var scrollLeft = $(window).scrollLeft();
-    var xOffset = 0;
-    var yOffset = 0;
-    var menuWidth = _this.$contextMenu.width();
-    var menuHeight = _this.$contextMenu.height();
-    var windowWidth = $(window).width();
-    var windowHeight = $(window).height();
-    var eventX = parseInt(event.clientX);
-    var eventY = parseInt(event.clientY);
-    if (eventX + menuWidth > windowWidth) {
-        xOffset = menuWidth;
-    }
-    if (eventY + menuHeight > windowHeight) {
-        yOffset = menuHeight;
-    }
-    _this.$contextMenu.jqxMenu('open', eventX + 5 + scrollLeft - xOffset, eventY + 5 + scrollTop - yOffset);
-};
-
-exports.default = jQWidgetsTable;
-
-// import ChartUtils from '../../helper/chart-utils';
-
-function jQWidgetsTableOptionBuilder() {
+function handsontableTableOptionBuilder() {
     _chartOptionBuilder2.default.call(this);
 }
 
-jQWidgetsTableOptionBuilder.prototype = Object.create(_chartOptionBuilder2.default.prototype);
-jQWidgetsTableOptionBuilder.prototype.constructor = jQWidgetsTableOptionBuilder;
+handsontableTableOptionBuilder.prototype = Object.create(_chartOptionBuilder2.default.prototype);
+handsontableTableOptionBuilder.prototype.constructor = handsontableTableOptionBuilder;
 
-jQWidgetsTableOptionBuilder.prototype.buildOptions = function (options) {
-    this.bOptions = options;
-    this.jqxOptions = this._defaultOptions();
-    var convertToPivot = _preferenceUtils2.default.getTableFormatter('pivot');
-
-    if (convertToPivot == 'true') {
-        if (this.bOptions.source.localData[0].data.length == 1) {
-            this._buildPivotTableColumns();
-            this._buildPivotSource();
-        } else {
-            this._buildTableColumns();
-            this._buildSource();
-        }
-    } else {
-        this._buildTableColumns();
-        this._buildSource();
-    }
-    return this.jqxOptions;
-};
-
-jQWidgetsTableOptionBuilder.prototype._defaultOptions = function () {
-    var opt = {
-        theme: 'office',
-        width: '100%',
-        height: '100%',
-        rowsheight: 25,
-        altrows: false,
-        filterable: false,
-        sortable: true,
-        columnsresize: true,
-        selectionmode: 'multiplecellsadvanced',
-        columnsautoresize: false,
-        headerZIndex: this.bOptions.source.localData[0].chartColumns.length
-    };
-
-    return opt;
-};
-
-jQWidgetsTableOptionBuilder.prototype.setBuilderOptions = function (options) {
+handsontableTableOptionBuilder.prototype.setBuilderOptions = function (options) {
     this.options = options;
 };
 
-jQWidgetsTableOptionBuilder.prototype._toFieldName = function (name) {
-    return '__' + name;
+handsontableTableOptionBuilder.prototype.buildOptions = function (options, width, height, contextMenu) {
+    this.bOptions = options;
+    this.handsontableTableOptions = this._defaultOptions(width, height);
+
+    this._buildData();
+    this._buildColumns();
+    this._buildMenu(contextMenu);
+
+    return this.handsontableTableOptions;
 };
 
-jQWidgetsTableOptionBuilder.prototype._buildSource = function () {
+handsontableTableOptionBuilder.prototype._defaultOptions = function (width, height) {
     var _this = this;
-    var source = {
-        localdata: _this.bOptions.source.localData[0].data,
-        origindata: _this.bOptions.source.localData[0].data,
-        datatype: 'array',
-        datafields: $.map(_this.bOptions.source.localData[0].columns, function (column, index) {
-            return {
-                format: _this._getColumnFormat(column.type, column.name, column.internalType),
-                name: _this._toFieldName(column.name),
-                type: column.type,
-                map: '' + index
-            };
-        })
+    var opt = {
+        readOnly: true,
+        rowHeaders: true,
+        filters: false,
+        dropdownMenu: false,
+        manualColumnResize: true,
+        columnSorting: true,
+        width: width,
+        height: height
     };
-    var dataAdapter = new $.jqx.dataAdapter(source);
-    this.jqxOptions.source = dataAdapter;
+    return opt;
 };
 
-jQWidgetsTableOptionBuilder.prototype._buildPivotSource = function () {
+handsontableTableOptionBuilder.prototype._buildData = function () {
     var _this = this;
-    var len = _this.bOptions.source.localData[0].data[0].length;
-    _this.makePivotArr = [], _this.originPivotArr = [];
-    var dataLen = _this.bOptions.source.localData[0].data.length;
-    for (var j = 0; j < len; j++) {
-        var arr = [],
-            originarr = [];
-        for (var i = 0; i < dataLen; i++) {
-            arr.push(_this.bOptions.source.localData[0].data[i][j]);
-            originarr.push(_this.bOptions.source.localData[0].data[i][j]);
+    var tableData = _this.bOptions.source.localData[0].data;
+
+    this.handsontableTableOptions.data = tableData;
+};
+
+handsontableTableOptionBuilder.prototype._buildColumns = function () {
+    var _this = this;
+    var colHeaders = [];
+    var colWidths = [];
+    var columns = [];
+
+    for (var i = 0; i < _this.bOptions.source.localData[0].columns.length; i++) {
+        var column = _this.bOptions.source.localData[0].columns[i];
+
+        // header 설정
+        colHeaders.push(column.name);
+
+        // header Width 설정
+        colWidths.push(column.name.length * 10 > 70 ? column.name.length * 10 : 70);
+
+        // column value 설정
+        var columnSetting = {};
+        if (column.type == 'date') {
+            columnSetting = {
+                type: 'time',
+                timeFormat: 'yyyy-MM-dd HH:mm:ss:fff',
+                correctFormat: true,
+                renderer: function renderer(hotInstance, TD, row, col, prop, value, cellProperties) {
+                    $(TD).attr('title', value);
+                    $(TD).text(value);
+                }
+            };
+        } else if (column.type == 'string') {
+            columnSetting = _this._createStringColumnSetting(column);
+        } else if (column.type == 'number') {
+            columnSetting = _this._createNumberColumnSetting(column, _this._getColumnFormat(column.type, column.name, column.internalType));
+        } else if (column.type == 'map') {
+            columnSetting = _this._createMapColumnSetting(column);
+        } else if (column.type.indexOf('[]') > -1) {
+            columnSetting = _this._createArrayColumnSetting(column);
         }
-        _this.makePivotArr.push(arr);
-        _this.originPivotArr.push(originarr);
+        columns.push(columnSetting);
     }
 
-    var source = {
-        localdata: _this.makePivotArr,
-        origindata: _this.originPivotArr,
-        datatype: 'number',
-        datafields: $.map(_this.jqxOptions.columns, function (column, index) {
-            return {
-                format: _this._getColumnFormat(column.type, column.name, column.internalType),
-                name: _this._toFieldName(index),
-                type: column.type,
-                map: '' + index
-            };
-        })
-    };
-    var dataAdapter = new $.jqx.dataAdapter(source);
-    this.jqxOptions.source = dataAdapter;
+    this.handsontableTableOptions.colHeaders = colHeaders;
+    this.handsontableTableOptions.colWidths = colWidths;
+    this.handsontableTableOptions.columns = columns;
 };
 
-jQWidgetsTableOptionBuilder.prototype._createNumberRenderer = function (idx) {
-    var _this = this;
-    var renderer = function renderer(row, column, value) {
-        var _cellValue = this.owner.source.records[row][column];
-        var _dataFields = this.owner.source._source.datafields;
-        var _columnIndex = function () {
-            for (var i in _dataFields) {
-                if (_dataFields[i].name === column) {
-                    return Number(_dataFields[i].map);
-                }
-            }
-        }();
-
-        if (Number.isNaN(_cellValue) || typeof _cellValue === 'undefined' || _cellValue === '' || _cellValue === null) {
-            var text = '' + this.owner.source._source.localdata[row][_columnIndex];
-            var $el = $('<div class="jqx-grid-cell-right-align" style="margin-top: 5.5px; color: #ff3333"></div>').text(text);
-            $el.attr('title', text);
-            return $el.wrapAll('<div/>').parent().html();
-        } else if (_dataFields[_columnIndex].format) {
-            var useFormat = Brightics.Chart.Helper.OptionUtils.parseFmtStrToObj(_dataFields[_columnIndex].format);
-            var $el = $('<div class="jqx-grid-cell-right-align" style="margin-top: 5.5px;"></div>');
-            if (useFormat.type === 'number') {
-                $el.text(parseFloat(_cellValue).toFixed(useFormat.digit));
-                $el.attr('title', parseFloat(_cellValue).toFixed(useFormat.digit));
-            } else if (useFormat.type === 'exponential') {
-                $el.text(parseFloat(_cellValue).toExponential(useFormat.digit));
-                $el.attr('title', parseFloat(_cellValue).toExponential(useFormat.digit));
-            }
-            return $el.wrapAll('<div/>').parent().html();
-        } else {
-            var $el = $('<div class="jqx-grid-cell-right-align" style="margin-top: 5.5px;"></div>').text(_cellValue);
-            if (_cellValue.toString().indexOf('e') !== -1) {
-                $el.css('color', '#626fdb');
-            }
-            $el.attr('title', _cellValue);
-            return $el.wrapAll('<div/>').parent().html();
-        }
-    };
-    return renderer;
-};
-
-jQWidgetsTableOptionBuilder.prototype._createStringRenderer = function (idx) {
-    var index = idx;
-    var renderer = function renderer(row, column, value) {
-        var _loadedData = this.owner.source.loadedData[row][index];
-        if (typeof _loadedData === 'boolean') {
-            _loadedData = _loadedData + '';
-        }
-        if (_loadedData) {
-            var $el = $('<div class="jqx-grid-cell-left-align" style="margin-top: 5.5px;"></div>').text(_loadedData);
-            $el.attr('title', _loadedData);
-            return $el.wrapAll('<div/>').parent().html();
-        } else if (_loadedData == null) {
-            var $el = $('<div class="jqx-grid-cell-left-align" style="margin-top: 5.5px; color: #ff3333"></div>').text('null');
-            $el.attr('title', 'null');
-            return $el.wrapAll('<div/>').parent().html();
-        } else {
-            var $el = $('<div class="jqx-grid-cell-left-align" style="margin-top: 5.5px; color: #ff3333"></div>').text(_loadedData);
-            $el.attr('title', _loadedData);
-            return $el.wrapAll('<div/>').parent().html();
-        }
-    };
-    return renderer;
-};
-
-jQWidgetsTableOptionBuilder.prototype._createMapRenderer = function (idx) {
-    var index = idx;
-    var renderer = function renderer(row, column, value) {
-        var _loadedData = this.owner.source.loadedData[row][index];
-        if (_loadedData) {
-            var $el = $('<div class="jqx-grid-cell-left-align" style="margin-top: 4px;"></div>').text(JSON.stringify(_loadedData));
-            $el.attr('title', JSON.stringify(_loadedData));
-            return $el.wrapAll('<div/>').parent().html();
-        } else {
-            var $el = $('<div class="jqx-grid-cell-left-align" style="margin-top: 4px; color: #ff3333;"></div>').text(JSON.stringify(_loadedData));
-            $el.attr('title', JSON.stringify(_loadedData));
-            return $el.wrapAll('<div/>').parent().html();
-        }
-    };
-    return renderer;
-};
-
-jQWidgetsTableOptionBuilder.prototype._createArrayRenderer = function (idx) {
-    var css = '';
-    var index = idx;
-    var renderer = function renderer(row, column, value) {
-        var _loadedData = this.owner.source.loadedData[row][index];
-        if (_loadedData) {
-            var $el = $('<div class="jqx-grid-cell-left-align" style="margin-top: 4px;"></div>').text(JSON.stringify(_loadedData));
-            $el.attr('title', JSON.stringify(_loadedData));
-            return $el.wrapAll('<div/>').parent().html();
-        } else {
-            var $el = $('<div class="jqx-grid-cell-left-align" style="margin-top: 4px; color: #ff3333;"></div>').text(JSON.stringify(_loadedData));
-            $el.attr('title', JSON.stringify(_loadedData));
-            return $el.wrapAll('<div/>').parent().html();
-        }
-    };
-    return renderer;
-};
-
-jQWidgetsTableOptionBuilder.prototype._getColumnFormat = function (type, name, internalType) {
+handsontableTableOptionBuilder.prototype._getColumnFormat = function (type, name, internalType) {
     for (var i in this.bOptions.plotOptions.table.formatter) {
         var formatter = this.bOptions.plotOptions.table.formatter[i];
         if (formatter.column === name) {
@@ -23624,96 +23406,84 @@ jQWidgetsTableOptionBuilder.prototype._getColumnFormat = function (type, name, i
     }
 };
 
-jQWidgetsTableOptionBuilder.prototype._getColumnWidth = function (name) {
-    return this.options.columnWidth[name] ? this.options.columnWidth[name] : 80;
+handsontableTableOptionBuilder.prototype._createStringColumnSetting = function (column) {
+    var renderer = function renderer(hotInstance, TD, row, col, prop, value, cellProperties) {
+        if (typeof value === 'boolean') {
+            value = value + '';
+        }
+
+        if (value) {
+            $(TD).attr('title', value);
+        } else if (value == null) {
+            value = 'null';
+            $(TD).attr('title', 'null');
+            $(TD).css('color', '#ff3333');
+        } else {
+            $(TD).attr('title', value);
+            $(TD).css('color', '#ff3333');
+        }
+        $(TD).text(value);
+    };
+    return { type: 'text', renderer: renderer };
 };
 
-jQWidgetsTableOptionBuilder.prototype._buildTableColumns = function () {
-    var _this = this;
-    var tableColumns = $.map(this.bOptions.source.localData[0].columns, function (column, index) {
-        column.name = _chartUtils2.default.convertHTMLSpecialChar(column.name);
-        var tooltiprenderer = function tooltiprenderer(element) {
-            $(element).attr('title', $(element).text());
-        };
-        var col = {
-            text: column.name,
-            datafield: _this._toFieldName(column.name),
-            width: _this._getColumnWidth(column.name),
-            rendered: tooltiprenderer
-        };
-        if (column.type == 'date') {
-            col.cellsformat = 'yyyy-MM-dd HH:mm:ss:fff';
-        } else if (column.type == 'string') {
-            col.cellsrenderer = _this._createStringRenderer(index);
-        } else if (column.type == 'number') {
-            col.cellsalign = 'right';
-            col.cellsrenderer = _this._createNumberRenderer(index);
-        } else if (column.type == 'map') {
-            col.cellsrenderer = _this._createMapRenderer(index);
-        } else if (column.type.indexOf('[]') > -1) {
-            col.cellsrenderer = _this._createArrayRenderer(index);
-        }
-        return col;
-    });
-    tableColumns.unshift({
-        text: 'No.',
-        pinned: true,
-        sortable: false,
-        menu: false,
-        editable: false,
-        groupable: false,
-        draggable: false,
-        datafield: '_no_', width: 30,
-        columntype: 'number', cellsformat: 'd', cellsalign: 'right',
-        cellsrenderer: function cellsrenderer(row, column, value) {
-            if (_this.bOptions.source.localData && _this.bOptions.source.localData[0]) {
-                var offset = _this.bOptions.source.localData[0].offset || 0;
-                return '<div align="right" style="margin:4px;">' + (value + offset + 1) + '</div>';
-            } else {
-                return '<div align="right" style="margin:4px;"></div>';
+handsontableTableOptionBuilder.prototype._createNumberColumnSetting = function (column, pattern) {
+    var renderer = function renderer(hotInstance, TD, row, col, prop, value, cellProperties) {
+        if (isNaN(value) || typeof value === 'undefined' || value === '' || value === null) {
+            value = '' + value;
+            $(TD).attr('title', value);
+            $(TD).css('color', '#ff3333');
+        } else if (pattern) {
+            var useFormat = Brightics.Chart.Helper.OptionUtils.parseFmtStrToObj(pattern);
+            if (useFormat.type === 'number') {
+                $(TD).attr('title', value);
+                value = parseFloat(value).toFixed(useFormat.digit);
+            } else if (useFormat.type === 'exponential') {
+                $(TD).attr('title', value);
+                value = parseFloat(value).toExponential(useFormat.digit);
             }
-        }
-    });
-    this.jqxOptions.columns = tableColumns;
-};
-
-jQWidgetsTableOptionBuilder.prototype._buildPivotTableColumns = function () {
-    var _this = this;
-
-    var tableColumns = $.map(_this.bOptions.source.localData[0].data, function (column, index) {
-        var col = {
-            text: index + 1,
-            datafield: _this._toFieldName(index),
-            width: 50
-        };
-        col.cellsalign = 'right';
-        col.cellsrenderer = _this._createNumberRenderer(index);
-
-        return col;
-    });
-
-    tableColumns.unshift({
-        text: 'Col.',
-        pinned: true,
-        sortable: false,
-        menu: false,
-        editable: false,
-        groupable: false,
-        draggable: false,
-        datafield: '_col_',
-        width: 80,
-        columntype: 'string',
-        cellsrenderer: function cellsrenderer(row, column, value) {
-            if (_this.bOptions.source.localData && _this.bOptions.source.localData[0]) {
-                return '<div align="right" style="margin:4px;">' + _this.bOptions.source.localData[0].columns[row].name + '</div>';
+        } else {
+            if (value.toString().indexOf('e') !== -1) {
+                $(TD).css('color', '#626fdb');
             }
+            $(TD).attr('title', value);
         }
-    });
+        $(TD).text(value);
+        $(TD).css('text-align', 'right');
+    };
 
-    this.jqxOptions.columns = tableColumns;
+    return { type: 'numeric', renderer: renderer };
 };
 
-exports.jQWidgetsTableOptionBuilder = jQWidgetsTableOptionBuilder;
+handsontableTableOptionBuilder.prototype._createMapColumnSetting = function (column) {
+    var renderer = function renderer(hotInstance, TD, row, col, prop, value, cellProperties) {
+        if (!value) {
+            $(TD).css('color', '#ff3333');
+        }
+        value = JSON.stringify(value);
+        $(TD).attr('title', value);
+        $(TD).text(value);
+    };
+    return { type: 'text', renderer: renderer };
+};
+
+handsontableTableOptionBuilder.prototype._createArrayColumnSetting = function (column) {
+    var renderer = function renderer(hotInstance, TD, row, col, prop, value, cellProperties) {
+        if (!value) {
+            $(TD).css('color', '#ff3333');
+        }
+        $(TD).attr('title', value);
+        $(TD).text(JSON.stringify(value));
+    };
+    return { type: 'text', renderer: renderer };
+};
+
+handsontableTableOptionBuilder.prototype._buildMenu = function (contextMenu) {
+    // 여기서 만드는게 구조상 맞는데 사정상 밖에서 만들고 끌고 들어옴
+    this.handsontableTableOptions.contextMenu = contextMenu;
+};
+
+//headerwidth = event.args.columntext.length * 7
 
 /***/ }),
 /* 303 */
@@ -23751,7 +23521,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsWrapper = __webpack_require__(14);
+var _echartsWrapper = __webpack_require__(13);
 
 var _echartsWrapper2 = _interopRequireDefault(_echartsWrapper);
 
@@ -24214,7 +23984,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsWrapper = __webpack_require__(14);
+var _echartsWrapper = __webpack_require__(13);
 
 var _echartsWrapper2 = _interopRequireDefault(_echartsWrapper);
 
@@ -24356,7 +24126,7 @@ var _echartsMapLinesExtractor = __webpack_require__(310);
 
 var _echartsMapLinesExtractor2 = _interopRequireDefault(_echartsMapLinesExtractor);
 
-var _echartsAxisTypeOptionBuilder = __webpack_require__(13);
+var _echartsAxisTypeOptionBuilder = __webpack_require__(14);
 
 var _echartsAxisTypeOptionBuilder2 = _interopRequireDefault(_echartsAxisTypeOptionBuilder);
 
@@ -24752,7 +24522,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _echartsWrapper = __webpack_require__(14);
+var _echartsWrapper = __webpack_require__(13);
 
 var _echartsWrapper2 = _interopRequireDefault(_echartsWrapper);
 
