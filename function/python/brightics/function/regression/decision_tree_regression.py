@@ -28,18 +28,21 @@ def _decision_tree_regression_train(table, feature_cols, label_col,  # fig_size=
     regressor.fit(table[feature_cols], table[label_col],
                    sample_weight, check_input, X_idx_sorted)
     
-    from sklearn.externals.six import StringIO  
-    from sklearn.tree import export_graphviz
-    import pydotplus
-    dot_data = StringIO()
-    export_graphviz(regressor, out_file=dot_data,
-                    feature_names=feature_cols,
-                    filled=True, rounded=True,
-                    special_characters=True)
-    graph = pydotplus.graph_from_dot_data(dot_data.getvalue())  
-    
-    from brightics.common.report import png2MD
-    fig_tree = png2MD(graph.create_png())
+    try:
+        from sklearn.externals.six import StringIO  
+        from sklearn.tree import export_graphviz
+        import pydotplus
+        dot_data = StringIO()
+        export_graphviz(regressor, out_file=dot_data,
+                        feature_names=feature_cols,
+                        filled=True, rounded=True,
+                        special_characters=True)
+        graph = pydotplus.graph_from_dot_data(dot_data.getvalue())  
+        
+        from brightics.common.report import png2MD
+        fig_tree = png2MD(graph.create_png())
+     except:
+        fig_tree = "Graphviz is needed to draw a Decision Tree graph. Please download it from http://graphviz.org/download/ and install it to your computer."
     
     # json
     model = _model_dict('decision_tree_regression_model')
