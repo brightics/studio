@@ -3,7 +3,7 @@ import seaborn as sns
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
-from brightics.common.report import ReportBuilder, strip_margin, plt2MD
+from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
@@ -72,7 +72,7 @@ def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True)
     plt.xlabel('Residuals')
     fig_residual_3 = plt2MD(plt)
 
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## Linear Regression Result
     | ### Summary
@@ -106,7 +106,7 @@ def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True)
     model['tvalues'] = lr_model_fit.tvalues
     model['pvalues'] = lr_model_fit.pvalues
     model['lr_model'] = lr_model
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
 
     return {'model' : model}
 

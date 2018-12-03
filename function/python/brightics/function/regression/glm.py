@@ -1,5 +1,5 @@
 import statsmodels.api as sm
-from brightics.common.report import ReportBuilder, strip_margin
+from brightics.common.repr import BrtcReprBuilder, strip_margin
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
@@ -55,7 +55,7 @@ def _glm_train(table, feature_cols, label_col, family="Gaussian", link="ident", 
         glm_model = sm.GLM(label, features, family=sm_family, link=sm_link).fit()
     summary = glm_model.summary().as_html()
 
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## GLM Result
     | ### Summary
@@ -75,7 +75,7 @@ def _glm_train(table, feature_cols, label_col, family="Gaussian", link="ident", 
     model['pvalues'] = glm_model.pvalues
     model['fit_intercept'] = fit_intercept
     model['glm_model'] = glm_model
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
 
     return {'model' : model}
 

@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn import svm
 from brightics.function.utils import _model_dict
-from brightics.common.report import ReportBuilder, strip_margin, pandasDF2MD, dict2MD
+from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, dict2MD
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 
@@ -30,7 +30,7 @@ def _svm_classification_train(table, feature_cols, label_col, c=1.0, kernel='rbf
     get_param['feature_cols'] = feature_cols
     get_param['label_col'] = label_col
     
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## SVM Classification Result
     | ### Parameters
@@ -40,7 +40,7 @@ def _svm_classification_train(table, feature_cols, label_col, c=1.0, kernel='rbf
     _model = _model_dict('svc_model')
     _model['svc_model'] = _svc_model
     _model['features'] = feature_cols
-    _model['report'] = rb.get()
+    _model['_repr_brtc_'] = rb.get()
     
     return {'model':_model}
 

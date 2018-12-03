@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from brightics.common.validator import NumberValidator
-from brightics.common.report import ReportBuilder, strip_margin, pandasDF2MD, plt2MD
+from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, plt2MD
 import statsmodels.api as sm
 from brightics.function.utils import _model_dict
 from brightics.function.evaluation import _plot_roc_pr_curve
@@ -53,7 +53,7 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
     
     prob = lr_model.predict_proba(features)
     
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## Logistic Regression Result
     | ### Summary
@@ -70,7 +70,7 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
     model['penalty'] = penalty
     model['solver'] = solver
     model['lr_model'] = lr_model
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
 
     return {'model' : model}
 

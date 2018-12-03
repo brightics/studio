@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.tree import DecisionTreeRegressor
-from brightics.common.report import ReportBuilder, strip_margin, pandasDF2MD, plt2MD, dict2MD
+from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, plt2MD, dict2MD
 from brightics.function.utils import _model_dict
 from sklearn.tree.export import export_graphviz
 from brightics.common.groupby import _function_by_group
@@ -39,7 +39,7 @@ def _decision_tree_regression_train(table, feature_cols, label_col,  # fig_size=
                         special_characters=True)
         graph = pydotplus.graph_from_dot_data(dot_data.getvalue())  
         
-        from brightics.common.report import png2MD
+        from brightics.common.repr import png2MD
         fig_tree = png2MD(graph.create_png())
     except:
         fig_tree = "Graphviz is needed to draw a Decision Tree graph. Please download it from http://graphviz.org/download/ and install it to your computer."
@@ -78,7 +78,7 @@ def _decision_tree_regression_train(table, feature_cols, label_col,  # fig_size=
     
     # Add tree plot
         
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## Decision Tree Regression Train Result
     | ### Decision Tree
@@ -94,7 +94,7 @@ def _decision_tree_regression_train(table, feature_cols, label_col,  # fig_size=
                fig_feature_importances=fig_feature_importances,
                list_parameters=params            
                )))     
-    model['report'] = rb.get()   
+    model['_repr_brtc_'] = rb.get()   
                
     return {'model' : model}
 

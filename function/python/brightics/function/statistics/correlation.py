@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
-from brightics.common.report import ReportBuilder
+from brightics.common.repr import BrtcReprBuilder
 from scipy import stats
 import numpy as np
 from brightics.common.groupby import _function_by_group
@@ -72,7 +72,7 @@ def _correlation(table, vars, method='pearson', height=2.5, corr_prec=2):
         g.map_lower(sns.regplot, lowess=True, scatter_kws=scatter_kws) 
     g.map_upper(corr, method=method)
     
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addPlt(plt)
     plt.clf()
     
@@ -82,6 +82,6 @@ def _correlation(table, vars, method='pearson', height=2.5, corr_prec=2):
     res['params'] = params
     res['corr'] = corr_arr
     res['pvalue'] = p_arr
-    res['report'] = rb.get()
+    res['_repr_brtc_'] = rb.get()
     
     return {'result': res}

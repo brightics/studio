@@ -1,7 +1,7 @@
 import json
 import pickle
 import numpy
-from brightics.common.report import ReportBuilder
+from brightics.common.repr import BrtcReprBuilder
 
 # DefaultEncoder is used for building viewable json string for in browser
 class DefaultEncoder(json.JSONEncoder):
@@ -13,9 +13,9 @@ class DefaultEncoder(json.JSONEncoder):
         # TODO add more support types
         else:
         #elif hasattr(obj, '__str__'):
-            rb = ReportBuilder()
+            rb = BrtcReprBuilder()
             rb.addRawTextMD(str(obj))
-            return {'type':'python object', 'report':rb.get()}
+            return {'type':'python object', '_repr_brtc_':rb.get()}
 
      #   return 'python object'
 
@@ -45,17 +45,17 @@ class PickleEncoder(DefaultEncoder):
         # TODO add more support types
         #return {'__pickled__': list(pickle.dumps(o))}
         elif hasattr(o, '_repr_html_'):
-            rb = ReportBuilder()
+            rb = BrtcReprBuilder()
             rb.addHTML(o._repr_html_())
-            return {'report':rb.get(), '__pickled__': list(pickle.dumps(o))}
+            return {'_repr_brtc_':rb.get(), '__pickled__': list(pickle.dumps(o))}
         elif hasattr(o, 'savefig'):
-            rb = ReportBuilder()
+            rb = BrtcReprBuilder()
             rb.addPlt(o)
-            return {'report':rb.get(), '__pickled__': list(pickle.dumps(o))}
+            return {'_repr_brtc_':rb.get(), '__pickled__': list(pickle.dumps(o))}
         else:
-            rb = ReportBuilder()
+            rb = BrtcReprBuilder()
             rb.addRawTextMD(str(o))
-            return {'report':rb.get(), '__pickled__': list(pickle.dumps(o))}
+            return {'_repr_brtc_':rb.get(), '__pickled__': list(pickle.dumps(o))}
 
 
 def encode(obj, for_redis):

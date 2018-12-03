@@ -1,4 +1,4 @@
-from brightics.common.report import ReportBuilder
+from brightics.common.repr import BrtcReprBuilder
 import pandas_profiling as pd_profiling
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
@@ -12,11 +12,11 @@ def profile_table(table, group_by=None, **params):
         return _profile_table(table, **params)
     
 def _profile_table(table, bins=10, check_correlation=False, correlation_threshold=0.9, correlation_overrides=None):
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     
     profile = pd_profiling.ProfileReport(table, bins=bins, check_correlation=check_correlation, correlation_threshold=correlation_threshold, correlation_overrides=correlation_overrides)
     rb.addHTML(profile.html)
     summary = dict()
-    summary['report'] = rb.get()
+    summary['_repr_brtc_'] = rb.get()
     
     return {'result': summary}
