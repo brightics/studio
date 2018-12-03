@@ -1,6 +1,6 @@
 from sklearn.cluster import AgglomerativeClustering as SKAgglomerativeClustering
 from scipy.cluster.hierarchy import dendrogram
-from brightics.common.report import ReportBuilder, strip_margin, plt2MD
+from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -26,12 +26,12 @@ def agglomerative_clustering_train_predict(input_table, input_cols, n_clusters=3
     plot_dendrogram = plt2MD(plt) 
     plt.clf()
     
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## Agglomerative Clustering Result
     | {plot_dendrogram}
     """.format(plot_dendrogram=plot_dendrogram)))
     
-    agglomerative_clustering_result = {'model':agglomerative_clustering, 'input_cols':input_cols, 'report':rb.get()}
+    agglomerative_clustering_result = {'model':agglomerative_clustering, 'input_cols':input_cols, '_repr_brtc_':rb.get()}
     
     return {'out_table': input_table, 'agglomerative_result':agglomerative_clustering_result}

@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from xgboost import XGBRegressor
 from xgboost import plot_importance, plot_tree
-from brightics.common.report import ReportBuilder, strip_margin, pandasDF2MD, plt2MD
+from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, plt2MD
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
@@ -70,7 +70,7 @@ def _xgb_regression_train(table, feature_cols, label_col, max_depth=3, learning_
     get_param_df = pd.DataFrame(data=get_param_list, columns=['parameter', 'value'])
     feature_importance_df = pd.DataFrame(data=feature_importance, index=feature_cols).T
     
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## XGB Regression Result
     |
@@ -87,7 +87,7 @@ def _xgb_regression_train(table, feature_cols, label_col, max_depth=3, learning_
                table_feature_importance=pandasDF2MD(feature_importance_df, 20),
                table_parameter=pandasDF2MD(get_param_df)            
                )))     
-    out_model['report'] = rb.get()
+    out_model['_repr_brtc_'] = rb.get()
                
     return {'model' : out_model}
 

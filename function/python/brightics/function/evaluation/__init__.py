@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import itertools
-from brightics.common.report import ReportBuilder, strip_margin, pandasDF2MD, plt2MD
+from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, plt2MD
 import matplotlib.pyplot as plt
 from sklearn.metrics import explained_variance_score, mean_absolute_error, mean_squared_error, median_absolute_error, r2_score
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, confusion_matrix
@@ -45,7 +45,7 @@ def _evaluate_regression(table, label_col, prediction_col):
     all_df = all_df[['r2_score', 'mean_squared_error', 'mean_absolute_error', 'median_absolute_error', 'explained_variance_score']]
     summary['all'] = all_df
             
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## Evaluate Regression Result
     | ### Metrics
@@ -54,7 +54,7 @@ def _evaluate_regression(table, label_col, prediction_col):
     |
     """.format(table1=pandasDF2MD(all_df)            
                )))     
-    summary['report'] = rb.get()   
+    summary['_repr_brtc_'] = rb.get()   
                
     return {'result' : summary}
 
@@ -106,7 +106,7 @@ def _evaluate_classification(table, label_col, prediction_col):
     all_df = all_df[['f1', 'accuracy', 'precision', 'recall']]
     summary['all'] = all_df
             
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## Evaluate Classification Result
     | ### Metrics
@@ -121,7 +121,7 @@ def _evaluate_classification(table, label_col, prediction_col):
                fig_confusion_matrix=fig_cnf_matrix,
                fig_confusion_matrix_normalized=fig_cnf_matrix_normalized           
                )))     
-    summary['report'] = rb.get()   
+    summary['_repr_brtc_'] = rb.get()   
                
     return {'result' : summary}
         
@@ -272,7 +272,7 @@ def _plot_roc_pr_curve(table, label_col, probability_col, fig_size=[6.4, 4.8], p
     summary['label_col'] = label_col
     summary['probability_col'] = probability_col
     
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## Plot ROC Curve and PR Curve Result
     |
@@ -292,6 +292,6 @@ def _plot_roc_pr_curve(table, label_col, probability_col, fig_size=[6.4, 4.8], p
                fig_precision_recall=fig_precision_recall,
                fig_confusion=fig_confusion
                )))     
-    summary['report'] = rb.get()
+    summary['_repr_brtc_'] = rb.get()
                    
     return {'result' : summary}

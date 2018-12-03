@@ -1,5 +1,5 @@
 from sklearn.cluster import KMeans as SKKMeans
-from brightics.common.report import ReportBuilder, strip_margin, dict2MD, plt2MD
+from brightics.common.repr import BrtcReprBuilder, strip_margin, dict2MD, plt2MD
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 import numpy as np
@@ -98,7 +98,7 @@ def _kmeans_train_predict(table, input_cols, n_clusters=3, prediction_col='predi
     fig_samples = _kmeans_samples_plot(table, input_cols, n_samples, cluster_centers)
     fig_pca = _kmeans_pca_plot(labels, cluster_centers, pca2_model, pca2)
     
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## Kmeans Result
     | - Number of iterations run: {n_iter_}.
@@ -115,7 +115,7 @@ def _kmeans_train_predict(table, input_cols, n_clusters=3, prediction_col='predi
     model = _model_dict('kmeans')
     model['model'] = k_means
     model['input_cols'] = input_cols
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
     
     out_table = table.copy()
     out_table[prediction_col] = labels
@@ -232,7 +232,7 @@ def _kmeans_silhouette_train_predict(table, input_cols, n_clusters_list=range(2,
     fig_silhouette = plt2MD(plt)
     plt.clf()
     
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## Kmeans Silhouette Result
     | - silloutte metrics:
@@ -257,7 +257,7 @@ def _kmeans_silhouette_train_predict(table, input_cols, n_clusters_list=range(2,
     model['best_centers'] = best_centers
     model['best_model'] = best_model
     model['input_cols'] = input_cols
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
     
     out_table = table.copy()
     out_table[prediction_col] = predict

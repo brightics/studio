@@ -1,7 +1,7 @@
 from sklearn.decomposition import PCA
 import pandas as pd
 import matplotlib.pyplot as plt
-from brightics.common.report import ReportBuilder, strip_margin, pandasDF2MD, plt2MD, dict2MD
+from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, plt2MD, dict2MD
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
@@ -71,7 +71,7 @@ def _pca(table, input_cols, new_column_name='projected_', n_components=None, cop
     table_explained_variance['explained_variance_ratio'] = res_explained_variance_ratio
     table_explained_variance['cum_explained_variance_ratio'] = res_explained_variance_ratio.cumsum()
                 
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## PCA Result
     | ### Plot
@@ -104,7 +104,7 @@ def _pca(table, input_cols, new_column_name='projected_', n_components=None, cop
     model['parameters'] = res_get_param
     model['covariance'] = res_get_covariance
     model['precision'] = res_get_precision
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
     model['pca_model'] = pca_model
     model['input_cols'] = input_cols
     

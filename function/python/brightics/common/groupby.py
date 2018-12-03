@@ -1,6 +1,6 @@
 import pandas as pd
 from abc import *
-from brightics.common.report import ReportBuilder, strip_margin
+from brightics.common.repr import BrtcReprBuilder, strip_margin
 
 # assuming that function takes table, model, params
 def _function_by_group(function, table, model=None, group_by=None, **params):
@@ -17,7 +17,7 @@ def _function_by_group(function, table, model=None, group_by=None, **params):
                                   model=model['_grouped_data'][sample_group], **params)
     res_keys = sample_result.keys()
     df_keys = [k for k, v in sample_result.items() if isinstance(v, pd.DataFrame)]
-    model_keys_containing_repr = [k for k, v in sample_result.items() if isinstance(v, dict) and 'report' in v]
+    model_keys_containing_repr = [k for k, v in sample_result.items() if isinstance(v, dict) and '_repr_brtc_' in v]
     
     res_dict = dict()
     for res_key in res_keys:
@@ -35,11 +35,11 @@ def _function_by_group(function, table, model=None, group_by=None, **params):
     
     
     for repr_key in model_keys_containing_repr:
-        rb = ReportBuilder()
+        rb = BrtcReprBuilder()
         for group in group_keys:
             rb.addMD('{group}'.format(group=group))
-            rb.merge(res_dict[repr_key]['_grouped_data'][group]['report'])
-        res_dict[repr_key]['report'] = rb.get()    
+            rb.merge(res_dict[repr_key]['_grouped_data'][group]['_repr_brtc_'])
+        res_dict[repr_key]['_repr_brtc_'] = rb.get()    
             
     for df_key in df_keys:
         res_dict[df_key] = _flatten(res_dict[df_key])

@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
-from brightics.common.report import ReportBuilder
+from brightics.common.repr import BrtcReprBuilder
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 
@@ -32,8 +32,8 @@ def _pairplot(table, x_vars, y_vars=None, kind='scatter', diag_kind='auto', mark
             for label in ax.get_xticklabels():
                 label.set_rotation(90 * (2.5 - height))
     
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addPlt(plt)
     plt.clf()
     
-    return {'result': {'report':rb.get()} }
+    return {'result': {'_repr_brtc_':rb.get()} }
