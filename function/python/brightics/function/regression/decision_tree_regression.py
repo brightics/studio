@@ -41,7 +41,7 @@ def _decision_tree_regression_train(table, feature_cols, label_col,  # fig_size=
         
         from brightics.common.report import png2MD
         fig_tree = png2MD(graph.create_png())
-     except:
+    except:
         fig_tree = "Graphviz is needed to draw a Decision Tree graph. Please download it from http://graphviz.org/download/ and install it to your computer."
     
     # json
