@@ -7,5 +7,3 @@ def get_iris():
     out_data = pd.DataFrame(data=raw_data.data, columns=['sepal_length', 'sepal_width', 'petal_length', 'petal_width'])
     out_data['species'] = [raw_data.target_names[x] for x in raw_data.target]
     return out_data
-
-iris = get_iris()
