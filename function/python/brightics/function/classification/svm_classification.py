@@ -72,12 +72,12 @@ def _svm_classification_predict(table, model, prediction_col='prediction', proba
         else:
             thresholds = np.array(thresholds)
     
+    # validation: the lengths of classes and thresholds must be equal.
+    
     if suffix == 'index':
         suffixes = [i for i, _ in enumerate(classes)]
     else:
         suffixes = classes
-    
-    result = _table.copy()
     
     log_prob = svc_model.predict_log_proba(features)
     prob = svc_model.predict_proba(features)
