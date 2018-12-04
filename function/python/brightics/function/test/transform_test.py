@@ -1,8 +1,8 @@
 import unittest
 import pandas as pd
 import numpy as np
-from brightics.function.transform import delete_missing_data, select_column
-
+from brightics.function.transform import delete_missing_data, select_column, pivot
+from brightics.function.test_data import iris
 
 df_example1 = pd.DataFrame({'num1':[1,2,3,4,5],
                             'num2':[10,20,30,40,50],
@@ -75,3 +75,17 @@ class SelectColumnTest(unittest.TestCase):
         print(df.dtypes)
         print(out_df)
         print(out_df.dtypes)
+        
+class Pivot(unittest.TestCase):
+    
+    def test1(self):
+        out = pivot(iris, values=['petal_length'], aggfunc=['25th', '75th'], index=['species'])
+        print(out['out_table'])
+    
+    def test2(self):
+        out = pivot(iris, values=['petal_length'], aggfunc=['mean'], index=['species'])
+        print(out['out_table'])  
+    
+    def test3(self):
+        print(iris)
+          
