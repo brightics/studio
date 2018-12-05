@@ -1,4 +1,4 @@
-from brightics.common.report import ReportBuilder, strip_margin, plt2MD, \
+from brightics.common.report import ReportBuilder, strip_margin, plt2MD, dict2MD, \
     pandasDF2MD, keyValues2MD
 from brightics.function.utils import _model_dict
 from brightics.common.utils import check_required_parameters
