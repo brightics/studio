@@ -9,9 +9,8 @@ import math
 from math import sqrt
 import seaborn as sns
 import matplotlib.pyplot as plt
-import scipy.stats
 from scipy.stats import t
-from scipy import mean
+from scipy import mean, stats
 from statsmodels.stats.weightstats import ttest_ind
 
 
@@ -28,7 +27,7 @@ def one_sample_ttest(table, input_cols, alternatives, hypothesized_mean=0, conf_
     # Print model
     rb = ReportBuilder()
     rb.addMD(strip_margin("""
-    ## One Sameple T Test Result
+    ## One Sample T Test Result
     | - Statistics = {s}
     | - Hypothesized mean = {h} 
     | - Confidence level = {cl}
@@ -146,10 +145,13 @@ def two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alternat
     if(type(table[factor_col][0]) == str):
         table_first = table[table[factor_col] == first]
         table_second = table[table[factor_col] == second]
+    elif(type(table[factor_col][0]) == bool):
+        table_first = table[table[factor_col] == bool(first)]
+        table_second = table[table[factor_col] == bool(second)]
     else:
         table_first = table[table[factor_col] == float(first)]
         table_second = table[table[factor_col] == float(second)]
-        
+            
     tmp_table = []
 
     rb = ReportBuilder()
@@ -171,7 +173,7 @@ def two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alternat
         if(equal_vari == 'auto'):
             start_auto = 1
             f_value = (std1 ** 2) / (std2 ** 2)
-            f_test_p_value_tmp = scipy.stats.f.cdf(1 / f_value, number1 - 1, number2 - 1)
+            f_test_p_value_tmp = stats.f.cdf(1 / f_value, number1 - 1, number2 - 1)
             if(f_test_p_value_tmp > 0.5):
                 f_test_p_value = (1 - f_test_p_value_tmp) * 2
             else:
@@ -230,13 +232,14 @@ def two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alternat
         result_model = pd.DataFrame.from_records(tmp_model)
         result_model.columns = ['alternatives', 'p values', '%g%% confidence interval' % (confi_level * 100)]
         rb.addMD(strip_margin("""
-        | #### Data = {response_col}
-		
+        | #### Data = {response_col} by {factor_col}({first},{second})
+        
         | - Statistics = t statistic, t distribution with {ttestresult2} degrees of freedom under the null hypothesis
+        | - Estimates= {ttestresult0}
         |
         | {result_model}
         |
-        """.format(ttestresult2=ttestresult[2], response_col=response_col, ttestresult0=ttestresult[0], result_model=pandasDF2MD(result_model))))
+        """.format(ttestresult2=ttestresult[2], response_col=response_col, factor_col=factor_col,first=first,second=second,ttestresult0=ttestresult[0], result_model=pandasDF2MD(result_model))))
         if(start_auto == 1):
             equal_vari = 'auto'
     result = pd.DataFrame.from_records(tmp_table)
