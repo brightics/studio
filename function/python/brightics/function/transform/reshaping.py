@@ -54,11 +54,11 @@ def pivot(table, values, aggfunc, index=None, columns=None):  # TODO
             func_list.append(var)
         elif func_name == 'min':
             func_list.append(min)
-        elif func_name == '25th':
+        elif func_name == '_25th':
             func_list.append(_25th)
         elif func_name == 'median':
             func_list.append(median)
-        elif func_name == '75th':
+        elif func_name == '_75th':
             func_list.append(_75th)
         elif func_name == 'max':
             func_list.append(max)
