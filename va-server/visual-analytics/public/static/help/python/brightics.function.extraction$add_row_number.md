@@ -1,0 +1,36 @@
+## Format
+### Python
+```python
+from brightics.function.extraction import add_row_number
+res = add_row_number(new_col = )
+res['out_table']
+```
+
+## Description
+Add Row Number returns the sequential number of a row, starting at 1 for the first row.
+
+---
+
+## Properties
+### VA
+#### Inputs
+1. **table**: table
+
+#### Parameters
+1. **New Column Name**: The name of the added column.
+   - Value type : String
+
+#### Outputs
+1. **out_table**: table
+
+### Python
+#### Inputs
+1. **table**: table
+
+#### Parameters
+1. **new_col**: The name of the added column.
+   - Value type : String
+
+#### Outputs
+1. **out_table**: table
+
