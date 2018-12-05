@@ -19,7 +19,7 @@ import math
 import array
 
 
-def chi_square_test(table, response_cols, factor_col, correction=True, lambda_="pearson"):
+def chi_square_test_for_independence(table, response_cols, factor_col, correction=True, lambda_="pearson"):
     label_list=[]
     feature_list=[]
     alternative_hypothesis_list = []
