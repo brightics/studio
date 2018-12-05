@@ -9,10 +9,13 @@ def ftest_for_stacked_data(table, response_cols, factor_col, alternatives, first
     if(type(table[factor_col][0]) == str):
         table_first = table[table[factor_col] == first]
         table_second = table[table[factor_col] == second]
+    elif(type(table[factor_col][0]) == bool):
+        table_first = table[table[factor_col] == bool(first)]
+        table_second = table[table[factor_col] == bool(second)]
     else:
         table_first = table[table[factor_col] == float(first)]
         table_second = table[table[factor_col] == float(second)]
-        
+            
     tmp_table = []
     number1 = len(table_first[factor_col])
     number2 = len(table_second[factor_col])
@@ -65,12 +68,12 @@ def ftest_for_stacked_data(table, response_cols, factor_col, alternatives, first
         result_model = pd.DataFrame.from_records(tmp_model)
         result_model.columns = ['alternatives', 'p values', '%g%% confidence interval' % (confi_level * 100)]
         rb.addMD(strip_margin("""
-        | #### Data = {response_col}
+        | #### Data = {response_col} by {factor_col}({first},{second})
         | - Estimates= {f_value}
         |
         | {result_model}
         |
-        """.format(response_col=response_col, f_value=f_value, result_model=pandasDF2MD(result_model))))
+        """.format(response_col=response_col, factor_col=factor_col, first=first, second=second, f_value=f_value, result_model=pandasDF2MD(result_model))))
        
     result = pd.DataFrame.from_records(tmp_table)
     result.columns = ['data', 'alternative_hypothesis', 'statistics', 'estimates', 'p_value', 'confidence_level', 'lower_confidence_interval', 'upper_confidence_interval']
