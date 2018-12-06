@@ -21,7 +21,8 @@ def _is_serialized(obj):
         return False
 
 
-def _get_deserialized_table(table, cols_to_deserialize):
+def _get_deserialized_table(table):
+    cols_to_deserialize = _get_serialized_cols(table)
     for col in cols_to_deserialize:
         table[col] = table[col].apply(lambda _: _deserialize(_)) 
     

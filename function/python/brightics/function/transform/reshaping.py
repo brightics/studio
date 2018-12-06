@@ -54,11 +54,11 @@ def pivot(table, values, aggfunc, index=None, columns=None):  # TODO
             func_list.append(var)
         elif func_name == 'min':
             func_list.append(min)
-        elif func_name == '25th':
+        elif func_name == '_25th':
             func_list.append(_25th)
         elif func_name == 'median':
             func_list.append(median)
-        elif func_name == '75th':
+        elif func_name == '_75th':
             func_list.append(_75th)
         elif func_name == 'max':
             func_list.append(max)
@@ -69,3 +69,34 @@ def pivot(table, values, aggfunc, index=None, columns=None):  # TODO
     pivoted.columns = _mi2index(pivoted.columns)
     out_table = pd.concat([pivoted.index.to_frame(), pivoted], axis=1)
     return {'out_table':out_table}
+
+def transpose(table, columns, label_col='', label_col_name='label'):
+
+    sort_table = pd.DataFrame()
+    feature_col_name = []
+    
+    for i in range(0, len(table.transpose())):
+        if table.columns[i] in columns:
+            sort_table[table.columns[i]] = table[table.columns[i]]
+            feature_col_name.append(table.columns[i])
+
+    result_table = sort_table.transpose()
+
+    if len(label_col):
+        for i in range(0, len(table)):
+            result_table = result_table.rename(columns={i:str(table[label_col][i])})
+    else:
+        for i in range(0, len(table)):
+            result_table = result_table.rename(columns={len(table) - i - 1:'x' + str(len(table) - i)})
+
+    result_table.insert(loc=0, column=label_col_name, value=feature_col_name)
+
+    return{'out_table':result_table}
+
+
+def distinct(table, input_cols, shown_opt):
+    if shown_opt == 'selected':
+        out_table = table[input_cols].drop_duplicates()
+    else:
+        out_table = table.drop_duplicates(input_cols)
+    return {'out_table': out_table}

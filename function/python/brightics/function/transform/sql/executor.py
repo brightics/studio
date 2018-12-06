@@ -28,18 +28,21 @@ def execute(tables, query):
     con.execute("PRAGMA journal_mode = OFF")
     
     # write tables?
-    for idx, table in enumerate(tables):
-        cols_to_pickle = _get_columns_to_serialize(table)
-        pickled_table = _get_serialized_table(table, cols_to_pickle)
-        pickled_table.to_sql('df%i' % idx, con, index=False)
+    _write_table(tables, con)
     
-    res = sql.read_sql(query, con)
-    _get_deserialized_table(res, _get_serialized_cols(res))
+    res = _get_deserialized_table(sql.read_sql(query, con))
     # data_utils.validate_column_name(res)
     
     con.close()  # delete tables?
     
     return res
+
+
+def _write_table(tables, con):
+    for idx, table in enumerate(tables):
+        cols_to_pickle = _get_columns_to_serialize(table)
+        pickled_table = _get_serialized_table(table, cols_to_pickle)
+        pickled_table.to_sql('df%i' % idx, con, index=False)
 
 
 def _create_aggregate_functions(con, *modules):
