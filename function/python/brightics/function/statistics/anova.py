@@ -11,6 +11,7 @@ from statsmodels.stats.anova import anova_lm
 from statsmodels.stats.multicomp import pairwise_tukeyhsd
 import numpy as np
 import pandas as pd
+from brightics.common.exception import BrighticsFunctionException
 
 
 def bartletts_test(table, response_cols, factor_col):
@@ -112,6 +113,9 @@ def oneway_anova(table, response_cols, factor_col):
     
     
 def tukeys_range_test(table, response_cols, factor_col, alpha=0.05):
+    if alpha < 0.001 or alpha >= 0.9: 
+        raise BrighticsFunctionException("0006",['alpha',0.001,0.9])
+    
     rb = BrtcReprBuilder()
     rb.addMD("""## Tukey's range test Result""")
     
