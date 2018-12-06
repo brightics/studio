@@ -5,6 +5,7 @@ from scipy import stats
 import numpy as np
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.function.validation import validate, greater_than, greater_than_or_equal_to
 
 
 def correlation(table, group_by=None, **params):
@@ -15,6 +16,10 @@ def correlation(table, group_by=None, **params):
         return _correlation(table, **params)
 
 def _correlation(table, vars, method='pearson', height=2.5, corr_prec=2):
+    
+    validate(greater_than(height, 0, 'height'),
+             greater_than_or_equal_to(corr_prec, 1, 'corr_prec'))
+    
     size = len(vars)
     
     s_default = plt.rcParams['lines.markersize'] ** 2.
