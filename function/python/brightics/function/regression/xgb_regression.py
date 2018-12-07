@@ -6,6 +6,7 @@ from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, pl
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.function.validation import validate, greater_than_or_equal_to
 
 
 def xgb_regression_train(table, group_by=None, **params):
@@ -22,7 +23,11 @@ def _xgb_regression_train(table, feature_cols, label_col, max_depth=3, learning_
             scale_pos_weight=1, base_score=0.5, random_state=0, seed=None, missing=None,
             sample_weight=None, eval_set=None, eval_metric=None, early_stopping_rounds=None, verbose=True,
             xgb_model=None, sample_weight_eval_set=None):
-                    
+
+    validate(greater_than_or_equal_to(max_depth, 1, 'max_depth'),
+             greater_than_or_equal_to(learning_rate, 0.0, 'learning_rate'),
+             greater_than_or_equal_to(n_estimators, 1, 'n_estimators'))
+        
     regressor = XGBRegressor(max_depth, learning_rate, n_estimators,
                              silent, objectibe, booster, n_jobs, nthread, gamma, min_child_weight,
                              max_delta_step, subsample, colsample_bytree, colsample_bylevel, reg_alpha, reg_lambda,
