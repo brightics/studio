@@ -2,7 +2,6 @@ import unittest
 import pandas as pd
 from brightics.function.extraction import add_expression_column, add_expression_column_if
 from sklearn import datasets
-from pandasql import sqldf
 
 
 df_example1 = pd.DataFrame({'num1':[1,2,3,4,5],
