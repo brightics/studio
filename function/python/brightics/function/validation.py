@@ -42,6 +42,31 @@ def over_to(var, over_v, to_v, var_name):
 def over_under(var, over_v, under_v, var_name):
     return error(over_v < var < under_v, '0006', [var_name, over_v, under_v])
 
+def all_elements_greater_than(var, criteria, var_name):
+    return error(all([x > criteria for x in var]), '0009', [var_name, criteria])
+
+def all_elements_greater_than_or_equal_to(var, criteria, var_name):
+    return error(all([x >= criteria for x in var]), '0011', [var_name, criteria])
+
+def all_elements_less_than(var, criteria, var_name):
+    return error(all([x < criteria for x in var]), '0013', [var_name, criteria])
+
+def all_elements_less_than_or_equal_to(var, criteria, var_name):
+    return error(all([x <= criteria for x in var]), '0015', [var_name, criteria])
+
+def all_elements_from_to(var, from_v, to_v, var_name):
+    return error(all([from_v <= x <= to_v for x in var]), '0005', [var_name, from_v, to_v])
+
+def all_elements_from_under(var, from_v, under_v, var_name):
+    return error(all([from_v <= var < under_v for x in var]), '0007', [var_name, from_v, under_v])
+
+def all_elements_over_to(var, over_v, to_v, var_name):
+    return error(all([over_v < var <= to_v for x in var]), '0017', [var_name, over_v, to_v])
+
+def all_elements_over_under(var, over_v, under_v, var_name):
+    return error(all([over_v < var < under_v for x in var]), '0019', [var_name, over_v, under_v])
+
+
 
 def raise_error(true_condition, error_code, error_message_params):
     if not true_condition:

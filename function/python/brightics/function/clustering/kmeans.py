@@ -9,6 +9,8 @@ from sklearn.metrics.cluster.unsupervised import silhouette_score, \
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.function.validation import validate, greater_than_or_equal_to,\
+    greater_than, all_elements_greater_than
 
 
 def _kmeans_centers_plot(input_cols, cluster_centers):
@@ -78,7 +80,14 @@ def _kmeans_train_predict(table, input_cols, n_clusters=3, prediction_col='predi
     inputarr = table[input_cols]
     if n_samples is None:
         n_samples = len(inputarr)
-    
+        
+    validate(greater_than_or_equal_to(n_clusters, 1, 'n_clusters'),
+             greater_than_or_equal_to(n_init, 1, 'n_init'),
+             greater_than_or_equal_to(max_iter, 1, 'max_iter'),
+             greater_than(tol, 0.0, 'tol'),
+             greater_than_or_equal_to(n_jobs, 1, 'n_jobs'),
+             greater_than_or_equal_to(n_samples, 0, 'n_samples'))
+        
     k_means = SKKMeans(n_clusters=n_clusters, init=init, n_init=n_init,
              max_iter=max_iter, tol=tol, precompute_distances=precompute_distances,
              verbose=0, random_state=seed, copy_x=True, n_jobs=n_jobs, algorithm=algorithm)
@@ -163,6 +172,13 @@ def _kmeans_silhouette_train_predict(table, input_cols, n_clusters_list=range(2,
     if n_samples is None:
         n_samples = len(table)
     inputarr = table[input_cols]
+    
+    validate(all_elements_greater_than(n_clusters_list, 1, 'n_clusters_list'),
+         greater_than_or_equal_to(n_init, 1, 'n_init'),
+         greater_than_or_equal_to(max_iter, 1, 'max_iter'),
+         greater_than(tol, 0.0, 'tol'),
+         greater_than_or_equal_to(n_jobs, 1, 'n_jobs'),
+         greater_than_or_equal_to(n_samples, 0, 'n_samples'))
     
     pca2_model = PCA(n_components=2).fit(inputarr)
     pca2 = pca2_model.transform(inputarr)
