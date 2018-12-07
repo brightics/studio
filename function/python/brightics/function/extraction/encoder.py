@@ -5,6 +5,7 @@ import pandas as pd
 from brightics.common.groupby import _function_by_group
 from brightics.function.utils import _model_dict
 from brightics.common.utils import check_required_parameters
+from brightics.function.validation import raise_runtime_error
 
 def label_encoder(table, group_by=None, **params):
     check_required_parameters(_label_encoder, params, ['table'])
@@ -56,7 +57,7 @@ def _one_hot_encoder(table, input_cols, prefix='list', prefix_list=None, suffix=
     le_list = []
     prefix_list_index = 0
     if prefix == 'list' and len(input_cols) != len(prefix_list):
-        raise Exception('The number of input columns and the numnber of predix list should be equal.')
+        raise_runtime_error('The number of input columns and the numnber of predix list should be equal.')
     for col_name in input_cols:
         enc = OneHotEncoder(n_values=n_values, categorical_features=categorical_features, sparse=sparse, handle_unknown=handle_unknown)
         le = LabelEncoder()

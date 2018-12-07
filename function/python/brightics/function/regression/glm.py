@@ -3,6 +3,7 @@ from brightics.common.repr import BrtcReprBuilder, strip_margin
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.function.validation import raise_runtime_error
 
 
 def glm_train(table, group_by=None, **params):
@@ -17,7 +18,7 @@ def _glm_train(table, feature_cols, label_col, family="Gaussian", link="ident", 
     label = table[label_col]
 
     if label_col in feature_cols:
-        raise Exception("%s is duplicated." % label_col)
+        raise_runtime_error("%s is duplicated." % label_col)
 
     if family == "Gaussian": 
         sm_family = sm.families.Gaussian()
