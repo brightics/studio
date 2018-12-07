@@ -7,6 +7,7 @@ from brightics.function.utils import _model_dict
 from sklearn.tree.export import export_graphviz
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.function.validation import validate, greater_than_or_equal_to
 
 
 def decision_tree_classification_train(table, group_by=None, **params):
@@ -22,6 +23,11 @@ def _decision_tree_classification_train(table, feature_cols, label_col,  # fig_s
                                        min_weight_fraction_leaf=0.0, max_features=None, random_state=None, max_leaf_nodes=None,
                                        min_impurity_decrease=0.0, min_impurity_split=None, class_weight=None, presort=False,
                                        sample_weight=None, check_input=True, X_idx_sorted=None):
+    validate(greater_than_or_equal_to(max_depth, 1, 'max_depth'),
+             greater_than_or_equal_to(min_samples_split, 2, 'min_samples_split'),
+             greater_than_or_equal_to(min_samples_leaf, 1, 'min_samples_leaf'),
+             greater_than_or_equal_to(min_weight_fraction_leaf, 0.0, 'min_weight_fraction_leaf'))
+    
     classifier = DecisionTreeClassifier(criterion, splitter, max_depth, min_samples_split, min_samples_leaf,
                                        min_weight_fraction_leaf, max_features, random_state, max_leaf_nodes,
                                        min_impurity_decrease, min_impurity_split, class_weight, presort)
