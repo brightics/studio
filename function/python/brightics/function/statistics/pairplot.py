@@ -3,6 +3,7 @@ import seaborn as sns
 from brightics.common.repr import BrtcReprBuilder
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.function.validation import validate, greater_than
 
 
 def pairplot(table, group_by=None, **params):
@@ -13,6 +14,10 @@ def pairplot(table, group_by=None, **params):
         return _pairplot(table, **params)
 
 def _pairplot(table, x_vars, y_vars=None, kind='scatter', diag_kind='auto', markers=None, palette=None, height=2.5, aspect=1, dropna=True, hue=None):
+    
+    validate(greater_than(height, 0, 'height'), 
+             greater_than(aspect, 0, 'aspect'))
+    
     s_default = plt.rcParams['lines.markersize'] ** 2.
     plot_kws = {"s": s_default * height / 6.4}
     
