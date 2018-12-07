@@ -9,6 +9,7 @@ import seaborn as sns
 import numpy as np
 import matplotlib.cm as cm
 from matplotlib.patches import Patch
+from brightics.function.validation import validate, greater_than_or_equal_to
 
 
 def pca(table, group_by=None, **params):
@@ -21,7 +22,8 @@ def pca(table, group_by=None, **params):
     
 def _pca(table, input_cols, new_column_name='projected_', n_components=None, copy=True, whiten=False, svd_solver='auto',
             tol=0.0, iterated_power='auto', random_state=None, hue=None, alpha=0, key_col=None):
-                    
+    validate(greater_than_or_equal_to(n_components, 1, 'n_components'))
+    
     num_feature_cols = len(input_cols)
     if n_components is None:
         n_components = num_feature_cols
