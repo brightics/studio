@@ -5,6 +5,7 @@ from brightics.function.utils import _model_dict
 from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, dict2MD
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.function.validation import validate, greater_than
 
 
 def svm_classification_train(table, group_by=None, **params):
@@ -17,6 +18,8 @@ def svm_classification_train(table, group_by=None, **params):
 
 def _svm_classification_train(table, feature_cols, label_col, c=1.0, kernel='rbf', degree=3, gamma='auto', coef0=0.0, shrinking=True,
               probability=True, tol=1e-3, max_iter=-1, random_state=None):
+    validate(greater_than(c, 0.0, 'c'))
+    
     _table = table.copy()
     
     _feature_cols = _table[feature_cols]
