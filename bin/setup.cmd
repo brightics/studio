@@ -4,7 +4,7 @@
 @ECHO OFF
 TITLE Setup BrighticsForWindows
 
-SET BRIGHTICS_HOME=%~dp0
+for %%B in (%~dp0\.) do SET BRIGHTICS_HOME=%%~dpB
 
 where /q python
 IF ERRORLEVEL 1 (
