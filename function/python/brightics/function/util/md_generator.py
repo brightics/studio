@@ -161,9 +161,7 @@ from {function_package} import {function_name}
 if __name__ == "__main__":
     
     python_visual_files = glob.glob('''../**/meta/*.json''')
-    OUTPUT_PATH = './help/'
-    sep = re.escape(os.sep)
-    in_file_re = re.compile('([\w\.\$' + sep  + ']+' + sep + ')meta(' + sep + '[\w\.\$]+)\.json$')
+    
     for in_file_name in python_visual_files:
         
         in_file_path = os.path.abspath(in_file_name)
