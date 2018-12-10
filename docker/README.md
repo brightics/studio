@@ -1,6 +1,8 @@
 # Step 0. Prerequisite
 You have to setup docker.
+
 If you've not installed docker on your laptop yet, the following website can help you.
+
 https://docs.docker.com/install/
 
 # Step 1. Build
