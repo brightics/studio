@@ -23,7 +23,7 @@ If you don't need to store any user data
 $ docker run -d -p 3000:3000 brightics-studio:latest
 ```
 
-All Components of brightics-studio will may take around 20 secs.
+It may take approximately 20 seconds for all components of brightics-studio to start.
 
 
 ## Step 2-2. Run with a volume
