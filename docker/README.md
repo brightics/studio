@@ -20,7 +20,7 @@ $ docker build -t brightics-studio:latest .
 If you don't need to store any user data
 
 ```console
-$docker run -d -p 3000:3000 brightics-studio:latest
+$ docker run -d -p 3000:3000 brightics-studio:latest
 ```
 
 If you want to store the user data you were working on
