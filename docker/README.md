@@ -15,13 +15,18 @@ $ docker build -t brightics-studio:latest .
 ```
 
 
-# Step 2. Run
+# Step 2. Run without volumes
 
 If you don't need to store any user data
 
 ```console
 $ docker run -d -p 3000:3000 brightics-studio:latest
 ```
+
+All Components of brightics-studio will may take around 20 secs.
+
+
+# Step 2. Run with volumes
 
 If you want to store the user data you were working on
 
