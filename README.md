@@ -17,10 +17,11 @@ Please visit our web site http://www.brightics.ai
 
 ## Getting started
 ### Prerequisite
-Mac OS users have to install [graphviz](http://graphviz.org/download/) using [Homebrew](https://brew.sh/)
+* Mac OS users have to install [graphviz](http://graphviz.org/download/) using [Homebrew](https://brew.sh/)
 ```
 brew install graphviz
 ```
+* Some functions which interact with database need client libraries such as [Oracle Instant Client](http://www.oracle.com/technetwork/database/database-technologies/instant-client/overview/index.html)
 
 ### Download
 In the beta phase, the releases and patches will probably be updated every week.<br>
