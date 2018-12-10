@@ -2,14 +2,11 @@ import unittest
 import pandas as pd
 import numpy as np
 from brightics.function.manipulation import filter, sort, replace_missing_number, replace_missing_string, simple_filter
-from sklearn import datasets
+from brightics.function.test_data import get_iris
 
 df_example1 = pd.DataFrame({'num1':[1,2,3,4,5],
                             'num2':[10,20,30,40,50],
                             'str1':['a','b','c','d','e']}) 
-
-datasets_iris = datasets.load_iris()
-df_iris = pd.read_csv('../../testdata/sample_iris.csv')
 
 df_example2 = pd.DataFrame({'num1':[1,2,3,4,5,6],
                             'num2':[10,20,30,np.nan,50,60],
@@ -18,25 +15,36 @@ df_example2 = pd.DataFrame({'num1':[1,2,3,4,5,6],
                             'grp':['a','a','a','b','b','b']}) 
 
         
-class FilterTest(unittest.TestCase):
-    
-    def test1(self):
+class ManipulationTest(unittest.TestCase):
+    def filter_test1(self):
         df = df_example1.copy() 
         out_df = filter(df, 'num1 > 1 & num2 != 40')['out_table']
         print(df)
         print(out_df)
         
-    def test3(self):
+    def simple_filter_test1(self):
         df = df_example1.copy()
         out_df = simple_filter(df, ['num1', 'num2', 'str1'], ['>', 'not in', 'in'], ['1', '''[40]''', '''['b','e']'''], 'and')['out_table']
+        print(df)
+        print(out_df)
+        
+    def simple_filter_test2(self):
+        df = df_example1.copy()
+        out_df = simple_filter(df, [], [], [], 'and')['out_table']
         print(df)
         print(out_df)
         
 class SortTest(unittest.TestCase):
     
     def test1(self):
-        df = df_iris.copy()
+        df = get_iris()
         out_df = sort(df, input_cols=['species', 'petal_length'], is_asc=['desc', 'asc'])['out_table']
+        print(df)
+        print(out_df)
+        
+    def test2(self):
+        df = get_iris()
+        out_df = sort(df, input_cols=[], is_asc=['desc'])['out_table']
         print(df)
         print(out_df)
 

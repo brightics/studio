@@ -3,7 +3,8 @@ import numpy as np
 import math
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
-from brightics.function.validation import validate, greater_than_or_equal_to
+from brightics.function.validation import validate, greater_than_or_equal_to,\
+    raise_error, require_param
 
 
 def filter(table, query):
@@ -17,6 +18,10 @@ def simple_filter(table, input_cols, operators, operands, main_operator='and'):
     _table = table.copy()
     _column = [c.strip() for c in input_cols]
     _operator = [o.strip() for o in operators]
+    
+    if len(input_cols) == 0 or not (len(input_cols) == len(operators) == len(operands)):
+        validate(require_param('input_cols'))
+    
     _main_operator = 'and' if main_operator == 'and' else 'or'
     _query = _main_operator.join(['''({input_cols} {operators} {operands})'''.format(input_cols=c, operators=op, operands=od) for c, op, od in zip(_column, _operator, operands)])
     _out_table = _table.query(_query, engine='python')
@@ -34,7 +39,11 @@ def _sort(table, input_cols, is_asc=None):
     if is_asc is None or is_asc == True:
         is_asc = [True for _ in input_cols]
     elif is_asc == False:
-        is_asc = [False for _ in input_cols]    
+        is_asc = [False for _ in input_cols]
+        
+    if len(input_cols) == 0:
+        validate(require_param('input_cols'))
+        
     _table = table.copy()
     
     return {'out_table':table.sort_values(by=input_cols, ascending=is_asc)}

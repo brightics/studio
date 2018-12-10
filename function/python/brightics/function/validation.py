@@ -7,6 +7,7 @@ def validate(*bfe):
         if e is not None and type(e) is tuple and len(e) == 2:
             elist.append({e[0]: e[1]})
     if len(elist) > 0:
+        print(elist)
         raise BrighticsFunctionException.from_errors(elist)
 
 def get_error(true_condition, error_code, error_message_params):
@@ -22,7 +23,7 @@ def error(error_code, error_message_params, true_condition=False):
 def runtime_error(error_message, true_condition=False):
     return get_error(true_condition, '0100', [error_message])
     
-def require(var_name):
+def require_param(var_name):
     return error('0033', [var_name])
     
 def greater_than(var, criteria, var_name):
