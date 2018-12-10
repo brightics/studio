@@ -22,6 +22,9 @@ def error(error_code, error_message_params, true_condition=False):
 def runtime_error(error_message, true_condition=False):
     return get_error(true_condition, '0100', [error_message])
     
+def require(var_name):
+    return error('0033', [var_name])
+    
 def greater_than(var, criteria, var_name):
     return get_error(var > criteria, '0008', [var_name, criteria])
 
