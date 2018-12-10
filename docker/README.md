@@ -37,3 +37,10 @@ If you want to change the owner of the directory, execute the following statemen
 ```console
 $ sudo chown `id -un`:`id -un` -R userdata
 ```
+
+
+# Step 2. Stop and Remove
+
+```console
+$ docker ps | grep brightics-studio:latest | awk '{system("docker stop " $1 "; docker rm " $1)}'
+```
