@@ -1,6 +1,7 @@
 import json
 import glob
 import re
+import os
 
 
 def json_to_md(in_file_name):
@@ -12,7 +13,7 @@ def json_to_md(in_file_name):
     in_file_json = json.loads(open(in_file_name, 'r').read())
     
     if('disableMDGenerator' in in_file_json and in_file_json['disableMDGenerator'] == True):
-        print('skip {} : disableMDGenerator is true.')
+        print('Skip {} : disableMDGenerator is true.'.format(in_file_name))
         return ''
     
     func_jsonspec = in_file_json['specJson']
@@ -161,20 +162,28 @@ if __name__ == "__main__":
     
     python_visual_files = glob.glob('''../**/meta/*.json''')
     OUTPUT_PATH = './help/'
+    sep = re.escape(os.sep)
+    in_file_re = re.compile('([\w\.\$' + sep  + ']+' + sep + ')meta(' + sep + '[\w\.\$]+)\.json$')
     for in_file_name in python_visual_files:
-        out_file_name = OUTPUT_PATH + re.compile('.json$').sub('.md', re.findall('[\w\.\$]*.json$', in_file_name)[0])
-   
+        
+        in_file_path = os.path.abspath(in_file_name)
+        out_file_dir = os.path.dirname(os.path.dirname(in_file_path)) + os.sep + 'help'
+        out_file_path = out_file_dir + os.sep + re.sub(r'\.json$', '.md', os.path.basename(in_file_path))
+        
         mdstr = ''
         error_occur = False
         try:
-            mdstr = json_to_md(in_file_name)
+            mdstr = json_to_md(in_file_path)
         except Exception as e:
-            print("Error occurs in json : " + in_file_name)
+            print("Error occurs in json : " + in_file_path)
             print("Exception Message : {e}".format(e=e))
             error_occur = True
             
         if not error_occur and mdstr:
-            wf = open(out_file_name, 'w')
+            
+            if not os.path.exists(out_file_dir):
+                os.makedirs(out_file_dir)
+            wf = open(out_file_path, 'w')
             wf.write(mdstr)
             wf.close()
-            print("MD is generated in {0}".format(out_file_name))
+            print("MD is generated in {0}".format(out_file_path))
