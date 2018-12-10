@@ -29,3 +29,11 @@ If you want to store the user data you were working on
 $ mkdir userdata
 $ docker run -d -p 3000:3000 --privileged=true -v "`pwd`/userdata:/brightics-studio/userdata" brightics-studio:latest
 ```
+
+The userdata directory will may be created as root.
+
+If you want to change the owner of the directory, execute the following statement.
+
+```console
+$ sudo chown `id -un`:`id -un` -R userdata
+```
