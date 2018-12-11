@@ -20,7 +20,7 @@ Scale selected features. MinMaxScaler, StandardScaler, MaxAbsScaler, and RobustS
 #### Parameters
 1. **Input Columns**<b style="color:red">*</b>: Select features to scale.
    - Allowed column type : Integer, Long, Float, Double
-2. **Normalization Type**: Choose one of MinMaxScaler, StandardScaler, MaxAbsScaler, and RobustScaler.
+2. **Scaler**: Choose one of MinMaxScaler, StandardScaler, MaxAbsScaler, and RobustScaler.
 3. **Suffix**: Suffix for the new column names.
    - Value type : String
 4. **Group By**: Colums to group by
