@@ -10,7 +10,9 @@ from brightics.function.validation import raise_runtime_error
 def label_encoder(table, group_by=None, **params):
     check_required_parameters(_label_encoder, params, ['table'])
     if group_by is not None:
-        return _function_by_group(_label_encoder, table, group_by=group_by, **params)
+        grouped_model = _function_by_group(_label_encoder, table, group_by=group_by, **params) 
+        grouped_model['model']['_grouped_key'] = group_by
+        return grouped_model
     else:
         return _label_encoder(table, **params)
     
@@ -29,7 +31,8 @@ def _label_encoder(table, input_col, new_column_name='encoded_column'):
 
 def label_encoder_model(table, model, group_by=None, **params):
     check_required_parameters(_label_encoder_model, params, ['table', 'model'])
-    if group_by is not None:
+    if '_grouped_key' in model:
+        group_by = model['_grouped_key']
         return _function_by_group(_label_encoder_model, table, model, group_by=group_by, **params)
     else:
         return _label_encoder_model(table, model, **params)
