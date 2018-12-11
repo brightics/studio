@@ -15,18 +15,21 @@ from brightics.function.validation import validate, greater_than_or_equal_to
 def pca(table, group_by=None, **params):
     check_required_parameters(_pca, params, ['table'])
     if group_by is not None:
-        return _function_by_group(_pca, table, group_by=group_by, **params)
+        grouped_model = _function_by_group(_pca, table, group_by=group_by, **params)
+        grouped_model['model']['_grouped_key'] = group_by
+        return grouped_model
     else:
         return _pca(table, **params)
     
     
 def _pca(table, input_cols, new_column_name='projected_', n_components=None, copy=True, whiten=False, svd_solver='auto',
             tol=0.0, iterated_power='auto', random_state=None, hue=None, alpha=0, key_col=None):
-    validate(greater_than_or_equal_to(n_components, 1, 'n_components'))
     
     num_feature_cols = len(input_cols)
     if n_components is None:
         n_components = num_feature_cols
+    
+    validate(greater_than_or_equal_to(n_components, 1, 'n_components'))
         
     pca = PCA(None, copy, whiten, svd_solver, tol, iterated_power, random_state)
     pca_model = pca.fit(table[input_cols])
@@ -191,7 +194,8 @@ def _biplot(xidx, yidx, data, pc_columns, columns, singular_values, components,
 
 def pca_model(table, model, group_by=None, **params):
     check_required_parameters(_pca_model, params, ['table', 'model'])
-    if group_by is not None:
+    if '_grouped_key' in model:
+        group_by = model['_grouped_key']
         return _function_by_group(_pca_model, table, model, group_by=group_by, **params)
     else:
         return _pca_model(table, model, **params)

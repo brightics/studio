@@ -11,7 +11,9 @@ from brightics.function.validation import validate, greater_than
 def svm_classification_train(table, group_by=None, **params):
     check_required_parameters(_svm_classification_train, params, ['table'])
     if group_by is not None:
-        return _function_by_group(_svm_classification_train, table, group_by=group_by, **params)
+        grouped_model = _function_by_group(_svm_classification_train, table, group_by=group_by, **params)
+        grouped_model['model']['_grouped_key'] = group_by
+        return grouped_model
     else:
         return _svm_classification_train(table, **params)
 
@@ -48,9 +50,10 @@ def _svm_classification_train(table, feature_cols, label_col, c=1.0, kernel='rbf
     return {'model':_model}
 
 
-def svm_classification_predict(table, model, group_by=None, **params):
+def svm_classification_predict(table, model, **params):
     check_required_parameters(_svm_classification_predict, params, ['table', 'model'])
-    if group_by is not None:
+    if '_grouped_key' in model:
+        group_by = model['_grouped_key']
         return _function_by_group(_svm_classification_predict, table, model, group_by=group_by, **params)
     else:
         return _svm_classification_predict(table, model, **params)

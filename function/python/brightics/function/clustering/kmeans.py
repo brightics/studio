@@ -69,7 +69,9 @@ def _kmeans_pca_plot(labels, cluster_centers, pca2_model, pca2):
 def kmeans_train_predict(table, group_by=None, **params):
     check_required_parameters(_kmeans_train_predict, params, ['table'])
     if group_by is not None:
-        return _function_by_group(_kmeans_train_predict, table, group_by=group_by, **params)
+        grouped_model = _function_by_group(_kmeans_train_predict, table, group_by=group_by, **params)
+        grouped_model['model']['_grouped_key'] = group_by
+        return grouped_model
     else:
         return _kmeans_train_predict(table, **params)
     
@@ -133,7 +135,8 @@ def _kmeans_train_predict(table, input_cols, n_clusters=3, prediction_col='predi
 
 def kmeans_predict(table, model, group_by=None, **params):
     check_required_parameters(_kmeans_predict, params, ['table', 'model'])
-    if group_by is not None:
+    if '_grouped_key' in model:
+        group_by = model['_grouped_key']
         return _function_by_group(_kmeans_predict, table, model, group_by=group_by, **params)
     else:
         return _kmeans_predict(table, model, **params)
@@ -162,7 +165,9 @@ def _kmeans_predict(table, model, prediction_col='prediction'):
 def kmeans_silhouette_train_predict(table, group_by=None, **params):
     check_required_parameters(_kmeans_silhouette_train_predict, params, ['table'])
     if group_by is not None:
-        return _function_by_group(_kmeans_silhouette_train_predict, table, group_by=group_by, **params)
+        grouped_model = _function_by_group(_kmeans_silhouette_train_predict, table, group_by=group_by, **params) 
+        grouped_model['model']['_grouped_key'] = group_by
+        return grouped_model
     else:
         return _kmeans_silhouette_train_predict(table, **params)
     

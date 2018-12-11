@@ -12,7 +12,9 @@ from brightics.common.utils import check_required_parameters
 def linear_regression_train(table, group_by=None, **params):
     check_required_parameters(_linear_regression_train, params, ['table'])
     if group_by is not None:
-        return _function_by_group(_linear_regression_train, table, group_by=group_by, **params)
+        grouped_model = _function_by_group(_linear_regression_train, table, group_by=group_by, **params)
+        grouped_model['model']['_grouped_key'] = group_by
+        return grouped_model
     else:
         return _linear_regression_train(table, **params)
     
@@ -111,9 +113,10 @@ def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True)
     return {'model' : model}
 
 
-def linear_regression_predict(table, model, group_by=None, **params):
+def linear_regression_predict(table, model, **params):
     check_required_parameters(_linear_regression_predict, params, ['table', 'model'])
-    if group_by is not None:
+    if '_grouped_key' in model:
+        group_by = model['_grouped_key']
         return _function_by_group(_linear_regression_predict, table, model, group_by=group_by, **params)
     else:
         return _linear_regression_predict(table, model, **params)

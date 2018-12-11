@@ -13,7 +13,9 @@ from brightics.function.validation import validate, greater_than_or_equal_to
 def decision_tree_classification_train(table, group_by=None, **params):
     check_required_parameters(_decision_tree_classification_train, params, ['table'])
     if group_by is not None:
-        return _function_by_group(_decision_tree_classification_train, table, group_by=group_by, **params)
+        grouped_model = _function_by_group(_decision_tree_classification_train, table, group_by=group_by, **params)
+        grouped_model['model']['_grouped_key'] = group_by
+        return grouped_model
     else:
         return _decision_tree_classification_train(table, **params)
 
@@ -23,10 +25,14 @@ def _decision_tree_classification_train(table, feature_cols, label_col,  # fig_s
                                        min_weight_fraction_leaf=0.0, max_features=None, random_state=None, max_leaf_nodes=None,
                                        min_impurity_decrease=0.0, min_impurity_split=None, class_weight=None, presort=False,
                                        sample_weight=None, check_input=True, X_idx_sorted=None):
-    validate(greater_than_or_equal_to(max_depth, 1, 'max_depth'),
-             greater_than_or_equal_to(min_samples_split, 2, 'min_samples_split'),
+    
+    param_validation_check = [greater_than_or_equal_to(min_samples_split, 2, 'min_samples_split'),
              greater_than_or_equal_to(min_samples_leaf, 1, 'min_samples_leaf'),
-             greater_than_or_equal_to(min_weight_fraction_leaf, 0.0, 'min_weight_fraction_leaf'))
+             greater_than_or_equal_to(min_weight_fraction_leaf, 0.0, 'min_weight_fraction_leaf')]
+    if max_depth is not None:
+        param_validation_check.append(greater_than_or_equal_to(max_depth, 1, 'max_depth'))
+        
+    validate(*param_validation_check)
     
     classifier = DecisionTreeClassifier(criterion, splitter, max_depth, min_samples_split, min_samples_leaf,
                                        min_weight_fraction_leaf, max_features, random_state, max_leaf_nodes,
@@ -107,9 +113,10 @@ def _decision_tree_classification_train(table, feature_cols, label_col,  # fig_s
     return {'model' : model}
 
 
-def decision_tree_classification_predict(table, model, group_by=None, **params):
+def decision_tree_classification_predict(table, model, **params):
     check_required_parameters(_decision_tree_classification_predict, params, ['table', 'model'])
-    if group_by is not None:
+    if '_grouped_key' in model:
+        group_by = model['_grouped_key']
         return _function_by_group(_decision_tree_classification_predict, table, model, group_by=group_by, **params)
     else:
         return _decision_tree_classification_predict(table, model, **params)

@@ -21,12 +21,6 @@ class AddFunctionColumnTest(unittest.TestCase):
     def test1(self):
         out = add_expression_column(self.example_df, ['num3', 'num4'], ['log(num1)', 'sqrt(num3)'], expr_type='python')
         print(out['out_table'])
-        
-#     def test3(self):
-#         def concat2(str):
-#             return str+'!!!!!'
-#         out = add_expression_column(self.example_df, ['str2'], [''' @concat2(str1) '''], expr_type='python')
-#         print(out['out_table'])
     
     def test4(self):
         df = self.example_df
@@ -38,12 +32,6 @@ class AddFunctionColumnTest(unittest.TestCase):
                                      ''' cast(str3 as float)'''], expr_type='sqlite')['out_table']
         print(out)
         print(out.dtypes)
-    
-#     def test5(self):
-#         def concat(str1, str2):
-#             return str1 + str2
-#         df = self.example_df
-#         print(df.eval('''nc=@concat(str1,"_a")'''))
     
     def test6(self):
         df = self.example_df
@@ -63,17 +51,6 @@ class AddFunctionColumnTest(unittest.TestCase):
         
 class AddFunctionColumnIfTest(unittest.TestCase):
     
-#     def test1(self):
-#         #df = df_iris.copy().query(''' species != 'setosa' ''')
-#         df = df_iris.copy()
-#         print(df)
-#         out = add_expression_column_if(df,
-#                                      'encoded_species', 
-#                                      ['''species == 'setosa' ''', '''species == 'virginica' '''],
-#                                      ['sepal_length', 'petal_width'], 
-#                                      'petal_length')['out_table']
-#         print(out)
-        
     def test2(self):
         #df = df_iris.copy().query(''' species != 'setosa' ''')
         df = df_iris.copy()
