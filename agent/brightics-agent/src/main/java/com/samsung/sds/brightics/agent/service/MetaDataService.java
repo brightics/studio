@@ -205,7 +205,7 @@ public class MetaDataService {
     private static ResultDataMessage removeData(ExecuteDataMessage request) {
         try {
             DataStatus dataStatus = ContextManager.getDataStatusAsKey(request.getKey());
-            if (FileClient.delete(dataStatus.path) && ContextManager.deleteCurrentDataStatus(dataStatus.key)) {
+            if (ContextManager.deleteCurrentDataStatus(dataStatus.key)) {
                 return getSuccessResult("Success to delete " + dataStatus.key);
             } else {
                 return getFailResult(new BrighticsCoreException("5007", dataStatus.key));
