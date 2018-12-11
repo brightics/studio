@@ -109,7 +109,7 @@ def _decision_tree_regression_train(table, feature_cols, label_col,  # fig_size=
     return {'model' : model}
 
 
-def decision_tree_regression_predict(table, model, group_by=None, **params):
+def decision_tree_regression_predict(table, model, **params):
     check_required_parameters(_decision_tree_regression_predict, params, ['table', 'model'])
     if '_grouped_key' in model:
         group_by = model['_grouped_key']

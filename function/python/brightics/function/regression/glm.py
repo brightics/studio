@@ -83,7 +83,7 @@ def _glm_train(table, feature_cols, label_col, family="Gaussian", link="ident", 
     return {'model' : model}
 
 
-def glm_predict(table, model, group_by=None, **params):
+def glm_predict(table, model, **params):
     check_required_parameters(_glm_predict, params, ['table', 'model'])
     if '_grouped_key' in model:
         group_by = model['_grouped_key']
