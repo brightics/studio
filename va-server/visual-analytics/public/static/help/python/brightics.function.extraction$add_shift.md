@@ -18,8 +18,8 @@ This function add new columns of shifted data.
 
 #### Parameters
 1. **Input Column**<b style="color:red">*</b>: Input column to shift
-2. **Shift Set**<b style="color:red">*</b>: For each shift in shift set, this function creates corresponding shifted column.
-3. **Shifted Column Prefix**: This function creates new columns with name {prefix}_{shift}. If None, this function uses input column name as prefix.
+2. **Offset Set**<b style="color:red">*</b>: For each shift in shift set, this function creates corresponding shifted column.
+3. **Output Column Prefix**: This function creates new columns with name {prefix}_{shift}. If None, this function uses input column name as prefix.
    - Value type : String
 4. **Group By**: Columns to group by
 
