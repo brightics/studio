@@ -207,6 +207,7 @@ public class MessageSender {
         }
 
         if (errorSignal.size() > 0) {
+        	logger.error("[Common network] fail to send data stream.", errorSignal.get(0));
             throw new BrighticsCoreException("3401").addDetailMessage(errorSignal.get(0));
         }
     }

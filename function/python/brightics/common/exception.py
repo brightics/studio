@@ -7,8 +7,8 @@ class BrighticsCoreException(Exception):
         self.message = message
         
     def add_detail_message(self, detailed_cause):
-        self.detailed_cause = detailed_cause
-        return self
+    	self.detailed_cause = detailed_cause
+    	return self
 
 class BrighticsFunctionException(Exception):
     def __init__(self, code, params=None):
@@ -29,7 +29,7 @@ class BrighticsFunctionException(Exception):
     def add_error(self, code, params=None):
         params_list = params if isinstance(params, list) else [params] if params else []
         self.errors.append({code: params_list})
-    
+	
     def add_detail_message(self, detailed_cause):
         self.detailed_cause = detailed_cause
         return self

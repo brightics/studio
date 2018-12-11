@@ -375,8 +375,8 @@ public class MetaDataService {
         logger.error("[Meta data detail error message]", e);
         Builder failResult = FailResult.newBuilder()
                 .setMessage(e.getMessage());
-        if (StringUtils.isNoneBlank(e.detailMessage)) {
-            failResult.setDetailMessage(e.detailMessage);
+        if (StringUtils.isNoneBlank(e.detailedCause)) {
+            failResult.setDetailMessage(e.detailedCause);
         }
         return ResultDataMessage.newBuilder()
                 .setMessageStatus(MessageStatus.FAIL)

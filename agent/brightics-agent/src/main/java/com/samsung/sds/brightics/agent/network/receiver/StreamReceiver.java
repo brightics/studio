@@ -59,7 +59,7 @@ public class StreamReceiver extends StreamServiceGrpc.StreamServiceImplBase {
 	public StreamObserver<ByteStreamMessage> writeStream(StreamObserver<WriteMessage> responseObserver) {
 		return new StreamObserver<ByteStreamMessage>() {
 			String tempKey;
-
+			boolean isClear = true;
 			@Override
 			public void onNext(ByteStreamMessage value) {
 				tempKey = value.getTempKey();
@@ -70,22 +70,31 @@ public class StreamReceiver extends StreamServiceGrpc.StreamServiceImplBase {
 					logger.error("Cannot write file", e);
 					responseObserver.onNext(WriteMessage.newBuilder().setErrorMessage(ExceptionUtils.getStackTrace(e)).build());
 					responseObserver.onError(e);
+					isClear = false;
 				}
 			}
 
 			@Override
 			public void onError(Throwable t) {
-				StreamService.writeClose(tempKey, false);
-				listener.onCompleted(tempKey);
+				try {
+					logger.error("[Common network] fail to write file stream.", t);
+					StreamService.writeClose(tempKey, false);
+				} finally {
+					listener.onCompleted(tempKey);
+				}
 			}
 
 			@Override
 			public void onCompleted() {
-				logger.info("[Common network] complete to write file stream.");
-				responseObserver.onCompleted();
-				
-				StreamService.writeClose(tempKey, true);
-				listener.onCompleted(tempKey);
+				try {
+					logger.info("[Common network] complete to write file stream.");
+					StreamService.writeClose(tempKey, isClear);
+					if(isClear) {
+						responseObserver.onCompleted();
+					}
+				} finally {
+					listener.onCompleted(tempKey);
+				}
 			}
 		};
 	}

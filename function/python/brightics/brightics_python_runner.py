@@ -8,6 +8,7 @@ import signal
 import traceback
 import ast
 from contextlib import contextmanager
+import json
 
 try:
     from StringIO import StringIO
@@ -21,6 +22,7 @@ os.chdir(brightics_python_root_dir)
 
 from brightics.brightics_java_gateway import brtc_java_gateway
 from brightics.common.exception import BrighticsCoreException
+from brightics.common.exception import BrighticsFunctionException
 
 
 @contextmanager
@@ -108,6 +110,8 @@ class BrighticsPythonRunner(object):
                     exec(interactive_code_object, self._globals)
             except BrighticsCoreException as bce:
                 raise bce
+            except BrighticsFunctionException as bfe:
+                raise bfe
             except Exception as e:
                 self._stdout.write(traceback.format_exc())
                 self._is_exception = (True, traceback.format_exception_only(type(e), e)[-1])
@@ -173,6 +177,9 @@ if __name__ == '__main__':
                 brtc_java_gateway.logger.info("[Python] Result: " + result + "\n")
 
                 brtc_java_gateway.notify_python_process_finished(result, is_exception[0], is_exception[1])
+            except BrighticsFunctionException as bfe:
+                brtc_java_gateway.notify_brightics_function_exception(traceback.format_exc(), json.dumps(bfe.errors))
+                brtc_java_gateway.logger.info("[Python] " + traceback.format_exc())
             except BrighticsCoreException as bce:
                 brtc_java_gateway.notify_brightics_core_exception(traceback.format_exc(), str(bce.code), bce.message)
                 brtc_java_gateway.logger.info("[Python] " + traceback.format_exc())

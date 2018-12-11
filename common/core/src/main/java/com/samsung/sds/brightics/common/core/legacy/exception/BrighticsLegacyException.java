@@ -1,7 +1,7 @@
 package com.samsung.sds.brightics.common.core.legacy.exception;
 
 import com.samsung.sds.brightics.common.core.exception.AbsBrighticsException;
-import com.samsung.sds.brightics.common.core.exception.provider.FunctionLabelProvider;
+import com.samsung.sds.brightics.common.core.legacy.provider.LegacyFunctionLabelProvider;
 
 /**
  * This class is used for legacy function or script exception.
@@ -17,7 +17,7 @@ public class BrighticsLegacyException extends AbsBrighticsException {
 
 	public BrighticsLegacyException(String code, String functionName, String[] params) {
 		//legacy function parameters should change display label name.
-		super("BR", code.replace("BR-", ""), FunctionLabelProvider.getFunctionLabel(functionName, params));
+		super("BR", code.replace("BR-", ""), LegacyFunctionLabelProvider.getFunctionLabel(functionName, params));
 	}
 
 }

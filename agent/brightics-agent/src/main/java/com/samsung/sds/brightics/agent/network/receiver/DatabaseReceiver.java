@@ -34,7 +34,7 @@ public class DatabaseReceiver extends DatabaseServiceGrpc.DatabaseServiceImplBas
 		} catch (AbsBrighticsException e) {
 			logger.error("[Database receiver] Cannot get database info.", e);
 			responseObserver.onNext(ResultDBMessage.newBuilder().setMessageStatus(MessageStatus.FAIL)
-					.setMessage(e.getMessage()).setMessage(e.detailMessage).build());
+					.setMessage(e.getMessage()).setMessage(e.detailedCause).build());
 		} finally {
 			responseObserver.onCompleted();
 			listener.onCompleted(key);
