@@ -24,12 +24,14 @@ def _decision_tree_regression_train(table, feature_cols, label_col,  # fig_size=
                                        min_weight_fraction_leaf=0.0, max_features=None, random_state=None, max_leaf_nodes=None,
                                        min_impurity_decrease=0.0, min_impurity_split=None, presort=False,
                                        sample_weight=None, check_input=True, X_idx_sorted=None):
-    validate(greater_than_or_equal_to(min_samples_split, 2, 'min_samples_split'),
-             greater_than_or_equal_to(min_samples_leaf, 1, 'min_samples_leaf'),
-             greater_than_or_equal_to(min_weight_fraction_leaf, 0.0, 'min_weight_fraction_leaf'))
     
+    param_validation_check = [greater_than_or_equal_to(min_samples_split, 2, 'min_samples_split'),
+                              greater_than_or_equal_to(min_samples_leaf, 1, 'min_samples_leaf'),
+                              greater_than_or_equal_to(min_weight_fraction_leaf, 0.0, 'min_weight_fraction_leaf')]
     if max_depth is not None:
-        validate(greater_than_or_equal_to(max_depth, 1, 'max_depth'))
+        param_validation_check.append(greater_than_or_equal_to(max_depth, 1, 'max_depth'))
+        
+    validate(*param_validation_check)
     
     regressor = DecisionTreeRegressor(criterion, splitter, max_depth, min_samples_split,
                                        min_samples_leaf, min_weight_fraction_leaf, max_features,
