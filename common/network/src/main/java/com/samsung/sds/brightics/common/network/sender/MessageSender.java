@@ -164,6 +164,7 @@ public class MessageSender {
                     @Override
                     public void onNext(WriteMessage value) {
                         if (StringUtils.isNoneBlank(value.getErrorMessage())) { //receive error
+                        	doneSignal.countDown();
                             errorSignal.add(value.getErrorMessage());
                           } else if("done".equals(value.getParameters())){
                               logger.debug("Partial data written complete.");
@@ -207,7 +208,6 @@ public class MessageSender {
         }
 
         if (errorSignal.size() > 0) {
-        	logger.error("[Common network] fail to send data stream.", errorSignal.get(0));
             throw new BrighticsCoreException("3401").addDetailMessage(errorSignal.get(0));
         }
     }

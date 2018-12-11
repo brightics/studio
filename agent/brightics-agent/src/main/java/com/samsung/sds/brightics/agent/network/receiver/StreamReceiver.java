@@ -69,7 +69,6 @@ public class StreamReceiver extends StreamServiceGrpc.StreamServiceImplBase {
 				} catch (Throwable e) {
 					logger.error("Cannot write file", e);
 					responseObserver.onNext(WriteMessage.newBuilder().setErrorMessage(ExceptionUtils.getStackTrace(e)).build());
-					responseObserver.onError(e);
 					isClear = false;
 				}
 			}

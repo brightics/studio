@@ -101,14 +101,9 @@ public class StreamService {
     }
 
     public static void writeData(String tempKey, ByteString data) throws Throwable {
-    	AppendableParquetWriter dataWriter = writers.get(tempKey);
-    	try {
-    		logger.info("writeData, temp key : " + tempKey + "data size : " + data.toByteArray().length);
-    		dataWriter.append(data.toByteArray());
-    	} catch (Throwable t) {
-    		logger.error("close AppendableParquetWriter.", t);
-    		dataWriter.close();
-    	}
+        logger.info("writeData, temp key : " + tempKey + "data size : " + data.toByteArray().length);
+        AppendableParquetWriter dataWriter = writers.get(tempKey);
+        dataWriter.append(data.toByteArray());
     }
 
     public static void writeClose(String tempKey, boolean isCompleted) {
