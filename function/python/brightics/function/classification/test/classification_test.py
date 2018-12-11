@@ -4,6 +4,8 @@ from brightics.function.transform import split_data
 from brightics.function.test_data import get_iris
 import pandas as pd
 import random
+from brightics.function.classification.decision_tree_classification import decision_tree_classification_train,\
+    decision_tree_classification_predict
 
 class SVMTest(unittest.TestCase):
     
@@ -42,4 +44,18 @@ class SVMTest(unittest.TestCase):
         
         train_out = svm_classification_train(df, feature_cols=['sepal_length', 'sepal_width', 'petal_length', 'petal_width'], label_col='species', group_by=['random_group'])
         predict_out = svm_classification_predict(df, train_out['model'])
+        print(predict_out['out_table'][['species', 'prediction']])
+        
+
+class DecisionTreeClassificationTest(unittest.TestCase):
+    
+    def groupby1(self):
+        df = get_iris()
+        random_group = []
+        for i in range(len(df)):
+            random_group.append(random.randint(1, 2))
+        df['random_group'] = random_group
+        
+        train_out = decision_tree_classification_train(df, feature_cols=['sepal_length', 'sepal_width', 'petal_length', 'petal_width'], label_col='species', group_by=['random_group'])
+        predict_out = decision_tree_classification_predict(df, train_out['model'])
         print(predict_out['out_table'][['species', 'prediction']])
