@@ -8,6 +8,8 @@ from brightics.function.classification.decision_tree_classification import decis
     decision_tree_classification_predict
 from brightics.function.classification.logistic_regression import logistic_regression_train,\
     logistic_regression_predict
+from brightics.function.classification.xgb_classification import xgb_classification_train,\
+    xgb_classification_predict
 
 class SVMTest(unittest.TestCase):
     
@@ -74,4 +76,18 @@ class LogisticRegressionTest(unittest.TestCase):
         
         train_out = logistic_regression_train(df, feature_cols=['sepal_length', 'sepal_width', 'petal_length', 'petal_width'], label_col='species', group_by=['random_group'])
         predict_out = logistic_regression_predict(df, train_out['model'])
+        print(predict_out['out_table'][['species', 'prediction']])
+        
+        
+class XGBClassificationTest(unittest.TestCase):
+    
+    def groupby1(self):
+        df = get_iris()
+        random_group = []
+        for i in range(len(df)):
+            random_group.append(random.randint(1, 2))
+        df['random_group'] = random_group
+        
+        train_out = xgb_classification_train(df, feature_cols=['sepal_length', 'sepal_width', 'petal_length', 'petal_width'], label_col='species', group_by=['random_group'])
+        predict_out = xgb_classification_predict(df, train_out['model'])
         print(predict_out['out_table'][['species', 'prediction']])
