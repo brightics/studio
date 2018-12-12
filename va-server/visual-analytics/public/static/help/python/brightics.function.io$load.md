@@ -7,7 +7,7 @@ res['table']
 ```
 
 ## Description
-
+Load data from repository.
 
 ---
 
