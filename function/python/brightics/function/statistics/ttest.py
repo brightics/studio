@@ -219,9 +219,9 @@ def two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alternat
             df = ttestresult[2]
             if(equal_vari == 'pooled'):    
                 std_number1number2 = sqrt(((number1 - 1) * (std1) ** 2 + (number2 - 1) * (std2) ** 2) / (number1 + number2 - 2))
-                margin = t.ppf((confi_level) , df) * std_number1number2 * sqrt(1 / number1 + 1 / number2)
+                margin = t.ppf((confi_level+1)/2 , df) * std_number1number2 * sqrt(1 / number1 + 1 / number2)
             if(equal_vari == 'unequal'):
-                margin = t.ppf((confi_level) , df) * sqrt(std1 ** 2 / (number1) + std2 ** 2 / (number2))
+                margin = t.ppf((confi_level+1)/2 , df) * sqrt(std1 ** 2 / (number1) + std2 ** 2 / (number2))
             tmp_model += [['true difference in means != 0.0'] + 
             [ttestresult[1]] + [(mean1 - mean2 - margin, mean1 - mean2 + margin)]]
             tmp_table += [['%s by %s(%s,%s)' % (response_col, factor_col, first, second)] + 
@@ -239,7 +239,7 @@ def two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alternat
         |
         | {result_model}
         |
-        """.format(ttestresult2=ttestresult[2], response_col=response_col, factor_col=factor_col, first=first, second=second, ttestresult0=ttestresult[0], result_model=pandasDF2MD(result_model))))
+        """.format(ttestresult2=ttestresult[2], response_col=response_col, factor_col=factor_col,first=first,second=second,ttestresult0=ttestresult[0], result_model=pandasDF2MD(result_model))))
         if(start_auto == 1):
             equal_vari = 'auto'
     result = pd.DataFrame.from_records(tmp_table)
