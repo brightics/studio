@@ -8,7 +8,7 @@ def place(a, splits):
 
         
 def bucketizer(table, input_cols, splits, table_splits=None, new_name=None):
-        
+    check_decimal_number = None
     if table_splits is None:
         if 'to' in splits and 'by' in splits:
             string_format = splits.split(' ')
