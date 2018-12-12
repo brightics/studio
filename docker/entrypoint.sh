@@ -16,6 +16,12 @@ fi
 rm -rf /brightics-studio/brightics-server/data
 ln -s /brightics-studio/userdata/data /brightics-studio/brightics-server/data
 
+mkdir -p /brightics-studio/brightics-server/logs \
+         /brightics-studio/visual-analytics/logs
+touch /brightics-studio/brightics-server/logs/brightics-server.log \
+      /brightics-studio/visual-analytics/logs/visual-analytics.client.log \
+      /brightics-studio/visual-analytics/logs/visual-analytics.error.log \
+      /brightics-studio/visual-analytics/logs/visual-analytics.log
+
 sh start-brightics.sh
-sleep 2
 exec tail -f /brightics-studio/brightics-server/logs/* /brightics-studio/visual-analytics/logs/*
