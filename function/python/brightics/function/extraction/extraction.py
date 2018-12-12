@@ -22,3 +22,13 @@ def discretize_quantile(table, input_col, num_of_buckets, bucket_opt='False', ou
         out_col = pd.DataFrame(np.digitize(table[input_col], buckets, right=False), columns={out_col_name})
     out_table = pd.concat([table, out_col], axis=1)
     return {'out_table': out_table}
+
+
+def binarizer(table, column, threshold=0, out_col_name=''):
+    if len(out_col_name) == 0:
+        out_col_name = 'binarized_' + str(column)
+    table[out_col_name] = 0
+    for t in range(0, len(table[column])):
+        if table[column][t] > threshold:
+            table[out_col_name][t] = 1
+    return{'table':table}
