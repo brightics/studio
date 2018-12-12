@@ -22,10 +22,10 @@ Principal component analysis. Linear dimensionality reduction using Singular Val
    - Allowed column type : Double, Float, Integer, Long
 2. **Number of Components**: Number of components to keep.
    - Value type : Integer
-3. **SVD Solver**: SVD Solver.
-4. **Tolerance**: Tolerance for singular values computed by svd_solver == arpack.
+3. **SVD Solver**: Solver for Singular Value Decomposition.
+4. **Tolerance**: Tolerance for singular values computed by 'SVD Solver' == 'ARPACK'.
    - Value type : Double
-5. **Number of Iterations**: Number of iterations for the power method computed by svd_solver == randomized.
+5. **Number of Iterations**: Number of iterations for the power method computed by 'SVD Solver' == 'Randomized'.
    - Value type : Integer
 6. **Seed**: The seed used by the random number generator.
    - Value type : Integer
@@ -46,10 +46,10 @@ Principal component analysis. Linear dimensionality reduction using Singular Val
    - Allowed column type : Double, Float, Integer, Long
 2. **n_components**: Number of components to keep.
    - Value type : Integer
-3. **svd_solver**: SVD Solver.
-4. **tol**: Tolerance for singular values computed by svd_solver == arpack.
+3. **svd_solver**: Solver for Singular Value Decomposition.
+4. **tol**: Tolerance for singular values computed by 'SVD Solver' == 'ARPACK'.
    - Value type : Double
-5. **iterated_power**: Number of iterations for the power method computed by svd_solver == randomized.
+5. **iterated_power**: Number of iterations for the power method computed by 'SVD Solver' == 'Randomized'.
    - Value type : Integer
 6. **seed**: The seed used by the random number generator.
    - Value type : Integer
