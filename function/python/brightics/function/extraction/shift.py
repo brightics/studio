@@ -8,6 +8,7 @@ def add_shift(table, group_by=None, **params):
         return _function_by_group(_add_shift, table, group_by=group_by, **params)
     else:
         return _add_shift(table, **params)
+
     
 def _add_shift(table, input_col, shift_list, shifted_col=None):
     out_table = table.copy()

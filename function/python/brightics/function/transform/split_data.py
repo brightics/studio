@@ -1,6 +1,7 @@
 from sklearn.model_selection import train_test_split as sktrain_test_split
 from brightics.function.validation import validate, greater_than
 
+
 def split_data(table, train_ratio=7.0, test_ratio=3.0, random_state=None, shuffle=True, stratify=None):
     validate(greater_than(train_ratio, 0.0, 'train_ratio'),
              greater_than(test_ratio, 0.0, 'test_ratio'))

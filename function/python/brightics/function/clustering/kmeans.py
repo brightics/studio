@@ -9,7 +9,7 @@ from sklearn.metrics.cluster.unsupervised import silhouette_score, \
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
-from brightics.function.validation import validate, greater_than_or_equal_to,\
+from brightics.function.validation import validate, greater_than_or_equal_to, \
     greater_than, all_elements_greater_than, raise_runtime_error
 
 
@@ -157,7 +157,7 @@ def _kmeans_predict(table, model, prediction_col='prediction'):
         out_table[prediction_col] = predict
     else:
         raise_runtime_error("Unsupported model")
-        #raise Exception("Unsupported model")
+        # raise Exception("Unsupported model")
     
     return {'out_table':out_table}
 

@@ -70,6 +70,7 @@ def pivot(table, values, aggfunc, index=None, columns=None):  # TODO
     out_table = pd.concat([pivoted.index.to_frame(), pivoted], axis=1)
     return {'out_table':out_table}
 
+
 def transpose(table, columns, label_col='', label_col_name='label'):
 
     sort_table = pd.DataFrame()

@@ -15,6 +15,7 @@ def glm_train(table, group_by=None, **params):
     else:
         return _glm_train(table, **params)
 
+
 def _glm_train(table, feature_cols, label_col, family="Gaussian", link="ident", fit_intercept=True):
     features = table[feature_cols]
     label = table[label_col]

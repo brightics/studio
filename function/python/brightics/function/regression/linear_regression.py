@@ -17,6 +17,7 @@ def linear_regression_train(table, group_by=None, **params):
         return grouped_model
     else:
         return _linear_regression_train(table, **params)
+
     
 def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True):
     features = table[feature_cols]

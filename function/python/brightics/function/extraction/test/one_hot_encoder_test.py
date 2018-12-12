@@ -17,6 +17,7 @@ def get_iris_randomgroup():
     df['random_group2'] = random_group2
     return df
 
+
 class OneHotEncoderTest(unittest.TestCase):
     
     def groupby1(self):

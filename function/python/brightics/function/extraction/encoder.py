@@ -7,6 +7,7 @@ from brightics.function.utils import _model_dict
 from brightics.common.utils import check_required_parameters
 from brightics.function.validation import raise_runtime_error
 
+
 def label_encoder(table, group_by=None, **params):
     check_required_parameters(_label_encoder, params, ['table'])
     if group_by is not None:
@@ -38,7 +39,7 @@ def label_encoder_model(table, model, group_by=None, **params):
         return _label_encoder_model(table, model, **params)
     
 
-def _label_encoder_model(table, model, new_column_name = 'encoded_column'):
+def _label_encoder_model(table, model, new_column_name='encoded_column'):
     out_table = table.copy()
     out_table[new_column_name] = model['label_encoder'].transform(out_table[model['input_col']])
     
@@ -69,10 +70,10 @@ def _one_hot_encoder(table, input_cols, prefix='list', prefix_list=None, suffix=
         new_col_names = []
         if suffix == 'index':
             if prefix == 'list':                
-                for i in range(0,len(np.unique(out_table[col_name].values))):
+                for i in range(0, len(np.unique(out_table[col_name].values))):
                     new_col_names.append(prefix_list[prefix_list_index] + '_' + str(i))
             else:               
-                for i in range(0,len(np.unique(out_table[col_name].values))):
+                for i in range(0, len(np.unique(out_table[col_name].values))):
                     new_col_names.append(col_name + '_' + str(i))
         else:
             if prefix == 'list':  
@@ -113,14 +114,14 @@ def one_hot_encoder_model(table, model, group_by=None, **params):
 def _one_hot_encoder_model(table, model):
     out_table = table.copy()
     for i in range(0, len(model['input_cols'])):
-        new_col_names =[]
+        new_col_names = []
         col_name = model['input_cols'][i]
         if model['suffix'] == 'index':
             if model['prefix'] == 'list':                
-                for j in range(0,len(np.unique(out_table[col_name].values))):
+                for j in range(0, len(np.unique(out_table[col_name].values))):
                     new_col_names.append(model['prefix_list'][i] + '_' + str(j))
             else:               
-                for j in range(0,len(np.unique(out_table[col_name].values))):
+                for j in range(0, len(np.unique(out_table[col_name].values))):
                     new_col_names.append(col_name + '_' + str(j))
         else:
             if model['prefix'] == 'list':  

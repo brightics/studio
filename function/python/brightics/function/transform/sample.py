@@ -10,6 +10,7 @@ def random_sampling(table, group_by=None, **params):
     else:
         return _random_sampling(table, **params)
 
+
 def _random_sampling(table, num_or_frac='num', num=1, frac=0.5, replace=False, seed=None):
     validate(greater_than_or_equal_to(num, 1, 'num'))
     

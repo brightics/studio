@@ -114,7 +114,7 @@ def oneway_anova(table, response_cols, factor_col):
     
 def tukeys_range_test(table, response_cols, factor_col, alpha=0.05):
     if alpha < 0.001 or alpha >= 0.9: 
-        raise BrighticsFunctionException("0006",['alpha',0.001,0.9])
+        raise BrighticsFunctionException("0006", ['alpha', 0.001, 0.9])
     
     rb = BrtcReprBuilder()
     rb.addMD("""## Tukey's range test Result""")

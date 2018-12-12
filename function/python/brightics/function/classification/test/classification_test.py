@@ -4,12 +4,13 @@ from brightics.function.transform import split_data
 from brightics.function.test_data import get_iris
 import pandas as pd
 import random
-from brightics.function.classification.decision_tree_classification import decision_tree_classification_train,\
+from brightics.function.classification.decision_tree_classification import decision_tree_classification_train, \
     decision_tree_classification_predict
-from brightics.function.classification.logistic_regression import logistic_regression_train,\
+from brightics.function.classification.logistic_regression import logistic_regression_train, \
     logistic_regression_predict
-from brightics.function.classification.xgb_classification import xgb_classification_train,\
+from brightics.function.classification.xgb_classification import xgb_classification_train, \
     xgb_classification_predict
+
 
 class SVMTest(unittest.TestCase):
     
@@ -21,7 +22,7 @@ class SVMTest(unittest.TestCase):
         test_df = df_splitted['test_table']
         
         train_out = svm_classification_train(train_df, feature_cols=['sepal_length', 'sepal_width', 'petal_length', 'petal_width'], label_col='species')
-        #print(train_out['model']['svc_model'])
+        # print(train_out['model']['svc_model'])
         
         predict_out = svm_classification_predict(test_df, train_out['model'])
         print(predict_out['out_table'][['species', 'prediction']])
@@ -34,7 +35,7 @@ class SVMTest(unittest.TestCase):
         test_df = df_splitted['test_table']
         
         train_out = svm_classification_train(train_df, feature_cols=['sepal_length', 'sepal_width', 'petal_length', 'petal_width'], label_col='species')
-        #print(train_out['model']['svc_model'])
+        # print(train_out['model']['svc_model'])
         
         predict_out = svm_classification_predict(test_df, train_out['model'], thresholds=[0.1, 0.2, 0.3])
         print(predict_out['out_table'][['species', 'prediction']])

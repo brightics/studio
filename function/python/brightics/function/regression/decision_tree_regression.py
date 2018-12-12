@@ -19,6 +19,7 @@ def decision_tree_regression_train(table, group_by=None, **params):
     else:
         return _decision_tree_regression_train(table, **params)
 
+
 def _decision_tree_regression_train(table, feature_cols, label_col,  # fig_size=np.array([6.4, 4.8]), 
                                        criterion='mse', splitter='best', max_depth=None, min_samples_split=2, min_samples_leaf=1,
                                        min_weight_fraction_leaf=0.0, max_features=None, random_state=None, max_leaf_nodes=None,
@@ -118,6 +119,7 @@ def decision_tree_regression_predict(table, model, **params):
         return _function_by_group(_decision_tree_regression_predict, table, model, group_by=group_by, **params)
     else:
         return _decision_tree_regression_predict(table, model, **params)         
+
 
 def _decision_tree_regression_predict(table, model, prediction_col='prediction',
                                      check_input=True):

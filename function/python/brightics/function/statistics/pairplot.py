@@ -13,9 +13,10 @@ def pairplot(table, group_by=None, **params):
     else:
         return _pairplot(table, **params)
 
+
 def _pairplot(table, x_vars, y_vars=None, kind='scatter', diag_kind='auto', markers=None, palette=None, height=2.5, aspect=1, dropna=True, hue=None):
     
-    validate(greater_than(height, 0, 'height'), 
+    validate(greater_than(height, 0, 'height'),
              greater_than(aspect, 0, 'aspect'))
     
     s_default = plt.rcParams['lines.markersize'] ** 2.

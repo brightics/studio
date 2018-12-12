@@ -1,5 +1,5 @@
 import unittest
-from brightics.function.extraction.encoder import label_encoder,\
+from brightics.function.extraction.encoder import label_encoder, \
     label_encoder_model
 from brightics.function.test_data import get_iris
 import random

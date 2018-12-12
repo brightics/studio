@@ -16,12 +16,13 @@ def get_iris_randomgroup():
     df['random_group2'] = random_group2
     return df
 
+
 class ScaleTest(unittest.TestCase):
     
     def groupby1(self):
         df = get_iris_randomgroup()
         enc_out = scale(df, input_cols=['sepal_length', 'sepal_width', 'petal_length', 'petal_width'],
-                        scaler='RobustScaler',  
+                        scaler='RobustScaler',
                         group_by=['random_group1', 'random_group2'])
         print(enc_out['out_table'])
         print(enc_out['model'].keys())
