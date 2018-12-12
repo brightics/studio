@@ -24,7 +24,7 @@ Encode categorical integer features using a one-hot aka one-of-K scheme.
    - Available items
       - Use existing column name(s) (default)
       - Enter new column name(s)
-3. **Prefix(es)**: List of prefix name(s). The length of this list should be equal to the length of input columns.
+3. **Prefix(es)**<b style="color:red">*</b>: List of prefix name(s). The length of this list should be equal to the length of input columns.
 4. **Suffix Type**: Choose suffix type.
    - Available items
       - Index (default)
@@ -46,7 +46,7 @@ Encode categorical integer features using a one-hot aka one-of-K scheme.
    - Available items
       - col_name (default)
       - list
-3. **prefix_list**: List of prefix name(s). The length of this list should be equal to the length of input columns.
+3. **prefix_list**<b style="color:red">*</b>: List of prefix name(s). The length of this list should be equal to the length of input columns.
 4. **suffix**: Choose suffix type.
    - Available items
       - index (default)
