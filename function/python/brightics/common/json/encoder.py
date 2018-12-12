@@ -1,11 +1,12 @@
 import json
 import pickle
 import numpy
+import pandas as pd
 from brightics.common.report import ReportBuilder
 
 
 def _to_default_list(np_arr):
-    return numpy.where(numpy.isnan(np_arr), None, np_arr).tolist()
+    return numpy.where(pd.isnull(np_arr), None, np_arr).tolist()
 
 
 class DefaultEncoder(json.JSONEncoder):
