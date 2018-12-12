@@ -28,11 +28,11 @@ def bucketizer(table, input_cols, splits, table_splits=None, new_name=None):
                         check_decimal_number = max(check_decimal_number, len(check_starting_decimal_number[1]))
                     if 'e' in string_format[0]: 
                         check_starting_decimal_number = string_format[0].split('-')
-                        print(int(check_starting_decimal_number[1]))
+                        
                         check_decimal_number = max(check_decimal_number, int(check_starting_decimal_number[1]))
             i = float(string_format[0])
             while i <= float(string_format[2]):
-                if '.' in string_format[4]:
+                if check_decimal_number is not None:        
                     i = round(i, check_decimal_number)
                 print(i)
                 splits += [i]
