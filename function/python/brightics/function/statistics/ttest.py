@@ -239,7 +239,7 @@ def two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alternat
         |
         | {result_model}
         |
-        """.format(ttestresult2=ttestresult[2], response_col=response_col, factor_col=factor_col,first=first,second=second,ttestresult0=ttestresult[0], result_model=pandasDF2MD(result_model))))
+        """.format(ttestresult2=ttestresult[2], response_col=response_col, factor_col=factor_col, first=first, second=second, ttestresult0=ttestresult[0], result_model=pandasDF2MD(result_model))))
         if(start_auto == 1):
             equal_vari = 'auto'
     result = pd.DataFrame.from_records(tmp_table)
@@ -252,21 +252,18 @@ def two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alternat
 
 def paired_ttest(table, first_column, second_column, alternative, hypothesized_difference=0, confidence_level=0.95):
     df = len(table) - 1
-    diff_mean = abs(table[first_column] - table[second_column]).mean()
-    std_dev = np.sqrt(((diff_mean - abs(table[first_column] - table[second_column])) * (diff_mean - abs(table[first_column] - table[second_column]))).mean())
-    ans = stats.ttest_rel(table[first_column], table[second_column] + hypothesized_difference)
-    t_value = ans[0]
-    p_value_ul = ans[1]
-    p_value_u = stats.t.sf(t_value, 149)
-    p_value_l = stats.t.cdf(t_value, 149)
+    diff_mean = (table[first_column] - table[second_column]).mean()
+    std_dev = np.std(table[first_column] - table[second_column])
+    t_value = stats.ttest_rel(table[first_column], table[second_column] + hypothesized_difference)[0]
+    p_value_ul = stats.ttest_rel(table[first_column], table[second_column] + hypothesized_difference)[1]
+    p_value_u = stats.t.sf(t_value, df)
+    p_value_l = stats.t.cdf(t_value, df)
 
     left_u = diff_mean - std_dev * stats.t.isf((1 - confidence_level), df) / np.sqrt(df)
-    right_u = np.Infinity
-    left_l = -np.Infinity
     right_l = diff_mean + std_dev * stats.t.isf((1 - confidence_level), df) / np.sqrt(df)
     left_ul = diff_mean - std_dev * stats.t.isf((1 - confidence_level) / 2, df) / np.sqrt(df)
     right_ul = diff_mean + std_dev * stats.t.isf((1 - confidence_level) / 2, df) / np.sqrt(df)
-    
+
     result_value_u = [{'data' : first_column + " , " + second_column,
                  'alternative_hypothesis' : "true difference in means > " + str(hypothesized_difference),
                  'statistics' : "t statistics, t distribution with " + str(df) + " degrees of freedom under the null hypothesis",
@@ -274,14 +271,14 @@ def paired_ttest(table, first_column, second_column, alternative, hypothesized_d
                  'p_value' : p_value_u,
                  'confidence_level' : confidence_level,
                  'low_confidence_interval' : left_u,
-                 'upper_confidence_interval' : right_u}]
+                 'upper_confidence_interval' : np.Infinity}]
     result_value_l = [{'data' : first_column + " , " + second_column,
                  'alternative_hypothesis' : "true difference in means < " + str(hypothesized_difference),
                  'statistics' : "t statistics, t distribution with " + str(df) + " degrees of freedom under the null hypothesis",
                  'estimates' : t_value,
                  'p_value' : p_value_l,
                  'confidence_level' : confidence_level,
-                 'low_confidence_interval' : left_l,
+                 'low_confidence_interval' :-np.Infinity,
                  'upper_confidence_interval' : right_l}]
     result_value_ul = [{'data' : first_column + " , " + second_column,
                  'alternative_hypothesis' : "true difference in means != " + str(hypothesized_difference),
@@ -304,49 +301,30 @@ def paired_ttest(table, first_column, second_column, alternative, hypothesized_d
     if 'twosided' in alternative:
         df_result = df_result.append(df_ul, ignore_index=True)
 
-    params = {'Input columns' : first_column + ", " + second_column, 'Hypothesized difference' : str(hypothesized_difference), 'Confidence level' : str(confidence_level)}
+    result_table_ul = pd.DataFrame([{'Alternative': 'Two Sided', 'H1': 'true difference in means != ' + str(hypothesized_difference), 't_value': t_value, 'p_value': p_value_ul, str(confidence_level * 100) + '% confidence interval': '(' + str(left_ul) + ', ' + str(right_ul) + ')'}])
+    result_table_u = pd.DataFrame([{'Alternative': 'Greater', 'H1': 'true difference in means > ' + str(hypothesized_difference), 't_value': t_value, 'p_value': p_value_u, str(confidence_level * 100) + '% confidence interval': '(' + str(left_u) + ', ' + str(np.Infinity) + ')'}])
+    result_table_l = pd.DataFrame([{'Alternative': 'Less', 'H1': 'true difference in means < ' + str(hypothesized_difference), 't_value': t_value, 'p_value': p_value_l, str(confidence_level * 100) + '% confidence interval': '(' + str(-np.Infinity) + ', ' + str(right_l) + ')'}])
+    result_table = pd.DataFrame()
+
+    if 'greater' in alternative:
+        result_table = result_table.append(result_table_u, ignore_index=True)
+    if 'less' in alternative:
+        result_table = result_table.append(result_table_l, ignore_index=True)
+    if 'twosided' in alternative:
+        result_table = result_table.append(result_table_ul, ignore_index=True)
+
+    ordered_result_table = pd.DataFrame(result_table, columns=['Alternative', 'H1', 't_value', 'p_value', str(confidence_level * 100) + '% confidence interval'])
 
     rb = ReportBuilder()
     rb.addMD(strip_margin("""
-    | ## Paired T Test Result
+    |## Paired T Test Result
+    |##### df : {deg_f}
+    |##### Mean of differences : {dm}
+    |##### Standard deviation : {sd}
     |
-    |df|mean_difference|standard_deviation|t_value
-    |--|--|--|--
-    |{deg_f}|{dm}|{sd}|{tv}
-    """.format(deg_f=df, dm=diff_mean, sd=std_dev, tv=t_value, params=dict2MD(params))))
-
-    if 'greater' in alternative:
-        rb.addMD(strip_margin("""
-        | - H0 : true diffrence in means is less than or equal to {hd}.
-        | - H1 : true diffrence in means is larger than {hd}.
-        |
-        |p_value|confidence_level|confidence_interval
-        |--|--|--
-        |{pvu}|{con_lv}|({l_u}, {r_u})
-        |
-        """.format(pvu=p_value_u, hd=str(hypothesized_difference), con_lv=str(confidence_level), l_u=left_u, r_u=right_u)))
-
-    if 'less' in alternative:
-        rb.addMD(strip_margin("""
-        | - H0 : true diffrence in means is larger than or equal to {hd}.
-        | - H1 : true diffrence in means is less than {hd}.
-        |
-        |p_value|confidence_level|confidence_interval
-        |--|--|--
-        |{pvl}|{con_lv}|({l_l}, {r_l})
-        |
-        """.format(pvl=p_value_l, hd=str(hypothesized_difference), con_lv=str(confidence_level), l_l=left_l, r_l=right_l)))
-        
-    if 'twosided' in alternative:
-        rb.addMD(strip_margin("""
-        | - H0 : true diffrence in means is equal to {hd}.
-        | - H1 : true diffrence in means is not equal to {hd}.
-        |
-        |p_value|confidence_level|confidence_interval
-        |--|--|--
-        |{pvul}|{con_lv}|({l_ul}, {r_ul})
-        |
-        """.format(pvul=p_value_ul, hd=str(hypothesized_difference), con_lv=str(confidence_level), l_ul=left_ul, r_ul=right_ul)))
+    |{result_table}
+    |
+    """.format(deg_f=df, dm=diff_mean, sd=std_dev, result_table=pandasDF2MD(ordered_result_table))))
 
     model = dict()
     model['report'] = rb.get()
