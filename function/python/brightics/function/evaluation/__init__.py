@@ -261,11 +261,11 @@ def plot_roc_pr_curve(table, group_by=None, **params):
         return _plot_roc_pr_curve(table, **params)    
 
 
-def _plot_roc_pr_curve(table, label_col, probability_col, fig_size=[6.4, 4.8], pos_label=None):
+def _plot_roc_pr_curve(table, label_col, probability_col, fig_w=6.4, fig_h=4.8, pos_label=None):
     label = table[label_col]
     probability = table[probability_col]
     
-    threshold, fig_tpr_fpr, fig_roc, fig_precision_recall, fig_pr, fig_confusion = _plot_binary(label, probability, fig_size=(fig_size[0], fig_size[1]), pos_label=pos_label)
+    threshold, fig_tpr_fpr, fig_roc, fig_precision_recall, fig_pr, fig_confusion = _plot_binary(label, probability, fig_size=(fig_w, fig_h), pos_label=pos_label)
 
     summary = dict()
     summary['threshold'] = threshold
