@@ -4,8 +4,3 @@ from .pairplot import pairplot
 from .anova import bartletts_test
 from .anova import oneway_anova
 from .anova import tukeys_range_test
-from .ttest import one_sample_ttest
-from .ttest import two_sample_ttest_for_stacked_data
-from .ttest import paired_ttest
-from .ftest import ftest_for_stacked_data
-from .chi_square_test import chi_square_test_for_independence

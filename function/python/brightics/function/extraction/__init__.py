@@ -9,5 +9,3 @@ from .encoder import one_hot_encoder_model
 from .pca import pca
 from .pca import pca_model
 from .shift import add_shift
-from .extraction import add_row_number
-from .extraction import discretize_quantile
