@@ -171,7 +171,7 @@ if __name__ == "__main__":
         out_file_header = in_json_str['specJson']['name']
         
         #out_file_path = out_file_dir + os.sep + re.sub(r'\.json$', '.md', os.path.basename(in_file_path))
-        out_file_path = out_file_dir + os.sep + out_file_header + '.json'
+        out_file_path = out_file_dir + os.sep + out_file_header + '.md'
         mdstr = ''
         error_occur = False
         try:
