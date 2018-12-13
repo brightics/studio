@@ -10,6 +10,7 @@ from sklearn.utils.fixes import signature
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 
+
 def evaluate_regression(table, group_by=None, **params):
     check_required_parameters(_evaluate_regression, params, ['table'])
     if group_by is not None:
@@ -171,7 +172,6 @@ def _plot_binary(label, probability, threshold=None, fig_size=(6.4, 4.8), pos_la
         argmin = np.argmin(np.abs(tpr + fpr - 1))
         threshold = threshold_roc[argmin]
     
-    
     fpr_prop = fpr[argmin]
     tpr_prop = tpr[argmin]
     plt.plot(threshold_roc, tpr, color='blue',
@@ -219,7 +219,7 @@ def _plot_binary(label, probability, threshold=None, fig_size=(6.4, 4.8), pos_la
     plt.ylim([0.0, 1.05])
     plt.xlim([0.0, 1.0])
     plt.plot(recall_prop, precision_prop, 'g*', markersize=10, color="red", label='threshold: %0.2f' % threshold)
-    plt.title('Precision-Recall curve') # TODO Average precision score
+    plt.title('Precision-Recall curve')  # TODO Average precision score
     plt.legend()
     fig_pr = plt2MD(plt)
     plt.clf()

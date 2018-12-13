@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 def bind_row_column(first_table, second_table, row_or_col):
     if row_or_col == 'row':
         table = pd.concat([first_table, second_table], ignore_index=True, sort=False)

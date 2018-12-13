@@ -6,6 +6,7 @@ import pandas as pd
 import io
 import boto3
 from brightics.common.datasource import DbEngine
+from brightics.function.validation import raise_runtime_error
 
 
 def write_csv(table, path):
@@ -35,7 +36,7 @@ def write_to_s3(table, datasource, object_key):
 
 def write_to_db(table, tableName, datasource, ifExists='fail'):
     if not isinstance(table, pd.DataFrame):
-        raise Exception('table is not pandas.DataFrame')
+        raise_runtime_error('table is not pandas.DataFrame')
 
     with DbEngine(**datasource) as engine:
         table.to_sql(tableName, engine, if_exists=ifExists, index=False)

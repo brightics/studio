@@ -1,4 +1,5 @@
 from brightics.common.exception import BrighticsCoreException
+from brightics.common.exception import BrighticsFunctionException
 
 
 def get_required_parameters(func):
@@ -13,6 +14,9 @@ def get_required_parameters(func):
 
 def check_required_parameters(func, params, excluded_paramkeys=[]):
     required_params = get_required_parameters(func)
+    required_parames_error = []
     for rp in required_params:
         if rp not in params and rp not in excluded_paramkeys:
-            raise BrighticsCoreException('3109', rp)
+            error_parameters.append({'3109':[rp]})
+        if required_parames_error:
+            raise BrighticsFunctionException.from_errors(required_parames_error)

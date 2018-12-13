@@ -5,7 +5,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-class AgglomerativeClustering(): # TODO predefine matrix input
+class AgglomerativeClustering():  # TODO predefine matrix input
+
     def process(self, input_table, input_cols, n_clusters=3, affinity='euclidean', compute_full_tree=True, linkage='ward', prediction_col='prediction', figw=6.4, figh=4.8):
         return agglomerative_clustering_train_predict(input_table=input_table, input_cols=input_cols, n_clusters=n_clusters, affinity=affinity, compute_full_tree=compute_full_tree, linkage=linkage, prediction_col=prediction_col, figw=figw, figh=figh) 
 

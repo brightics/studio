@@ -19,6 +19,7 @@ import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
 import com.samsung.sds.brightics.common.core.util.JsonUtil;
 import com.samsung.sds.brightics.common.core.util.JsonUtil.JsonParam;
 import com.samsung.sds.brightics.common.data.DataStatus;
+import com.samsung.sds.brightics.common.data.client.FileClient;
 import com.samsung.sds.brightics.common.data.parquet.reader.DefaultRecord;
 import com.samsung.sds.brightics.common.data.parquet.reader.info.ParquetInformation;
 import com.samsung.sds.brightics.common.data.parquet.reader.util.BrighticsParquetUtils;
@@ -100,14 +101,9 @@ public class StreamService {
     }
 
     public static void writeData(String tempKey, ByteString data) throws Throwable {
-    	AppendableParquetWriter dataWriter = writers.get(tempKey);
-    	try {
-    		logger.info("writeData, temp key : " + tempKey + "data size : " + data.toByteArray().length);
-    		dataWriter.append(data.toByteArray());
-    	} catch (Throwable t) {
-    		logger.error("close AppendableParquetWriter.", t);
-    		dataWriter.close();
-    	}
+        logger.info("writeData, temp key : " + tempKey + "data size : " + data.toByteArray().length);
+        AppendableParquetWriter dataWriter = writers.get(tempKey);
+        dataWriter.append(data.toByteArray());
     }
 
     public static void writeClose(String tempKey, boolean isCompleted) {
@@ -127,6 +123,16 @@ public class StreamService {
         try {
             logger.info("close AppendableParquetWriter.");
             dataWriter.close();
+            if (!isCompleted) {
+				logger.info("remove abnormal uploaded file data.");
+				try {
+					if (FileClient.getFileSystem().exists(new Path(outputDirectory))) {
+						FileClient.delete(outputDirectory);
+					}
+				} catch (IOException e) {
+					logger.error("cannot remove abnormal uploaded file data.", e);
+				}
+			}
         } catch (IOException e) {
             logger.error("Cannot close DataWriter", e);
         }

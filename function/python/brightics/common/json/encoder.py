@@ -3,8 +3,10 @@ import pickle
 import numpy
 from brightics.common.repr import BrtcReprBuilder
 
+
 # DefaultEncoder is used for building viewable json string for in browser
 class DefaultEncoder(json.JSONEncoder):
+
     def default(self, obj):
         if isinstance(obj, set):
             return list(obj)
@@ -12,16 +14,19 @@ class DefaultEncoder(json.JSONEncoder):
             return obj.tolist()
         # TODO add more support types
         else:
-        #elif hasattr(obj, '__str__'):
+        # elif hasattr(obj, '__str__'):
             rb = BrtcReprBuilder()
             rb.addRawTextMD(str(obj))
             return {'type':'python object', '_repr_brtc_':rb.get()}
 
      #   return 'python object'
 
+
 # PickleEncoder is used for building json string saved in redis
 class PickleEncoder(DefaultEncoder):
+
     def encode(self, obj):
+
         def hint_tuples(item):
             if isinstance(item, tuple):
                 return {'__tuple__': [hint_tuples(e) for e in item]}
@@ -43,7 +48,7 @@ class PickleEncoder(DefaultEncoder):
         elif isinstance(o, numpy.ndarray):
             return {'__numpy__': o.tolist()}
         # TODO add more support types
-        #return {'__pickled__': list(pickle.dumps(o))}
+        # return {'__pickled__': list(pickle.dumps(o))}
         elif hasattr(o, '_repr_html_'):
             rb = BrtcReprBuilder()
             rb.addHTML(o._repr_html_())

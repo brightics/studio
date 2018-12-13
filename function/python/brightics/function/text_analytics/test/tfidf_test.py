@@ -15,21 +15,19 @@ class TfIdfTest(unittest.TestCase):
                   'Is this the first document?']
         self.ex_corpus = corpus
         self.ex2 = pd.read_csv('sample_termDocument2.csv')['description2'].values
-        self.df = pd.DataFrame({'data':corpus, 'text_index':[1,2,3,4], 'text_comment':['a','b','c','d']})
+        self.df = pd.DataFrame({'data':corpus, 'text_index':[1, 2, 3, 4], 'text_comment':['a', 'b', 'c', 'd']})
     
     def test1(self):
-        out_func = tfidf(self.df, input_col='data', hold_cols=['text_index','text_comment'], max_df = 1.0)
+        out_func = tfidf(self.df, input_col='data', hold_cols=['text_index', 'text_comment'], max_df=1.0)
         
         print(out_func['frequency_table'])
         print(out_func['idf_vector_table'])
         
     def test2(self):
-        out_func = tfidf(self.df, input_col='data', hold_cols=['text_index','text_comment'], idf_weighting_scheme='idf')
+        out_func = tfidf(self.df, input_col='data', hold_cols=['text_index', 'text_comment'], idf_weighting_scheme='idf')
         
         print(out_func['frequency_table'])
         print(out_func['idf_vector_table'])
-    
-    
     
     def test11(self):
         corpus = ['This is the first document.',
@@ -38,7 +36,7 @@ class TfIdfTest(unittest.TestCase):
                   'Is this the first document?']
         
         vectorizer = TfidfVectorizer()
-        #X = vectorizer.fit_transform(corpus)
+        # X = vectorizer.fit_transform(corpus)
         model = vectorizer.fit(corpus)
         X = model.transform(corpus)
         print(vectorizer.get_feature_names())
@@ -55,7 +53,7 @@ class TfIdfTest(unittest.TestCase):
         
         tfidft = TfidfTransformer()
         out_tfidft = tfidft.fit_transform(out_cv)
-        #tfidft.
+        # tfidft.
         print(out_cv)
         print(out_tfidft)
     
@@ -75,32 +73,31 @@ class TfIdfTest(unittest.TestCase):
         vectorizer = TfidfVectorizer()
         X = vectorizer.fit_transform(d)
         model = vectorizer.fit(d)
-        #print(vectorizer.get_feature_names())
-        #print(vectorizer.get_stop_words())
-        #print(vectorizer.inverse_transform(X))
-        #print(X.shape)
-        #print(X)
-        #print(model.vocabulary_)
-        #print(model.idf_)
+        # print(vectorizer.get_feature_names())
+        # print(vectorizer.get_stop_words())
+        # print(vectorizer.inverse_transform(X))
+        # print(X.shape)
+        # print(X)
+        # print(model.vocabulary_)
+        # print(model.idf_)
         
         dic = [None] * len(model.vocabulary_)
-        for k,v in model.vocabulary_.items():
+        for k, v in model.vocabulary_.items():
             dic[v] = k
         
         out_table2 = pd.DataFrame({'voc':dic, 'idf_vector':model.idf_})
         print(out_table2)
 #         print(X)
         
-        #print(pd.DataFrame(X.toarray()))
+        # print(pd.DataFrame(X.toarray()))
         X_coo = X.tocoo()
-        #print(X_coo)
-        #print(X_coo.data)
-        #print(X_coo.row)
-        #print(X_coo.col)
+        # print(X_coo)
+        # print(X_coo.data)
+        # print(X_coo.row)
+        # print(X_coo.col)
         
         X_new = X_coo.copy()
         y = np.array(list(range(1, 1937)))
         mnb = MultinomialNB()
         mnb.fit(X_new, y)
-        
         

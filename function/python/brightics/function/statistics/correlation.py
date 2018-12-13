@@ -5,6 +5,7 @@ from scipy import stats
 import numpy as np
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.function.validation import validate, greater_than, greater_than_or_equal_to
 
 
 def correlation(table, group_by=None, **params):
@@ -14,11 +15,16 @@ def correlation(table, group_by=None, **params):
     else:
         return _correlation(table, **params)
 
+
 def _correlation(table, vars, method='pearson', height=2.5, corr_prec=2):
+    
+    validate(greater_than(height, 0, 'height'),
+             greater_than_or_equal_to(corr_prec, 1, 'corr_prec'))
+    
     size = len(vars)
     
     s_default = plt.rcParams['lines.markersize'] ** 2.
-    scatter_kws={"s": s_default*height/6.4}
+    scatter_kws = {"s": s_default * height / 6.4}
     
     corr_arr = np.ones((size, size))  # TODO variable name dict
     p_arr = np.zeros((size, size))
@@ -58,7 +64,7 @@ def _correlation(table, vars, method='pearson', height=2.5, corr_prec=2):
             
         corr_text = '{:.{prec}f}'.format(r, prec=corr_prec)
         print(type(corr_prec))
-        font_size = abs(r) * 15 * 2/corr_prec + 5
+        font_size = abs(r) * 15 * 2 / corr_prec + 5
         ax = plt.gca()
         ax.annotate(corr_text, [.5, .5, ], xycoords="axes fraction",
                     ha='center', va='center', fontsize=font_size * height)

@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
 
-def tfidf(table, input_col, hold_cols=None, min_df=None, max_df=None, max_features=None, idf_weighting_scheme='unary', 
+def tfidf(table, input_col, hold_cols=None, min_df=None, max_df=None, max_features=None, idf_weighting_scheme='unary',
           vocabulary_col='vocabulary', index_col='index', frequency_col='frequency'):
     _table = table.copy()
     
@@ -28,7 +28,7 @@ def tfidf(table, input_col, hold_cols=None, min_df=None, max_df=None, max_featur
         _vectorizer = CountVectorizer(min_df=_min_df, max_df=_max_df, max_features=max_features)
         _model = _vectorizer.fit(_input_data)        
         _tdm = _model.transform(_input_data)
-        _idf_vector = [1.0]*len(_model.get_feature_names())
+        _idf_vector = [1.0] * len(_model.get_feature_names())
     
     _features = _vectorizer.get_feature_names()
     _out_coo = _tdm.tocoo()

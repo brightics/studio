@@ -7,7 +7,7 @@ res['out_table']
 ```
 
 ## Description
-This function transforms the features using the result of Scale.
+This function transforms the features using the result of Normalization.
 
 ---
 

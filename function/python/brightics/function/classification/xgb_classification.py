@@ -7,12 +7,15 @@ from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 import numpy as np
+from brightics.function.validation import validate, greater_than_or_equal_to
 
 
 def xgb_classification_train(table, group_by=None, **params):
     check_required_parameters(_xgb_classification_train, params, ['table'])
     if group_by is not None:
-        return _function_by_group(_xgb_classification_train, table, group_by=group_by, **params)
+        grouped_model = _function_by_group(_xgb_classification_train, table, group_by=group_by, **params) 
+        grouped_model['model']['_grouped_key'] = group_by
+        return grouped_model
     else:
         return _xgb_classification_train(table, **params)
 
@@ -23,6 +26,10 @@ def _xgb_classification_train(table, feature_cols, label_col, max_depth=3, learn
             scale_pos_weight=1, base_score=0.5, random_state=0, seed=None, missing=None,
             sample_weight=None, eval_set=None, eval_metric=None, early_stopping_rounds=None, verbose=True,
             xgb_model=None, sample_weight_eval_set=None):
+    validate(greater_than_or_equal_to(max_depth, 1, 'max_depth'),
+             greater_than_or_equal_to(learning_rate, 0.0, 'learning_rate'),
+             greater_than_or_equal_to(n_estimators, 1, 'n_estimators'))
+    
     classifier = XGBClassifier(max_depth, learning_rate, n_estimators,
                                silent, objective, booster, n_jobs, nthread, gamma, min_child_weight,
                                max_delta_step, subsample, colsample_bytree, colsample_bylevel, reg_alpha, reg_lambda,
@@ -90,9 +97,10 @@ def _xgb_classification_train(table, feature_cols, label_col, max_depth=3, learn
     return {'model' : model}
 
 
-def xgb_classification_predict(table, model, group_by=None, **params):
+def xgb_classification_predict(table, model, **params):
     check_required_parameters(_xgb_classification_predict, params, ['table', 'model'])
-    if group_by is not None:
+    if '_grouped_key' in model:
+        group_by = model['_grouped_key']
         return _function_by_group(_xgb_classification_predict, table, model, group_by=group_by, **params)
     else:
         return _xgb_classification_predict(table, model, **params)        

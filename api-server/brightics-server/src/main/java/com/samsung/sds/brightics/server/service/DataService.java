@@ -172,7 +172,7 @@ public class DataService {
      * @param columnNameJson column type json (optional)
      */
     public void fileUpload(InputStream inputstream, String path, String delimiter, String columnTypeJson, String columnNameJson) {
-        filePathValidator(path);
+        filePathValidator(path); 
         String param = ParameterBuilder.newBuild()
                 .addProperty("delimiter", delimiter)
                 .addProperty("columntype", toCommaDelimitedString(columnTypeJson))

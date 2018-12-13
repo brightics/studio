@@ -14,9 +14,9 @@ public class BrighticsUncodedException extends AbsBrighticsException {
 		super.message = message;
 	}
 
-	public BrighticsUncodedException(String message, String detailMessage) {
+	public BrighticsUncodedException(String message, String detailedCause) {
 		super.message = message;
-		super.detailMessage = detailMessage;
+		super.detailedCause = detailedCause;
 	}
 
 }

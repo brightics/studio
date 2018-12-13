@@ -32,7 +32,7 @@ public class ExceptionTest {
 	@Test
 	public void messageTestAddDetail() {
 		BrighticsCoreException bce = new BrighticsCoreException("3001").addDetailMessage("detail message...");
-		System.out.println(bce.detailMessage);
+		System.out.println(bce.detailedCause);
 	}
 
 	@Test
@@ -40,7 +40,7 @@ public class ExceptionTest {
 		AbsBrighticsException bce = new BrighticsCoreException("3001").addDetailMessage("detail message...");
 		String stackTrace = ExceptionUtils.getStackTrace(bce);
 		System.out.println(stackTrace);
-		System.out.println(bce.detailMessage);
+		System.out.println(bce.detailedCause);
 	}
 	
 }

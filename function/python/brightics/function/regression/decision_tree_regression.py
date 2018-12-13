@@ -7,20 +7,33 @@ from brightics.function.utils import _model_dict
 from sklearn.tree.export import export_graphviz
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.function.validation import validate, greater_than_or_equal_to
 
 
 def decision_tree_regression_train(table, group_by=None, **params):
     check_required_parameters(_decision_tree_regression_train, params, ['table'])
     if group_by is not None:
-        return _function_by_group(_decision_tree_regression_train, table, group_by=group_by, **params)
+        grouped_model = _function_by_group(_decision_tree_regression_train, table, group_by=group_by, **params)
+        grouped_model['model']['_grouped_key'] = group_by
+        return grouped_model
     else:
         return _decision_tree_regression_train(table, **params)
+
 
 def _decision_tree_regression_train(table, feature_cols, label_col,  # fig_size=np.array([6.4, 4.8]), 
                                        criterion='mse', splitter='best', max_depth=None, min_samples_split=2, min_samples_leaf=1,
                                        min_weight_fraction_leaf=0.0, max_features=None, random_state=None, max_leaf_nodes=None,
                                        min_impurity_decrease=0.0, min_impurity_split=None, presort=False,
                                        sample_weight=None, check_input=True, X_idx_sorted=None):
+    
+    param_validation_check = [greater_than_or_equal_to(min_samples_split, 2, 'min_samples_split'),
+                              greater_than_or_equal_to(min_samples_leaf, 1, 'min_samples_leaf'),
+                              greater_than_or_equal_to(min_weight_fraction_leaf, 0.0, 'min_weight_fraction_leaf')]
+    if max_depth is not None:
+        param_validation_check.append(greater_than_or_equal_to(max_depth, 1, 'max_depth'))
+        
+    validate(*param_validation_check)
+    
     regressor = DecisionTreeRegressor(criterion, splitter, max_depth, min_samples_split,
                                        min_samples_leaf, min_weight_fraction_leaf, max_features,
                                        random_state, max_leaf_nodes, min_impurity_decrease,
@@ -99,12 +112,14 @@ def _decision_tree_regression_train(table, feature_cols, label_col,  # fig_size=
     return {'model' : model}
 
 
-def decision_tree_regression_predict(table, model, group_by=None, **params):
+def decision_tree_regression_predict(table, model, **params):
     check_required_parameters(_decision_tree_regression_predict, params, ['table', 'model'])
-    if group_by is not None:
+    if '_grouped_key' in model:
+        group_by = model['_grouped_key']
         return _function_by_group(_decision_tree_regression_predict, table, model, group_by=group_by, **params)
     else:
         return _decision_tree_regression_predict(table, model, **params)         
+
 
 def _decision_tree_regression_predict(table, model, prediction_col='prediction',
                                      check_input=True):

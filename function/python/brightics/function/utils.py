@@ -5,6 +5,7 @@ import numpy as np
 def _model_dict(type):
     return {'_type':type, '_context':'python', '_version': 3.6}
 
+
 def dataframe_to_md(table, n=20, precision=None, max_width=None):
     
     if precision is None:
@@ -33,7 +34,7 @@ def dataframe_to_md(table, n=20, precision=None, max_width=None):
             if max_width is None or max_width < 10 or l < max_width:
                 return str(v)
             else:
-                return s[0:max_width-3] + '...'
+                return s[0:max_width - 3] + '...'
     
     data = _table.values[:n]
     
@@ -42,7 +43,7 @@ def dataframe_to_md(table, n=20, precision=None, max_width=None):
     
     for row in data:
         md_line.append(COL_DIVIDER + COL_DIVIDER.join([to_string(c, max_width) for c in row]) + COL_DIVIDER)
-        #for c in row:
+        # for c in row:
             
     return '\n'.join(md_line)
 
