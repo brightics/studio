@@ -28,13 +28,16 @@ In the beta phase, the releases and patches will probably be updated every week.
 Download release files are available from github release or our web site http://www.brightics.ai/downloads
 
 ### Installation
-Unzip the downloaded file somewhere.
+Execute the downloaded file. It will extract files automatically.
+
+	BrighticsStudio-\<version\>-\<os name\>.exe : for windows
+	BrighticsStudio-\<version\>-\<os name\>.sh : for linux and mac
+
+Details of the directory is as follows:
 
 	/brightics-studio/brightics-server : core home
 	/brightics-studio/visual-analytics : GUI home
 	/brightics-studio/lib : external libs
-
-※ for windows, running exe file will extract files automatically.
 
 ### Launch
 You don't need to prepare anything before running it. Our releases contain all requirements in a package itself.<br>
