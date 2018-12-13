@@ -166,8 +166,12 @@ if __name__ == "__main__":
         
         in_file_path = os.path.abspath(in_file_name)
         out_file_dir = os.path.dirname(os.path.dirname(in_file_path)) + os.sep + 'help'
-        out_file_path = out_file_dir + os.sep + re.sub(r'\.json$', '.md', os.path.basename(in_file_path))
+                
+        in_json_str = json.loads(open(in_file_name, 'r').read())
+        out_file_header = in_json_str['specJson']['name']
         
+        #out_file_path = out_file_dir + os.sep + re.sub(r'\.json$', '.md', os.path.basename(in_file_path))
+        out_file_path = out_file_dir + os.sep + out_file_header + '.json'
         mdstr = ''
         error_occur = False
         try:
