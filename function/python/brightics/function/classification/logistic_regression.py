@@ -9,6 +9,8 @@ from brightics.function.evaluation import _plot_roc_pr_curve
 from statsmodels.sandbox.distributions.quantize import prob_bv_rectangle
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.function.validation import raise_runtime_error
+import sklearn.utils as sklearn_utils
 
 
 def logistic_regression_train(table, group_by=None, **params):
@@ -24,8 +26,13 @@ def logistic_regression_train(table, group_by=None, **params):
 def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dual=False, tol=0.0001, C=1.0, fit_intercept=True, intercept_scaling=1, class_weight=None, random_state=None, solver='liblinear', max_iter=100, multi_class='ovr', verbose=0, warm_start=False, n_jobs=1):
     features = table[feature_cols]
     label = table[label_col]
+
+    if(sklearn_utils.multiclass.type_of_target(label) == 'continuous'):
+        raise_runtime_error('''Label Column should not be continuous.''')
+    
     lr_model = LogisticRegression(penalty, dual, tol, C, fit_intercept, intercept_scaling, class_weight, random_state, solver, max_iter, multi_class, verbose, warm_start, n_jobs)
     lr_model.fit(features, label)
+    raise_runtime_error('')
 
     featureNames = np.append("Intercept", feature_cols)
     intercept = lr_model.intercept_
