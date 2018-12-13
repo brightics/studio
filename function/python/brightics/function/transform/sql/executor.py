@@ -21,6 +21,7 @@ import traceback
 
 import uuid
 
+
 def execute(tables, query):
 #     from sqlalchemy import create_engine
 #     engine = create_engine('sqlite:///:memory:', echo=True)
@@ -38,7 +39,7 @@ def execute(tables, query):
     table_names = _write_table(tables, con)
     
     for i, table_name in enumerate(table_names):
-        query = query.replace("""#{{DF({i})}}""".format(i=i),table_name)
+        query = query.replace("""#{{DF({i})}}""".format(i=i), table_name)
     res = _get_deserialized_table(sql.read_sql(query, con))
         
 #     except Exception as e:
@@ -61,33 +62,22 @@ def _write_table(tables, con):
     for idx, table in enumerate(tables):
         cols_to_pickle = _get_columns_to_serialize(table)
         pickled_table = _get_serialized_table(table, cols_to_pickle)
-        table_name = 'df_'+str(uuid.uuid4())[:8]
+        table_name = 'df_' + str(uuid.uuid4())[:8]
         table_names.append(table_name)
         print(table_name)
         pickled_table.to_sql(table_name, con, index=False)
 
     return table_names
 
+
 def _register_adapters(sqlite3):
-    sqlite3.register_adapter(np.int8, int)
-    sqlite3.register_adapter(np.int16, int)
-    sqlite3.register_adapter(np.int32, int)
-    sqlite3.register_adapter(np.int64, int)
-    sqlite3.register_adapter(np.uint8, int)
-    sqlite3.register_adapter(np.uint16, int)
-    sqlite3.register_adapter(np.uint32, int)
-    sqlite3.register_adapter(np.uint64, int)
-    
-    sqlite3.register_adapter(np.float16, float)
-    sqlite3.register_adapter(np.float32, float)
-    sqlite3.register_adapter(np.float64, float)
+    pass
+#     sqlite3.register_adapter(np.int8, int)
     
     
 def _register_converters(sqlite3):
-    sqlite3.register_converter("numpy.int32", np.int32)
-    sqlite3.register_converter("numpy.int64", np.int32)
-    sqlite3.register_converter("numpy.float32", np.float32)
-    sqlite3.register_converter("numpy.float64", np.float64)
+    pass
+    # sqlite3.register_converter("numpy.int32", np.int32)
     
 
 def _create_aggregate_functions(con, *modules):
