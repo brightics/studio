@@ -9,7 +9,7 @@ from brightics.function.evaluation import _plot_roc_pr_curve
 from statsmodels.sandbox.distributions.quantize import prob_bv_rectangle
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
-from brightics.function.validation import raise_runtime_error
+from brightics.function.validation import raise_runtime_error, raise_error
 import sklearn.utils as sklearn_utils
 
 
@@ -32,7 +32,6 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
     
     lr_model = LogisticRegression(penalty, dual, tol, C, fit_intercept, intercept_scaling, class_weight, random_state, solver, max_iter, multi_class, verbose, warm_start, n_jobs)
     lr_model.fit(features, label)
-    raise_runtime_error('')
 
     featureNames = np.append("Intercept", feature_cols)
     intercept = lr_model.intercept_
@@ -108,6 +107,11 @@ def _logistic_regression_predict(table, model, prediction_col='prediction', prob
             thresholds = np.array([thresholds[0], 1 - thresholds[0]])
         else:
             thresholds = np.array(thresholds)
+    
+    len_thresholds = len(thresholds)
+    if len_classes > 0 and len_thresholds > 0 and len_classes != len_thresholds:
+        # FN-0613='%s' must have length equal to the number of classes.
+        raise_error('0613', ['thresholds'])
     
     prob = lr_model.predict_proba(features)
     prediction = pd.DataFrame(prob).apply(lambda x: classes[np.argmax(x / thresholds)], axis=1)
