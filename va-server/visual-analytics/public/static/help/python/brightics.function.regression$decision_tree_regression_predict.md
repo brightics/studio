@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.regression import decision_tree_regression_predict
-res = decision_tree_regression_predict(prediction_col = ,group_by = )
+res = decision_tree_regression_predict(prediction_col = )
 res['out_table']
 ```
 
@@ -21,7 +21,6 @@ The predicted value based on X is returned.
 1. **Prediction Column Name**: Column name for prediction
    - Value type : String
    - Default : prediction
-2. **Group By**: Columns to group by
 
 #### Outputs
 1. **out_table**: table
@@ -35,7 +34,6 @@ The predicted value based on X is returned.
 1. **prediction_col**: Column name for prediction
    - Value type : String
    - Default : prediction
-2. **group_by**: Columns to group by
 
 #### Outputs
 1. **out_table**: table

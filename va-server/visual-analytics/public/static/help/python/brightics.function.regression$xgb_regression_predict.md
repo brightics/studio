@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.regression import xgb_regression_predict
-res = xgb_regression_predict(prediction_col = ,group_by = )
+res = xgb_regression_predict(prediction_col = )
 res['out_table']
 ```
 
@@ -21,7 +21,6 @@ Using the result of 'XGB Regression Train', this function predicts with the inpu
 1. **Prediction Column Name**: Column name for pPrediction
    - Value type : String
    - Default : prediction
-2. **Group By**: Columns to group by
 
 #### Outputs
 1. **out_table**: table
@@ -35,7 +34,6 @@ Using the result of 'XGB Regression Train', this function predicts with the inpu
 1. **prediction_col**: Column name for pPrediction
    - Value type : String
    - Default : prediction
-2. **group_by**: Columns to group by
 
 #### Outputs
 1. **out_table**: table

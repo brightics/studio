@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.classification import logistic_regression_predict
-res = logistic_regression_predict(prediction_col = ,probability_col = ,log_probability_col = ,suffix = ,thresholds = ,group_by = )
+res = logistic_regression_predict(prediction_col = ,probability_col = ,log_probability_col = ,suffix = ,thresholds = )
 res['out_table']
 ```
 
@@ -29,7 +29,6 @@ Predict data using a logistic regression model.
       - Index (default)
       - Label
 5. **Thresholds**: Thresholds used to predict.
-6. **Group By**: Group By Column
 
 #### Outputs
 1. **out_table**: table
@@ -51,7 +50,6 @@ Predict data using a logistic regression model.
       - index (default)
       - label
 5. **thresholds**: Thresholds used to predict.
-6. **group_by**: Group By Column
 
 #### Outputs
 1. **out_table**: table

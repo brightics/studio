@@ -7,7 +7,7 @@ res['result']
 ```
 
 ## Description
-In statistics, Bartlett's test (see Snedecor and Cochran, 1989) is used to test if k samples are from populations with equal variances. Equal variances across populations is called homoscedasticity or homogeneity of variances. Some statistical tests, for example the analysis of variance, assume that variances are equal across groups or samples. The Bartlett test can be used to verify that assumption.Bartlett's test is sensitive to departures from normality. That is, if the samples come from non-normal distributions, then Bartlett's test may simply be testing for non-normality. Levene's test and the Brown�밊orsythe test are alternatives to the Bartlett test that are less sensitive to departures from normality. The test is named after Maurice Stevenson Bartlett. 
+"In statistics, Bartlett's test (see Snedecor and Cochran, 1989) is used to test if k samples are from populations with equal variances. Equal variances across populations is called homoscedasticity or homogeneity of variances. Some statistical tests, for example the analysis of variance, assume that variances are equal across groups or samples. The Bartlett test can be used to verify that assumption.Bartlett's test is sensitive to departures from normality. That is, if the samples come from non-normal distributions, then Bartlett's test may simply be testing for non-normality. Levene's test and the Brown Forsythe test are alternatives to the Bartlett test that are less sensitive to departures from normality. The test is named after Maurice Stevenson Bartlett." 
 
 Reference:
 + <https://en.wikipedia.org/wiki/Bartlett%27s_test>

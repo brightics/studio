@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.classification import svm_classification_predict
-res = svm_classification_predict(prediction_col = ,probability_col = ,log_probability_col = ,suffix = ,thresholds = ,group_by = )
+res = svm_classification_predict(prediction_col = ,probability_col = ,log_probability_col = ,suffix = ,thresholds = )
 res['out_table']
 ```
 
@@ -29,7 +29,6 @@ Predict data using a support vector classification model.
       - Index (default)
       - Label
 5. **Thresholds**: Thresholds used to predict.
-6. **Group By**: Columns to group by
 
 #### Outputs
 1. **out_table**: table
@@ -51,7 +50,6 @@ Predict data using a support vector classification model.
       - index (default)
       - label
 5. **thresholds**: Thresholds used to predict.
-6. **group_by**: Columns to group by
 
 #### Outputs
 1. **out_table**: table

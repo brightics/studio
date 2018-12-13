@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.classification import xgb_classification_predict
-res = xgb_classification_predict(prediction_col = ,probability_col = ,suffix = ,thresholds = ,group_by = )
+res = xgb_classification_predict(prediction_col = ,probability_col = ,suffix = ,thresholds = )
 res['out_table']
 ```
 
@@ -28,7 +28,6 @@ Using the result of 'XGB Classification Train', this function predicts with the 
       - Index (default)
       - Label
 4. **Thresholds**: Thresholds used to predict.
-5. **Group By**: Columns to group by
 
 #### Outputs
 1. **out_table**: table
@@ -49,7 +48,6 @@ Using the result of 'XGB Classification Train', this function predicts with the 
       - index (default)
       - label
 4. **thresholds**: Thresholds used to predict.
-5. **group_by**: Columns to group by
 
 #### Outputs
 1. **out_table**: table

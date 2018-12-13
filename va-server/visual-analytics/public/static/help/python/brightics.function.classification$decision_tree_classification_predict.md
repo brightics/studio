@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.classification import decision_tree_classification_predict
-res = decision_tree_classification_predict(prediction_col = ,group_by = )
+res = decision_tree_classification_predict(prediction_col = )
 res['out_table']
 ```
 
@@ -21,7 +21,6 @@ Predict data using a decision tree classification model.
 1. **Prediction Column Name**: Column name for prediction.
    - Value type : String
    - Default : prediction
-2. **Group By**: Columns to group by
 
 #### Outputs
 1. **out_table**: table
@@ -35,7 +34,6 @@ Predict data using a decision tree classification model.
 1. **prediction_col**: Column name for prediction.
    - Value type : String
    - Default : prediction
-2. **group_by**: Columns to group by
 
 #### Outputs
 1. **out_table**: table
