@@ -3,39 +3,65 @@
 import dateutil.parser
 import datetime
 import numpy as np
+import math
 from .serializer import _serialize
 from .serializer import _deserialize
+import re
+
 """ 
 constants 
 """
 
 
 def e():
-    return np.e
+    return np.math.e
 
 
 def pi():
-    return np.pi
+    return np.math.pi
 
 """
 lambda functions
 """
-log = lambda _: np.log(_)
-ln = lambda _: np.log(_)
-log10 = lambda _: np.log10(_)
-log2 = lambda _: np.log2(_)
-exp = lambda _: np.exp(_)
-exp2 = lambda _: np.exp2(_)
-sqrt = lambda _: np.sqrt(_)
-ceil = lambda _: np.ceil(_)
-floor = lambda _: np.floor(_)
-sign = lambda _: np.sign(_)
+log = lambda _: np.math.log(_) if _ is not None else np.math.nan #?
+ln = lambda _: np.math.log(_)
+log10 = lambda _: np.math.log10(_)
+log2 = lambda _: np.math.log2(_)
+exp = lambda _: np.math.exp(_)
+exp2 = lambda _: np.math.pow(2,_)
+sqrt = lambda _: np.math.sqrt(_)
+ceil = lambda _: np.math.ceil(_)
+floor = lambda _: np.math.floor(_)
+sign = lambda _: int(np.sign(_))
+    
 factorial = lambda _: np.math.factorial(_)
 
-pow = lambda a, b: np.power(a, b)
-# todo lpad, rpad
-# todo regexp
+pow = lambda a, b: np.math.pow(a,b)
 
+lpad = lambda str, length, lpad_str: str.ljust(length, lpad_str)
+rpad = lambda str, length, rpad_str: str.rjust(length, rpad_str)
+
+
+is_null = lambda _: 1 if _ is None else 0
+
+"""
+regular expression related functions
+"""
+
+regexp = lambda exp, str: False if re.search(exp, str) is None else True
+regexp_replace = lambda initial_str, pattern, replacement: re.sub(pattern, replacement, initial_str)
+
+
+def regexp_extract(subject, pattern, *index):  # todo index??
+
+    def _is_empty(tup):
+        return not tup
+    
+    if _is_empty(index):
+        return re.search(pattern, subject).group(1)
+    else:
+        return re.search(pattern, subject).group(index[0])
+    
 """
 datetime related functions
 """
