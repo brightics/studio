@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from brightics.common.groupby import _function_by_group
+from brightics.function.validation import raise_runtime_error
 
 
 def unpivot(table, value_vars, var_name=None, value_name='value', col_level=None):
@@ -10,6 +11,10 @@ def unpivot(table, value_vars, var_name=None, value_name='value', col_level=None
 
 
 def pivot(table, values, aggfunc, index=None, columns=None):  # TODO
+
+    if index is None and columns is None:
+        # TODO: assign an error code.
+        raise_runtime_error('Group key value is required: Index or Columns.')
 
     def count(x): return len(x)
 
