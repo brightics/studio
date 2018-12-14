@@ -89,8 +89,8 @@ def json_to_md(in_file_name):
             additional_type = LEFT_INDENT + '- Value type : {0}'.format(func_param['type'])
             vaparam_additionals.append(additional_type)
             pythonparam_additionals.append(additional_type)
-            # Default Value (placeHolder)
-            if 'placeHolder' in func_param:
+            # Default Value
+            if 'placeHolder' in func_param and len(func_param['placeHolder']) > 0:
                 additional_default = LEFT_INDENT + '- Default : {0}'.format(func_param['placeHolder'])
                 vaparam_additionals.append(additional_default)
                 pythonparam_additionals.append(additional_default)
