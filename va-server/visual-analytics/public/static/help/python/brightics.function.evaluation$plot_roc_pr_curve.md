@@ -25,8 +25,10 @@ Plot ROC Curve and PR Curve.
    - Value type : String
 4. **Figure Width**: Figure Width.
    - Value type : Double
+   - Default : 6.4
 5. **Figure Height**: Figure Height.
    - Value type : Double
+   - Default : 4.8
 6. **Group By**: Columns to group by
 
 #### Outputs
@@ -45,8 +47,10 @@ Plot ROC Curve and PR Curve.
    - Value type : String
 4. **fig_w**: Figure Width.
    - Value type : Double
+   - Default : 6.4
 5. **fig_h**: Figure Height.
    - Value type : Double
+   - Default : 4.8
 6. **group_by**: Columns to group by
 
 #### Outputs

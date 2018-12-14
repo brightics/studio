@@ -26,6 +26,7 @@ This function changes null values in the value of given string type columns.
       - Backward Fill
 3. **Fill String**: String value to fill holes.
    - Value type : String
+   - Default : 
 4. **Limit**: The limit number of filled value in each given columns.
    - Value type : Integer
 5. **Group By**: Columns to group by
@@ -47,6 +48,7 @@ This function changes null values in the value of given string type columns.
       - bfill
 3. **fill_string**: String value to fill holes.
    - Value type : String
+   - Default : 
 4. **limit**: The limit number of filled value in each given columns.
    - Value type : Integer
 5. **group_by**: Columns to group by

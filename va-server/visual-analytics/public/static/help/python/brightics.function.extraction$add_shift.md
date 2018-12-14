@@ -21,6 +21,7 @@ This function add new columns of shifted data.
 2. **Offset Set**<b style="color:red">*</b>: For each shift in shift set, this function creates corresponding shifted column.
 3. **Output Column Prefix**: This function creates new columns with name {prefix}_{shift}. If None, this function uses input column name as prefix.
    - Value type : String
+   - Default : 
 4. **Group By**: Columns to group by
 
 #### Outputs
@@ -35,6 +36,7 @@ This function add new columns of shifted data.
 2. **shift_list**<b style="color:red">*</b>: For each shift in shift set, this function creates corresponding shifted column.
 3. **shifted_col**: This function creates new columns with name {prefix}_{shift}. If None, this function uses input column name as prefix.
    - Value type : String
+   - Default : 
 4. **group_by**: Columns to group by
 
 #### Outputs

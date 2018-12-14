@@ -20,6 +20,7 @@ Predict data using a decision tree classification model.
 #### Parameters
 1. **Prediction Column Name**: Column name for prediction.
    - Value type : String
+   - Default : prediction
 
 #### Outputs
 1. **out_table**: table
@@ -32,6 +33,7 @@ Predict data using a decision tree classification model.
 #### Parameters
 1. **prediction_col**: Column name for prediction.
    - Value type : String
+   - Default : prediction
 
 #### Outputs
 1. **out_table**: table

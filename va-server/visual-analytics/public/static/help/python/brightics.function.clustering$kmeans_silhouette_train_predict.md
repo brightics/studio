@@ -25,6 +25,7 @@ This function fits and predicts using sklearn.cluster.KMeans model.
 2. **Number of Clusters Set**: The number of clusters to form as well as the number of centroids to generate.
 3. **Prediction Column Name**: Column name for prediction
    - Value type : String
+   - Default : prediction
 4. **Method for initialization**: Method for initialization.
    - Available items
       - k-means++ (default)
@@ -51,6 +52,7 @@ This function fits and predicts using sklearn.cluster.KMeans model.
        - elkan
 12. **Number of Samples**: Number of samples
     - Value type : Integer
+    - Default : 50
 13. **Group By**: Columns to group by
 
 #### Outputs
@@ -67,6 +69,7 @@ This function fits and predicts using sklearn.cluster.KMeans model.
 2. **n_clusters_list**: The number of clusters to form as well as the number of centroids to generate.
 3. **prediction_col**: Column name for prediction
    - Value type : String
+   - Default : prediction
 4. **init**: Method for initialization.
    - Available items
       - k-means++ (default)
@@ -93,6 +96,7 @@ This function fits and predicts using sklearn.cluster.KMeans model.
        - elkan
 12. **n_samples**: Number of samples
     - Value type : Integer
+    - Default : 50
 13. **group_by**: Columns to group by
 
 #### Outputs

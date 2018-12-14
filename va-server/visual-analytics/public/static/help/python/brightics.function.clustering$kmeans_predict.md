@@ -20,6 +20,7 @@ This function predicts cluster labels from trained model.
 #### Parameters
 1. **Prediction Column Name**: Prediction column name
    - Value type : String
+   - Default : prediction
 
 #### Outputs
 1. **out_table**: table
@@ -32,6 +33,7 @@ This function predicts cluster labels from trained model.
 #### Parameters
 1. **prediction_col**: Prediction column name
    - Value type : String
+   - Default : prediction
 
 #### Outputs
 1. **out_table**: table

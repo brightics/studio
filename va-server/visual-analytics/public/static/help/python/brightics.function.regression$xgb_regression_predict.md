@@ -20,6 +20,7 @@ Using the result of 'XGB Regression Train', this function predicts with the inpu
 #### Parameters
 1. **Prediction Column Name**: Column name for pPrediction
    - Value type : String
+   - Default : prediction
 
 #### Outputs
 1. **out_table**: table
@@ -32,6 +33,7 @@ Using the result of 'XGB Regression Train', this function predicts with the inpu
 #### Parameters
 1. **prediction_col**: Column name for pPrediction
    - Value type : String
+   - Default : prediction
 
 #### Outputs
 1. **out_table**: table

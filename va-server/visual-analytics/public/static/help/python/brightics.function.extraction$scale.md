@@ -28,6 +28,7 @@ Scale selected features. MinMaxScaler, StandardScaler, MaxAbsScaler, and RobustS
       - RobustScaler
 3. **Suffix**: Suffix for the new column names.
    - Value type : String
+   - Default : _min_max
 4. **Group By**: Colums to group by
 
 #### Outputs
@@ -49,6 +50,7 @@ Scale selected features. MinMaxScaler, StandardScaler, MaxAbsScaler, and RobustS
       - RobustScaler
 3. **suffix**: Suffix for the new column names.
    - Value type : String
+   - Default : _min_max
 4. **group_by**: Colums to group by
 
 #### Outputs
