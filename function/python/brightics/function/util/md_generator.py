@@ -63,6 +63,9 @@ def json_to_md(in_file_name):
     func_vaparams = []
     func_pythonparams = []
     for idx, func_param in enumerate(func_jsonspec['params'], start=1):
+        
+        LEFT_INDENT = ('' if idx < 10 else ' ') + INDENT
+        
         if func_param['mandatory'] is True:
             mdformat = mdformat_param_mandatory
         else:
@@ -77,18 +80,18 @@ def json_to_md(in_file_name):
         if func_param['control'] == 'ColumnSelector':
             # Type
             if len(func_param['columnType']) > 0:
-                additional_type_column = INDENT + '- Allowed column type : {0}'.format(', '.join(func_param['columnType']))
+                additional_type_column = LEFT_INDENT + '- Allowed column type : {0}'.format(', '.join(func_param['columnType']))
                 vaparam_additionals.append(additional_type_column)
                 pythonparam_additionals.append(additional_type_column)
         # Additional Info : InputBox
         elif func_param['control'] == 'InputBox':
             # Type
-            additional_type = INDENT + '- Value type : {0}'.format(func_param['type'])
+            additional_type = LEFT_INDENT + '- Value type : {0}'.format(func_param['type'])
             vaparam_additionals.append(additional_type)
             pythonparam_additionals.append(additional_type)
             # Default Value
             if 'defaultValue' in func_param:
-                additional_default = INDENT + '- Default : {0}'.format(func_param['defaultValue'])
+                additional_default = LEFT_INDENT + '- Default : {0}'.format(func_param['defaultValue'])
                 vaparam_additionals.append(additional_default)
                 pythonparam_additionals.append(additional_default)
         # Additional Info : RadioButton
@@ -105,10 +108,10 @@ def json_to_md(in_file_name):
                     md_item_description = ' ' + item['description']
                 else:
                     md_item_description = ''
-                va_available_items.append(INDENT + INDENT + '- ' + item['label'] + md_defaultitem + md_item_description)
-                python_available_items.append(INDENT + INDENT + '- ' + item['value'] + md_defaultitem + md_item_description)
-            vaparam_additionals.append(INDENT + '- Available items\n' + '\n'.join(va_available_items))
-            pythonparam_additionals.append(INDENT + '- Available items\n' + '\n'.join(python_available_items))
+                va_available_items.append(LEFT_INDENT + INDENT + '- ' + item['label'] + md_defaultitem + md_item_description)
+                python_available_items.append(LEFT_INDENT + INDENT + '- ' + item['value'] + md_defaultitem + md_item_description)
+            vaparam_additionals.append(LEFT_INDENT + '- Available items\n' + '\n'.join(va_available_items))
+            pythonparam_additionals.append(LEFT_INDENT + '- Available items\n' + '\n'.join(python_available_items))
         
         if len(vaparam_additionals) > 0:
             vaparam_md += '\n' + '\n'.join(vaparam_additionals)

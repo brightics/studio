@@ -42,11 +42,11 @@ https://en.wikipedia.org/wiki/Decision_tree
 9. **Max Features**: The number of features to consider when looking for the best split.
    - Value type : Integer
 10. **Seed**: The seed used by the random number generator.
-   - Value type : Integer
+    - Value type : Integer
 11. **Max Leaf Nodes**: Grow a tree with this value in best-first fashion.
-   - Value type : Integer
+    - Value type : Integer
 12. **Min Impurity Decrease**: A node will be split if this split induces a decrease of the impurity greater than or equal to this value.
-   - Value type : Double
+    - Value type : Double
 13. **Group By**: Columns to group by
 
 #### Outputs
@@ -80,11 +80,11 @@ https://en.wikipedia.org/wiki/Decision_tree
 9. **max_features**: The number of features to consider when looking for the best split.
    - Value type : Integer
 10. **random_state**: The seed used by the random number generator.
-   - Value type : Integer
+    - Value type : Integer
 11. **max_leaf_nodes**: Grow a tree with this value in best-first fashion.
-   - Value type : Integer
+    - Value type : Integer
 12. **min_impurity_decrease**: A node will be split if this split induces a decrease of the impurity greater than or equal to this value.
-   - Value type : Double
+    - Value type : Double
 13. **group_by**: Columns to group by
 
 #### Outputs

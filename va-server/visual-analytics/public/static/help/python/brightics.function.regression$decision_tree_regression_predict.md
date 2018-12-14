@@ -20,7 +20,6 @@ The predicted value based on X is returned.
 #### Parameters
 1. **Prediction Column Name**: Column name for prediction
    - Value type : String
-   - Default : prediction
 
 #### Outputs
 1. **out_table**: table
@@ -33,7 +32,6 @@ The predicted value based on X is returned.
 #### Parameters
 1. **prediction_col**: Column name for prediction
    - Value type : String
-   - Default : prediction
 
 #### Outputs
 1. **out_table**: table
