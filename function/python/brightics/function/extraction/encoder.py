@@ -62,8 +62,11 @@ def _one_hot_encoder(table, input_cols, prefix='list', prefix_list=None, suffix=
     enc_list = []
     le_list = []
     prefix_list_index = 0
-    if prefix == 'list' and len(input_cols) != len(prefix_list):
-        raise_runtime_error('The number of input columns and the numnber of predix list should be equal.')
+    if prefix == 'list':
+        len_prefix_list = 0 if prefix_list is None else len(prefix_list)
+        if len(input_cols) != len_prefix_list:
+            # TODO: make the error message code
+            raise_runtime_error('The number of Input Columns and the numnber of Prefixes should be equal.')
     for col_name in input_cols:
         enc = OneHotEncoder(n_values=n_values, categorical_features=categorical_features, sparse=sparse, handle_unknown=handle_unknown)
         le = LabelEncoder()
