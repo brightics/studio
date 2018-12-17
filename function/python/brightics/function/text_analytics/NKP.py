@@ -7,12 +7,6 @@ from brightics.function.utils import _model_dict
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 from twkorean import TwitterKoreanProcessor
 
-from tensorflow import keras
-from keras.preprocessing.text import Tokenizer
-from keras.preprocessing.sequence import pad_sequences
-from keras.utils import to_categorical
-
-
 import MeCab
 import pandas as pd
 import numpy as np
