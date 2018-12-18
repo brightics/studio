@@ -133,6 +133,8 @@ def _one_hot_encoder_model(table, model):
             else:  
                 for stri in np.unique(out_table[col_name].values):
                     new_col_names.append(col_name + '_' + stri)
-        out_table = pd.concat([out_table.reset_index(drop=True), pd.DataFrame(model['one_hot_encoder_list'][i].transform(model['label_encoder_list'][i].transform(out_table[col_name]).reshape(-1, 1)), columns=new_col_names)], axis=1)
-        
+        transformed_table = pd.DataFrame(model['one_hot_encoder_list'][i].transform(model['label_encoder_list'][i].transform(out_table[col_name]).reshape(-1, 1)), columns=new_col_names)
+        for new_col_name in new_col_names:
+            out_table[new_col_name] = transformed_table[new_col_name]
+            
     return {'out_table' : out_table}
