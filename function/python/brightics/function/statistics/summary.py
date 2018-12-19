@@ -74,10 +74,14 @@ def statistic_derivation(table, input_cols, statistics, percentile_amounts=[], t
     _statistics.remove('column_name')
     
     for col in input_cols:
-        col_idx = _table_stat.index[_table_stat['column_name'] == col].tolist()[0]
+        row_idx = _table_stat.index[_table_stat['column_name'] == col].tolist()[0]
         for st in _statistics:
             new_col = '{}_{}'.format(col, st)
-            _table[new_col] = _table_stat[st][col_idx]
+            if st == 'mode':
+                # note: the output type of mode is list.
+                _table[new_col] = _table.apply(lambda x:_table_stat[st][row_idx], axis=1)
+            else:
+                _table[new_col] = _table_stat[st][row_idx]
     
     return {'out_table' : _table}
 

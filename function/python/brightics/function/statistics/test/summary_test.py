@@ -97,3 +97,16 @@ class SummaryTest(unittest.TestCase):
         print(out['out_table1']['num_of_white_space'])
         print(out['out_table1']['num_of_space_padded'])
         print(out['out_table2'])
+        
+    def test_deriv1(self):
+        d = {
+          'd1':[2.0, 3.0, 5.0, 7.0, 11.0, 13.0, 17.0, 19.0],
+          'd2':[2.7, 3.7, 5.7, 7.7, 11.7, 13.7, 17.7, 19.7],
+          'd3':[2.7, 3.7, None, 7.7, np.nan, 13.7, 17.7, 19.7],
+        }
+        df = pd.DataFrame(d)
+        
+        #out = statistic_derivation(df, ['d1','d2','d3'], ['min', 'max', 'mode', 'percentile'], [0.1, 0.75], [0.1, 0.3])['out_table']
+        out = statistic_derivation(df, ['d1','d2','d3'], ['min', 'mode'], [0.1, 0.75], [0.1, 0.3])['out_table']
+        print(out)
+        
