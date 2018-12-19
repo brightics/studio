@@ -10,7 +10,7 @@ def json_to_md(in_file_name):
     MESSAGE_NOINPUT = 'This function has no input data.'
     MESSAGE_NOOUTPUT = 'This function has no output data.'
 
-    in_file_json = json.loads(open(in_file_name, 'r').read())
+    in_file_json = json.loads(open(in_file_name, 'r', encoding='UTF-8').read())
     
     if('disableMDGenerator' in in_file_json and in_file_json['disableMDGenerator'] == True):
         print('Skip {} : disableMDGenerator is true.'.format(in_file_name))
@@ -163,10 +163,10 @@ from {function_package} import {function_name}
 
 if __name__ == "__main__":
     
-    python_visual_files = glob.glob('''../**/meta/*.json''')
-    
+    python_visual_files = glob.glob('''../../../../../va-server/visual-analytics/public/js/va/functions/json/*.json''')
+    #va-server\visual-analytics\public\js\va\functions\json
     for in_file_name in python_visual_files:
-        
+        print('json filename: {}'.format(in_file_name))
         in_file_path = os.path.abspath(in_file_name)
         
 #         out_file_dir = os.path.dirname(os.path.dirname(in_file_path)) + os.sep + 'help'
@@ -174,7 +174,7 @@ if __name__ == "__main__":
 #         out_file_header = in_json_str['specJson']['name']
 #         out_file_path = out_file_dir + os.sep + re.sub(r'\.json$', '.md', os.path.basename(in_file_path))
         out_file_dir = os.path.abspath('../../../../../va-server/visual-analytics/public/static/help/python/')
-        in_json_str = json.loads(open(in_file_name, 'r').read())
+        in_json_str = json.loads(open(in_file_name, 'r', encoding='UTF-8').read())
         out_file_header = in_json_str['specJson']['name']
         out_file_path = out_file_dir + os.sep + out_file_header + '.md'
         
@@ -191,7 +191,7 @@ if __name__ == "__main__":
             
             if not os.path.exists(out_file_dir):
                 os.makedirs(out_file_dir)
-            wf = open(out_file_path, 'w')
+            wf = open(out_file_path, 'w', encoding='UTF-8')
             wf.write(mdstr)
             wf.close()
             print("MD is generated in {0}".format(out_file_path))
