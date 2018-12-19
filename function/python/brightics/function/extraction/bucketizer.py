@@ -11,7 +11,6 @@ def _place(a, splits):
 
 # table_splits는 나중에 table 2개 받을때를 대비해서 넣어둔 것.        
 def bucketizer(table, input_cols, radio_splits, splits=None, splits_from=None, splits_to=None, splits_by=None, table_splits=None, new_name=None):
-    check_decimal_number = None
     if table_splits is None:
         if radio_splits != 'array':
             splits = [-math.inf]
@@ -26,6 +25,7 @@ def bucketizer(table, input_cols, radio_splits, splits=None, splits_from=None, s
                     splits += [i]
                     i += splits_by
                     i = round(i, 10)
+                    splits.sort()
             splits += [math.inf]
         else:
             splits += [-math.inf, math.inf]
