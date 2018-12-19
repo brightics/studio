@@ -31,7 +31,7 @@ cumulative percentage : The cumulative percentage in a selected column.
 
 #### Parameters
 1. **Input Columns**<b style="color:red">*</b>: Column names to be summarized. If no columns are selected, all columns in the input table are summarized.
-   - Allowed column type : Integer, Double, Long, Decimal, Float, String
+   - Allowed column type : String
 
 #### Outputs
 1. **summary_table**: table
@@ -43,7 +43,7 @@ cumulative percentage : The cumulative percentage in a selected column.
 
 #### Parameters
 1. **input_cols**<b style="color:red">*</b>: Column names to be summarized. If no columns are selected, all columns in the input table are summarized.
-   - Allowed column type : Integer, Double, Long, Decimal, Float, String
+   - Allowed column type : String
 
 #### Outputs
 1. **summary_table**: table
