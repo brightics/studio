@@ -46,11 +46,11 @@ def ftest_for_stacked_data(table, response_cols, factor_col, alternatives, first
         if 'smaller' in alternatives:
             p_value = scipy.stats.f.cdf(f_value, d_num, d_denum)
             tmp_model += [['true ratio < 1'] + 
-            [p_value] + [(0, f_value * (scipy.stats.f.ppf(confi_level, d_denum, d_num)))]]
+            [p_value] + [(0.0, f_value * (scipy.stats.f.ppf(confi_level, d_denum, d_num)))]]
             tmp_table += [['%s by %s(%s,%s)' % (response_col, factor_col, first, second)] + 
             ['true ratio of variances < 1'] + 
             ['F statistic, F distribution with %d numerator degrees of freedom and %d degrees of freedom under the null hypothesis.' % (d_num, d_denum)] + 
-            [f_value] + [p_value] + [confi_level] + [0] + [f_value * (scipy.stats.f.ppf(confi_level, d_denum, d_num))]]
+            [f_value] + [p_value] + [confi_level] + [0.0] + [f_value * (scipy.stats.f.ppf(confi_level, d_denum, d_num))]]
     
         if 'two-sided' in alternatives:
             p_value_tmp = scipy.stats.f.cdf(1 / f_value, d_num, d_denum)

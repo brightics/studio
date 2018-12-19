@@ -28,13 +28,13 @@ def ewma(table, input_cols, ratio_type, custom_ratio=0.5, period_number=1):
     return{'out_table':out_table}
 
 
-def moving_average(table, input_cols, window_size=1, weights=None, mode='past_values_only', equal_weights=True):
+def moving_average(table, input_cols, weights_array = None, window_size=1, weights='uniform_weights', mode='past_values_only'):
     out_table = table.copy()
     nsides = 1
     if mode == 'centered_moving_average':
         nsides = 2
-    if equal_weights == True:
-        weights = np.ones(window_size)
+    if weights == 'uniform_weights':
+        weights_array = np.ones(window_size)
     for column in input_cols:
-        out_table[column + '_MA'] = sm.convolution_filter(out_table[column], weights, nsides) / sum(weights)
+        out_table[column + '_MA'] = sm.convolution_filter(out_table[column], weights_array, nsides) / sum(weights_array)
     return{'out_table':out_table}
