@@ -16,10 +16,16 @@ def bucketizer(table, input_cols, radio_splits, splits=None, splits_from=None, s
         if radio_splits != 'array':
             splits = [-math.inf]
             i = splits_from
-            while i <= splits_to:    
-                splits += [i]
-                i += splits_by
-                i = round(i, 10)
+            if splits_by > 0:
+                while i <= splits_to:    
+                    splits += [i]
+                    i += splits_by
+                    i = round(i, 10)
+            else:
+                while i >= splits_to:    
+                    splits += [i]
+                    i += splits_by
+                    i = round(i, 10)
             splits += [math.inf]
         else:
             splits += [-math.inf, math.inf]
