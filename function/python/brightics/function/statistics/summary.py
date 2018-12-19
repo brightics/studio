@@ -150,4 +150,4 @@ def string_summary(table, input_cols):
     
     result2 = pd.concat(count_table_list, ignore_index=True)[['column_name', 'value', 'counts', 'rate', 'cumulative_rate']]
     
-    return {'out_table1':result1, 'out_table2':result2}
+    return {'summary_table':result1, 'count_table':result2}

@@ -53,7 +53,7 @@ class SummaryTest(unittest.TestCase):
         t = pd.DataFrame({'s1': ['a', 'a', 'b', 'b', 'b', None, None, None, None, 'e']})
         print(t)
         
-        out1 = string_summary(t, ['s1'])['out_table1']
+        out1 = string_summary(t, ['s1'])['summary_table']
         print(out1)
         print(out1['mode'])
         
@@ -93,10 +93,10 @@ class SummaryTest(unittest.TestCase):
         
         out = string_summary(t, ['s1', 's2'])
         
-        print(out['out_table1'])
-        print(out['out_table1']['num_of_white_space'])
-        print(out['out_table1']['num_of_space_padded'])
-        print(out['out_table2'])
+        print(out['summary_table'])
+        print(out['summary_table']['num_of_white_space'])
+        print(out['summary_table']['num_of_space_padded'])
+        print(out['count_table'])
         
     def test_deriv1(self):
         d = {
