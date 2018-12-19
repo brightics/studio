@@ -12,6 +12,7 @@ def filter(table, query):
     
     return {'out_table':_out_table}
 
+
 def simple_filter(table, input_cols, operators, operands, main_operator='and'):
     _table = table.copy()
     _column = [c.strip() for c in input_cols]
@@ -28,6 +29,7 @@ def sort(table, group_by=None, **params):
         return _function_by_group(_sort, table, group_by=group_by, **params)
     else:
         return _sort(table, **params)
+
 
 def _sort(table, input_cols, is_asc=None):
     if is_asc is None or is_asc == True:
