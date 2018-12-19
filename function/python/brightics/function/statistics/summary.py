@@ -113,7 +113,7 @@ def string_summary(table, input_cols):
         col_null_count.append(brtc_stats.num_null(coldata))
         col_num_of_distinct.append(brtc_stats.num_distinct(coldata_dropped))
         col_num_of_white_space.append(np.count_nonzero([not (x and str(x).strip()) for x in coldata]))
-        col_num_of_space_padded.append(np.count_nonzero([x and len(x) != len(str(x).strip()) for x in coldata]))
+        col_num_of_space_padded.append(np.count_nonzero([x and len(str(x)) != len(str(x).strip()) for x in coldata]))
     
     data['max'] = col_max
     data['min'] = col_min
