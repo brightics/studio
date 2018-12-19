@@ -18,9 +18,9 @@ def discretize_quantile(table, input_col, bucket_opt, num_of_buckets=2, out_col_
     
     out_col = pd.DataFrame()
     if bucket_opt == 'False':
-        out_col[out_col_name] = (num_of_buckets - 1) - pd.qcut((-1) * table[input_col], num_of_buckets, labels=False)
+        out_col[out_col_name] = (num_of_buckets - 1) - pd.qcut((-1) * table[input_col], num_of_buckets, labels=False, duplicates='drop')
     else:
-        out_col[out_col_name] = pd.qcut(table[input_col], num_of_buckets, labels=False)    
+        out_col[out_col_name] = pd.qcut(table[input_col], num_of_buckets, labels=False, duplicates='drop')    
     out_table = pd.concat([table, out_col], axis=1)
     return {'out_table': out_table}
 
