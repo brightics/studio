@@ -40,8 +40,10 @@ Reference:
    - Value type : String
 8. **Height**: Height (in inches) of each facet.
    - Value type : Double
+   - Default : 2.5
 9. **Aspect**: Aspect * Height gives the width (in inches).
    - Value type : Double
+   - Default : 1
 10. **Drop NA**<b style="color:red">*</b>: Drop missing values from the data before plotting.
 11. **Group By**: Columns to group by
 
@@ -73,8 +75,10 @@ Reference:
    - Value type : String
 8. **height**: Height (in inches) of each facet.
    - Value type : Double
+   - Default : 2.5
 9. **aspect**: Aspect * Height gives the width (in inches).
    - Value type : Double
+   - Default : 1
 10. **dropna**<b style="color:red">*</b>: Drop missing values from the data before plotting.
 11. **group_by**: Columns to group by
 

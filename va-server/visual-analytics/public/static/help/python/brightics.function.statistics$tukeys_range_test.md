@@ -25,6 +25,7 @@ Reference:
 2. **Factor Column**<b style="color:red">*</b>: Factor column
 3. **Significance Level**: Significant level
    - Value type : Double
+   - Default : 0.05
 
 #### Outputs
 1. **result**: model
@@ -39,6 +40,7 @@ Reference:
 2. **factor_col**<b style="color:red">*</b>: Factor column
 3. **alpha**: Significant level
    - Value type : Double
+   - Default : 0.05
 
 #### Outputs
 1. **result**: model

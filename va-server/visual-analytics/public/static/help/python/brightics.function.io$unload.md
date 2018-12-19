@@ -1,13 +1,13 @@
 ## Format
 ### Python
 ```python
-from brightics.function.io import write_csv
-res = write_csv(path = )
+from brightics.function.io import unload
+res = unload(partial_path = )
 
 ```
 
 ## Description
-This function writes a table to a csv file.
+This function writes a table as a parquet in the repository for brightics.
 
 ---
 
@@ -17,8 +17,7 @@ This function writes a table to a csv file.
 1. **table**: table
 
 #### Parameters
-1. **Path**<b style="color:red">*</b>: csv file path.
-   - Value type : String
+1. **Path**<b style="color:red">*</b>: Relative path.
 
 #### Outputs
 This function has no output data.
@@ -28,8 +27,7 @@ This function has no output data.
 1. **table**: table
 
 #### Parameters
-1. **path**<b style="color:red">*</b>: csv file path.
-   - Value type : String
+1. **partial_path**<b style="color:red">*</b>: Relative path.
 
 #### Outputs
 This function has no output data.

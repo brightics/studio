@@ -23,8 +23,10 @@ Return a random sample of items from an axis of object.
       - Fraction
 2. **Number**: Number of items to return.
    - Value type : Integer
+   - Default : 1
 3. **Fraction**: Fraction of items to return.
    - Value type : Double
+   - Default : 0.5
 4. **Replacement**: Sample with or without replacement.
 5. **Seed**: Seed for the random number generator.
    - Value type : Integer
@@ -44,8 +46,10 @@ Return a random sample of items from an axis of object.
       - frac
 2. **num**: Number of items to return.
    - Value type : Integer
+   - Default : 1
 3. **frac**: Fraction of items to return.
    - Value type : Double
+   - Default : 0.5
 4. **replace**: Sample with or without replacement.
 5. **seed**: Seed for the random number generator.
    - Value type : Integer

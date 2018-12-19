@@ -25,18 +25,22 @@ https://en.wikipedia.org/wiki/Student's_t-test#Independent_two-sample_t-test
 
 #### Parameters
 1. **Response Columns**<b style="color:red">*</b>: 
-   - Allowed column type : Integer, Long, Float, Decimal, Double
+   - Allowed column type : Integer, Long, Float, Double
 2. **Factor Column**<b style="color:red">*</b>: 
-   - Allowed column type : String, Integer, Double, Long, Float, Decimal, Boolean
+   - Allowed column type : String, Integer, Double, Long, Float, Boolean
 3. **Alternatives**: Array[String] Alternative hypothesis. "two_sided","less","greater" are possible. 
 4. **Confidence Level**: Double Confidence level. Default: 0.95
    - Value type : Double
-5. **First**: The first label in the label column
+   - Default : 0.95 (0 <= value <= 1)
+5. **First**<b style="color:red">*</b>: The first label in the label column
    - Value type : String
-6. **Second**: The second label in the label column
+   - Default : Enter value
+6. **Second**<b style="color:red">*</b>: The second label in the label column
    - Value type : String
+   - Default : Enter value
 7. **Hypothesized Difference**: Double Hypothesized difference. Default: 0
    - Value type : Integer
+   - Default : 0
 8. **Assume Equal Variances**: When this parameter is true, this function uses an estimator of the pooled standard deviation. When this parameter is false, this function conducts Welch's t-test. If the parameter is auto, this function conduct F-test with 0.95 confidence level and using the result this function chooses the parameter.
    - Available items
       - Auto (default)
@@ -53,18 +57,22 @@ https://en.wikipedia.org/wiki/Student's_t-test#Independent_two-sample_t-test
 
 #### Parameters
 1. **response_cols**<b style="color:red">*</b>: 
-   - Allowed column type : Integer, Long, Float, Decimal, Double
+   - Allowed column type : Integer, Long, Float, Double
 2. **factor_col**<b style="color:red">*</b>: 
-   - Allowed column type : String, Integer, Double, Long, Float, Decimal, Boolean
+   - Allowed column type : String, Integer, Double, Long, Float, Boolean
 3. **alternatives**: Array[String] Alternative hypothesis. "two_sided","less","greater" are possible. 
 4. **confi_level**: Double Confidence level. Default: 0.95
    - Value type : Double
-5. **first**: The first label in the label column
+   - Default : 0.95 (0 <= value <= 1)
+5. **first**<b style="color:red">*</b>: The first label in the label column
    - Value type : String
-6. **second**: The second label in the label column
+   - Default : Enter value
+6. **second**<b style="color:red">*</b>: The second label in the label column
    - Value type : String
+   - Default : Enter value
 7. **hypo_diff**: Double Hypothesized difference. Default: 0
    - Value type : Integer
+   - Default : 0
 8. **equal_vari**: When this parameter is true, this function uses an estimator of the pooled standard deviation. When this parameter is false, this function conducts Welch's t-test. If the parameter is auto, this function conduct F-test with 0.95 confidence level and using the result this function chooses the parameter.
    - Available items
       - auto (default)
