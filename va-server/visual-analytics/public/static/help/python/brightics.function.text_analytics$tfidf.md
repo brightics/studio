@@ -29,10 +29,8 @@ https://en.wikipedia.org/wiki/Tf-idf
       - Inverse Document Frequency
 4. **Min Document Frequency**: Min document frequency
    - Value type : Double
-   - Default : 
 5. **Max Document Frequency**: Max document frequency
    - Value type : Double
-   - Default : 
 6. **Max Features Number**: Max features number
    - Value type : Integer
 7. **Vocabulary Column Name**: Vocabulary column name
@@ -63,10 +61,8 @@ https://en.wikipedia.org/wiki/Tf-idf
       - idf
 4. **min_df**: Min document frequency
    - Value type : Double
-   - Default : 
 5. **max_df**: Max document frequency
    - Value type : Double
-   - Default : 
 6. **max_features**: Max features number
    - Value type : Integer
 7. **vocabulary_col**: Vocabulary column name
