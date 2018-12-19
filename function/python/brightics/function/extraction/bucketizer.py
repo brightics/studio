@@ -1,58 +1,46 @@
 import pandas as pd
+import numpy as np
+import math
 
 
-def place(a, splits):
+def _place(a, splits):
     for i in range(len(splits) - 1):
         if splits[i] <= float(a) < splits[i + 1]:
             return i
 
-        
-def bucketizer(table, input_cols, splits, table_splits=None, new_name=None):
-    check_decimal_number = None
-    if table_splits is None:
-        if 'to' in splits and 'by' in splits:
-            string_format = splits.split(' ')
-            splits = []
-            if '.' in string_format[4]:
-                string_format[4] = str(float(string_format[4]))
-                if '.' in string_format[4]:
-                    check_decimal_number = string_format[4].split('.')
-                    check_decimal_number = len(check_decimal_number[1])
-                if 'e' in string_format[4]:
-                    check_decimal_number = string_format[4].split('-')
-                    check_decimal_number = int(check_decimal_number[1])
-                if '.' in string_format[0]:
-                    string_format[0] = str(float(string_format[0]))
-                    if '.' in string_format[0]:
-                        check_starting_decimal_number = string_format[0].split('.')
-                        check_decimal_number = max(check_decimal_number, len(check_starting_decimal_number[1]))
-                    if 'e' in string_format[0]: 
-                        check_starting_decimal_number = string_format[0].split('-')
-                        
-                        check_decimal_number = max(check_decimal_number, int(check_starting_decimal_number[1]))
-            i = float(string_format[0])
-            while i <= float(string_format[2]):
-                if check_decimal_number is not None:        
-                    i = round(i, check_decimal_number)
-                print(i)
-                splits += [i]
-                i += float(string_format[4])
-                
-        else:
-            splits = splits.split(',')
-        splits = list(map(float, splits))
 
+# table_splits는 나중에 table 2개 받을때를 대비해서 넣어둔 것.        
+def bucketizer(table, input_cols, radio_splits, splits=None, splits_from=None, splits_to=None, splits_by=None, table_splits=None, new_name=None):
+    if table_splits is None:
+        if radio_splits != 'array':
+            splits = [-math.inf]
+            i = splits_from
+            if splits_by > 0:
+                while i <= splits_to:    
+                    splits += [i]
+                    i += splits_by
+                    i = round(i, 10)
+            else:
+                while i >= splits_to:    
+                    splits += [i]
+                    i += splits_by
+                    i = round(i, 10)
+                    splits.sort()
+            splits += [math.inf]
+        else:
+            splits += [-math.inf, math.inf]
+            splits.sort()
     # else:
         # splits=list(table_splits[input_cols[1]])
         
-    splits.sort()
     if new_name is None:
     
         # new_name=input_cols[0]+'_bucketed'
         new_name = input_cols + '_bucketed'
-    table[new_name] = table[input_cols].apply(place, splits=splits)
+    out_table = table.copy()
+    out_table[new_name] = out_table[input_cols].apply(_place, splits=splits)
     
-    # table[new_name]=table[input_cols[0]].apply(place,splits=splits)
-    # result=table[list(hold_cols)+[input_cols[0]]+[new_name]]
+    # out_table[new_name]=out_table[input_cols[0]].apply(_place,splits=splits)
+    # result=out_table[list(hold_cols)+[input_cols[0]]+[new_name]]
     
-    return {'out_table' : table}
+    return {'out_table' : out_table}

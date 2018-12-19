@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.classification import naive_bayes_train
-res = naive_bayes_train(feature_cols = ,label_col = ,alpha = )
+res = naive_bayes_train(feature_cols = ,label_col = ,alpha = ,fit_prior = )
 res['model']
 ```
 
@@ -29,6 +29,8 @@ https://en.wikipedia.org/wiki/Naive_Bayes_classifier
    - Allowed column type : Integer, Long, Double, String, Float
 3. **Lambda**: Smoothing parameter (default = 1.0)
    - Value type : Double
+   - Default : 1.0 (0 < value)
+4. **Fit Class Prior Probabilities**: Whether to learn class prior probabilities or not. If false, a uniform prior will be used.
 
 #### Outputs
 1. **model**: model
@@ -44,6 +46,8 @@ https://en.wikipedia.org/wiki/Naive_Bayes_classifier
    - Allowed column type : Integer, Long, Double, String, Float
 3. **alpha**: Smoothing parameter (default = 1.0)
    - Value type : Double
+   - Default : 1.0 (0 < value)
+4. **fit_prior**: Whether to learn class prior probabilities or not. If false, a uniform prior will be used.
 
 #### Outputs
 1. **model**: model

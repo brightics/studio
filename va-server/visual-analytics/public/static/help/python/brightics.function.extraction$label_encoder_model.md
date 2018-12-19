@@ -20,6 +20,7 @@ This function transforms the features using the result of Label Encoder.
 #### Parameters
 1. **New Column Name**: New column name
    - Value type : String
+   - Default : encoded_column
 2. **Group By**: Columns to group by
 
 #### Outputs
@@ -33,6 +34,7 @@ This function transforms the features using the result of Label Encoder.
 #### Parameters
 1. **new_column_name**: New column name
    - Value type : String
+   - Default : encoded_column
 2. **group_by**: Columns to group by
 
 #### Outputs

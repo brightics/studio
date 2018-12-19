@@ -21,12 +21,14 @@ Quantile-based discretization function. Discretize variable into equal-sized buc
    - Allowed column type : Integer, Long, Float, Double, Decimal
 2. **Number of Buckets**: Number of buckets.
    - Value type : Integer
+   - Default : 2
 3. **Bucket Type**: Indicating whether the intervals include the right or the left bin edge.
    - Available items
       - Left-closed and Right-open (default)
       - Left-open and Right-closed
 4. **Out Column Name**: 
    - Value type : String
+   - Default : bucket_number
 
 #### Outputs
 1. **out_table**: table
@@ -40,12 +42,14 @@ Quantile-based discretization function. Discretize variable into equal-sized buc
    - Allowed column type : Integer, Long, Float, Double, Decimal
 2. **num_of_buckets**: Number of buckets.
    - Value type : Integer
+   - Default : 2
 3. **bucket_opt**: Indicating whether the intervals include the right or the left bin edge.
    - Available items
       - False (default)
       - True
 4. **out_col_name**: 
    - Value type : String
+   - Default : bucket_number
 
 #### Outputs
 1. **out_table**: table

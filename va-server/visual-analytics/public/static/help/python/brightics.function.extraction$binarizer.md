@@ -21,8 +21,10 @@ Binarize a column of continuous features given a threshold. The features greater
    - Allowed column type : Integer, Long, Float, Double, Decimal, Boolean
 2. **Threshold**: Threshold used to binarize continuous features. Default: 0
    - Value type : Double
+   - Default : 0
 3. **Out Column Name**: Out column name for the binarized result. Default : 'binarized_' + column name
    - Value type : String
+   - Default : Enter value
 
 #### Outputs
 1. **table**: table
@@ -36,8 +38,10 @@ Binarize a column of continuous features given a threshold. The features greater
    - Allowed column type : Integer, Long, Float, Double, Decimal, Boolean
 2. **threshold**: Threshold used to binarize continuous features. Default: 0
    - Value type : Double
+   - Default : 0
 3. **out_col_name**: Out column name for the binarized result. Default : 'binarized_' + column name
    - Value type : String
+   - Default : Enter value
 
 #### Outputs
 1. **table**: table

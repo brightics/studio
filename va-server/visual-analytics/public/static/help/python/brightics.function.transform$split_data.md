@@ -20,8 +20,10 @@ Split data into random train and test subsets.
 #### Parameters
 1. **Train Ratio**: Train ratio.
    - Value type : Double
+   - Default : 7.0
 2. **Test Ratio**: Test ratio.
    - Value type : Double
+   - Default : 3.0
 3. **Seed**: The seed used by the random number generator.
    - Value type : Integer
 
@@ -36,8 +38,10 @@ Split data into random train and test subsets.
 #### Parameters
 1. **train_ratio**: Train ratio.
    - Value type : Double
+   - Default : 7.0
 2. **test_ratio**: Test ratio.
    - Value type : Double
+   - Default : 3.0
 3. **random_state**: The seed used by the random number generator.
    - Value type : Integer
 

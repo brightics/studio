@@ -20,6 +20,7 @@ Predict data using a GLM model.
 #### Parameters
 1. **Prediction column name**: Column name for prediction
    - Value type : String
+   - Default : prediction
 2. **Group By**: Columns to group by
 
 #### Outputs
@@ -33,6 +34,7 @@ Predict data using a GLM model.
 #### Parameters
 1. **prediction_col**: Column name for prediction
    - Value type : String
+   - Default : prediction
 2. **group_by**: Columns to group by
 
 #### Outputs

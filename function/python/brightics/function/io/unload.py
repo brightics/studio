@@ -6,6 +6,11 @@ import pandas as pd
 import io
 import boto3
 from brightics.common.datasource import DbEngine
+import brightics.common.data.utils as util
+
+
+def unload(table, partial_path):
+    table.to_parquet(util.make_data_path_from_key(partial_path[0]))
 
 
 def write_csv(table, path):

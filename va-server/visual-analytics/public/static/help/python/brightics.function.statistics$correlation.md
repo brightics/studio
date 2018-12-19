@@ -29,8 +29,10 @@ Reference:
       - kendal
 3. **Height**: Height
    - Value type : Double
+   - Default : 2.5
 4. **Precision**: Precision for correlation coefficients.
    - Value type : Integer
+   - Default : 2
 5. **Group By**: Columns to group by
 
 #### Outputs
@@ -50,8 +52,10 @@ Reference:
       - kendal
 3. **height**: Height
    - Value type : Double
+   - Default : 2.5
 4. **corr_prec**: Precision for correlation coefficients.
    - Value type : Integer
+   - Default : 2
 5. **group_by**: Columns to group by
 
 #### Outputs

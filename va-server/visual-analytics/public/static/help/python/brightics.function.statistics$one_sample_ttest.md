@@ -23,8 +23,10 @@ One Sample T Test is used to compare the mean of one sample to a known standard 
 2. **Alternatives**: The alternative hypothesis. Allowed value is one of Two Sided (default), Greater or Less.
 3. **Hypothesized Mean**: The theoretical mean. Default is 0 but you can change it.
    - Value type : Double
+   - Default : 0
 4. **Confidence Level**: The frequency (i.e. the proportion) of possible confidence intervals that contain the true value of the unknown population parameter. Default is 0.95 but you can change it.
    - Value type : Double
+   - Default : 0.95 (0 <= value <= 1)
 
 #### Outputs
 1. **model**: model
@@ -40,8 +42,10 @@ One Sample T Test is used to compare the mean of one sample to a known standard 
 2. **alternatives**: The alternative hypothesis. Allowed value is one of Two Sided (default), Greater or Less.
 3. **hypothesized_mean**: The theoretical mean. Default is 0 but you can change it.
    - Value type : Double
+   - Default : 0
 4. **conf_level**: The frequency (i.e. the proportion) of possible confidence intervals that contain the true value of the unknown population parameter. Default is 0.95 but you can change it.
    - Value type : Double
+   - Default : 0.95 (0 <= value <= 1)
 
 #### Outputs
 1. **model**: model

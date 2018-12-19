@@ -24,8 +24,10 @@ In statistics, a paired difference test is a type of location test that is used 
    - Allowed column type : Integer, Long, Float, Double, Decimal, Boolean
 3. **Hypothesized Difference**: Hypothesized difference. Default: 0
    - Value type : Double
+   - Default : 0
 4. **Confidence Level**: Confidence level. Default: 0.95
    - Value type : Double
+   - Default : 0.95 (0<=value<=1)
 5. **Alternatives**: Alternative hypothesis.
 
 #### Outputs
@@ -43,8 +45,10 @@ In statistics, a paired difference test is a type of location test that is used 
    - Allowed column type : Integer, Long, Float, Double, Decimal, Boolean
 3. **hypothesized_difference**: Hypothesized difference. Default: 0
    - Value type : Double
+   - Default : 0
 4. **confidence_level**: Confidence level. Default: 0.95
    - Value type : Double
+   - Default : 0.95 (0<=value<=1)
 5. **alternative**: Alternative hypothesis.
 
 #### Outputs

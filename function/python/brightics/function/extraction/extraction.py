@@ -14,12 +14,13 @@ def add_row_number(table, new_col='add_row_number'):
     return {'out_table': out_table}
 
 
-def discretize_quantile(table, input_col, num_of_buckets, bucket_opt='False', out_col_name='bucket_number'):
-    buckets = table[input_col].quantile(np.linspace(1 / num_of_buckets, 1, num_of_buckets))
-    if bucket_opt == 'True':
-        out_col = pd.DataFrame(np.digitize(table[input_col], buckets, right=True), columns={out_col_name})
+def discretize_quantile(table, input_col, bucket_opt, num_of_buckets=2, out_col_name='bucket_number'):
+    
+    out_col = pd.DataFrame()
+    if bucket_opt == 'False':
+        out_col[out_col_name] = (num_of_buckets - 1) - pd.qcut((-1) * table[input_col], num_of_buckets, labels=False, duplicates='drop')
     else:
-        out_col = pd.DataFrame(np.digitize(table[input_col], buckets, right=False), columns={out_col_name})
+        out_col[out_col_name] = pd.qcut(table[input_col], num_of_buckets, labels=False, duplicates='drop')    
     out_table = pd.concat([table, out_col], axis=1)
     return {'out_table': out_table}
 
