@@ -1,3 +1,5 @@
+from .outlier_detection import outlier_detection_lof, outlier_detection_tukey_carling
+
 import pandas as pd
 import numpy as np
 import math
