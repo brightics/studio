@@ -2,6 +2,14 @@ var request = __REQ_request;
 
 var URI_API_SERVER = 'http://localhost:3333';
 
+var setBearerToken = function (options, token) {
+    if (options.auth) {
+        options.auth.bearer = token;
+    } else {
+        if (token) options.auth = {bearer: token};
+    }
+};
+
 var createRequestOptions = function (method, url, token) {
     var options = {
         url: URI_API_SERVER + url,
@@ -19,14 +27,6 @@ var createRequestOptions = function (method, url, token) {
     return options;
 };
 
-var setBearerToken = function (options, token) {
-    if (options.auth) {
-        options.auth.bearer = token;
-    } else {
-        if (token) options.auth = {bearer: token};
-    }
-};
-
 var proxy = function (req, res) {
     var options = __BRTC_API_SERVER.createRequestOptions(req.method, req.originalUrl);
 
@@ -38,14 +38,14 @@ var proxy = function (req, res) {
             req.originalUrl.substring(req.originalUrl.indexOf(req.baseUrl) + req.baseUrl.length));
     } else if (req.originalUrl.startsWith('/api/admin/v2/deploy')) {
         options = __BRTC_API_SERVER.createRequestOptions(
-            req.method, 
+            req.method,
             '/api/admin/v2/authorization/roles?userId=' + req.session.userId + '&roleLabel=Administrator'
             );
     }
 
     options.body = JSON.stringify(req.body);
     __BRTC_API_SERVER.setBearerToken(options, req.accessToken);
-    
+
     request(options, function (error, response, body) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));

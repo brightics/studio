@@ -17,7 +17,7 @@ exports.listMembers = function (req, res) {
                     return res.status(400).json(JSON.parse(body));
                 }
 
-                var projectMembers = result.map(x => Object.assign(x, JSON.parse(body).find(y => y.id == x.user_id)));
+                var projectMembers = result.map(x => Object.assign(x, JSON.parse(body).find(y => y.id === x.user_id)));
                 projectMembers.forEach(function (member) {
                     member['user_name'] = member['name'];
                     delete member['name'];
@@ -64,7 +64,7 @@ exports.withdrawMember = function (req, res) {
 
     // 본인만 With
     var permission = PERMISSION.PROJECT.UPDATE;
-    if (req.body.members.length === 1 && req.apiUserId == req.body.members[0].user_id) {
+    if (req.body.members.length === 1 && req.apiUserId === req.body.members[0].user_id) {
         permission = PERMISSION.PROJECT.READ;
     }
 

@@ -59,7 +59,7 @@ module.exports = {
     notice: {
         checkSchema: function (errCallback, doneCallback) {
             query(DDL_CHECK_TABLE, ['brtc_notice'], errCallback, function (result) {
-                if (result.length == 0) {
+                if (result.length === 0) {
                     query(DDL_CREATE_NOTICE_TABLE, [], errCallback, doneCallback);
                 } else {
                     if (doneCallback) doneCallback(result.rows, result, DDL_CHECK_TABLE, ['brtc_notice']);

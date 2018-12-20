@@ -31,7 +31,7 @@ var parseStagingData = function (body) {
             type: convertedType.type,
             internalType: convertedType.internalType
         });
-        if (convertedType.type == 'byte[]') {
+        if (convertedType.type === 'byte[]') {
             arrColIndexes.push(c);
         }
     }
@@ -59,30 +59,28 @@ router.get('/', function (req, res) {
     __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
     request(options, function (error, response, body) {
         if (error) {
-            __BRTC_ERROR_HANDLER.sendServerError(res, error);
-        } else {
-            if (response.statusCode == 200) {
-                try {
-                    var answer = []
-                        , resultSet = JSON.parse(body);
-                    if (req.query.type) {
-                        for (var i in resultSet) {
-                            if (req.query.type == resultSet[i].datasourceType ||
-                                (req.query.type === 'RDB' && resultSet[i].datasourceType === 'JDBC') ||
-                                (req.query.type === 'RDB' && resultSet[i].datasourceType === 'HIVE')) {
-                                answer.push(resultSet[i]);
-                            }
-                        }
-                    } else {
-                        answer = resultSet;
+            return __BRTC_ERROR_HANDLER.sendServerError(res, error);
+        }
+        if (response.statusCode !== 200) {
+            return __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
+        }
+        try {
+            var answer = []
+                , resultSet = JSON.parse(body);
+            if (req.query.type) {
+                for (var i in resultSet) {
+                    if (req.query.type === resultSet[i].datasourceType ||
+                        (req.query.type === 'RDB' && resultSet[i].datasourceType === 'JDBC') ||
+                        (req.query.type === 'RDB' && resultSet[i].datasourceType === 'HIVE')) {
+                        answer.push(resultSet[i]);
                     }
-                    res.status(200).json(answer);
-                } catch (err) {
-                    __BRTC_ERROR_HANDLER.sendServerError(res, err);
                 }
             } else {
-                __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
+                answer = resultSet;
             }
+            res.status(200).json(answer);
+        } catch (err) {
+            __BRTC_ERROR_HANDLER.sendServerError(res, err);
         }
     });
 });
@@ -99,7 +97,7 @@ router.get('/:source/tables', function (req, res) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 try {
                     var answer = JSON.parse(body).result;
                     res.status(200).json(answer);
@@ -126,7 +124,7 @@ router.get('/:source/columns', __BRTC_ERROR_HANDLER.checkParams(['tableName']), 
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 try {
                     var answer = JSON.parse(body).result;
                     res.status(200).json(answer);
@@ -156,7 +154,7 @@ router.get('/staging/query', __BRTC_ERROR_HANDLER.checkParams(['user', 'mid', 't
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 try {
                     res.json(parseStagingData(body));
                 } catch (err) {
@@ -170,38 +168,35 @@ router.get('/staging/query', __BRTC_ERROR_HANDLER.checkParams(['user', 'mid', 't
 });
 
 router.post('/staging/delete', __BRTC_ERROR_HANDLER.checkParams(['user']), function (req, res) {
-    if (req.query.user != req.session.userId) {
-        __BRTC_ERROR_HANDLER.sendNotAllowedError(res);
-    } else {
-        var url = '/api/v2/datasources/staging/' + req.query.user;
-        if (req.query.mid) {
-            url += '/' + req.query.mid;
-            if (req.query.tab) {
-                url += '/' + req.query.tab
-            }
-        }
-        var options = __BRTC_CORE_SERVER.createRequestOptions('DELETE', url);
-        __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-        request(options, function (error, response, body) {
-            if (error) {
-                __BRTC_ERROR_HANDLER.sendServerError(res, error);
-            } else {
-                if (response.statusCode == 200) {
-                    try {
-                        res.json(JSON.parse(body));
-                    } catch (err) {
-                        __BRTC_ERROR_HANDLER.sendServerError(res, err);
-                    }
-                } else {
-                    __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-                }
-            }
-        });
+    if (req.query.user !== req.session.userId) {
+        return __BRTC_ERROR_HANDLER.sendNotAllowedError(res);
     }
+    var url = '/api/v2/datasources/staging/' + req.query.user;
+    if (req.query.mid) {
+        url += '/' + req.query.mid;
+        if (req.query.tab) {
+            url += '/' + req.query.tab
+        }
+    }
+    var options = __BRTC_CORE_SERVER.createRequestOptions('DELETE', url);
+    __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
+    return request(options, function (error, response, body) {
+        if (error) {
+            return __BRTC_ERROR_HANDLER.sendServerError(res, error);
+        }
+        if (response.statusCode !== 200) {
+            return __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
+        }
+        try {
+            res.json(JSON.parse(body));
+        } catch (err) {
+            __BRTC_ERROR_HANDLER.sendServerError(res, err);
+        }
+    });
 });
 
 var urlParser = function (req) {
-    var dbType = req.body.dbtype;
+    // var dbType = req.body.dbtype;
     var host = req.body.host;
     var port = req.body.port;
     var service = req.body.service;
@@ -266,7 +261,7 @@ router.post('/etl/query/:sqlId/:site', function (req, res) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 try {
                     res.json(JSON.parse(body));
                 } catch (err) {
@@ -287,7 +282,7 @@ var removeData = function (req, res) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 try {
                     res.json(JSON.parse(response.body));
                 } catch (ex) {
@@ -316,7 +311,7 @@ var queryRef = function (req, res) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
 
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 try {
                     res.json(parseStagingData(body));
                 } catch (err) {
@@ -352,7 +347,7 @@ var queryResult = function (req, res, next) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 try {
                     var jsonObject = JSON.parse(body);
                     res.json(jsonObject.result);

@@ -22,7 +22,9 @@ var listFiles = function (req, res) {
 
 var createFile = function (req, res) {
     var task = function (permissions) {
-        if (!req.body.id || !req.body.label || !req.body.contents) return __BRTC_ERROR_HANDLER.sendError(res, '10103');
+        if (!req.body.id || !req.body.label || !req.body.contents) {
+            return __BRTC_ERROR_HANDLER.sendError(res, '10103');
+        }
 
         __BRTC_DAO.file.selectByProject({
             project_id: req.params.project
@@ -45,7 +47,7 @@ var createFile = function (req, res) {
                     __BRTC_ERROR_HANDLER.sendServerError(res, err);
                 }, function (result) {
                     __BRTC_DAO.file.create(opt, function (err) {
-                        if (err.error.indexOf('duplicate key ') == 0) {
+                        if (err.error.indexOf('duplicate key ') === 0) {
                             __BRTC_ERROR_HANDLER.sendError(res, 10101);
                         } else {
                             __BRTC_ERROR_HANDLER.sendServerError(res, err);
@@ -58,8 +60,10 @@ var createFile = function (req, res) {
                 __BRTC_ERROR_HANDLER.sendError(res, 10401);
             }
         });
+        return undefined;
     };
     projectPermission.execute(req.params.project, req.apiUserId, PERMISSION.FILE.CREATE, res, task);
+    return undefined;
 };
 
 var getFile = function (req, res) {
@@ -83,7 +87,9 @@ var getFile = function (req, res) {
 
 var updateFile = function (req, res) {
     var task = function (permissions) {
-        if (!req.body.label || !req.body.contents || !req.body.event_key) return __BRTC_ERROR_HANDLER.sendError(res, '10103');
+        if (!req.body.label || !req.body.contents || !req.body.event_key) {
+            return __BRTC_ERROR_HANDLER.sendError(res, '10103');
+        }
 
         var opt = {
             id: req.params.file,
@@ -103,7 +109,7 @@ var updateFile = function (req, res) {
             __BRTC_DAO.file.update(opt, function (err) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, err);
             }, function (rowCount) {
-                if (rowCount == 0) {
+                if (rowCount === 0) {
                     __BRTC_ERROR_HANDLER.sendError(res, 32031);
                 } else {
                     __BRTC_DAO.file.selectById(opt, function (err) {
@@ -117,8 +123,10 @@ var updateFile = function (req, res) {
                 }
             });
         });
+        return undefined;
     };
     projectPermission.execute(req.params.project, req.apiUserId, PERMISSION.FILE.UPDATE, res, task, true);
+    return undefined;
 };
 
 var deleteFile = function (req, res) {

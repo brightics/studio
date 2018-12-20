@@ -32,7 +32,7 @@ var Jasypt = {
         opt.verbose = false;
         opt.algorithm = opt.algorithm || 'PBEWithMD5AndDES';
         var result = this._execute(JASYPT_CMD_ENCRYPT, opt);
-        if (result.status == 0) {
+        if (parseInt(result.status, 10) === 0) {
             var lines = result.stdout.toString().split(/\n/);
             if (lines.length > 0) {
                 return lines[0].trim();
@@ -40,6 +40,7 @@ var Jasypt = {
         } else {
             console.error(result.stderr.toString());
         }
+        return undefined;
     },
     decrypt: function (input, password, options) {
         var opt = options || {};
@@ -48,7 +49,7 @@ var Jasypt = {
         opt.verbose = false;
         opt.algorithm = opt.algorithm || 'PBEWithMD5AndDES';
         var result = this._execute(JASYPT_CMD_DECRYPT, opt);
-        if (result.status == 0) {
+        if (parseInt(result.status, 10) === 0) {
             var lines = result.stdout.toString().split(/\n/);
             if (lines.length > 0) {
                 return lines[0].trim();
@@ -56,6 +57,7 @@ var Jasypt = {
         } else {
             console.error(result.stderr.toString());
         }
+        return undefined;
     }
 };
 

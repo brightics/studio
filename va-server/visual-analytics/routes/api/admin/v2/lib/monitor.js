@@ -26,7 +26,7 @@ var checkSchema = function (req, res) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     res.json(Number.parseInt(body));
                 } else {
                     res.status(response.statusCode).send(response.body);
@@ -46,7 +46,7 @@ var getResourceInfo = function (req, res, nex) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     res.json(JSON.parse(body));
                 } else {
                     res.status(response.statusCode).send(response.body);
@@ -66,7 +66,7 @@ var getResourcePids = function (req, res, nex) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     res.json(JSON.parse(body));
                 } else {
                     res.status(response.statusCode).send(response.body);
@@ -86,7 +86,7 @@ var getResourceStatus = function (req, res, nex) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     res.json(JSON.parse(body));
                 } else {
                     res.status(response.statusCode).send(response.body);
@@ -107,7 +107,7 @@ var getRunningJobUser = function (req, res, nex) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     res.json(JSON.parse(body));
                 } else {
                     res.status(response.statusCode).send(response.body);
@@ -127,7 +127,7 @@ var getJobStatus = function (req, res, nex) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     res.json(JSON.parse(body));
                 } else {
                     res.status(response.statusCode).send(response.body);

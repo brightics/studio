@@ -67,9 +67,9 @@ const DDL_CREATE_VERSION_TABLE_DEFAULT = `
         ${DESCRIPTION_COL} ${DESCRIPTION_TYPE},
         ${MODEL_IMAGE_COL} ${MODEL_IMAGE_TYPE},
         ${IS_DELETED_COL} ${IS_DELETED_TYPE},
-        CONSTRAINT ${FILE_VERSION_TABLE}_pkey 
+        CONSTRAINT ${FILE_VERSION_TABLE}_pkey
             PRIMARY KEY (${VERSION_ID_COL}, ${FILE_ID_COL})
-    ) 
+    )
     WITH (
         OIDS=FALSE
     )
@@ -92,9 +92,9 @@ const DDL_CREATE_VERSION_TABLE_SQLITE = `
         ${DESCRIPTION_COL} ${DESCRIPTION_TYPE},
         ${MODEL_IMAGE_COL} ${MODEL_IMAGE_TYPE},
         ${IS_DELETED_COL} ${IS_DELETED_TYPE},
-        CONSTRAINT ${FILE_VERSION_TABLE}_pkey 
+        CONSTRAINT ${FILE_VERSION_TABLE}_pkey
             PRIMARY KEY (${VERSION_ID_COL}, ${FILE_ID_COL})
-    ) 
+    )
 `;
 
 const FILE_SELECT_BY_FILE_ID_DEFAULT = `
@@ -106,14 +106,14 @@ const VERSION_SELECT_BY_FILE_ID_DEFAULT = `
 `;
 
 const VERSION_SELECT_BY_FILE_AND_VERSION_ID_DEFAULT = `
-    SELECT * 
+    SELECT *
     FROM ${FILE_VERSION_TABLE}
     WHERE ${FILE_ID_COL} = $1 AND ${VERSION_ID_COL} = $2
 `;
 
 const SELECT_CONTENTS_TYPE_FROM_IN_FILE_TABLE_DEFAULT = `
-    SELECT 
-        ${FILE_CONTENTS_IN_FILE_TABLE}, 
+    SELECT
+        ${FILE_CONTENTS_IN_FILE_TABLE},
         ${FILE_TYPE_IN_FILE_TABLE},
         ${FROM_VERSION_IN_FILE_TABLE}
     FROM ${FILE_TABLE}
@@ -255,7 +255,7 @@ const VERSION_CREATE_WITH_MAJOR_SQLITE = `
 `;
 const VERSION_CREATE_WITH_MINOR_DEFAULT = `
     ${VERSION_CREATE_HEADER}
-    SELECT 
+    SELECT
         CAST($1 AS VARCHAR),
         CAST($2 AS VARCHAR),
         $9,
@@ -279,9 +279,9 @@ const VERSION_CREATE_WITH_MINOR_DEFAULT = `
     RETURNING *
 `;
 
-const VERSION_CREATE_WITH_MINOR_SQLITE = `   
+const VERSION_CREATE_WITH_MINOR_SQLITE = `
     ${VERSION_CREATE_HEADER}
-    SELECT 
+    SELECT
         CAST($1 AS VARCHAR) ${VERSION_ID_COL},
         CAST($2 AS VARCHAR) ${FILE_ID_COL},
         $9 ${MAJOR_VERSION_COL},
@@ -327,14 +327,14 @@ const VERSION_UPDATE_SQLITE = `
 `;
 
 // const VERSION_SOFT_DELETE = `
-//     UPDATE ${FILE_VERSION_TABLE} 
+//     UPDATE ${FILE_VERSION_TABLE}
 //     SET (${UPDATER_COL}, ${UPDATE_TIME_COL}, ${IS_DELETED_COL})
-//         = ($1, now(), true) 
+//         = ($1, now(), true)
 //     WHERE ${FILE_ID_COL} = $2 AND ${VERSION_ID_COL} = $3
 // `;
 
 const VERSION_HARD_DELETE_DEFAULT = `
-    DELETE FROM ${FILE_VERSION_TABLE} 
+    DELETE FROM ${FILE_VERSION_TABLE}
     WHERE ${FILE_ID_COL} = $1 AND ${VERSION_ID_COL} = $2
 `;
 
@@ -479,7 +479,7 @@ const repairTable = (schemaRows) => {
     const checkAllColumns = columnNameAndType.map((column) => {
         const name = column[0];
         const type = column[1];
-        const alterQuery = `ALTER TABLE ${FILE_VERSION_TABLE} 
+        const alterQuery = `ALTER TABLE ${FILE_VERSION_TABLE}
                     ADD COLUMN ${name} ${type}`;
         return new Promise((resolve, reject) => {
             if (!columns[name]) {

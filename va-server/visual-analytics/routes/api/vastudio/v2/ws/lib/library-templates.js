@@ -5,7 +5,7 @@ exports.listTemplates = function (req, res) {
     __BRTC_DAO.library.selectById(opt, function (err) {
         __BRTC_ERROR_HANDLER.sendServerError(res, err);
     }, function (libraries) {
-        if (libraries.length > 0 && libraries[0].creator != req.apiUserId && libraries[0].type != 'Opened') {
+        if (libraries.length > 0 && libraries[0].creator !== req.apiUserId && libraries[0].type !== 'Opened') {
             __BRTC_ERROR_HANDLER.sendNotAllowedError(res);
         } else {
             opt = {
@@ -30,7 +30,7 @@ exports.createTemplate = function (req, res) {
     __BRTC_DAO.library.selectById(opt, function (err) {
         __BRTC_ERROR_HANDLER.sendServerError(res, err);
     }, function (result) {
-        if (result.length > 0 && result[0].creator != req.apiUserId) {
+        if (result.length > 0 && result[0].creator !== req.apiUserId) {
             __BRTC_ERROR_HANDLER.sendNotAllowedError(res);
         } else {
             __BRTC_DAO.template.selectByLibrary({
@@ -48,7 +48,7 @@ exports.createTemplate = function (req, res) {
                         creator: req.apiUserId
                     };
                     __BRTC_DAO.template.create(opt, function (err) {
-                        if (err.error.indexOf('duplicate key ') == 0) {
+                        if (err.error.indexOf('duplicate key ') === 0) {
                             __BRTC_ERROR_HANDLER.sendError(res, 34011);
                         } else {
                             __BRTC_ERROR_HANDLER.sendError(res, 34012);
@@ -72,7 +72,7 @@ exports.getTemplate = function (req, res) {
     __BRTC_DAO.library.selectById(opt, function (err) {
         __BRTC_ERROR_HANDLER.sendServerError(res, err);
     }, function (result) {
-        if (result.length > 0 && result[0].creator != req.apiUserId && result[0].type != 'Opened') {
+        if (result.length > 0 && result[0].creator !== req.apiUserId && result[0].type !== 'Opened') {
             __BRTC_ERROR_HANDLER.sendNotAllowedError(res);
         } else {
 
@@ -106,7 +106,7 @@ exports.updateTemplate = function (req, res) {
     __BRTC_DAO.library.selectById(opt, function (err) {
         __BRTC_ERROR_HANDLER.sendServerError(res, err);
     }, function (result) {
-        if (result.length > 0 && result[0].creator != req.apiUserId) {
+        if (result.length > 0 && result[0].creator !== req.apiUserId) {
             __BRTC_ERROR_HANDLER.sendNotAllowedError(res);
         } else {
 
@@ -136,7 +136,7 @@ exports.deleteTemplate = function (req, res) {
     __BRTC_DAO.library.selectById(opt, function (err) {
         __BRTC_ERROR_HANDLER.sendServerError(res, err);
     }, function (result) {
-        if (result.length > 0 && result[0].creator != req.apiUserId) {
+        if (result.length > 0 && result[0].creator !== req.apiUserId) {
             __BRTC_ERROR_HANDLER.sendNotAllowedError(res);
         } else {
 

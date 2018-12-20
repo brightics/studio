@@ -22,7 +22,7 @@ var listSchedules = function (req, res) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 res.json((JSON.parse(body)).result);
             } else {
                 __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
@@ -33,7 +33,7 @@ var listSchedules = function (req, res) {
             //     for (var i in result) {
             //         userNames.push(result[i].id);
             //     }
-            //     if (response.statusCode == 200) {
+            //     if (response.statusCode === 200) {
             //         var returnValues = [];
             //         var scheduleList = (JSON.parse(body)).result;
             //         for (var i in scheduleList) {
@@ -59,7 +59,7 @@ var listScheduleHistories = function (req, res) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 res.json((JSON.parse(body)).result);
             } else {
                 __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
@@ -75,7 +75,7 @@ var scheduleHistories = function (req, res) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 var scheduleHistoryList = (JSON.parse(body)).result;
                 scheduleHistoryList = scheduleHistoryList.filter(function (item) {
                     return item.scheduleId === req.params.scheduleId;
@@ -98,7 +98,7 @@ var createSchedule = function (req, res) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     res.json({success: true});
                 } else {
                     __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
@@ -118,7 +118,7 @@ var updateSchedule = function (req, res) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     res.json({success: true});
                 } else {
                     __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
@@ -137,7 +137,7 @@ var deleteSchedule = function (req, res) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     res.json({success: true});
                 } else {
                     __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
@@ -156,7 +156,7 @@ var abortSchedule = function (req, res) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     res.json({success: true});
                 } else {
                     __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
@@ -178,7 +178,7 @@ var getReport = function (req, res) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 res.json(JSON.parse(body));
             } else {
                 __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
@@ -198,7 +198,7 @@ var getErrorMessage = function (req, res) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 res.json(JSON.parse(body));
             } else {
                 __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
@@ -207,64 +207,58 @@ var getErrorMessage = function (req, res) {
     });
 };
 
-var getSchedule = function (req, res) {
+var getSchedule = function (req, res, next) {
     var options = __BRTC_SCHEDULER_SERVER.createRequestOptions('GET', '/api/v2/schedules');
     __BRTC_SCHEDULER_SERVER.setBearerToken(options, req.accessToken);
     request(options, function (error, response, body) {
         if (error) {
-            __BRTC_ERROR_HANDLER.sendServerError(res, error);
-        } else {
-            if (response.statusCode == 200) {
-                try {
-                    var answer = []
-                        , resultSet = (JSON.parse(body)).result,
-                        promises = [];
-                    for (var i in resultSet) {
-                        if (req.params.scheduleId == resultSet[i].scheduleId) {
-                            var schedule = resultSet[i];
-                            var mainMid = JSON.parse(schedule.executeContents).main;
-                            var versionId = JSON.parse(schedule.executeContents).models[JSON.parse(schedule.executeContents).main].version_id;
-                            answer.push(schedule);
+            return __BRTC_ERROR_HANDLER.sendServerError(res, error);
+        }
+        if (response.statusCode !== 200) {
+            return __BRTC_ERROR_HANDLER.sendServerError(res, error);
+        }
 
-                            var promise = new Promise(function (resolve, reject) {
-                                var compile = mf.compile('/api/va/v2/ws/projects/:project/files/{fileid}/versions/{versionid}');
-                                var url = compile({
-                                    fileid: encodeURI(mainMid),
-                                    versionid: encodeURI(versionId)
-                                });
-                                var options = __BRTC_API_SERVER.createRequestOptions('GET', url);
-                                __BRTC_API_SERVER.setBearerToken(options, req.accessToken);
-                                request(options, function (error, response, body) {
-                                    if (error) {
-                                        reject(Error(error.message));
-                                    } else {
-                                        if (response.statusCode == 200) {
-                                            var rows = JSON.parse(body);
-                                            if (rows) {
-                                                schedule.modelVersion = rows.major_version + '.' + rows.minor_version;
-                                                schedule.modelVersionId = versionId;
-                                            }
-                                            resolve("SUCCESS Schedule ModelVersion");
-                                        } else {
-                                            reject(new Error(__BRTC_ERROR_HANDLER.parseError(body).errors[0].message));
-                                        }
-                                    }
-                                });
-                            });
-                            promises.push(promise);
-                        }
+        const checkVersion = (schedule) => {
+            var mainMid = JSON.parse(schedule.executeContents).main;
+            var versionId = JSON.parse(schedule.executeContents).models[JSON.parse(schedule.executeContents).main].version_id;
+
+            return new Promise(function (resolve, reject) {
+                var compile = mf.compile('/api/va/v2/ws/projects/:project/files/{fileid}/versions/{versionid}');
+                var url = compile({
+                    fileid: encodeURI(mainMid),
+                    versionid: encodeURI(versionId)
+                });
+                var options = __BRTC_API_SERVER.createRequestOptions('GET', url);
+                __BRTC_API_SERVER.setBearerToken(options, req.accessToken);
+                request(options, function (error, response, body) {
+                    if (error) {
+                        return reject(Error(error.message));
                     }
-                    Promise.all(promises).then(function () {
-                        res.status(200).json(answer);
-                    }, function (error) {
-                        next(error);
-                    });
-                } catch (err) {
-                    __BRTC_ERROR_HANDLER.sendServerError(res, err);
-                }
-            } else {
-                __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-            }
+                    if (response.statusCode !== 200) {
+                        return reject(new Error(__BRTC_ERROR_HANDLER.parseError(body).errors[0].message));
+                    }
+                    var rows = JSON.parse(body);
+                    if (rows) {
+                        schedule.modelVersion = rows.major_version + '.' + rows.minor_version;
+                        schedule.modelVersionId = versionId;
+                    }
+                    return resolve("SUCCESS Schedule ModelVersion");
+                });
+            });
+        }
+        try {
+            var resultSet = (JSON.parse(body)).result;
+            var answer = resultSet.filter(({ scheduleId }) => {
+                return req.params.scheduleId === scheduleId;
+            });
+            var promises = answer.map(checkVersion);
+            Promise.all(promises).then(function () {
+                res.status(200).json(answer);
+            }, function (error) {
+                next(error);
+            });
+        } catch (err) {
+            __BRTC_ERROR_HANDLER.sendServerError(res, err);
         }
     });
 };
@@ -277,7 +271,7 @@ var forceReadySchedule = function (req, res) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     res.json({success: true});
                 } else {
                     __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
@@ -296,7 +290,7 @@ var forceDeleteSchedule = function (req, res) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     res.json({success: true});
                 } else {
                     __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));

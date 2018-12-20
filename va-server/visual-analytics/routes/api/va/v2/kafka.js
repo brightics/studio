@@ -8,7 +8,7 @@ router.get('/alltopics', function (req, res) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 try {
                     res.send(JSON.parse(response.body).result);
                     console.log(JSON.parse(response.body).result);
