@@ -5,7 +5,7 @@
  @api {GET} /api/vastudio/v3/projects/:projectId/files Get file list
  @apiGroup Files
  @apiName Get file list
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParamExample Param Example 1
  /api/vastudio/v3/projects/pr73udvq34ugp9wh/files
@@ -39,7 +39,7 @@
  @api {POST} /api/vastudio/v3/projects/:projectId/files Create file
  @apiGroup Files
  @apiName Create file
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParam {String} id ID
  @apiParam {String} label Label
@@ -95,7 +95,7 @@
  @api {GET} /api/vastudio/v3/projects/:projectId/files/:fileId Get file
  @apiGroup Files
  @apiName Get file
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParamExample Param Example 1
  /api/vastudio/v3/projects/nnnnininidididid/files/pr73udvq34ugp9df
@@ -136,7 +136,7 @@
  @api {PUT} /api/vastudio/v3/projects/:projectId/files/:fileId Update file
  @apiGroup Files
  @apiName Update file
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParam {String} event_key Current event_key
  @apiParam {String} label Label
@@ -200,7 +200,7 @@
  @api {DELETE} /api/vastudio/v3/projects/:projectId/files/:fileId Delete file
  @apiGroup Files
  @apiName Delete file
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParamExample Param Example 1
  /api/vastudio/v3/projects/p34ephjmngga3vp1/files/pr73udvq34ugp9df
@@ -228,7 +228,7 @@
  @api {GET} /api/vastudio/v3/projects/:projectId/files/:fileId/versions Get version list
  @apiGroup Files
  @apiName Get version list
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParamExample Param Example 1
  /api/vastudio/v3/projects/p34ephjmngga3vp1/files/pr73udvq34ugp9df/versions
@@ -269,7 +269,7 @@
  @api {GET} /api/vastudio/v3/projects/:projectId/files/:fileId/versions/:versionId Get version
  @apiGroup Files
  @apiName Get version
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParamExample Param Example 1
  /api/vastudio/v3/projects/p34ephjmngga3vp1/files/pr73udvq34ugp9df/versions/vhjb5m79z4s3pjjb
@@ -297,7 +297,7 @@
  @api {POST} /api/vastudio/v3/projects/:projectId/files/:fileId/versions Create version
  @apiGroup Files
  @apiName Create version
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParam {String} event_key Current event_key
  @apiParam {String} label Label
@@ -336,7 +336,7 @@
  @api {PUT} /api/vastudio/v3/projects/:projectId/files/:fileId/versions/:versionId Update version
  @apiGroup Files
  @apiName Update version
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParam {String} [description] Description
  @apiParam {String} [tag] Tag
@@ -371,7 +371,7 @@
  @api {post} /api/vastudio/v3/projects/:projectId/files/:fileId/versions/:versionId/load Load version
  @apiGroup Files
  @apiName Load version
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParamExample Param Example 1
  /api/vastudio/v3/projects/p34ephjmngga3vp1/files/pr73udvq34ugp9df/versions/vhjb5m79z4s3pjjb/load

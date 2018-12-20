@@ -14,12 +14,64 @@ var _executeInPermission = function (req, res, perm, task) {
 
 /**agent 목록조회**/
 router.get('/agents', function (req, res, next) {
+
+    const queryAgentId = (req.query.agentId || '').toLowerCase();
+    const queryActiveStart = req.query.activeStart;
+    const queryActiveStop = req.query.activeStop;
+    const isValidAgent = ({ agentId, status }) => {
+        if (queryAgentId && agentId.toLowerCase().indexOf(queryAgentId) === -1) {
+            return false;
+        }
+        if (queryActiveStart === 'false' &&
+            queryActiveStop === 'true' &&
+            status !== 'STOP') {
+            return false;
+        }
+
+        if (queryActiveStart === 'true' &&
+            queryActiveStop === 'false' &&
+            status !== 'RUN') {
+            return false;
+        }
+        if (queryActiveStart === 'false' && queryActiveStop === 'false') return false;
+        return true;
+    };
+
+    var executeApi = function (reqApi, req, res) {
+        __BRTC_CORE_SERVER.setBearerToken(reqApi, req.accessToken);
+        request(reqApi, function (error, response, body) {
+            if (error) {
+                return __BRTC_ERROR_HANDLER.sendServerError(res, error);
+            }
+            if (response.statusCode !== 200) {
+                return __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
+            }
+
+            var agentList = (JSON.parse(body)).result;
+
+            var rt = [];
+            if (agentList instanceof Array) {
+                rt = rt.concat(agentList.filter(isValidAgent));
+            } else {
+                rt.push(agentList);
+            }
+
+            rt.sort(function (a, b) {
+                if (a.agentId < b.agentId) return -1;
+                if (a.agentId > b.agentId) return 1;
+                return 0;
+            });
+
+            return res.send(rt);
+        });
+    };
+
     var task = function (permissions) {
         var reqApi;
         if (__BRTC_CONF['agent-isolation']) {
             var chkIsForceReadPerm = permissions.findIndex(function (permObj) {
                 //TODO: PERM_AGENT_READ_FORCE db에 추가필요
-                return permObj.permission_id == __BRTC_PERM_HELPER.PERMISSIONS.PERM_AGENT_READ_FORCE
+                return permObj.permission_id === __BRTC_PERM_HELPER.PERMISSIONS.PERM_AGENT_READ_FORCE;
             });
             if (chkIsForceReadPerm > -1) {
                 reqApi = __BRTC_CORE_SERVER.createRequestOptions('GET', '/api/core/v2/agents');
@@ -29,16 +81,14 @@ router.get('/agents', function (req, res, next) {
                 var findAgentIdApi = __BRTC_CORE_SERVER.createRequestOptions('GET', '/api/core/v2/agentUser/' + _userId);
                 request(findAgentIdApi, function (error, response, body) {
                     if (error) {
-                        __BRTC_ERROR_HANDLER.sendServerError(res, error);
-                    } else {
-                        if (response.statusCode == 200) {
-                            var myAgentObj = (JSON.parse(body)).result;
-                            reqApi = __BRTC_CORE_SERVER.createRequestOptions('GET', '/api/core/v2/agent/' + myAgentObj.agentId);
-                            executeApi(reqApi, req, res);
-                        } else {
-                            __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
-                        }
+                        return __BRTC_ERROR_HANDLER.sendServerError(res, error);
                     }
+                    if (response.statusCode !== 200) {
+                        return __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
+                    }
+                    var myAgentObj = (JSON.parse(body)).result;
+                    reqApi = __BRTC_CORE_SERVER.createRequestOptions('GET', '/api/core/v2/agent/' + myAgentObj.agentId);
+                    return executeApi(reqApi, req, res);
                 });
             }
         } else {
@@ -47,50 +97,6 @@ router.get('/agents', function (req, res, next) {
         }
     };
 
-    var executeApi = function (reqApi, req, res) {
-        __BRTC_CORE_SERVER.setBearerToken(reqApi, req.accessToken);
-        request(reqApi, function (error, response, body) {
-            if (error) {
-                __BRTC_ERROR_HANDLER.sendServerError(res, error);
-            } else {
-                if (response.statusCode == 200) {
-                    var agentList = (JSON.parse(body)).result;
-
-                    var rt = [];
-                    if (agentList instanceof Array) {
-                        for (var i in agentList) {
-                            if (req.query.agentId && req.query.agentId != '') {
-                                if ((agentList[i].agentId.toLowerCase()).indexOf(req.query.agentId.toLowerCase()) == -1) continue;
-                            }
-                            if (req.query.activeStart == 'false' && req.query.activeStop == 'true') {
-                                if ((agentList[i].status) != 'STOP') continue;
-                            }
-                            if (req.query.activeStart == 'true' && req.query.activeStop == 'false') {
-                                if ((agentList[i].status) != 'RUN') continue;
-                            }
-                            if (req.query.activeStart == 'false' && req.query.activeStop == 'false') {
-                                continue;
-                            }
-                            rt.push(agentList[i]);
-                        }
-                    } else {
-                        rt.push(agentList);
-                    }
-
-                    rt.sort(function (a, b) {
-                        if (a.agentId < b.agentId) return -1;
-                        if (a.agentId > b.agentId) return 1;
-                        return 0;
-                    });
-
-                    res.send(rt);
-                } else {
-                    __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-                }
-            }
-
-        });
-    }
 
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_AGENT_READ, task);
 });
@@ -105,7 +111,7 @@ var createAgent = function (req, res, nex) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     res.send(body);
                 } else {
                     __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
@@ -126,7 +132,7 @@ var UpdateAgent = function (req, res, nex) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     res.send(body);
                 } else {
                     __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
@@ -147,7 +153,7 @@ var deleteAgent = function (req, res, nex) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
 
                     var rt = (JSON.parse(body));
 
@@ -172,7 +178,7 @@ var deleteAgents = function (req, res, nex) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
 
                     var rt = (JSON.parse(body));
 
@@ -195,7 +201,7 @@ router.get('/agents/exist/:agentId', function (req, res, next) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 res.json(JSON.parse(body));
             } else {
                 __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
@@ -212,7 +218,7 @@ router.get('/agents/:agentId/start', function (req, res, next) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 res.json(JSON.parse(body));
             } else {
                 __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
@@ -229,7 +235,7 @@ router.get('/agents/:agentId/stop', function (req, res, next) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 res.json(JSON.parse(body));
             } else {
                 __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
@@ -248,12 +254,12 @@ router.get('/agents/users/agent/:agentId', function (req, res, next) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
 
                 var allUserList = (JSON.parse(body)).result;
 
                 allUserList = allUserList.filter(function (item) {
-                    return (item.agentId == _agentId);
+                    return (item.agentId === _agentId);
                 });
                 res.send(allUserList);
             } else {
@@ -273,7 +279,7 @@ router.get('/agents/users/user/:userId', function (req, res, next) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 var agentUserInfo = (JSON.parse(body)).result;
                 res.send(agentUserInfo);
             } else {
@@ -291,7 +297,7 @@ router.get('/agents/users', function (req, res, next) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
 
                 var allUserList = (JSON.parse(body)).result;
                 res.send(allUserList);
@@ -313,7 +319,7 @@ var addAgentUser = function (req, res, nex) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     res.send(body);
                 } else {
                     __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
@@ -333,7 +339,7 @@ var removeAgentUser = function (req, res, nex) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     res.json(JSON.parse(body));
                 } else {
                     __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
@@ -352,7 +358,7 @@ router.get('/agents/:agentId/status', function (req, res, next) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 var rt = JSON.parse(body);
                 rt.agentId = req.params.agentId;
                 res.send(rt);

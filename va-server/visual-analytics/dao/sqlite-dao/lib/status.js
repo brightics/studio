@@ -84,24 +84,24 @@ module.exports = {
         user: {
             checkSchema: function (errCallback, doneCallback) {
                 query(DDL_CHECK_TABLE, ['brtc_user_status'], errCallback, function (result) {
-                    if (result.length == 0) {
+                    if (result.length === 0) {
                         query(DDL_CREATE_USER__STATUS_TABLE, [], errCallback, function () {
                             query(USER_STATUS_INSERT, [], errCallback, doneCallback);
                         });
-                    } else {
-                        var columns = {};
-                        for (var i in result) {
-                            columns[result[i].column_name] = true;
-                        }
-                        if (!columns['id']) query('ALTER TABLE brtc_user_status ADD COLUMN id character varying(80)', errCallback);
-                        if (!columns['last_login_time']) query('ALTER TABLE brtc_user_status ADD COLUMN last_login_time timestamp without time zone', errCallback);
-                        if (!columns['last_password_time']) query('ALTER TABLE brtc_user_status ADD COLUMN last_password_time timestamp without time zone', errCallback);
-                        if (!columns['temp_password_flag']) query('ALTER TABLE brtc_user_status ADD COLUMN temp_password_flag boolean', errCallback);
-                        if (!columns['token']) query('ALTER TABLE brtc_user_status ADD COLUMN token character varying(80)', errCallback);
-                        if (!columns['user_ip']) query('ALTER TABLE brtc_user_status ADD COLUMN user_ip character varying(80)', errCallback);
-
-                        if (doneCallback) doneCallback();
+                        return;
                     }
+                    var columns = {};
+                    for (var i in result) {
+                        columns[result[i].column_name] = true;
+                    }
+                    if (!columns['id']) query('ALTER TABLE brtc_user_status ADD COLUMN id character varying(80)', errCallback);
+                    if (!columns['last_login_time']) query('ALTER TABLE brtc_user_status ADD COLUMN last_login_time timestamp without time zone', errCallback);
+                    if (!columns['last_password_time']) query('ALTER TABLE brtc_user_status ADD COLUMN last_password_time timestamp without time zone', errCallback);
+                    if (!columns['temp_password_flag']) query('ALTER TABLE brtc_user_status ADD COLUMN temp_password_flag boolean', errCallback);
+                    if (!columns['token']) query('ALTER TABLE brtc_user_status ADD COLUMN token character varying(80)', errCallback);
+                    if (!columns['user_ip']) query('ALTER TABLE brtc_user_status ADD COLUMN user_ip character varying(80)', errCallback);
+
+                    if (doneCallback) doneCallback();
                 });
             },
             selectById: function (opt, errCallback, doneCallback) {

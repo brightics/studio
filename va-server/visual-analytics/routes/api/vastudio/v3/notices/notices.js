@@ -23,7 +23,9 @@ var listNotices = function (req, res) {
 /**공지사항 추가**/
 var createNotice = function (req, res) {
     var task = function (permissions) {
-        if (!req.body.id || !req.body.title || !req.body.content) return __BRTC_ERROR_HANDLER.sendError(res, '10103');
+        if (!req.body.id || !req.body.title || !req.body.content) {
+            return __BRTC_ERROR_HANDLER.sendError(res, '10103');
+        }
 
         var opt = {
             id: req.body.id,
@@ -33,7 +35,7 @@ var createNotice = function (req, res) {
             hits: 0
         };
         __BRTC_DAO.notice.create(opt, function (err) {
-            if (err.error.indexOf('duplicate key ') == 0) {
+            if (err.error.indexOf('duplicate key ') === 0) {
                 __BRTC_ERROR_HANDLER.sendError(res, 10101);
             } else {
                 __BRTC_ERROR_HANDLER.sendServerError(res, err);
@@ -41,6 +43,7 @@ var createNotice = function (req, res) {
         }, function (result) {
             res.sendStatus(200);
         });
+        return undefined;
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_NOTICE_CREATE, task);
 };
@@ -48,7 +51,9 @@ var createNotice = function (req, res) {
 /**공지사항 수정**/
 var updateNotice = function (req, res) {
     var task = function (permissions) {
-        if (!req.body.content) return __BRTC_ERROR_HANDLER.sendError(res, '10103');
+        if (!req.body.content) {
+            return __BRTC_ERROR_HANDLER.sendError(res, '10103');
+        }
 
         var opt = {
             id: req.params.noticeId,
@@ -66,6 +71,7 @@ var updateNotice = function (req, res) {
                 res.sendStatus(200);
             }
         });
+        return undefined;
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_NOTICE_UPDATE, task);
 };

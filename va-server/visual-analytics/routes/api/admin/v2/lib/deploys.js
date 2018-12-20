@@ -2,7 +2,8 @@ var router = __REQ_express.Router();
 var request = __REQ_request;
 
 var _executeInPermission = function (req, res, perm, task) {
-    var permHandler = __BRTC_PERM_HELPER.checkPermission(req, [__BRTC_PERM_HELPER.PERMISSION_RESOURCE_TYPES.DEPLOY], perm);
+    var permHandler = __BRTC_PERM_HELPER.checkPermission(req,
+        [__BRTC_PERM_HELPER.PERMISSION_RESOURCE_TYPES.DEPLOY], perm);
     permHandler.on('accept', task);
     permHandler.on('deny', function (permissions) {
         __BRTC_ERROR_HANDLER.sendNotAllowedError(res);
@@ -11,23 +12,6 @@ var _executeInPermission = function (req, res, perm, task) {
         __BRTC_ERROR_HANDLER.sendServerError(res, err);
     });
 };
-
-// user 권한 체크
-var getUserAuth = function (req, res) {
-    var opt;
-
-    if (req.session.userId) {
-        opt = {'user_id': req.session.userId, 'role_id': 'role_10101'};
-    }
-
-    // TODO
-    // dao.user.resource.role.selectByUser(opt, function (err) {
-    //     __BRTC_ERROR_HANDLER.sendServerError(res, err);
-    // }, function (result) {
-    //     res.json(result.length);
-    // });
-};
-
 
 var deleteDeploy = function (req, res) {
     var task = function (permissions) {
@@ -42,7 +26,7 @@ var deleteDeploy = function (req, res) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     res.json({success: true});
                 } else {
                     __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
@@ -60,7 +44,7 @@ var getAllDeploy = function (req, res) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 try {
                     res.json(JSON.parse(body).result);
                 } catch (ex) {
@@ -86,7 +70,7 @@ var getDownloadDeploy = function (req, res) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     try {
                         res.json(JSON.parse(body).result);
                     } catch (ex) {

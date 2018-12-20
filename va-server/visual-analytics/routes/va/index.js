@@ -1,25 +1,23 @@
-var router = __REQ_express.Router();
-var request = __REQ_request;
+const router = __REQ_express.Router();
 
-var ip = require('ip');
+const dirsToTags = require('../../lib/dirs-to-tags');
 
-var subPath = __BRTC_CONF['sub-path'] || '';
-var subPathUrl = subPath ? ('/' + subPath) : ('');
-var baseUrl = __BRTC_CONF['callback-host'] + subPathUrl + '/';
+const subPath = __BRTC_CONF['sub-path'] || '';
+const subPathUrl = subPath ? ('/' + subPath) : ('');
+const baseUrl = __BRTC_CONF['callback-host'] + subPathUrl + '/';
 
-var defaultDocsUrl = __BRTC_CONF['docs-url'] ? __BRTC_CONF['docs-url'] : 'docs.brightics.ai';
-var persistMode = __BRTC_CONF['persist-mode'] ? __BRTC_CONF['persist-mode'] : 'storage-mode';
-var autonomousAnalytics = __BRTC_CONF['autonomous-analytics'] ? __BRTC_CONF['autonomous-analytics'] : 'allowed';
+const defaultDocsUrl = __BRTC_CONF['docs-url'] ? __BRTC_CONF['docs-url'] : 'docs.brightics.ai';
+const persistMode = __BRTC_CONF['persist-mode'] ? __BRTC_CONF['persist-mode'] : 'storage-mode';
+const autonomousAnalytics = __BRTC_CONF['autonomous-analytics'] ? __BRTC_CONF['autonomous-analytics'] : 'allowed';
 
-var log4js = require('log4js');
-var log = log4js.getLogger('INDEX');
+const log4js = require('log4js');
 
-var MarkdownIt = require('markdown-it');
-var md = new MarkdownIt({
-    html: true
+const MarkdownIt = require('markdown-it');
+const md = new MarkdownIt({
+    html: true,
 }).use(require('markdown-it-ins'));
 
-var RESOURCE_TYPES = [
+const RESOURCE_TYPES = [
     __BRTC_PERM_HELPER.PERMISSION_RESOURCE_TYPES.AGENT,
     __BRTC_PERM_HELPER.PERMISSION_RESOURCE_TYPES.AUTHORIZATION,
     __BRTC_PERM_HELPER.PERMISSION_RESOURCE_TYPES.NOTICE,
@@ -28,194 +26,172 @@ var RESOURCE_TYPES = [
     __BRTC_PERM_HELPER.PERMISSION_RESOURCE_TYPES.DEPLOY,
     __BRTC_PERM_HELPER.PERMISSION_RESOURCE_TYPES.PUBLISH,
     __BRTC_PERM_HELPER.PERMISSION_RESOURCE_TYPES.UDF,
-    __BRTC_PERM_HELPER.PERMISSION_RESOURCE_TYPES.DATA
+    __BRTC_PERM_HELPER.PERMISSION_RESOURCE_TYPES.DATA,
 ];
 
-var getResourceTypes = function () {
-    var list = RESOURCE_TYPES;
-    var customPermissionFile = __REQ_path.join(__dirname, '../../permission-conf.json');
+const getResourceTypes = () => {
+    let list = RESOURCE_TYPES;
+    const customPermissionFile = __REQ_path.join(__dirname, '../../permission-conf.json');
     if (!__REQ_fs.existsSync(customPermissionFile)) {
         return list;
     } else {
-        var customPermissionsConf = require('../../permission-conf.json');
-        for (var i in customPermissionsConf['CUSTOM_PERMISSION_RESOURCE_TYPES']) {
-            if (list.indexOf(customPermissionsConf['CUSTOM_PERMISSION_RESOURCE_TYPES'][i]) == -1)
-                list.push(customPermissionsConf['CUSTOM_PERMISSION_RESOURCE_TYPES'][i]);
+        const customPermissionsConf = require('../../permission-conf.json');
+        for (let i in customPermissionsConf.CUSTOM_PERMISSION_RESOURCE_TYPES) {
+            if (list.indexOf(customPermissionsConf.CUSTOM_PERMISSION_RESOURCE_TYPES[i]) === -1) {
+                list.push(customPermissionsConf.CUSTOM_PERMISSION_RESOURCE_TYPES[i]);
+            }
         }
         return list;
     }
 };
 
-router.get('/', function (req, res, next) {
-    var userId = req.session.userId;
-    var permTask = function (permission) {
+router.get('/', (req, res, next) => {
+    const userId = req.session.userId;
+    const permTask = (permission) => {
         req.session.permissions = permission;
 
-        var permissions = req.session.permissions;
+        const permissions = req.session.permissions;
 
-        var promises = [];
-        var addons = [];
-        var dirs = [
+        let dirs = [
             __REQ_path.join(__dirname, '../../public/js/va/addonfunctions'),
-            __REQ_path.join(__dirname, '../../public/js/va/customjs')
+            __REQ_path.join(__dirname, '../../public/js/va/customjs'),
         ];
 
         if (__BRTC_CONF['ui-extension']) {
-            dirs.push(__REQ_path.join(__dirname, '../../public/extension/css'));
-            dirs.push(__REQ_path.join(__dirname, '../../public/extension/js'));
+            dirs = dirs.concat(
+                __REQ_path.join(__dirname, '../../public/extension/css'),
+                __REQ_path.join(__dirname, '../../public/extension/js')
+            );
         }
 
-        for (var i in dirs) {
-            if (__REQ_fs.existsSync(dirs[i])) {
-                (function (_path) {
-                    promises.push(new Promise(function (resolve, reject) {
-                        __REQ_fs.readdir(_path, function (err, files) {
-                            if (err) {
-                                reject(Error(err.message));
-                            } else {
-                                files.forEach(function (file) {
-                                    var srcDir = _path.substring(_path.lastIndexOf('public/') + 7, _path.length);
-                                    var line;
-                                    if (file.endsWith('.js')) {
-                                        line = '    <script src="' + srcDir + '/' + file + '"></script>';
-                                    } else if (file.endsWith('.css')) {
-                                        line = '    <link type="text/css" rel="stylesheet" href="' + srcDir + '/' + file + '"/>'
-                                    }
-                                    if (line) addons.push(line);
-                                });
-                                resolve('SUCCESS: ' + _path);
-                            }
-                        });
-                    }));
-                })(dirs[i].replace(/\\/gi, '/'));
-            } else {
-                __REQ_fs.mkdirSync(dirs[i]);
-            }
-        }
 
-        Promise.all(promises).then(function () {
-            var addModelList = (__BRTC_CONF['models']) ? __BRTC_CONF['models'] : [];
+        const renderIndex = (addons) => {
+            const addModelList = __BRTC_CONF.models ? __BRTC_CONF.models : [];
+            const title = __BRTC_CONF['meta-db'] && __BRTC_CONF['meta-db'].type === 'sqlite' ? 'Brightics Studio' : 'Brightics AI';
+            const useSpark = __BRTC_CONF['use-spark'] === false ? false : true;
 
             res.render('index', {
                 baseUrl: baseUrl,
                 userId: userId,
                 permissions: permissions,
-                addons: addons.join('\n'),
+                addons,
                 logLevel: log4js.getLogger('CLIENT').level.levelStr,
                 models: addModelList,
                 subPath: subPath,
                 docsUrl: defaultDocsUrl,
                 persistMode: persistMode,
                 autonomousAnalytics: autonomousAnalytics,
-                useSpark: (__BRTC_CONF['use-spark'] === false) ? (false) : (true),
-                title: (__BRTC_CONF['meta-db'] && __BRTC_CONF['meta-db'].type === 'sqlite') ? 'Brightics Studio' : 'Brightics AI'
+                useSpark,
+                title,
             });
-        }, function (error) {
-            next(error);
-        });
+        };
+
+        return dirsToTags(dirs)
+            .then(renderIndex)
+            .catch((err) => next(err));
     };
-    var permHandler = __BRTC_PERM_HELPER.checkPermission(req, getResourceTypes(), null);
+    const permHandler = __BRTC_PERM_HELPER.checkPermission(req, getResourceTypes(), null);
     permHandler.on('accept', permTask);
 });
 
-router.get('/multichart', function (req, res) {
-    var userId = req.session.userId;
-    var permissions = req.session.permissions;
+router.get('/multichart', (req, res) => {
+    const userId = req.session.userId;
+    const permissions = req.session.permissions;
 
     res.render('multichart', {
         baseUrl: baseUrl,
-        userId: userId, permissions: permissions
+        userId: userId, permissions: permissions,
     });
 });
 
-router.get('/popupchart', function (req, res) {
-    var userId = req.session.userId;
-    var permissions = req.session.permissions;
+router.get('/popupchart', (req, res) => {
+    const userId = req.session.userId;
+    const permissions = req.session.permissions;
 
     res.render('popupchart', {
         baseUrl: baseUrl,
-        userId: userId, permissions: permissions
+        userId: userId, permissions: permissions,
     });
 });
 
-router.get('/popupmodel', function (req, res) {
-    var userId = req.session.userId;
-    var permissions = req.session.permissions;
+router.get('/popupmodel', (req, res) => {
+    const userId = req.session.userId;
+    const permissions = req.session.permissions;
 
     res.render('popupmodel', {
         baseUrl: baseUrl,
-        userId: userId, permissions: permissions
+        userId: userId, permissions: permissions,
     });
 });
 
-router.get('/popupimage', function (req, res) {
-    var userId = req.session.userId;
-    var permissions = req.session.permissions;
+router.get('/popupimage', (req, res) => {
+    const userId = req.session.userId;
+    const permissions = req.session.permissions;
 
     res.render('popupimage', {
         baseUrl: baseUrl,
-        userId: userId, permissions: permissions
+        userId: userId, permissions: permissions,
     });
 });
 
-router.get('/readme', function (req, res) {
-    var readmeStr = __REQ_fs.readFileSync(__REQ_path.join(__dirname, '../../README.md'), 'utf-8');
+router.get('/readme', (req, res) => {
+    const readmeStr = __REQ_fs.readFileSync(__REQ_path.join(__dirname, '../../README.md'), 'utf-8');
     res.render('readme', {
         baseUrl: baseUrl,
         content: md.render(readmeStr),
-        subPath: subPath
+        subPath: subPath,
     });
 });
 
-router.get('/readme_backup', function (req, res) {
-    var readmeStr = __REQ_fs.readFileSync(__REQ_path.join(__dirname, '../../README_BACKUP.md'), 'utf-8');
+router.get('/readme_backup', (req, res) => {
+    const readmeStr = __REQ_fs.readFileSync(__REQ_path.join(__dirname, '../../README_BACKUP.md'), 'utf-8');
     res.render('readme', {
         baseUrl: baseUrl,
         content: md.render(readmeStr),
-        subPath: subPath
+        subPath: subPath,
     });
 });
 
-router.get('/tethys', function (req, res, next) {
+router.get('/tethys', (req, res, next) => {
     res.render('tethys-demo');
 });
 
-router.get('/correlation-chart', function (req, res) {
+router.get('/correlation-chart', (req, res) => {
     res.render('correlation-chart');
 });
 
-router.get('/cron-expression', function (req, res) {
+router.get('/cron-expression', (req, res) => {
     res.render('utils/cron-expression.ejs');
 });
 
-router.get('/private-policy', function (req, res) {
+router.get('/private-policy', (req, res) => {
     res.render('utils/private-policy.ejs');
 });
 
-router.get('/apidoc', function (req, res) {
+router.get('/apidoc', (req, res) => {
     res.sendFile(__REQ_path.join(__dirname, '../../apidoc/index.html'));
 });
 
-router.get('/detail-popup', function (req, res) {
+router.get('/detail-popup', (req, res) => {
     res.render('detail-popup');
 });
 
-router.get('/pdf', function (req, res) {
-    var userId = req.session.userId;
+router.get('/pdf', (req, res) => {
+    const userId = req.session.userId;
     res.render('export-pdf', {
         baseUrl: baseUrl,
         userId: userId,
         logLevel: log4js.getLogger('CLIENT').level.levelStr,
-        subPath: subPath
+        subPath: subPath,
     });
 });
 
-router.get('/current-tasks', function (req, res) {
-    var userId = req.session.userId;
+router.get('/current-tasks', (req, res) => {
+    const userId = req.session.userId;
     res.render('current-tasks', {
         baseUrl: baseUrl,
         userId: userId,
-        subPath: subPath
+        subPath: subPath,
     });
 });
 

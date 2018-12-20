@@ -11,13 +11,17 @@ var pool = new pg.Pool({
 const EXPIRE_TOKEN_SECOND = 86400;
 const DDL_CHECK_TABLE = 'SELECT column_name, data_type FROM information_schema.columns WHERE table_name = $1';
 
-var query = function (sql, args, errCallback, doneCallback) {
+const fnify = (fn) => fn && typeof fn === 'function' ? fn : function () { };
+
+var query = function (sql, args, _errCallback, _doneCallback) {
+    const errCallback = fnify(_errCallback);
+    const doneCallback = fnify(_doneCallback);
     pool.connect(function (err, client, done) {
 
         var handleError = function (err) {
             if (err) {
                 if (client) done(client);
-                if (errCallback) errCallback({
+                errCallback({
                     code: err.code,
                     message: err.message,
                     error: err.message,
@@ -58,7 +62,7 @@ var batchUpdate = function (sql, records, errCallback, doneCallback) {
                 count++;
                 console.log(err);
                 next(null, affected);
-            }, function (result) {
+            }, function (result, ...args) {
                 count++;
                 affected += result;
                 next(null, affected);
@@ -66,21 +70,22 @@ var batchUpdate = function (sql, records, errCallback, doneCallback) {
         },
         function (err, n) {
             if (err) {
-                if (errCallback) errCallback(err);
+                errCallback(err);
             } else {
-                if (doneCallback) doneCallback(n);
+                doneCallback(n);
             }
         }
     );
 };
 
-var transaction = function (executeCallback, errCallback, doneCallback) {
+var transaction = function (executeCallback, _errCallback, _doneCallback) {
+    const errCallback = fnify(_errCallback);
+    const doneCallback = fnify(_doneCallback);
     pool.connect(function (err, client, done) {
-
         var handleError = function (err) {
             if (err) {
                 if (client) done(client);
-                if (errCallback) errCallback({
+                errCallback({
                     code: err.code,
                     message: err.message,
                     error: err.message

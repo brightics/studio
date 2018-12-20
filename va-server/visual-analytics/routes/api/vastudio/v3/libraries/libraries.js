@@ -9,7 +9,7 @@ var getMyLibrary = function (userId, errCallback, doneCallback) {
     };
 
     __BRTC_DAO.library.selectById(opt, errCallback, function (result) {
-        if (result.length == 0) {
+        if (result.length === 0) {
             __BRTC_DAO.library.create(opt, errCallback, function (result) {
                 __BRTC_DAO.library.selectById(opt, errCallback, doneCallback);
             });

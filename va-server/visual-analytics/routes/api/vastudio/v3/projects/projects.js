@@ -33,7 +33,7 @@ var createProject = function (req, res) {
     }, function (result) {
         if (result.length < 100) {
             __BRTC_DAO.project.create(opt, function (err) {
-                if (err.error.indexOf('duplicate key ') == 0) {
+                if (err.error.indexOf('duplicate key ') === 0) {
                     __BRTC_ERROR_HANDLER.sendError(res, 10101);
                 } else {
                     __BRTC_ERROR_HANDLER.sendServerError(res, err);
@@ -45,6 +45,7 @@ var createProject = function (req, res) {
             __BRTC_ERROR_HANDLER.sendError(res, 10201);
         }
     });
+    return undefined;
 };
 
 var getProject = function (req, res) {
@@ -82,6 +83,7 @@ var updateProject = function (req, res) {
                 res.sendStatus(200);
             }
         });
+        return undefined;
     };
     projectPermission.execute(req.params.project, req.apiUserId, PERMISSION.PROJECT.UPDATE, res, task);
 };

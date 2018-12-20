@@ -8,9 +8,37 @@ var ip = require('ip');
 var URI_ACCOUNT_SERVER = 'http://localhost:3000';
 
 const CALLBACK_HOST =
-    (process.env.NODE_ENV == 'development') ?
+    (process.env.NODE_ENV === 'development') ?
         ('http://' + ip.address() + ':' + __BRTC_CONF.port + subPathUrl) :
         (__BRTC_CONF['callback-host'] + subPathUrl);
+
+var setBearerToken = function (options, token) {
+    if (options.auth) {
+        options.auth.bearer = token;
+    } else {
+        options.auth = {
+            bearer: token
+        }
+    }
+};
+
+var getAccountSubPath = function () {
+    return __BRTC_CONF['account-sub-path'] ? '/' + __BRTC_CONF['account-sub-path'] : '';
+};
+
+var getAccountServer = function () {
+    return __BRTC_CONF['login-url'] + getAccountSubPath();
+};
+
+var getAccountHostName = function () {
+    return __BRTC_CONF['account-server'] + getAccountSubPath();
+};
+
+var getAccountAPI = function (api) {
+    return __BRTC_AUTH_CONF['account-server'][api];
+};
+
+
 
 var createRequestOptions = function (method, url, token) {
     var options = {
@@ -27,16 +55,6 @@ var createRequestOptions = function (method, url, token) {
         setBearerToken(options, token);
     }
     return options;
-};
-
-var setBearerToken = function (options, token) {
-    if (options.auth) {
-        options.auth.bearer = token;
-    } else {
-        options.auth = {
-            bearer: token
-        }
-    }
 };
 
 exports.env = function (options) {
@@ -57,6 +75,17 @@ exports.getSignOutURL = function (redirectURL) {
     return accountServerSignOutUrl;
 };
 
+var createRedirectQuery = function (pageList) {
+    var page;
+    var result = pageList[0];
+
+    for (var i = 1; i < pageList.length; i++) {
+        page = pageList[i];
+        result = result + '?redirect=' + page;
+    }
+    return result;
+};
+
 var goToLoginPage = function (req, res, redirectPage) {
     var redirectPageList = [
         CALLBACK_HOST + '/auth/brightics-user'
@@ -69,32 +98,6 @@ var goToLoginPage = function (req, res, redirectPage) {
     return res.redirect(getAccountServer() + signOutBeforeLogin + '?redirect=' + encodeURIComponent(redirectPageUrlQuery))
 };
 
-var createRedirectQuery = function (pageList) {
-    var page;
-    var result = pageList[0];
-
-    for (var i = 1; i < pageList.length; i++) {
-        page = pageList[i];
-        result = result + '?redirect=' + page;
-    }
-    return result;
-};
-
-var getAccountServer = function () {
-    return __BRTC_CONF['login-url'] + getAccountSubPath();
-};
-
-var getAccountHostName = function () {
-    return __BRTC_CONF['account-server'] + getAccountSubPath();
-};
-
-var getAccountSubPath = function () {
-    return __BRTC_CONF['account-sub-path'] ? '/' + __BRTC_CONF['account-sub-path'] : '';
-};
-
-var getAccountAPI = function (api) {
-    return __BRTC_AUTH_CONF['account-server'][api];
-};
 
 module.exports.goToLoginPage = goToLoginPage;
 module.exports.getAccountServer = getAccountServer;

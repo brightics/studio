@@ -61,7 +61,7 @@ const FILE_CREATE_SQLITE = `
         $6,
         datetime('now'),
         $7,
-        datetime('now'), 
+        datetime('now'),
         strftime('%Y_%H%M%f', current_timestamp),
         $8,
         $9)
@@ -73,8 +73,8 @@ const FILE_UPDATE_DEFAULT = '' +
     ' WHERE id=$7 AND project_id=$8 AND (event_key=$9 OR event_key IS NULL)';
 
 const FILE_UPDATE_SQLITE = `
-    UPDATE brtc_file 
-       SET (label, contents, description, updater, update_time, event_key, type, tag) 
+    UPDATE brtc_file
+       SET (label, contents, description, updater, update_time, event_key, type, tag)
         = ($1, $2, $3, $4, datetime('now'), strftime('%Y_%H%M%f', current_timestamp), $5, $6)
      WHERE id=$7 AND project_id=$8 AND (event_key=$9 OR event_key IS NULL)
 `;
@@ -129,23 +129,23 @@ module.exports = {
     file: {
         checkSchema: function (errCallback, doneCallback) {
             query(DDL_CHECK_TABLE, ['brtc_file'], errCallback, function (result) {
-                if (result.length == 0) {
+                if (result.length === 0) {
                     query(DDL_CREATE_FILE_TABLE, [], errCallback, doneCallback);
-                } else {
-                    var columns = {};
-                    for (var i in result) {
-                        columns[result[i].column_name] = true;
-                    }
-                    if (!columns['creator']) query('ALTER TABLE brtc_file ADD COLUMN creator character varying(80)', errCallback);
-                    if (!columns['create_time']) query('ALTER TABLE brtc_file ADD COLUMN create_time timestamp', errCallback);
-                    if (!columns['updater']) query('ALTER TABLE brtc_file ADD COLUMN updater character varying(80)', errCallback);
-                    if (!columns['update_time']) query('ALTER TABLE brtc_file ADD COLUMN update_time timestamp', errCallback);
-                    if (!columns['event_key']) query('ALTER TABLE brtc_file ADD COLUMN event_key character varying(40)', errCallback);
-                    if (!columns['type']) query('ALTER TABLE brtc_file ADD COLUMN type character varying(40)', errCallback);
-                    if (!columns['tag']) query('ALTER TABLE brtc_file ADD COLUMN tag character varying(80)', errCallback);
-                    if (!columns['from_version']) query('ALTER TABLE brtc_file ADD COLUMN from_version character varying(80) DEFAULT \'0.0\'', errCallback);
-                    if (doneCallback) doneCallback(result.rows, result, DDL_CHECK_TABLE, ['brtc_file']);
+                    return;
                 }
+                var columns = {};
+                for (var i in result) {
+                    columns[result[i].column_name] = true;
+                }
+                if (!columns['creator']) query('ALTER TABLE brtc_file ADD COLUMN creator character varying(80)', errCallback);
+                if (!columns['create_time']) query('ALTER TABLE brtc_file ADD COLUMN create_time timestamp', errCallback);
+                if (!columns['updater']) query('ALTER TABLE brtc_file ADD COLUMN updater character varying(80)', errCallback);
+                if (!columns['update_time']) query('ALTER TABLE brtc_file ADD COLUMN update_time timestamp', errCallback);
+                if (!columns['event_key']) query('ALTER TABLE brtc_file ADD COLUMN event_key character varying(40)', errCallback);
+                if (!columns['type']) query('ALTER TABLE brtc_file ADD COLUMN type character varying(40)', errCallback);
+                if (!columns['tag']) query('ALTER TABLE brtc_file ADD COLUMN tag character varying(80)', errCallback);
+                if (!columns['from_version']) query('ALTER TABLE brtc_file ADD COLUMN from_version character varying(80) DEFAULT \'0.0\'', errCallback);
+                if (doneCallback) doneCallback(result.rows, result, DDL_CHECK_TABLE, ['brtc_file']);
             });
         },
         selectByProject: function (opt, errCallback, doneCallback) {

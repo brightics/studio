@@ -55,24 +55,24 @@ module.exports = {
         user: {
             checkSchema: function (errCallback, doneCallback) {
                 query(DDL_CHECK_TABLE, ['brtc_confirmation_user'], errCallback, function (result) {
-                    if (result.length == 0) {
+                    if (result.length === 0) {
                         query(DDL_CREATE_CONFIRMATION_USER_TABLE, [], errCallback, doneCallback);
-                    } else {
-                        var columns = {};
-                        for (var i in result) {
-                            columns[result[i].column_name] = true;
-                        }
-                        if (!columns['user_id']) query('ALTER TABLE brtc_confirmation_user ADD COLUMN user_id character varying(80)', errCallback);
-                        if (!columns['confirmation_token']) query('ALTER TABLE brtc_confirmation_user ADD COLUMN confirmation_token character varying(256)', errCallback);
-                        if (!columns['confirmation_status']) query('ALTER TABLE brtc_confirmation_user ADD COLUMN confirmation_status character varying(5)', errCallback);
-                        if (!columns['confirmed_at']) query('ALTER TABLE brtc_confirmation_user ADD COLUMN confirmed_at timestamp', errCallback);
-                        if (!columns['confirmation_sent_at']) query('ALTER TABLE brtc_confirmation_user ADD COLUMN confirmation_sent_at timestamp', errCallback);
-                        if (!columns['password']) query('ALTER TABLE brtc_confirmation_user ADD COLUMN password character varying(10000) ', errCallback);
-                        if (!columns['name']) query('ALTER TABLE brtc_confirmation_user ADD COLUMN name character varying(80)', errCallback);
-                        if (!columns['email']) query('ALTER TABLE brtc_confirmation_user ADD COLUMN email character varying(80);', errCallback);
-
-                        if (doneCallback) doneCallback();
+                        return;
                     }
+                    var columns = {};
+                    for (var i in result) {
+                        columns[result[i].column_name] = true;
+                    }
+                    if (!columns['user_id']) query('ALTER TABLE brtc_confirmation_user ADD COLUMN user_id character varying(80)', errCallback);
+                    if (!columns['confirmation_token']) query('ALTER TABLE brtc_confirmation_user ADD COLUMN confirmation_token character varying(256)', errCallback);
+                    if (!columns['confirmation_status']) query('ALTER TABLE brtc_confirmation_user ADD COLUMN confirmation_status character varying(5)', errCallback);
+                    if (!columns['confirmed_at']) query('ALTER TABLE brtc_confirmation_user ADD COLUMN confirmed_at timestamp', errCallback);
+                    if (!columns['confirmation_sent_at']) query('ALTER TABLE brtc_confirmation_user ADD COLUMN confirmation_sent_at timestamp', errCallback);
+                    if (!columns['password']) query('ALTER TABLE brtc_confirmation_user ADD COLUMN password character varying(10000) ', errCallback);
+                    if (!columns['name']) query('ALTER TABLE brtc_confirmation_user ADD COLUMN name character varying(80)', errCallback);
+                    if (!columns['email']) query('ALTER TABLE brtc_confirmation_user ADD COLUMN email character varying(80);', errCallback);
+
+                    if (doneCallback) doneCallback();
                 });
             },
             selectById: function (opt, errCallback, doneCallback) {

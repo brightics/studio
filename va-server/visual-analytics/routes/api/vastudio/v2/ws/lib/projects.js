@@ -29,7 +29,7 @@ exports.createProject = function (req, res) {
     }, function (result) {
         if (result.length < 100) {
             __BRTC_DAO.project.create(opt, function (err) {
-                if (err.error.indexOf('duplicate key ') == 0) {
+                if (err.error.indexOf('duplicate key ') === 0) {
                     __BRTC_ERROR_HANDLER.sendError(res, 34011);
                 } else {
                     __BRTC_ERROR_HANDLER.sendServerError(res, err);

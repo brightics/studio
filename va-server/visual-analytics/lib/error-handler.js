@@ -53,6 +53,14 @@ const ERROR_CODE = {
 };
 
 var log = log4js.getLogger('ERROR-HANDLER');
+
+var writeLog = function (res, error) {
+    var ip = res.req.header('x-forwarded-for') || res.req.connection.remoteAddress;
+    var message = '[' + ip + '] ' + error.message;
+    if (error.stack) message = '[' + ip + '] ' + error.stack;
+    log.error(message);
+};
+
 var sendMessage = function (res, messages, status) {
     res.status(status || 400).json(messages);
     var error = new Error(messages.errors[0].message, messages.errors[0].code || messages.errors[0].errorCode);
@@ -107,14 +115,14 @@ var sendServerError = function (res, error) {
             {'code': error.errorCode || 500, 'message': error.message || error}
         ]
     };
-    if (messages.errors[0].message == 'ETIMEDOUT') {
+    if (messages.errors[0].message === 'ETIMEDOUT') {
         messages.errors[0].message = 'Connection attempt timed out.';
     }
 
     if (error.stack) messages.errors[0].detailMessage = error.stack;
 
     res.status(500).json(messages);
-    var error = new Error(messages.errors[0].message, messages.errors[0].code || messages.errors[0].errorCode);
+    error = new Error(messages.errors[0].message, messages.errors[0].code || messages.errors[0].errorCode);
     if (messages.errors[0].detailMessage) error.stack = messages.errors[0].detailMessage;
     writeLog(res, error);
 };
@@ -129,7 +137,7 @@ var checkParams = function (arr) {
                 missing_params.push(param);
             }
         }
-        if (missing_params.length == 0) {
+        if (missing_params.length === 0) {
             next();
         } else {
             sendError(res, null, 'Missing parameter(s): ' + missing_params.join(', '));
@@ -137,11 +145,29 @@ var checkParams = function (arr) {
     };
 };
 
-var writeLog = function (res, error) {
-    var ip = res.req.header('x-forwarded-for') || res.req.connection.remoteAddress;
-    var message = '[' + ip + '] ' + error.message;
-    if (error.stack) message = '[' + ip + '] ' + error.stack;
-    log.error(message);
+const adjustErrorMessage = ({ result, resultCode }) => {
+    if (parseInt(resultCode, 10) === 2104) {
+        return 'Server is unavailable. Please contact an administrator. (Error Code: 2104)';
+    }
+
+    if (result === 'This schedule doesn\'t added') {
+        return 'Cannot create a schedule.';
+    }
+
+    if (result.indexOf('UPDATE brtc_schedule') > -1) {
+        return 'Cannot udate a schedule.';
+    }
+
+    if (result.indexOf('BrighticsServerException:') > -1) {
+        return result.substring(
+            result.indexOf('BrighticsServerException:')
+            + 'BrighticsServerException:'.length).trim();
+    }
+
+    if (result.substring(0, 27) === 'Cannot resolve: Variable opt') {
+        return 'The links that connect into the OPT model should be selected to run.';
+    }
+    return result;
 };
 
 var parseError = function (body) {
@@ -153,28 +179,7 @@ var parseError = function (body) {
         }
 
         if (json.resultCode && json.result) {
-            if (json.resultCode && json.resultCode == '2104') {
-                json.result = 'Server is unavailable. Please contact an administrator. (Error Code: 2104)';
-            }
-
-            if (json.result == 'This schedule doesn\'t added') {
-                json.result = 'Cannot create a schedule.';
-            }
-
-            if (json.result.indexOf('UPDATE brtc_schedule') > -1) {
-                json.result = 'Cannot udate a schedule.';
-            }
-
-            if (json.result.indexOf('BrighticsServerException:') > -1) {
-                json.result = json.result.substring(
-                    json.result.indexOf('BrighticsServerException:')
-                    + 'BrighticsServerException:'.length).trim();
-            }
-
-            if (json.result.substring(0, 27) == 'Cannot resolve: Variable opt') {
-                json.result = 'The links that connect into the OPT model should be selected to run.';
-            }
-
+            json.result = adjustErrorMessage(json);
             return {
                 'errors': [{
                     'code': json.resultCode,

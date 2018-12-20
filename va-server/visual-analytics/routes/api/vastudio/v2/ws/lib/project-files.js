@@ -41,7 +41,7 @@ exports.createFile = function (req, res) {
                     __BRTC_ERROR_HANDLER.sendError(res, 34012);
                 }, function (result) {
                     __BRTC_DAO.file.create(opt, function (err) {
-                        if (err.error.indexOf('duplicate key ') == 0) {
+                        if (err.error.indexOf('duplicate key ') === 0) {
                             __BRTC_ERROR_HANDLER.sendError(res, 34011);
                         } else {
                             __BRTC_ERROR_HANDLER.sendServerError(res, err);
@@ -97,7 +97,7 @@ exports.updateFile = function (req, res) {
             __BRTC_DAO.file.update(opt, function (err) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, err);
             }, function (rowCount) {
-                if (rowCount == 0) {
+                if (rowCount === 0) {
                     __BRTC_ERROR_HANDLER.sendError(res, 32031);
                 } else {
                     __BRTC_DAO.file.selectById(opt, function (err) {
