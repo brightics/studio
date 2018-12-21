@@ -56,7 +56,7 @@ def one_hot_encoder(table, group_by=None, **params):
         return _one_hot_encoder(table, **params)
 
 
-def _one_hot_encoder(table, input_cols, prefix='list', prefix_list=None, suffix='index', n_values='auto', categorical_features='all', sparse=True, handle_unknown='error'):
+def _one_hot_encoder(table, input_cols, prefix='list', prefix_list=None, suffix='index', n_values='auto', categorical_features='all', sparse=True, handle_unknown='error', drop_last=False):
     out_table = table.copy()
     sparse = False
     enc_list = []
@@ -85,7 +85,14 @@ def _one_hot_encoder(table, input_cols, prefix='list', prefix_list=None, suffix=
             else:  
                 for stri in np.unique(out_table[col_name].values):
                     new_col_names.append(col_name + '_' + stri)
-        out_table = pd.concat([out_table.reset_index(drop=True), pd.DataFrame(enc.fit_transform(le.fit_transform(out_table[col_name]).reshape(-1, 1)), columns=new_col_names)], axis=1)
+                out_table = pd.concat([out_table.reset_index(drop=True), pd.DataFrame(enc.fit_transform(le.fit_transform(out_table[col_name]).reshape(-1, 1)), columns=new_col_names)], axis=1)
+        
+        transformed_table = pd.DataFrame(enc.fit_transform(le.fit_transform(out_table[col_name]).reshape(-1, 1)), columns=new_col_names)
+        if drop_last:
+            del new_col_names[-1]
+        for new_col_name in new_col_names:
+            out_table[new_col_name] = transformed_table[new_col_name]
+            
         enc_list.append(enc)
         le_list.append(le)
         prefix_list_index = prefix_list_index + 1
@@ -101,6 +108,7 @@ def _one_hot_encoder(table, input_cols, prefix='list', prefix_list=None, suffix=
     out_model['prefix'] = prefix
     out_model['prefix_list'] = prefix_list
     out_model['suffix'] = suffix
+    out_model['drop_last'] = drop_last
     
     return {'out_table' : out_table, 'model' : out_model}
 
@@ -134,6 +142,8 @@ def _one_hot_encoder_model(table, model):
                 for stri in np.unique(out_table[col_name].values):
                     new_col_names.append(col_name + '_' + stri)
         transformed_table = pd.DataFrame(model['one_hot_encoder_list'][i].transform(model['label_encoder_list'][i].transform(out_table[col_name]).reshape(-1, 1)), columns=new_col_names)
+        if drop_last:
+            del new_col_names[-1]
         for new_col_name in new_col_names:
             out_table[new_col_name] = transformed_table[new_col_name]
             
