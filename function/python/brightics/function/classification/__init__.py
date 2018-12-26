@@ -8,3 +8,4 @@ from .logistic_regression import logistic_regression_train
 from .logistic_regression import logistic_regression_predict
 from .naive_bayes_classification import naive_bayes_train
 from .naive_bayes_classification import naive_bayes_predict
+from .knn_classification import knn_classification

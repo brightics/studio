@@ -35,10 +35,13 @@ https://en.wikipedia.org/wiki/Tf-idf
    - Value type : Integer
 7. **Vocabulary Column Name**: Vocabulary column name
    - Value type : String
+   - Default : vocabulary
 8. **Index Column Name**: Index column name
    - Value type : String
+   - Default : index
 9. **Frequency Column Name**: Frequency column name
    - Value type : String
+   - Default : frequency
 
 #### Outputs
 1. **frequency_table**: table
@@ -64,10 +67,13 @@ https://en.wikipedia.org/wiki/Tf-idf
    - Value type : Integer
 7. **vocabulary_col**: Vocabulary column name
    - Value type : String
+   - Default : vocabulary
 8. **index_col**: Index column name
    - Value type : String
+   - Default : index
 9. **frequency_col**: Frequency column name
    - Value type : String
+   - Default : frequency
 
 #### Outputs
 1. **frequency_table**: table

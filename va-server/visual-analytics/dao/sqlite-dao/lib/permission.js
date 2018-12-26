@@ -60,7 +60,7 @@ module.exports = {
     permission: {
         checkSchema: function (errCallback, doneCallback) {
             query(DDL_CHECK_TABLE, ['brtc_permission'], errCallback, function (result) {
-                if (result.length == 0) {
+                if (result.length === 0) {
                     query(DDL_CREATE_PERMISSION_TABLE, [], errCallback, function () {
                         var records = [];
                         records.push(['perm_proj_create', 'project', 'Create a project']);
@@ -115,7 +115,7 @@ module.exports = {
                         records.push(['perm_datasource_update', 'datasource', 'Update a datasource']);
                         records.push(['perm_datasource_delete', 'datasource', 'Delete a datasource']);
 
-                        if (__BRTC_CONF['use-monitoring'] && process.platform == 'linux') {
+                        if (__BRTC_CONF['use-monitoring'] && process.platform === 'linux') {
                             records.push(['perm_monitoring_read', 'monitoring', 'Read a monitoring']);
                         }
 
@@ -132,8 +132,8 @@ module.exports = {
                     });
                 } else {
                     query('select * from brtc_permission where resource_type = \'monitoring\'', [], errCallback, function (result) {
-                        if (__BRTC_CONF['use-monitoring'] && process.platform == 'linux') {
-                            if(result.length == 0 ) {
+                        if (__BRTC_CONF['use-monitoring'] && process.platform === 'linux') {
+                            if(result.length === 0 ) {
                                 var records = [];
                                 records.push(['perm_monitoring_read', 'monitoring', 'Read a monitoring']);
 
@@ -148,7 +148,7 @@ module.exports = {
                     });
 
                     query('select * from brtc_permission where resource_type = \'datasource\'', [], errCallback, function (result) {
-                        if (result.length == 0) {
+                        if (result.length === 0) {
                             var records = [];
                             records.push(['perm_datasource_create', 'datasource', 'Create a datasource']);
                             records.push(['perm_datasource_read', 'datasource', 'Read a datasource']);
@@ -162,7 +162,7 @@ module.exports = {
                     });
 
                     query('select * from brtc_permission where resource_type = \'deploy\'', [], errCallback, function (result) {
-                        if (result.length == 0) {
+                        if (result.length === 0) {
                             var records = [];
                             records.push(['perm_deploy_create', 'deploy', 'Create a deploy']);
                             records.push(['perm_deploy_read', 'deploy', 'Read a deploy']);
@@ -176,7 +176,7 @@ module.exports = {
                     });
 
                     query('select * from brtc_permission where resource_type = \'publish\'', [], errCallback, function (result) {
-                        if (result.length == 0) {
+                        if (result.length === 0) {
                             var records = [];
                             records.push(['perm_publish_create', 'publish', 'Create a publish']);
                             records.push(['perm_publish_read', 'publish', 'Read a publish']);
@@ -189,7 +189,7 @@ module.exports = {
                     });
 
                     query('select * from brtc_permission where permission_id in (\'perm_schedule_read_my\', \'perm_publish_read_my\')', [], errCallback, function (result) {
-                        if (result.length == 0) {
+                        if (result.length === 0) {
                             var records = [];
                             records.push(['perm_schedule_read_my', 'schedule', 'Create a my publish']);
                             records.push(['perm_publish_read_my', 'publish', 'Read a my publish']);

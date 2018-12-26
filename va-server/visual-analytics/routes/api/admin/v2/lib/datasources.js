@@ -34,7 +34,7 @@ var getDbType = function (req, res) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     res.json(JSON.parse(body));
                 } else {
                     __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
@@ -54,7 +54,7 @@ var getDatasource = function (req, res) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     res.json(getPasswordDeletedDatasource(JSON.parse(body)));
                 } else {
                     // __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
@@ -76,7 +76,7 @@ var listDatasource = function (req, res) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     res.json(JSON.parse(body).map(getPasswordDeletedDatasource));
                 } else {
                     __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
@@ -96,7 +96,7 @@ var createDatasource = function (req, res) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     res.json(body);
                 } else {
                     __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
@@ -116,7 +116,7 @@ var updateDatasource = function (req, res) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     res.json({success: true});
                 } else {
                     __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
@@ -136,7 +136,7 @@ var deleteDatasource = function (req, res) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     res.json({success: true});
                 } else {
                     __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
@@ -156,7 +156,7 @@ var deleteDatasources = function (req, res) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     res.json({success: true});
                 } else {
                     __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));

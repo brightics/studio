@@ -3,6 +3,16 @@ var path = __REQ_path;
 
 var URI_API_SERVER = 'http://localhost:3333';
 
+var setBearerToken = function (options, token) {
+    if (options.auth) {
+        options.auth.bearer = token;
+    } else {
+        options.auth = {
+            bearer: token
+        }
+    }
+};
+
 var createRequestOptions = function (method, url, token) {
     var options = {
         url: URI_API_SERVER + url,
@@ -18,16 +28,6 @@ var createRequestOptions = function (method, url, token) {
         setBearerToken(options, token);
     }
     return options;
-};
-
-var setBearerToken = function (options, token) {
-    if (options.auth) {
-        options.auth.bearer = token;
-    } else {
-        options.auth = {
-            bearer: token
-        }
-    }
 };
 
 var proxy = function (req, res) {

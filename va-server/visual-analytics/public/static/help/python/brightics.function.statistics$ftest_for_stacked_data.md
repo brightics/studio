@@ -25,16 +25,19 @@ https://en.wikipedia.org/wiki/F-test_of_equality_of_variances
 
 #### Parameters
 1. **Response Columns**<b style="color:red">*</b>: 
-   - Allowed column type : Integer, Long, Float, Decimal, Double
+   - Allowed column type : Integer, Long, Float, Double
 2. **Factor Column**<b style="color:red">*</b>: 
-   - Allowed column type : String, Integer, Double, Long, Float, Decimal, Boolean
+   - Allowed column type : String, Integer, Double, Long, Float, Boolean
 3. **Alternatives**: Array[String] Alternative hypothesis. "two_sided","less","greater" are possible. 
 4. **Confidence Level**: Confidence level. Default: 0.95
    - Value type : Double
-5. **First**: The first label in the label column
+   - Default : 0.95 (0 <= value <= 1)
+5. **First**<b style="color:red">*</b>: The first label in the label column
    - Value type : String
-6. **Second**: The second label in the label column
+   - Default : Enter value
+6. **Second**<b style="color:red">*</b>: The second label in the label column
    - Value type : String
+   - Default : Enter value
 
 #### Outputs
 1. **model**: model
@@ -46,16 +49,19 @@ https://en.wikipedia.org/wiki/F-test_of_equality_of_variances
 
 #### Parameters
 1. **response_cols**<b style="color:red">*</b>: 
-   - Allowed column type : Integer, Long, Float, Decimal, Double
+   - Allowed column type : Integer, Long, Float, Double
 2. **factor_col**<b style="color:red">*</b>: 
-   - Allowed column type : String, Integer, Double, Long, Float, Decimal, Boolean
+   - Allowed column type : String, Integer, Double, Long, Float, Boolean
 3. **alternatives**: Array[String] Alternative hypothesis. "two_sided","less","greater" are possible. 
 4. **confi_level**: Confidence level. Default: 0.95
    - Value type : Double
-5. **first**: The first label in the label column
+   - Default : 0.95 (0 <= value <= 1)
+5. **first**<b style="color:red">*</b>: The first label in the label column
    - Value type : String
-6. **second**: The second label in the label column
+   - Default : Enter value
+6. **second**<b style="color:red">*</b>: The second label in the label column
    - Value type : String
+   - Default : Enter value
 
 #### Outputs
 1. **model**: model

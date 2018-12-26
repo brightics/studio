@@ -20,10 +20,13 @@ Predict data using a logistic regression model.
 #### Parameters
 1. **Prediction Column Name**: Prediction Column Name
    - Value type : String
+   - Default : prediction
 2. **Probability Column Prefix**: Probability Column Name
    - Value type : String
+   - Default : probability
 3. **Log Probability Column Prefix**: Log Probability Column Name
    - Value type : String
+   - Default : log_probability
 4. **Suffix Type**: Choose suffix type.
    - Available items
       - Index (default)
@@ -42,10 +45,13 @@ Predict data using a logistic regression model.
 #### Parameters
 1. **prediction_col**: Prediction Column Name
    - Value type : String
+   - Default : prediction
 2. **probability_col**: Probability Column Name
    - Value type : String
+   - Default : probability
 3. **log_probability_col**: Log Probability Column Name
    - Value type : String
+   - Default : log_probability
 4. **suffix**: Choose suffix type.
    - Available items
       - index (default)

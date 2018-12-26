@@ -11,7 +11,7 @@ var traceLog = function (req, res) {
 
     res.json({success: true}); // Logging 하는 시간이 오래 걸림. Logging 성공여부와 관계없이 success return
     try {
-        if (req.body.category == 'Chart') chartLogger[req.body.level](message);
+        if (req.body.category === 'Chart') chartLogger[req.body.level](message);
         else clientLogger[req.body.level](message);
     } catch (e) {
         // do nothing

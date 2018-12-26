@@ -25,6 +25,7 @@ Capitalize Variable returns a copy of the string in which all case-based charact
       - Lowercase 
 3. **Suffix of Out Column Name **: Suffix of the input column name to be newly generated (default = _upper for Uppercase mode, _lower for Lowercase mode)
    - Value type : String
+   - Default : _upper (or _lower)
 
 #### Outputs
 1. **out_table**: table
@@ -42,6 +43,7 @@ Capitalize Variable returns a copy of the string in which all case-based charact
       - lower
 3. **out_col_suffix**: Suffix of the input column name to be newly generated (default = _upper for Uppercase mode, _lower for Lowercase mode)
    - Value type : String
+   - Default : _upper (or _lower)
 
 #### Outputs
 1. **out_table**: table

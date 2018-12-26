@@ -5,6 +5,16 @@ var request = __REQ_request;
 
 var URI_MONITOR_SERVER = 'http://localhost:9100';
 
+var setBearerToken = function (options, token) {
+    if (options.auth) {
+        options.auth.bearer = token;
+    } else {
+        options.auth = {
+            bearer: token
+        }
+    }
+};
+
 var createRequestOptions = function (method, url, token) {
     var options = {
         url: URI_MONITOR_SERVER + url,
@@ -20,16 +30,6 @@ var createRequestOptions = function (method, url, token) {
         setBearerToken(options, token);
     }
     return options;
-};
-
-var setBearerToken = function (options, token) {
-    if (options.auth) {
-        options.auth.bearer = token;
-    } else {
-        options.auth = {
-            bearer: token
-        }
-    }
 };
 
 exports.env = function (options) {

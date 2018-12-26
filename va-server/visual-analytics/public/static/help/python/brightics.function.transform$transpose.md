@@ -22,6 +22,7 @@ This function exchanages rows and columns of the given table.
 2. **Label Column**: Label Column
 3. **Label Column Name**: Label Column Name
    - Value type : String
+   - Default : label
 
 #### Outputs
 1. **out_table**: table
@@ -36,6 +37,7 @@ This function exchanages rows and columns of the given table.
 2. **label_col**: Label Column
 3. **label_col_name**: Label Column Name
    - Value type : String
+   - Default : label
 
 #### Outputs
 1. **out_table**: table

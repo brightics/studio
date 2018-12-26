@@ -38,10 +38,10 @@ var getDatasource = function (req, res) {
         __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
         request(options, function (error, response, body) {
             if (error) {
-                __BRTC_ERROR_HANDLER.sendServerError(res, error);
+                return __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
-                    res.json(convertS3(JSON.parse(body)));
+                if (response.statusCode === 200) {
+                    return res.json(convertS3(JSON.parse(body)));
                 } else {
                     // __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
                     // res.status(response.statusCode).send(response.body);
@@ -49,7 +49,7 @@ var getDatasource = function (req, res) {
                     if (body) {
                         return __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
                     }
-                    res.json(null);
+                    return res.json(null);
                 }
             }
         });
@@ -65,7 +65,7 @@ var listDatasource = function (req, res) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     const items = JSON.parse(body);
                     res.json(items._embedded.brtcS3Datasources.map(convertS3));
                 } else {
@@ -86,7 +86,7 @@ var createDatasource = function (req, res) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 201) {
+                if (response.statusCode === 201) {
                     res.json({
                         success: true
                     });
@@ -108,7 +108,7 @@ var updateDatasource = function (req, res) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 201) {
+                if (response.statusCode === 201) {
                     res.json({success: true});
                 } else {
                     __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
@@ -128,7 +128,7 @@ var deleteDatasource = function (req, res) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 204) {
+                if (response.statusCode === 204) {
                     res.json({success: true});
                 } else {
                     __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));

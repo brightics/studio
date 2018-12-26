@@ -14,3 +14,4 @@ from .extraction import discretize_quantile
 from .extraction import binarizer
 from .extraction import capitalize_variable
 from .bucketizer import bucketizer
+from .moving_average import ewma, moving_average

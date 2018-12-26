@@ -35,12 +35,11 @@ var listMaps = function (req, res) {
 
 
 var getMap = function (req, res) {
-    var promises = [];
 
     var mapName = req.params.map;
     var path = 'lib/map/' + mapName;
 
-    var promise = new Promise(function (resolve, reject) {
+    new Promise(function (resolve, reject) {
         __REQ_fs.readFile(path, 'utf8', function (err, file) {
             if (err) {
                 reject(Error(err.message));
@@ -50,7 +49,6 @@ var getMap = function (req, res) {
             }
         });
     });
-
 };
 
 

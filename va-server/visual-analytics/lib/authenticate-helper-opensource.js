@@ -14,7 +14,7 @@ var ip = require('ip');
 var subPath = __BRTC_CONF['sub-path'] || '';
 var subPathUrl = subPath ? ('/' + subPath) : ('');
 
-const CALLBACK_HOST = (process.env.NODE_ENV == 'development') ?
+const CALLBACK_HOST = (process.env.NODE_ENV === 'development') ?
     ('http://' + ip.address() + ':' + __BRTC_CONF.port + subPathUrl) :
     (__BRTC_CONF['callback-host'] + subPathUrl);
 const CALLBACK_URL = CALLBACK_HOST + '/auth/brightics-user/callback';
@@ -73,7 +73,7 @@ var userProfile = function (accessToken, refreshToken, profile, done) {
     };
 
     request(option, function (error, response, body) {
-        if (!error && response.statusCode == 200) {
+        if (!error && response.statusCode === 200) {
             var json;
 
             if ('string' === typeof body) {
@@ -115,13 +115,13 @@ var userProfile = function (accessToken, refreshToken, profile, done) {
  * @returns {*}
  */
 var devOption = function (req, res, next) {
-    if (process.env.NODE_ENV == 'development') {
-        if (req.method == 'GET' && req.originalUrl == '/'
+    if (process.env.NODE_ENV === 'development') {
+        if (req.method === 'GET' && req.originalUrl === '/'
             && (req.headers.host.startsWith('localhost') || req.headers.host.startsWith('127.0.0.1'))) {
             return res.redirect(CALLBACK_HOST);
         }
     }
-    next();
+    return next();
 };
 
 /**
@@ -148,7 +148,7 @@ var certificateAuthorityOption = function (req, res, next) {
             return res.redirect(signOutUrl);
         }
     }
-    next();
+    return next();
 };
 
 exports.userProfile = userProfile;
@@ -190,7 +190,7 @@ exports.ensureLoggedIn = function (req, res, next) {
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
     res.header('Expires', '-1');
     res.header('Pragma', 'no-cache');
-    next();
+    return next();
 };
 /* --- END app.js에서 사용되는 함수들 */
 
@@ -264,7 +264,7 @@ exports.routers = {
         };
         req.login(user, function (err) {
             if (err) { return next(err); }
-            next();
+            return next();
         })
     }
 };

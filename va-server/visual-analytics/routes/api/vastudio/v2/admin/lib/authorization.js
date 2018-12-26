@@ -132,7 +132,7 @@ var listUserByRole = function (req, res, nex) {
                 return res.status(400).json(JSON.parse(body));
             }
 
-            var userByRoleId =  result.map(x => Object.assign(x, JSON.parse(body).find(y => y.id == x.user_id)));
+            var userByRoleId =  result.map(x => Object.assign(x, JSON.parse(body).find(y => y.id === x.user_id)));
             return res.json(userByRoleId);
         });
     });

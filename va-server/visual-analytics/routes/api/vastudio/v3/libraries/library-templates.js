@@ -7,7 +7,7 @@ var listTemplates = function (req, res) {
     __BRTC_DAO.library.selectById(opt, function (err) {
         __BRTC_ERROR_HANDLER.sendServerError(res, err);
     }, function (libraries) {
-        if (libraries.length > 0 && libraries[0].creator != req.apiUserId && libraries[0].type != 'Opened') {
+        if (libraries.length > 0 && libraries[0].creator !== req.apiUserId && libraries[0].type !== 'Opened') {
             __BRTC_ERROR_HANDLER.sendNotAllowedError(res);
         } else {
             opt = {
@@ -34,38 +34,38 @@ var createTemplate = function (req, res) {
     __BRTC_DAO.library.selectById(opt, function (err) {
         __BRTC_ERROR_HANDLER.sendServerError(res, err);
     }, function (result) {
-        if (result.length > 0 && result[0].creator != req.apiUserId) {
-            __BRTC_ERROR_HANDLER.sendNotAllowedError(res);
-        } else {
-            __BRTC_DAO.template.selectByLibrary({
-                library_id: req.params.libraryId
-            }, function (err) {
-                __BRTC_ERROR_HANDLER.sendServerError(res, err);
-            }, function (result) {
-                if (result.length < 20) {
-                    opt = {
-                        id: req.body.id,
-                        library_id: req.params.libraryId,
-                        label: req.body.label,
-                        contents: req.body.contents,
-                        description: __BRTC_TOOLS_SANITIZE_HTML.sanitizeHtml(req.body.description || ''),
-                        creator: req.apiUserId
-                    };
-                    __BRTC_DAO.template.create(opt, function (err) {
-                        if (err.error.indexOf('duplicate key ') == 0) {
-                            __BRTC_ERROR_HANDLER.sendError(res, 10101);
-                        } else {
-                            __BRTC_ERROR_HANDLER.sendServerError(res, err);
-                        }
-                    }, function (result) {
-                        res.sendStatus(200);
-                    });
-                } else {
-                    __BRTC_ERROR_HANDLER.sendError(res, 10301);
-                }
-            });
+        if (result.length > 0 && result[0].creator !== req.apiUserId) {
+            return __BRTC_ERROR_HANDLER.sendNotAllowedError(res);
         }
+        __BRTC_DAO.template.selectByLibrary({
+            library_id: req.params.libraryId
+        }, function (err) {
+            __BRTC_ERROR_HANDLER.sendServerError(res, err);
+        }, function (result) {
+            if (result.length >= 20) {
+                return __BRTC_ERROR_HANDLER.sendError(res, 10301);
+            }
+            opt = {
+                id: req.body.id,
+                library_id: req.params.libraryId,
+                label: req.body.label,
+                contents: req.body.contents,
+                description: __BRTC_TOOLS_SANITIZE_HTML.sanitizeHtml(req.body.description || ''),
+                creator: req.apiUserId
+            };
+            __BRTC_DAO.template.create(opt, function (err) {
+                if (err.error.indexOf('duplicate key ') === 0) {
+                    return __BRTC_ERROR_HANDLER.sendError(res, 10101);
+                }
+                return __BRTC_ERROR_HANDLER.sendServerError(res, err);
+            }, function (result) {
+                res.sendStatus(200);
+            });
+            return undefined;
+        });
+        return undefined;
     });
+    return undefined;
 };
 
 var getTemplate = function (req, res) {
@@ -76,7 +76,7 @@ var getTemplate = function (req, res) {
     __BRTC_DAO.library.selectById(opt, function (err) {
         __BRTC_ERROR_HANDLER.sendServerError(res, err);
     }, function (result) {
-        if (result.length > 0 && result[0].creator != req.apiUserId && result[0].type != 'Opened') {
+        if (result.length > 0 && result[0].creator !== req.apiUserId && result[0].type !== 'Opened') {
             __BRTC_ERROR_HANDLER.sendNotAllowedError(res);
         } else {
 
@@ -112,7 +112,7 @@ var updateTemplate = function (req, res) {
     __BRTC_DAO.library.selectById(opt, function (err) {
         __BRTC_ERROR_HANDLER.sendServerError(res, err);
     }, function (result) {
-        if (result.length > 0 && result[0].creator != req.apiUserId) {
+        if (result.length > 0 && result[0].creator !== req.apiUserId) {
             __BRTC_ERROR_HANDLER.sendNotAllowedError(res);
         } else {
 
@@ -131,6 +131,7 @@ var updateTemplate = function (req, res) {
             });
         }
     });
+    return undefined;
 };
 
 var deleteTemplate = function (req, res) {
@@ -141,7 +142,7 @@ var deleteTemplate = function (req, res) {
     __BRTC_DAO.library.selectById(opt, function (err) {
         __BRTC_ERROR_HANDLER.sendServerError(res, err);
     }, function (result) {
-        if (result.length > 0 && result[0].creator != req.apiUserId) {
+        if (result.length > 0 && result[0].creator !== req.apiUserId) {
             __BRTC_ERROR_HANDLER.sendNotAllowedError(res);
         } else {
             var opt = {
