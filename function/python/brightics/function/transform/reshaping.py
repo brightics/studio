@@ -71,7 +71,16 @@ def pivot(table, values, aggfunc, index=None, columns=None):  # TODO
     out_table = pd.concat([pivoted.index.to_frame(), pivoted], axis=1)
     return {'out_table':out_table}
 
-def transpose(table, columns, label_col='', label_col_name='label'):
+
+def transpose(table, group_by=None, **params):
+    check_required_parameters(_transpose, params, ['table'])
+    if group_by is not None:
+        return _function_by_group(_transpose, table, group_by=group_by, **params)
+    else:
+        return _transpose(table, **params)
+
+
+def _transpose(table, columns, label_col=None, label_col_name='label'):
 
     sort_table = pd.DataFrame()
     feature_col_name = []
@@ -81,28 +90,23 @@ def transpose(table, columns, label_col='', label_col_name='label'):
             sort_table[table.columns[i]] = table[table.columns[i]]
             feature_col_name.append(table.columns[i])
 
-    result_table = sort_table.transpose()
+    out_table = sort_table.transpose()
 
-    if len(label_col):
+    if label_col is None:
         for i in range(0, len(table)):
-            result_table = result_table.rename(columns={i:str(table[label_col][i])})
+            out_table = out_table.rename(columns={len(table) - i - 1:'x' + str(len(table) - i)})
     else:
         for i in range(0, len(table)):
-            result_table = result_table.rename(columns={len(table) - i - 1:'x' + str(len(table) - i)})
+            out_table = out_table.rename(columns={i:str(table[label_col][i])})
 
-    result_table.insert(loc=0, column=label_col_name, value=feature_col_name)
+    out_table.insert(loc=0, column=label_col_name, value=feature_col_name)
 
-    return{'out_table':result_table}
+    return{'out_table':out_table}
 
 
-def distinct(table, group_by=None, **params):
-    check_required_parameters(_distinct, params, ['table'])
-    if group_by is not None:
-        return _function_by_group(_distinct, table, group_by=group_by, **params)
+def distinct(table, input_cols, shown_opt):
+    if shown_opt == 'selected':
+        out_table = table[input_cols].drop_duplicates()
     else:
-        return _distinct(table, **params)
-
-        
-def _distinct(table, input_cols):
-    out_table = table.drop_duplicates(input_cols)
+        out_table = table.drop_duplicates(input_cols)
     return {'out_table': out_table}

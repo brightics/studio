@@ -5,7 +5,15 @@ from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 
 
-def statistic_summary(table, input_cols, statistics, percentile_amounts=[], trimmed_mean_amounts=[]):
+def statistic_summary(table, group_by=None, **params):
+    check_required_parameters(_statistic_summary, params, ['table'])
+    if group_by is not None:
+        return _function_by_group(_statistic_summary, table, group_by=group_by, **params)
+    else:
+        return _statistic_summary(table, **params)
+
+
+def _statistic_summary(table, input_cols, statistics, percentile_amounts=[], trimmed_mean_amounts=[]):
     
     _table = table.copy()
     
