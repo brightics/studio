@@ -8,6 +8,8 @@ var subPath = __BRTC_CONF['sub-path'] || '';
 var subPathUrl = subPath ? ('/' + subPath) : ('');
 var baseUrl = __BRTC_CONF['callback-host'] + subPathUrl + '/';
 
+var getFirstErrorMsg = require('../../lib/get-err-from-jobstatus');
+
 var _executeInPermission = function (req, res, perm, task) {
     var permHandler = __BRTC_PERM_HELPER.checkPermission(req, [__BRTC_PERM_HELPER.PERMISSION_RESOURCE_TYPES.PUBLISH], perm);
     permHandler.on('accept', task);
@@ -44,7 +46,7 @@ var parseStagingData = function (body) {
             type: convertedType.type,
             internalType: convertedType.internalType
         });
-        if (convertedType.type == 'byte[]') {
+        if (convertedType.type === 'byte[]') {
             arrColIndexes.push(c);
         }
     }
@@ -75,7 +77,7 @@ router.post('/jobs', function (req, res) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 res.send(body);
             } else {
                 __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
@@ -91,22 +93,12 @@ router.get('/jobs/:jid', function (req, res) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 var answer = JSON.parse(response.body);
                 if (answer.status === 'FAIL') {
-                    for (var p in answer.processes) {
-                        if (answer.processes[p].status === 'FAIL') {
-                            for (var f in answer.processes[p].functions) {
-                                if (answer.processes[p].functions[f].status === 'FAIL' && answer.processes[p].functions[f].message) {
-                                    var beginIdx = answer.processes[p].functions[f].message.indexOf(':');
-                                    var endIdx = answer.processes[p].functions[f].message.indexOf('\n');
-                                    if (beginIdx > -1 && endIdx > -1) {
-                                        answer.message = answer.processes[p].functions[f].message.substring(beginIdx + 2, endIdx);
-                                        break;
-                                    }
-                                }
-                            }
-                        }
+                    const msg = getFirstErrorMsg(answer);
+                    if (msg) {
+                        answer.message = msg;
                     }
                 }
                 res.json(answer);
@@ -148,7 +140,7 @@ router.get('/staging/query', __BRTC_ERROR_HANDLER.checkParams(['user', 'mid', 't
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 try {
                     res.json(parseStagingData(body));
                 } catch (err) {

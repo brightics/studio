@@ -9,6 +9,15 @@ var decryptRSA = require('../../../../../lib/rsa').decryptRSA;
 
 var ACC_URL_USER_PREFIX = '/api/account/v2/users';
 
+const reponseHandler = (req, res) => {
+    return function (error, response, body) {
+        if (error) {
+            return res.status(400).json(JSON.parse(body));
+        }
+        return res.json(JSON.parse(body));
+    };
+};
+
 var _executeInPermission = function (req, res, perm, task) {
     var permHandler = __BRTC_PERM_HELPER.checkPermission(req,
         [__BRTC_PERM_HELPER.PERMISSION_RESOURCE_TYPES.USER], perm);
@@ -31,23 +40,26 @@ var listUsers = function (req, res) {
     }
     var options = __BRTC_ACCOUNT_SERVER.createRequestOptions('GET', url);
     __BRTC_ACCOUNT_SERVER.setBearerToken(options, req.accessToken);
-    request(options, function (error, response, body) {
-        if (error) {
-            return res.status(400).json(JSON.parse(body));
-        }
-        return res.json(JSON.parse(body));
-    });
+    request(options, reponseHandler(req, res));
+
+    // function (error, response, body) {
+    // if (error) {
+    //     return res.status(400).json(JSON.parse(body));
+    // }
+    // return res.json(JSON.parse(body));
+    // });
 };
 
 var getUserById = function (req, res) {
     var options = __BRTC_ACCOUNT_SERVER.createRequestOptions('GET', ACC_URL_USER_PREFIX + '/' + req.params.userId);
     __BRTC_ACCOUNT_SERVER.setBearerToken(options, req.accessToken);
-    request(options, function (error, response, body) {
-        if (error) {
-            return res.status(400).json(JSON.parse(body));
-        }
-        return res.json(JSON.parse(body));
-    });
+    request(options, reponseHandler(req, res));
+    // function (error, response, body) {
+    //     if (error) {
+    //         return res.status(400).json(JSON.parse(body));
+    //     }
+    //     return res.json(JSON.parse(body));
+    // });
 };
 
 var createUser = function (req, res) {
