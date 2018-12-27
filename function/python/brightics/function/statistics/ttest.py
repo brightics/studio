@@ -2,7 +2,7 @@ from brightics.common.report import ReportBuilder, strip_margin, plt2MD, dict2MD
     pandasDF2MD, keyValues2MD
 from brightics.function.utils import _model_dict
 from brightics.common.utils import check_required_parameters
-
+from brightics.common.groupby import _function_by_group
 import numpy as np
 import pandas as pd
 import math
@@ -140,18 +140,50 @@ def one_sample_ttest(table, input_cols, alternatives, hypothesized_mean=0, conf_
     return {'out_table':out_table, 'model':result}
 
 
-def two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alternatives, first, second, hypo_diff=0, equal_vari='pooled', confi_level=0.95):
-
-    if(type(table[factor_col][0]) == str):
-        table_first = table[table[factor_col] == first]
-        table_second = table[table[factor_col] == second]
-    elif(type(table[factor_col][0]) == bool):
-        table_first = table[table[factor_col] == bool(first)]
-        table_second = table[table[factor_col] == bool(second)]
+def two_sample_ttest_for_stacked_data(table, group_by=None, **params):
+    check_required_parameters(_two_sample_ttest_for_stacked_data, params, ['table'])
+    if group_by is not None:
+        return _function_by_group(_two_sample_ttest_for_stacked_data, table, group_by=group_by, **params)
     else:
-        table_first = table[table[factor_col] == float(first)]
-        table_second = table[table[factor_col] == float(second)]
-            
+        return _two_sample_ttest_for_stacked_data(table, **params)
+
+def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alternatives, first=None , second=None , hypo_diff=0, equal_vari='pooled', confi_level=0.95):
+
+    if(type(table[factor_col][0]) != str):
+        if(type(table[factor_col][0]) == bool):
+            if(first != None):
+                first = bool(first)
+            if(second != None):
+                second = bool(second)
+        else:
+            if(first != None):
+                first = float(first)
+            if(second != None):
+                second = float(second)
+    if(first == None or second == None):
+        tmp_factors = []
+        if(first != None):
+            tmp_factors += [first]
+        if(second != None):
+            tmp_factors += [second]
+        for i in range(len(table[factor_col])):
+            if(table[factor_col][i] != None and table[factor_col][i] not in tmp_factors):
+                if(len(tmp_factors) == 2):
+                    raise Exception("There are more that 2 factors.")
+                else:
+                    tmp_factors += [table[factor_col][i]]
+    if(first == None):    
+        if(tmp_factors[0] != second):
+            first = tmp_factors[0]
+        else:
+            first = tmp_factors[1]
+    if(second == None):
+        if(tmp_factors[0] != first):
+            second = tmp_factors[0]
+        else:
+            second = tmp_factors[1]
+    table_first = table[table[factor_col] == first]
+    table_second = table[table[factor_col] == second]
     tmp_table = []
 
     rb = ReportBuilder()
@@ -248,7 +280,6 @@ def two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alternat
     model = dict()
     model['report'] = rb.get()    
     return {'out_table' : result, 'model' : model}
-
 
 def paired_ttest(table, first_column, second_column, alternative, hypothesized_difference=0, confidence_level=0.95):
     df = len(table) - 1
