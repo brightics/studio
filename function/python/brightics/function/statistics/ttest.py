@@ -14,17 +14,28 @@ from scipy import mean, stats
 from statsmodels.stats.weightstats import ttest_ind
 
 
-def one_sample_ttest(table, input_cols, alternatives, hypothesized_mean=0, conf_level=0.95):
+def one_sample_ttest(table, group_by=None, **params):
+    check_required_parameters(_one_sample_ttest, params, ['table'])
+    if group_by is not None:
+        return _function_by_group(_one_sample_ttest, table, group_by=group_by, **params)
+    else:
+        return _one_sample_ttest(table, **params)
 
-    n = len(table)
-    degree = n - 1
+        
+def _width(col, alpha, n):
+    # t.ppf(1.0 - alpha, n-1) is a t-critical value
+    return stats.t.ppf(1.0 - alpha, n - 1) * col.std() / np.sqrt(n) 
+
+
+def _one_sample_ttest(table, input_cols, alternatives, hypothesized_mean=0, conf_level=0.95):
+
+    cols = ['data', 'alternative_hypothesis', 'statistics', 't_value', 'p_value', 'confidence_level', 'lower_confidence_interval', 'upper_confidence_interval']  
+    out_table = pd.DataFrame(columns=cols) 
+    n = len(table)   
     alpha = 1.0 - conf_level
-    out_table = pd.DataFrame() 
+    statistics = "T statistic, T distribution with %d degrees of freedom under the null hypothesis." % (n - 1)
         
-    # statistics
-    statistics = "t statistic, t distribution with %d degrees of freedom under the null hypothesis." % degree
-        
-    # Print model
+    # ## Build model
     rb = ReportBuilder()
     rb.addMD(strip_margin("""
     ## One Sample T Test Result
@@ -34,110 +45,71 @@ def one_sample_ttest(table, input_cols, alternatives, hypothesized_mean=0, conf_
     """.format(s=statistics, h=hypothesized_mean, cl=conf_level)))
        
     for input_col in input_cols:
-        # model
-        alter_list = []
+    
+        col = table[input_col]
+        
+        H1_list = []
         p_list = []
         CI_list = []
+        
+        # width of the confidence interval
+        width_one_sided = _width(col, alpha, n)
+        width_two_sided = _width(col, alpha / 2, n)
      
-        # data
-        data = input_col
+        # t-statistic, two-tailed p-value 
+        t_value, p_value_two = stats.ttest_1samp(col, hypothesized_mean)
         
-        # estimates
-        result = stats.ttest_1samp(table[input_col], hypothesized_mean)
-        estimates = result[0]
+        # one-tailed p-value for Greater
+        if t_value >= 0:
+            p_value_one = p_value_two / 2
+        else:
+            p_value_one = 1.0 - p_value_two / 2        
 
-        cols = ['data', 'alternative_hypothesis', 'statistics', 'estimates', 'p_value', 'confidence_level', 'lower_confidence_interval', 'upper_confidence_interval']  
-
-        for i in alternatives:            
-            if (i == 'Greater'):
-                # alternative hypothesis
-                alternative_hypothesis = "true mean >" + str(hypothesized_mean)
-                # p-values
-                p_value = 1.0 - t.cdf(estimates, degree)
-                # confidence interval - greater
-                critical_val = t.ppf(1.0 - alpha, degree)
-                width = critical_val * np.std(table[input_col]) / math.sqrt(n - 1)
-                lower_conf_interval = np.mean(table[input_col]) - width
-                upper_conf_interval = math.inf
-                
-                # model
-                alter = 'true mean > {hypothesized_mean}'.format(hypothesized_mean=hypothesized_mean)
-                alter_list.append(alter)
-                p_list.append(p_value)
-                conf_interval = '({lower_conf_interval}, {upper_conf_interval})'.format(lower_conf_interval=lower_conf_interval, upper_conf_interval=upper_conf_interval)
-                CI_list.append(conf_interval)               
-                # out_table
-                list = []
-                list.append([data, alternative_hypothesis, statistics, estimates, p_value, conf_level, lower_conf_interval, upper_conf_interval])
-                out_table = out_table.append(pd.DataFrame(list, columns=cols))
-
-            if (i == 'Less'):
-                # alternative hypothesis
-                alternative_hypothesis = "true mean <" + str(hypothesized_mean)
-                p_value = t.cdf(estimates, degree)
-                # confidence interval - less
-                critical_val = t.ppf(1.0 - alpha, degree)
-                width = critical_val * np.std(table[input_col]) / math.sqrt(n - 1)
-                lower_conf_interval = -math.inf
-                upper_conf_interval = np.mean(table[input_col]) + width
-                
-                # model
-                alter = 'true mean < {hypothesized_mean}'.format(hypothesized_mean=hypothesized_mean)
-                alter_list.append(alter)
-                p_list.append(p_value)
-                conf_interval = '({lower_conf_interval}, {upper_conf_interval})'.format(lower_conf_interval=lower_conf_interval, upper_conf_interval=upper_conf_interval)
-                CI_list.append(conf_interval)               
-                # out_table
-                list = []
-                list.append([data, alternative_hypothesis, statistics, estimates, p_value, conf_level, lower_conf_interval, upper_conf_interval])
-                out_table = out_table.append(pd.DataFrame(list, columns=cols))
-
-            if (i == 'Two Sided'):
-                # alternative hypothesis
-                alternative_hypothesis = "true mean !=" + str(hypothesized_mean)
-                # p_value = (1.0 - t.cdf(abs(estimates), degree)) * 2.0
-                if (estimates >= 0):
-                    p_value = 2.0 * t.cdf(-estimates, degree)
-                else:
-                    p_value = 2.0 * t.cdf(estimates, degree) 
-                # confidence interval - two-sided
-                critical_val = t.ppf(1.0 - alpha / 2, degree)
-                width = critical_val * np.std(table[input_col]) / math.sqrt(n - 1)
-                lower_conf_interval = np.mean(table[input_col]) - width
-                upper_conf_interval = np.mean(table[input_col]) + width
-                
-                # model
-                alter = 'true mean != {hypothesized_mean}'.format(hypothesized_mean=hypothesized_mean)
-                alter_list.append(alter)
-                p_list.append(p_value)
-                conf_interval = '({lower_conf_interval}, {upper_conf_interval})'.format(lower_conf_interval=lower_conf_interval, upper_conf_interval=upper_conf_interval)
-                CI_list.append(conf_interval)               
-                # out_table
-                list = []
-                list.append([data, alternative_hypothesis, statistics, estimates, p_value, conf_level, lower_conf_interval, upper_conf_interval])
-                out_table = out_table.append(pd.DataFrame(list, columns=cols))                           
+        for alter in alternatives:            
+            if alter == 'Greater':
+                H1 = 'true mean > {hypothesized_mean}'.format(hypothesized_mean=hypothesized_mean)    
+                p_value = p_value_one
+                lower_conf_interval = np.mean(col) - width_one_sided
+                upper_conf_interval = np.inf 
+                   
+            if alter == 'Less':
+                H1 = 'true mean < {hypothesized_mean}'.format(hypothesized_mean=hypothesized_mean)
+                p_value = 1.0 - p_value_one
+                lower_conf_interval = -np.inf
+                upper_conf_interval = np.mean(col) + width_one_sided
+                           
+            if alter == 'Two Sided':
+                H1 = 'true mean != {hypothesized_mean}'.format(hypothesized_mean=hypothesized_mean)            
+                p_value = p_value_two              
+                lower_conf_interval = np.mean(col) - width_two_sided
+                upper_conf_interval = np.mean(col) + width_two_sided
+                                  
+            # ## Build out_table
+            out = pd.Series([input_col, H1, statistics, t_value, p_value, conf_level, lower_conf_interval, upper_conf_interval], index=cols)           
+            out_table = out_table.append(out, ignore_index=True)                 
+            
+            # ## Build model  
+            H1_list.append(H1)
+            p_list.append(p_value)
+            CI_list.append('({lower_conf_interval}, {upper_conf_interval})'.format(lower_conf_interval=lower_conf_interval, upper_conf_interval=upper_conf_interval))                 
         
-        # Print model     
-        conf_level_percent = conf_level * 100  
+        # ## Build model     
         result_table = pd.DataFrame.from_items([ 
-            ['alternative hypothesis', alter_list],
+            ['alternative hypothesis', H1_list],
             ['p-value', p_list],
-            ['%g%% confidence Interval' % conf_level_percent, CI_list]
-        ])
-        
-        result = dict()
-        result['result_table'] = result_table
+            ['%g%% confidence Interval' % (conf_level * 100), CI_list]
+        ])       
         rb.addMD(strip_margin("""
         ### Data = {input_col}
-        | - Estimates = {estimates} 
+        | - T-value = {t_value} 
         |
         | {result_table}
-        """.format(input_col=input_col, estimates=estimates, result_table=pandasDF2MD(result_table))))
+        """.format(input_col=input_col, t_value=t_value, result_table=pandasDF2MD(result_table))))
         
-    # print model
-    result['report'] = rb.get()
+    model = dict()    
+    model['report'] = rb.get()
         
-    return {'out_table':out_table, 'model':result}
+    return {'out_table':out_table, 'model':model}
 
 
 def two_sample_ttest_for_stacked_data(table, group_by=None, **params):
@@ -251,9 +223,9 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
             df = ttestresult[2]
             if(equal_vari == 'pooled'):    
                 std_number1number2 = sqrt(((number1 - 1) * (std1) ** 2 + (number2 - 1) * (std2) ** 2) / (number1 + number2 - 2))
-                margin = t.ppf((confi_level+1)/2 , df) * std_number1number2 * sqrt(1 / number1 + 1 / number2)
+                margin = t.ppf((confi_level + 1) / 2 , df) * std_number1number2 * sqrt(1 / number1 + 1 / number2)
             if(equal_vari == 'unequal'):
-                margin = t.ppf((confi_level+1)/2 , df) * sqrt(std1 ** 2 / (number1) + std2 ** 2 / (number2))
+                margin = t.ppf((confi_level + 1) / 2 , df) * sqrt(std1 ** 2 / (number1) + std2 ** 2 / (number2))
             tmp_model += [['true difference in means != 0.0'] + 
             [ttestresult[1]] + [(mean1 - mean2 - margin, mean1 - mean2 + margin)]]
             tmp_table += [['%s by %s(%s,%s)' % (response_col, factor_col, first, second)] + 
@@ -271,7 +243,7 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
         |
         | {result_model}
         |
-        """.format(ttestresult2=ttestresult[2], response_col=response_col, factor_col=factor_col,first=first,second=second,ttestresult0=ttestresult[0], result_model=pandasDF2MD(result_model))))
+        """.format(ttestresult2=ttestresult[2], response_col=response_col, factor_col=factor_col, first=first, second=second, ttestresult0=ttestresult[0], result_model=pandasDF2MD(result_model))))
         if(start_auto == 1):
             equal_vari = 'auto'
     result = pd.DataFrame.from_records(tmp_table)
