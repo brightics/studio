@@ -119,6 +119,7 @@ def two_sample_ttest_for_stacked_data(table, group_by=None, **params):
     else:
         return _two_sample_ttest_for_stacked_data(table, **params)
 
+
 def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alternatives, first=None , second=None , hypo_diff=0, equal_vari='pooled', confi_level=0.95):
 
     if(type(table[factor_col][0]) != str):
@@ -253,7 +254,16 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
     model['report'] = rb.get()    
     return {'out_table' : result, 'model' : model}
 
-def paired_ttest(table, first_column, second_column, alternative, hypothesized_difference=0, confidence_level=0.95):
+
+def paired_ttest(table, group_by=None, **params):
+    check_required_parameters(_paired_ttest, params, ['table'])
+    if group_by is not None:
+        return _function_by_group(_paired_ttest, table, group_by=group_by, **params)
+    else:
+        return _paired_ttest(table, **params)
+
+
+def _paired_ttest(table, first_column, second_column, alternative, hypothesized_difference=0, confidence_level=0.95):
     df = len(table) - 1
     diff_mean = (table[first_column] - table[second_column]).mean()
     std_dev = np.std(table[first_column] - table[second_column])
