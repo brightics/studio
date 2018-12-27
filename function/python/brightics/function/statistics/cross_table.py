@@ -1,12 +1,21 @@
 from brightics.common.report import ReportBuilder, strip_margin, plt2MD, \
     pandasDF2MD, keyValues2MD
 from brightics.function.utils import _model_dict
+from brightics.common.groupby import _function_by_group
+from brightics.common.utils import check_required_parameters
 
 import numpy as np
 import pandas as pd
 
+def cross_table(table, group_by=None, **params):
+    check_required_parameters(_cross_table, params, ['table'])
+    if group_by is not None:
+        return _function_by_group(_cross_table, table, group_by=group_by, **params)
+    else:
+        return _cross_table(table, **params)
 
-def cross_table(table, input_cols_1, input_cols_2, result='N', choice=True):
+
+def _cross_table(table, input_cols_1, input_cols_2, result='N', choice=False):
     data = pd.DataFrame(table)
     num_input_cols_1 = len(input_cols_1)
     num_input_cols_2 = len(input_cols_2)

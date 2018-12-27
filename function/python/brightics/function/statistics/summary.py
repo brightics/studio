@@ -1,6 +1,8 @@
 import pandas as pd
 import brightics.common.statistics as brtc_stats
 import numpy as np
+from brightics.common.groupby import _function_by_group
+from brightics.common.utils import check_required_parameters
 
 
 def statistic_summary(table, input_cols, statistics, percentile_amounts=[], trimmed_mean_amounts=[]):
@@ -85,8 +87,14 @@ def statistic_derivation(table, input_cols, statistics, percentile_amounts=[], t
     
     return {'out_table' : _table}
 
+def string_summary(table, group_by=None, **params):
+    check_required_parameters(_string_summary, params, ['table'])
+    if group_by is not None:
+        return _function_by_group(_string_summary, table, group_by=group_by, **params)
+    else:
+        return _linear_regression_train(table, **params)
 
-def string_summary(table, input_cols):
+def _string_summary(table, input_cols):
     table = table.copy()
     if input_cols == []:
         input_cols = list(table.columns)
