@@ -25,13 +25,17 @@ def discretize_quantile(table, input_col, bucket_opt, num_of_buckets=2, out_col_
     return {'out_table': out_table}
 
 
-def binarizer(table, column, threshold=0, out_col_name=''):
-    if len(out_col_name) == 0:
+def binarizer(table, column, threshold=0, threshold_type='greater', out_col_name=None):
+    if out_col_name is None:
         out_col_name = 'binarized_' + str(column)
     table[out_col_name] = 0
     for t in range(0, len(table[column])):
-        if table[column][t] > threshold:
-            table[out_col_name][t] = 1
+        if threshold_type == 'greater':
+            if table[column][t] > threshold:
+                table[out_col_name][t] = 1
+        else:
+            if table[column][t] >= threshold:
+                table[out_col_name][t] = 1
     return{'table':table}
 
 
