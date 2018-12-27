@@ -12,20 +12,10 @@ var getExpiredTime = function () {
     return (new Date().getTime()) / 1000 + (EXPIRE_TOKEN_SECOND);
 };
 
-const genArr = (len, v) => {
-    let idx = -1;
-    let ret = [];
-    while (++idx < len) {
-        ret[idx] = v;
-    }
-    return ret;
-
-};
-
 const transformSql = (sql, _args) => {
     const q = sql + ' ';
     const len = q.length;
-    let args = new Array(_args.length);//genArr(_args.length, '');
+    let args = new Array(_args.length);
     let ret = [];
     let state = 0;
     let num = 0;

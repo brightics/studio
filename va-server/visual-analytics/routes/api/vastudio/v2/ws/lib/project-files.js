@@ -1,6 +1,16 @@
 var PERMISSION = require('./common').PERMISSION;
 var projectPermission = require('./common').ProjectPermission;
 
+
+const parseContents = (res) => {
+    return function (result) {
+        for (var i in result) {
+            result[i].contents = JSON.parse(result[i].contents);
+        }
+        res.json(result);
+    };
+};
+
 exports.listFiles = function (req, res) {
     var task = function (permissions) {
         var opt = {
@@ -8,14 +18,10 @@ exports.listFiles = function (req, res) {
         };
         __BRTC_DAO.file.selectByProject(opt, function (err) {
             __BRTC_ERROR_HANDLER.sendServerError(res, err);
-        }, function (result) {
-            for (var i in result) {
-                result[i].contents = JSON.parse(result[i].contents);
-            }
-            res.json(result);
-        });
+        }, parseContents(res));
     };
-    projectPermission.execute(req.params.project, req.apiUserId, PERMISSION.PROJECT.READ, res, task);
+    projectPermission.execute(req.params.project,
+        req.apiUserId, PERMISSION.PROJECT.READ, res, task);
 };
 
 exports.createFile = function (req, res) {
@@ -37,7 +43,7 @@ exports.createFile = function (req, res) {
                     tag: req.body.tag
                 };
 
-                __BRTC_DAO.project.updateTime({id: req.params.project}, function (err) {
+                __BRTC_DAO.project.updateTime({ id: req.params.project }, function (err) {
                     __BRTC_ERROR_HANDLER.sendError(res, 34012);
                 }, function (result) {
                     __BRTC_DAO.file.create(opt, function (err) {
@@ -67,12 +73,13 @@ exports.getFile = function (req, res) {
 
         __BRTC_DAO.file.selectById(opt, function (err) {
             __BRTC_ERROR_HANDLER.sendServerError(res, err);
-        }, function (result) {
-            for (var i in result) {
-                result[i].contents = JSON.parse(result[i].contents);
-            }
-            res.json(result);
-        });
+        }, parseContents(res));
+        // function (result) {
+        //     for (var i in result) {
+        //         result[i].contents = JSON.parse(result[i].contents);
+        //     }
+        //     res.json(result);
+        // });
     };
     projectPermission.execute(req.params.project, req.apiUserId, PERMISSION.FILE.READ, res, task);
 };
@@ -91,7 +98,7 @@ exports.updateFile = function (req, res) {
             tag: req.body.tag
         };
 
-        __BRTC_DAO.project.updateTime({id: req.params.project}, function (err) {
+        __BRTC_DAO.project.updateTime({ id: req.params.project }, function (err) {
             __BRTC_ERROR_HANDLER.sendError(res, 32032);
         }, function (result) {
             __BRTC_DAO.file.update(opt, function (err) {
@@ -102,17 +109,13 @@ exports.updateFile = function (req, res) {
                 } else {
                     __BRTC_DAO.file.selectById(opt, function (err) {
                         __BRTC_ERROR_HANDLER.sendServerError(res, err);
-                    }, function (result) {
-                        for (var i in result) {
-                            result[i].contents = JSON.parse(result[i].contents);
-                        }
-                        res.json(result);
-                    });
+                    }, parseContents(res));
                 }
             });
         });
     };
-    projectPermission.execute(req.params.project, req.apiUserId, PERMISSION.FILE.UPDATE, res, task, true);
+    projectPermission.execute(req.params.project, req.apiUserId,
+        PERMISSION.FILE.UPDATE, res, task, true);
 };
 
 exports.deleteFile = function (req, res) {
@@ -122,7 +125,7 @@ exports.deleteFile = function (req, res) {
             project_id: req.params.project
         };
 
-        __BRTC_DAO.project.updateTime({id: req.params.project}, function (err) {
+        __BRTC_DAO.project.updateTime({ id: req.params.project }, function (err) {
             __BRTC_ERROR_HANDLER.sendError(res, 36041);
         }, function (result) {
             __BRTC_DAO.file.delete(opt, function (err) {

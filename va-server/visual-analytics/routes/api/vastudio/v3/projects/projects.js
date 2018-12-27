@@ -3,6 +3,16 @@ var router = __REQ_express.Router();
 var PERMISSION = require('../permissions/project-permission').PERMISSION;
 var projectPermission = require('../permissions/project-permission').ProjectPermission;
 
+const cb = (res) => {
+    return function (result) {
+        if (!result) {
+            __BRTC_ERROR_HANDLER.sendError(res, 10102);
+        } else {
+            res.sendStatus(200);
+        }
+    };
+};
+
 var listProjects = function (req, res) {
     var opt = {
         user_id: req.apiUserId
@@ -59,7 +69,8 @@ var getProject = function (req, res) {
             res.json(result);
         });
     };
-    projectPermission.execute(req.params.project, req.apiUserId, PERMISSION.PROJECT.READ, res, task);
+    projectPermission.execute(req.params.project, req.apiUserId,
+        PERMISSION.PROJECT.READ, res, task);
 };
 
 var updateProject = function (req, res) {
@@ -76,16 +87,11 @@ var updateProject = function (req, res) {
         };
         __BRTC_DAO.project.update(opt, function (err) {
             __BRTC_ERROR_HANDLER.sendServerError(res, err);
-        }, function (result) {
-            if (!result) {
-                __BRTC_ERROR_HANDLER.sendError(res, 10102);
-            } else {
-                res.sendStatus(200);
-            }
-        });
+        }, cb(res));
         return undefined;
     };
-    projectPermission.execute(req.params.project, req.apiUserId, PERMISSION.PROJECT.UPDATE, res, task);
+    projectPermission.execute(req.params.project, req.apiUserId,
+        PERMISSION.PROJECT.UPDATE, res, task);
 };
 
 var deleteProject = function (req, res) {
@@ -95,16 +101,11 @@ var deleteProject = function (req, res) {
         };
         __BRTC_DAO.project.delete(opt, function (err) {
             __BRTC_ERROR_HANDLER.sendServerError(res, err);
-        }, function (result) {
-            if (!result) {
-                __BRTC_ERROR_HANDLER.sendError(res, 10102);
-            } else {
-                res.sendStatus(200);
-            }
-        });
+        }, cb(res));
     };
 
-    projectPermission.execute(req.params.project, req.apiUserId, PERMISSION.PROJECT.DELETE, res, task);
+    projectPermission.execute(req.params.project, req.apiUserId,
+        PERMISSION.PROJECT.DELETE, res, task);
 };
 
 router.get('/projects', listProjects);

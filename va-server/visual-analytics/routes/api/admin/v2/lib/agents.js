@@ -2,7 +2,8 @@ var router = __REQ_express.Router();
 var request = __REQ_request;
 
 var _executeInPermission = function (req, res, perm, task) {
-    var permHandler = __BRTC_PERM_HELPER.checkPermission(req, [__BRTC_PERM_HELPER.PERMISSION_RESOURCE_TYPES.AGENT], perm);
+    var permHandler = __BRTC_PERM_HELPER.checkPermission(req,
+        [__BRTC_PERM_HELPER.PERMISSION_RESOURCE_TYPES.AGENT], perm);
     permHandler.on('accept', task);
     permHandler.on('deny', function (permissions) {
         __BRTC_ERROR_HANDLER.sendNotAllowedError(res);
@@ -12,9 +13,38 @@ var _executeInPermission = function (req, res, perm, task) {
     });
 };
 
-/**agent 목록조회**/
-router.get('/agents', function (req, res, next) {
+const defaultDBHandler = (req, res, withAgentId) => {
+    return (error, response, body) => {
+        if (error) {
+            __BRTC_ERROR_HANDLER.sendServerError(res, error);
+        } else {
+            if (response.statusCode === 200) {
+                let rt = JSON.parse(body);
+                if (withAgentId) rt.agentId = req.params.agentId;
+                res.json(rt);
+            } else {
+                __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
+            }
+        }
+    };
+};
 
+const dbHandlerWithoutParse = (req, res) => {
+    return function (error, response, body) {
+        if (error) {
+            __BRTC_ERROR_HANDLER.sendServerError(res, error);
+        } else {
+            if (response.statusCode === 200) {
+                res.send(body);
+            } else {
+                __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
+            }
+        }
+    };
+};
+
+/** agent 목록조회**/
+router.get('/agents', function (req, res, next) {
     const queryAgentId = (req.query.agentId || '').toLowerCase();
     const queryActiveStart = req.query.activeStart;
     const queryActiveStop = req.query.activeStop;
@@ -70,8 +100,9 @@ router.get('/agents', function (req, res, next) {
         var reqApi;
         if (__BRTC_CONF['agent-isolation']) {
             var chkIsForceReadPerm = permissions.findIndex(function (permObj) {
-                //TODO: PERM_AGENT_READ_FORCE db에 추가필요
-                return permObj.permission_id === __BRTC_PERM_HELPER.PERMISSIONS.PERM_AGENT_READ_FORCE;
+                // TODO: PERM_AGENT_READ_FORCE db에 추가필요
+                return permObj.permission_id ===
+                    __BRTC_PERM_HELPER.PERMISSIONS.PERM_AGENT_READ_FORCE;
             });
             if (chkIsForceReadPerm > -1) {
                 reqApi = __BRTC_CORE_SERVER.createRequestOptions('GET', '/api/core/v2/agents');
@@ -101,150 +132,72 @@ router.get('/agents', function (req, res, next) {
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_AGENT_READ, task);
 });
 
-/**agent 추가**/
+/** agent 추가**/
 var createAgent = function (req, res, nex) {
     var task = function (permissions) {
         var options = __BRTC_CORE_SERVER.createRequestOptions('PUT', '/api/core/v2/agent');
         __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
         options.body = JSON.stringify(req.body);
-        request(options, function (error, response, body) {
-            if (error) {
-                __BRTC_ERROR_HANDLER.sendServerError(res, error);
-            } else {
-                if (response.statusCode === 200) {
-                    res.send(body);
-                } else {
-                    __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
-                }
-            }
-        });
+        request(options, dbHandlerWithoutParse(req, res));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_AGENT_CREATE, task);
 };
 
-/**agent 수정**/
+/** agent 수정**/
 var UpdateAgent = function (req, res, nex) {
     var task = function (permissions) {
         var options = __BRTC_CORE_SERVER.createRequestOptions('POST', '/api/core/v2/agent');
         __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
         options.body = JSON.stringify(req.body);
-        request(options, function (error, response, body) {
-            if (error) {
-                __BRTC_ERROR_HANDLER.sendServerError(res, error);
-            } else {
-                if (response.statusCode === 200) {
-                    res.send(body);
-                } else {
-                    __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
-                }
-            }
-        });
+        request(options, dbHandlerWithoutParse(req, res));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_AGENT_UPDATE, task);
 };
 
 
-/*agent 삭제*/
+/* agent 삭제*/
 var deleteAgent = function (req, res, nex) {
     var task = function (permissions) {
         var options = __BRTC_CORE_SERVER.createRequestOptions('DELETE', '/api/core/v2/agent/' + req.params.agentId);
         __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-        request(options, function (error, response, body) {
-            if (error) {
-                __BRTC_ERROR_HANDLER.sendServerError(res, error);
-            } else {
-                if (response.statusCode === 200) {
-
-                    var rt = (JSON.parse(body));
-
-                    rt.agentId = req.params.agentId;
-                    res.send(rt);
-                } else {
-                    __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
-                }
-            }
-        });
+        request(options, defaultDBHandler(req, res, true));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_AGENT_DELETE, task);
 };
 
-/*agents 삭제*/
+/* agents 삭제*/
 var deleteAgents = function (req, res, nex) {
     var task = function (permissions) {
         var options = __BRTC_CORE_SERVER.createRequestOptions('DELETE', '/api/core/v2/agents');
         __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
         options.body = JSON.stringify(req.body);
-        request(options, function (error, response, body) {
-            if (error) {
-                __BRTC_ERROR_HANDLER.sendServerError(res, error);
-            } else {
-                if (response.statusCode === 200) {
-
-                    var rt = (JSON.parse(body));
-
-                    rt.agentId = req.params.agentId;
-                    res.send(rt);
-                } else {
-                    __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
-                }
-            }
-        });
+        request(options, defaultDBHandler(req, res, true));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_AGENT_DELETE, task);
 };
 
-/**agent 중복여부 체크**/
+/** agent 중복여부 체크**/
 router.get('/agents/exist/:agentId', function (req, res, next) {
     var options = __BRTC_CORE_SERVER.createRequestOptions('GET', '/api/core/v2/agent/exists/' + req.params.agentId);
     __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-    request(options, function (error, response, body) {
-        if (error) {
-            __BRTC_ERROR_HANDLER.sendServerError(res, error);
-        } else {
-            if (response.statusCode === 200) {
-                res.json(JSON.parse(body));
-            } else {
-                __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
-            }
-        }
-    });
+    request(options, defaultDBHandler(req, res));
 });
 
-/**agent start**/
+/** agent start**/
 router.get('/agents/:agentId/start', function (req, res, next) {
     var options = __BRTC_CORE_SERVER.createRequestOptions('GET', '/api/core/v2/agent/start/' + req.params.agentId);
     __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-    request(options, function (error, response, body) {
-        if (error) {
-            __BRTC_ERROR_HANDLER.sendServerError(res, error);
-        } else {
-            if (response.statusCode === 200) {
-                res.json(JSON.parse(body));
-            } else {
-                __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
-            }
-        }
-    });
+    request(options, defaultDBHandler(req, res));
 });
 
-/**agent stop**/
+/** agent stop**/
 router.get('/agents/:agentId/stop', function (req, res, next) {
     var options = __BRTC_CORE_SERVER.createRequestOptions('GET', '/api/core/v2/agent/stop/' + req.params.agentId);
     __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-    request(options, function (error, response, body) {
-        if (error) {
-            __BRTC_ERROR_HANDLER.sendServerError(res, error);
-        } else {
-            if (response.statusCode === 200) {
-                res.json(JSON.parse(body));
-            } else {
-                __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
-            }
-        }
-    });
+    request(options, defaultDBHandler(req, res));
 });
 
-/**agent별 user조회**/
+/** agent별 user조회**/
 router.get('/agents/users/agent/:agentId', function (req, res, next) {
     var _agentId = req.params.agentId;
 
@@ -255,7 +208,6 @@ router.get('/agents/users/agent/:agentId', function (req, res, next) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
             if (response.statusCode === 200) {
-
                 var allUserList = (JSON.parse(body)).result;
 
                 allUserList = allUserList.filter(function (item) {
@@ -269,7 +221,7 @@ router.get('/agents/users/agent/:agentId', function (req, res, next) {
     });
 });
 
-/**user가 사용하는 agent 조회**/
+/** user가 사용하는 agent 조회**/
 router.get('/agents/users/user/:userId', function (req, res, next) {
     var _userId = req.params.userId;
 
@@ -289,7 +241,7 @@ router.get('/agents/users/user/:userId', function (req, res, next) {
     });
 });
 
-/**agent별 user 전체 조회**/
+/** agent별 user 전체 조회**/
 router.get('/agents/users', function (req, res, next) {
     var options = __BRTC_CORE_SERVER.createRequestOptions('GET', '/api/core/v2/agentUsers');
     __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
@@ -298,7 +250,6 @@ router.get('/agents/users', function (req, res, next) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
             if (response.statusCode === 200) {
-
                 var allUserList = (JSON.parse(body)).result;
                 res.send(allUserList);
             } else {
@@ -308,65 +259,33 @@ router.get('/agents/users', function (req, res, next) {
     });
 });
 
-/**agent user 추가**/
+/** agent user 추가**/
 var addAgentUser = function (req, res, nex) {
     var task = function (permissions) {
         var options = __BRTC_CORE_SERVER.createRequestOptions('PUT', '/api/core/v2/agentUser');
         __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
         options.body = JSON.stringify(req.body);
         // options.body = req.body;
-        request(options, function (error, response, body) {
-            if (error) {
-                __BRTC_ERROR_HANDLER.sendServerError(res, error);
-            } else {
-                if (response.statusCode === 200) {
-                    res.send(body);
-                } else {
-                    __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
-                }
-            }
-        });
+        request(options, dbHandlerWithoutParse(req, res));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_AGENT_UPDATE, task);
 };
 
-/**agent user 삭제**/
+/** agent user 삭제**/
 var removeAgentUser = function (req, res, nex) {
     var task = function (permissions) {
         var options = __BRTC_CORE_SERVER.createRequestOptions('DELETE', '/api/core/v2/agentUser/' + req.params.userId);
         __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-        request(options, function (error, response, body) {
-            if (error) {
-                __BRTC_ERROR_HANDLER.sendServerError(res, error);
-            } else {
-                if (response.statusCode === 200) {
-                    res.json(JSON.parse(body));
-                } else {
-                    __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
-                }
-            }
-        });
+        request(options, defaultDBHandler(res));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_AGENT_UPDATE, task);
 };
 
-/**agent status**/
+/** agent status**/
 router.get('/agents/:agentId/status', function (req, res, next) {
     var options = __BRTC_CORE_SERVER.createRequestOptions('GET', '/api/core/v2/agent/health/' + req.params.agentId);
     __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-    request(options, function (error, response, body) {
-        if (error) {
-            __BRTC_ERROR_HANDLER.sendServerError(res, error);
-        } else {
-            if (response.statusCode === 200) {
-                var rt = JSON.parse(body);
-                rt.agentId = req.params.agentId;
-                res.send(rt);
-            } else {
-                __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
-            }
-        }
-    });
+    request(options, defaultDBHandler(req, res, true));
 });
 
 router.post('/agents/:agentId', createAgent);
