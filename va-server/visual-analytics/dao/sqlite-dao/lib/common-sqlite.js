@@ -25,7 +25,7 @@ const genArr = (len, v) => {
 const transformSql = (sql, _args) => {
     const q = sql + ' ';
     const len = q.length;
-    let args = genArr(_args.length, '');
+    let args = new Array(_args.length);//genArr(_args.length, '');
     let ret = [];
     let state = 0;
     let num = 0;
@@ -53,7 +53,7 @@ const transformSql = (sql, _args) => {
 
 const fnify = (fn) => fn && typeof fn === 'function' ? fn : function () { };
 const ddlCheckQuery = (sql, rep) => {
-    return sql === DDL_CHECK_TABLE ? sql.replace('$1', rep[0]) : sql;
+    return sql === DDL_CHECK_TABLE ? sql.replace('$1', rep) : sql;
 };
 
 const stringify = (o) => typeof o === 'object' ? JSON.stringify(o) : o;
