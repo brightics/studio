@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from brightics.common.groupby import _function_by_group
+from brightics.common.utils import check_required_parameters
 
 
 def unpivot(table, value_vars, var_name=None, value_name='value', col_level=None):
@@ -70,7 +71,16 @@ def pivot(table, values, aggfunc, index=None, columns=None):  # TODO
     out_table = pd.concat([pivoted.index.to_frame(), pivoted], axis=1)
     return {'out_table':out_table}
 
-def transpose(table, columns, label_col='', label_col_name='label'):
+
+def transpose(table, group_by=None, **params):
+    check_required_parameters(_transpose, params, ['table'])
+    if group_by is not None:
+        return _function_by_group(_transpose, table, group_by=group_by, **params)
+    else:
+        return _transpose(table, **params)
+
+
+def _transpose(table, columns, label_col=None, label_col_name='label'):
 
     sort_table = pd.DataFrame()
     feature_col_name = []
@@ -80,18 +90,18 @@ def transpose(table, columns, label_col='', label_col_name='label'):
             sort_table[table.columns[i]] = table[table.columns[i]]
             feature_col_name.append(table.columns[i])
 
-    result_table = sort_table.transpose()
+    out_table = sort_table.transpose()
 
-    if len(label_col):
+    if label_col is None:
         for i in range(0, len(table)):
-            result_table = result_table.rename(columns={i:str(table[label_col][i])})
+            out_table = out_table.rename(columns={len(table) - i - 1:'x' + str(len(table) - i)})
     else:
         for i in range(0, len(table)):
-            result_table = result_table.rename(columns={len(table) - i - 1:'x' + str(len(table) - i)})
+            out_table = out_table.rename(columns={i:str(table[label_col][i])})
 
-    result_table.insert(loc=0, column=label_col_name, value=feature_col_name)
+    out_table.insert(loc=0, column=label_col_name, value=feature_col_name)
 
-    return{'out_table':result_table}
+    return{'out_table':out_table}
 
 
 def distinct(table, input_cols, shown_opt):
