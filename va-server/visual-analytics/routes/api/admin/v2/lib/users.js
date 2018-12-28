@@ -9,6 +9,20 @@ var decryptRSA = require('../../../../../lib/rsa').decryptRSA;
 
 var ACC_URL_USER_PREFIX = '/api/account/v2/users';
 
+const cb = (res) => {
+    return function (error, response, body) {
+        if (error) {
+            __BRTC_ERROR_HANDLER.sendServerError(res, error);
+        } else {
+            if (response.statusCode === 200) {
+                res.json(JSON.parse(body));
+            } else {
+                res.status(response.statusCode).send(response.body);
+            }
+        }
+    };
+};
+
 const reponseHandler = (req, res) => {
     return function (error, response, body) {
         if (error) {
@@ -80,17 +94,7 @@ var createUser = function (req, res) {
                     email: req.body.email,
                     publicKey: rsaKey.publicKey,
                 };
-                return request(opt, function (error, response, body) {
-                    if (error) {
-                        __BRTC_ERROR_HANDLER.sendServerError(res, error);
-                    } else {
-                        if (response.statusCode === 200) {
-                            res.json(JSON.parse(body));
-                        } else {
-                            res.status(response.statusCode).send(response.body);
-                        }
-                    }
-                });
+                return request(opt, cb(res));
             } else {
                 return res.status(response.statusCode).send(response.body);
             }
@@ -107,17 +111,7 @@ var updateUser = function (req, res) {
             name: req.body.name,
             email: req.body.email,
         };
-        request(opt, function (error, response, body) {
-            if (error) {
-                __BRTC_ERROR_HANDLER.sendServerError(res, error);
-            } else {
-                if (response.statusCode === 200) {
-                    res.json(JSON.parse(body));
-                } else {
-                    res.status(response.statusCode).send(response.body);
-                }
-            }
-        });
+        request(opt, cb(res));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_ACCOUNT_UPDATE, task);
 };
@@ -128,17 +122,7 @@ var deleteUser = function (req, res) {
         opt.form = {
             id: req.params.userId,
         };
-        request(opt, function (error, response, body) {
-            if (error) {
-                __BRTC_ERROR_HANDLER.sendServerError(res, error);
-            } else {
-                if (response.statusCode === 200) {
-                    res.json(JSON.parse(body));
-                } else {
-                    res.status(response.statusCode).send(response.body);
-                }
-            }
-        });
+        request(opt, cb(res));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_ACCOUNT_DELETE, task);
 };
