@@ -37,36 +37,36 @@ def discretize_quantile(table, group_by=None, **params):
         
 def _discretize_quantile(table, input_col, num_of_buckets=2, out_col_name='bucket_number'):
     out_table = table.copy()
-    out_table[out_col_name], bins = pd.qcut(table[input_col], num_of_buckets, labels=False, retbins=True, precision=10, duplicates='drop')    
+    out_table[out_col_name], buckets = pd.qcut(table[input_col], num_of_buckets, labels=False, retbins=True, precision=10, duplicates='drop')    
             
-    ## Build model
+    # Build model
     rb = ReportBuilder()
     rb.addMD(strip_margin("""
     ## Quantile-based Discretization Result
     """))
     
-    # index_list, bin_list
-    index_list=[]
-    bin_list=[]     
-    for i, bin in enumerate(bins):
-        if i==1:
-            index_list.append(i-1)
-            bin_list.append("[{left}, {bin}]".format(left=left, bin=bin))
-        elif i>1:
-            index_list.append(i-1)
-            bin_list.append("({left}, {bin}]".format(left=left, bin=bin))
-        left = bin
+    # index_list, bucket_list
+    index_list = []
+    bucket_list = []     
+    for i, bucket in enumerate(buckets):
+        if i == 1:
+            index_list.append(i - 1)
+            bucket_list.append("[{left}, {bucket}]".format(left=left, bucket=bucket))
+        elif i > 1:
+            index_list.append(i - 1)
+            bucket_list.append("({left}, {bucket}]".format(left=left, bucket=bucket))
+        left = bucket
         
     # cnt_array
-    cnt=np.zeros(len(index_list), int)
+    cnt = np.zeros(len(index_list), int)
     for i in range(len(table)):
             cnt[out_table[out_col_name][i]] += 1
    
-   ## Build model
+    # Build model
     result = dict()
     result_table = pd.DataFrame.from_items([ 
         ['bucket number', index_list],
-        ['buckets', bin_list],
+        ['buckets', bucket_list],
         ['count', cnt]
     ])
     result['result_table'] = result_table
@@ -77,7 +77,8 @@ def _discretize_quantile(table, input_col, num_of_buckets=2, out_col_name='bucke
     """.format(input_col=input_col, n=num_of_buckets, result_table=pandasDF2MD(result_table))))
     result['report'] = rb.get()
     
-    return {'model': result, 'out_table': out_table}
+    return {'out_table': out_table, 'model': result}
+
 
 def binarizer(table, column, threshold=0, threshold_type='greater', out_col_name=None):
     if out_col_name is None:
