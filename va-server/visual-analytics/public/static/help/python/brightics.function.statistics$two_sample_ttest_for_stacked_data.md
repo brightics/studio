@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.statistics import two_sample_ttest_for_stacked_data
-res = two_sample_ttest_for_stacked_data(response_cols = ,factor_col = ,alternatives = ,confi_level = ,first = ,second = ,hypo_diff = ,equal_vari = )
+res = two_sample_ttest_for_stacked_data(response_cols = ,factor_col = ,alternatives = ,confi_level = ,first = ,second = ,hypo_diff = ,equal_vari = ,group_by = )
 res['model']
 res['out_table']
 ```
@@ -32,10 +32,10 @@ https://en.wikipedia.org/wiki/Student's_t-test#Independent_two-sample_t-test
 4. **Confidence Level**: Double Confidence level. Default: 0.95
    - Value type : Double
    - Default : 0.95 (0 <= value <= 1)
-5. **First**<b style="color:red">*</b>: The first label in the label column
+5. **First**: The first label in the label column
    - Value type : String
    - Default : Enter value
-6. **Second**<b style="color:red">*</b>: The second label in the label column
+6. **Second**: The second label in the label column
    - Value type : String
    - Default : Enter value
 7. **Hypothesized Difference**: Double Hypothesized difference. Default: 0
@@ -46,6 +46,7 @@ https://en.wikipedia.org/wiki/Student's_t-test#Independent_two-sample_t-test
       - Auto (default)
       - True
       - False
+9. **Group By**: Columns to group by
 
 #### Outputs
 1. **model**: model
@@ -64,10 +65,10 @@ https://en.wikipedia.org/wiki/Student's_t-test#Independent_two-sample_t-test
 4. **confi_level**: Double Confidence level. Default: 0.95
    - Value type : Double
    - Default : 0.95 (0 <= value <= 1)
-5. **first**<b style="color:red">*</b>: The first label in the label column
+5. **first**: The first label in the label column
    - Value type : String
    - Default : Enter value
-6. **second**<b style="color:red">*</b>: The second label in the label column
+6. **second**: The second label in the label column
    - Value type : String
    - Default : Enter value
 7. **hypo_diff**: Double Hypothesized difference. Default: 0
@@ -78,6 +79,7 @@ https://en.wikipedia.org/wiki/Student's_t-test#Independent_two-sample_t-test
       - auto (default)
       - pooled
       - unequal
+9. **group_by**: Columns to group by
 
 #### Outputs
 1. **model**: model

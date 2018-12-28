@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.extraction import moving_average
-res = moving_average(input_cols = ,weights = ,window_size = ,weights_array = ,mode = )
+res = moving_average(input_cols = ,weights = ,window_size = ,weights_array = ,mode = ,group_by = )
 res['out_table']
 ```
 
@@ -31,6 +31,7 @@ This function computes moving average values for analyzing particular time serie
    - Available items
       - Centered Moving Average
       - Past Values Only (default)
+6. **Group By**: Columns to group by
 
 #### Outputs
 1. **out_table**: table
@@ -54,6 +55,7 @@ This function computes moving average values for analyzing particular time serie
    - Available items
       - centered_moving_average
       - past_values_only (default)
+6. **group_by**: Columns to group by
 
 #### Outputs
 1. **out_table**: table
