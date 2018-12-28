@@ -3,7 +3,6 @@ import itertools
 import math
 import pandas as pd
 import matplotlib.pyplot as plt
-import networkx as nx
 from brightics.common.report import ReportBuilder, strip_margin, plt2MD, pandasDF2MD, dict2MD
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group

@@ -19,22 +19,23 @@ def bucketizer(table, input_cols, radio_splits, bucket_type, splits=None, splits
     if table_splits is None:
         if radio_splits != 'array':
             splits = [-math.inf]
-            i = splits_from
-            if splits_by > 0:
-                if(splits_to < splits_from):
-                    raise Exception("From is bigger than To")
-                while i <= splits_to:    
-                    splits += [i]
-                    i += splits_by
-                    i = round(i, 10)
-            else:
-                if(splits_to > splits_from):
-                    raise Exception("To is bigger than From")
-                while i >= splits_to:    
-                    splits += [i]
-                    i += splits_by
-                    i = round(i, 10)
-                    splits.sort()
+            if(splits_from is not None and splits_to is not None):
+                i = splits_from
+                if splits_by > 0:
+                    if(splits_to < splits_from):
+                        raise Exception("From is bigger than To")
+                    while i <= splits_to:    
+                        splits += [i]
+                        i += splits_by
+                        i = round(i, 10)
+                else:
+                    if(splits_to > splits_from):
+                        raise Exception("To is bigger than From")
+                    while i >= splits_to:    
+                        splits += [i]
+                        i += splits_by
+                        i = round(i, 10)
+                        splits.sort()
             splits += [math.inf]
         else:
             splits += [-math.inf, math.inf]
@@ -53,4 +54,3 @@ def bucketizer(table, input_cols, radio_splits, bucket_type, splits=None, splits
     # result=out_table[list(hold_cols)+[input_cols[0]]+[new_name]]
     
     return {'out_table' : out_table}
-
