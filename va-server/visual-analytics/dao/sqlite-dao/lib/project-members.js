@@ -4,7 +4,7 @@ var query = common.query;
 
 const getQuery = require('./query-utils').getQuery;
 
-//TODO brtc_user --> brtc_user_view
+// TODO brtc_user --> brtc_user_view
 const SELECT_MEMBER_BY_PROJECT_DEFAULT = '' +
     'SELECT m.* ' +
     '  FROM ( SELECT creator as user_id, \'role_10001\' as role_id, \'role_proj_member\' as role_category, \'Owner\' as role_label, create_time as joined_time ' +
@@ -89,102 +89,74 @@ const UPDATE_AUTHORITY = getQuery(stmt, 'UPDATE_AUTHORITY');
 const INSERT_MEMBER = getQuery(stmt, 'INSERT_MEMBER');
 const DELETE_MEMBER = getQuery(stmt, 'DELETE_MEMBER');
 
+const doWhilst = (opt, getArgs, qry, errCallback, doneCallback) => {
+    let count = 0;
+    let affected = 0;
+    async.whilst(
+        () => {
+            return count < opt.members.length;
+        },
+        (next) => {
+            query(qry, getArgs(opt, count),
+                (err) => {
+                    count++;
+                    console.log(err);
+                    next(null, affected);
+                },
+                (result) => {
+                    count++;
+                    affected += result;
+                    next(null, affected);
+                }
+            );
+        },
+        (err, n) => {
+            if (err) {
+                if (errCallback) errCallback(err);
+            } else {
+                if (doneCallback) doneCallback(n);
+            }
+        }
+    );
+};
+
 module.exports = {
     project: {
         members: {
             selectByProject: function (opt, errCallback, doneCallback) {
-                query(SELECT_MEMBER_BY_PROJECT_ORDERED, [opt.project_id], errCallback, doneCallback);
+                query(SELECT_MEMBER_BY_PROJECT_ORDERED, [opt.project_id],
+                    errCallback, doneCallback);
             },
             selectByProjectUser: function (opt, errCallback, doneCallback) {
-                query(SELECT_MEMBER_BY_PROJECT_USER, [opt.project_id, opt.user_id], errCallback, doneCallback);
+                query(SELECT_MEMBER_BY_PROJECT_USER, [opt.project_id, opt.user_id],
+                    errCallback, doneCallback);
             },
             selectPermissionByProjectUser: function (opt, errCallback, doneCallback) {
-                query(SELECT_PERMISSION_BY_PROJECT_USER, [opt.project_id, opt.user_id], errCallback, doneCallback);
+                query(SELECT_PERMISSION_BY_PROJECT_USER, [opt.project_id, opt.user_id],
+                    errCallback, doneCallback);
             },
             updateAuthority: function (opt, errCallback, doneCallback) {
-                var count = 0;
-                var affected = 0;
-                async.whilst(
-                    function () {
-                        return count < opt.members.length;
-                    },
-                    function (next) {
-                        var args = [opt.members[count].role_id, opt.project_id, opt.members[count].user_id];
-                        query(UPDATE_AUTHORITY, args, function (err) {
-                            // 실패하는 경우가 있을까? 일단 없다고 가정하고 진행하자. by daewon.park
-                            count++;
-                            console.log(err);
-                            next(null, affected);
-                        }, function (result) {
-                            count++;
-                            affected += result;
-                            next(null, affected);
-                        });
-                    },
-                    function (err, n) {
-                        if (err) {
-                            if (errCallback) errCallback(err);
-                        } else {
-                            if (doneCallback) doneCallback(n);
-                        }
-                    }
+                doWhilst(opt,
+                    (o, cnt) => [o.members[cnt].role_id, o.project_id, o.members[cnt].user_id],
+                    UPDATE_AUTHORITY,
+                    errCallback,
+                    doneCallback
                 );
             },
             invite: function (opt, errCallback, doneCallback) {
-                var count = 0;
-                var affected = 0;
-                async.whilst(
-                    function () {
-                        return count < opt.members.length;
-                    },
-                    function (next) {
-                        var args = [opt.members[count].user_id, opt.project_id, opt.members[count].role_id];
-                        query(INSERT_MEMBER, args, function (err) {
-                            count++;
-                            console.log(err);
-                            next(null, affected);
-                        }, function (result) {
-                            count++;
-                            affected += result;
-                            next(null, affected);
-                        });
-                    },
-                    function (err, n) {
-                        if (err) {
-                            if (errCallback) errCallback(err);
-                        } else {
-                            if (doneCallback) doneCallback(n);
-                        }
-                    }
+                doWhilst(opt,
+                    (o, cnt) => [o.members[cnt].user_id, o.project_id, o.members[cnt].role_id],
+                    INSERT_MEMBER,
+                    errCallback,
+                    doneCallback
                 );
             },
             withdraw: function (opt, errCallback, doneCallback) {
-                var count = 0;
-                var affected = 0;
-                async.whilst(
-                    function () {
-                        return count < opt.members.length;
-                    },
-                    function (next) {
-                        var args = [opt.members[count].user_id, opt.project_id, opt.members[count].role_id];
-                        query(DELETE_MEMBER, args, function (err) {
-                            // 실패하는 경우가 있을까? 일단 없다고 가정하고 진행하자. by daewon.park
-                            count++;
-                            console.log(err);
-                            next(null, affected);
-                        }, function (result) {
-                            count++;
-                            affected += result;
-                            next(null, affected);
-                        });
-                    },
-                    function (err, n) {
-                        if (err) {
-                            if (errCallback) errCallback(err);
-                        } else {
-                            if (doneCallback) doneCallback(n);
-                        }
-                    }
+                doWhilst(opt,
+                    (o, cnt) => [o.members[cnt].user_id, o.project_id, o.members[cnt].role_id],
+                    DELETE_MEMBER,
+                    errCallback,
+                    doneCallback
                 );
             }
         }

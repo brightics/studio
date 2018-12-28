@@ -213,7 +213,6 @@ module.exports = {
 
                             doneCallback(result.rows, result, DDL_CREATE_ROLE_PERMISSION_TABLE, ['brtc_role_permission']);
                         });
-                        return;
                     }
                     query('select * from brtc_role_permission where role_id = \'role_10101\' and permission_id in (\'perm_monitoring_read\')', [], errCallback, function (result) {
                         if (canMonitor) {

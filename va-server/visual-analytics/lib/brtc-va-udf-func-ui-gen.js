@@ -3,7 +3,8 @@ var camelize = function (str) {
         return g[1].toUpperCase();
     });
     return result.charAt(0).toUpperCase() + result.slice(1);
-}
+};
+
 var _gen_addColumnsRule = function (property) {
     var lines = [];
     lines.push('__clazz__Validator.prototype.add' + camelize(property.param) + 'Rule = function () {');
@@ -31,7 +32,7 @@ var _gen_addColumnsRule = function (property) {
     return lines;
 };
 
-var _gen_addNumericInputRule = function (property) {
+const _gen_addInputRuleCommon = (property) => {
     var lines = [];
     lines.push('__clazz__Validator.prototype.add' + camelize(property.param) + 'Rule = function () {');
     lines.push('    var _this = this;');
@@ -52,36 +53,64 @@ var _gen_addNumericInputRule = function (property) {
     lines.push('    });');
 
     // end of function
-    lines.push('};')
+    lines.push('};');
     lines.push(' ');
     return lines;
 };
 
-var _gen_addInputRule = function (property) {
-    var lines = [];
-    lines.push('__clazz__Validator.prototype.add' + camelize(property.param) + 'Rule = function () {');
-    lines.push('    var _this = this;');
+var _gen_addNumericInputRule = _gen_addInputRuleCommon;
+// function (property) {
+//     var lines = [];
+//     lines.push('__clazz__Validator.prototype.add' + camelize(property.param) + 'Rule = function () {');
+//     lines.push('    var _this = this;');
 
-    lines.push('    this.addRule(function (fnUnit) {');
-    lines.push('        var msg = {');
-    lines.push('            errorCode: \'EE001\',');
-    lines.push('            param: \'' + property.param + '\',');
-    lines.push('            messageParam: [\'' + property.label + '\']');
-    lines.push('        };');
-    lines.push('        for(var i in fnUnit.param[\'input-variables\'])');
-    lines.push('        {');
-    lines.push('              if(fnUnit.param[\'input-variables\'][i][0]===\'' + property.param + '\'){');
-    lines.push('                return _this._checkStringIsEmpty(msg, fnUnit, fnUnit.param[\'input-variables\'][i][2]);');
-    lines.push('              }');
-    lines.push('        }');
-    lines.push('        //return _this._checkStringIsEmpty(msg, fnUnit, fnUnit.param[\'' + property.param + '\']);');
-    lines.push('    });');
+//     lines.push('    this.addRule(function (fnUnit) {');
+//     lines.push('        var msg = {');
+//     lines.push('            errorCode: \'EE001\',');
+//     lines.push('            param: \'' + property.param + '\',');
+//     lines.push('            messageParam: [\'' + property.label + '\']');
+//     lines.push('        };');
+//     lines.push('        for(var i in fnUnit.param[\'input-variables\'])');
+//     lines.push('        {');
+//     lines.push('              if(fnUnit.param[\'input-variables\'][i][0]===\'' + property.param + '\'){');
+//     lines.push('                return _this._checkStringIsEmpty(msg, fnUnit, fnUnit.param[\'input-variables\'][i][2]);');
+//     lines.push('              }');
+//     lines.push('        }');
+//     lines.push('        //return _this._checkStringIsEmpty(msg, fnUnit, fnUnit.param[\'' + property.param + '\']);');
+//     lines.push('    });');
 
-    // end of function
-    lines.push('};')
-    lines.push(' ');
-    return lines;
-};
+//     // end of function
+//     lines.push('};')
+//     lines.push(' ');
+//     return lines;
+// };
+
+var _gen_addInputRule = _gen_addInputRuleCommon;
+// function (property) {
+//     var lines = [];
+//     lines.push('__clazz__Validator.prototype.add' + camelize(property.param) + 'Rule = function () {');
+//     lines.push('    var _this = this;');
+
+//     lines.push('    this.addRule(function (fnUnit) {');
+//     lines.push('        var msg = {');
+//     lines.push('            errorCode: \'EE001\',');
+//     lines.push('            param: \'' + property.param + '\',');
+//     lines.push('            messageParam: [\'' + property.label + '\']');
+//     lines.push('        };');
+//     lines.push('        for(var i in fnUnit.param[\'input-variables\'])');
+//     lines.push('        {');
+//     lines.push('              if(fnUnit.param[\'input-variables\'][i][0]===\'' + property.param + '\'){');
+//     lines.push('                return _this._checkStringIsEmpty(msg, fnUnit, fnUnit.param[\'input-variables\'][i][2]);');
+//     lines.push('              }');
+//     lines.push('        }');
+//     lines.push('        //return _this._checkStringIsEmpty(msg, fnUnit, fnUnit.param[\'' + property.param + '\']);');
+//     lines.push('    });');
+
+//     // end of function
+//     lines.push('};')
+//     lines.push(' ');
+//     return lines;
+// };
 
 var _gen_addMultiLineInputRule = function (property) {
     var lines = [];
@@ -98,7 +127,7 @@ var _gen_addMultiLineInputRule = function (property) {
     lines.push('    });');
 
     // end of function
-    lines.push('};')
+    lines.push('};');
     lines.push(' ');
     return lines;
 };
@@ -131,10 +160,11 @@ var _gen_createContentsAreaControls = function (fnUnit, properties) {
     var lines = [];
 
     lines.push('__clazz__Properties.prototype.createContentsAreaControls = function ($parent) {');
-    lines.push('    Brightics.VA.Core.Editors.Sheet.Panels.PropertiesPanel.prototype.createContentsAreaControls.call(this, $parent);')
+    lines.push('    Brightics.VA.Core.Editors.Sheet.Panels.PropertiesPanel.prototype.createContentsAreaControls.call(this, $parent);');
 
     lines.push('    this.render = {');
-    var i, del;
+    var i;
+    var del;
     for (i = 0; i < properties.length; i++) {
         del = (i < properties.length - 1 && properties.length > 1) ? ',' : '';
         lines.push('        ' + '\'' + properties[i].param + '\': this.render' + camelize(properties[i].param) + 'Control' + del);
@@ -220,7 +250,7 @@ var _gen_createColumnsControl = function (fnUnit, property) {
     lines.push('            _this.executeCommand(command)');
     lines.push('        };');
     lines.push('        _this.controls[\'' + property.param + '\'] = _this.createColumnList(_this.$elements[\'' + property.param + '\'], opt);');
-    lines.push('    }, {mandatory: ' + (property.mandatory || false) + '});')
+    lines.push('    }, {mandatory: ' + (property.mandatory || false) + '});');
 
     // end of function
     lines.push('};');
@@ -242,7 +272,7 @@ var _gen_createNumericInputControl = function (fnUnit, property) {
     lines.push('            var command = _this.createSetUDFParameterValueCommand(\'' + property.param + '\', this.getValue());');
     lines.push('            _this.executeCommand(command);');
     lines.push('        });');
-    lines.push('    }, {mandatory: ' + (property.mandatory || false) + '});')
+    lines.push('    }, {mandatory: ' + (property.mandatory || false) + '});');
 
 
     // end of function
@@ -275,7 +305,7 @@ var _gen_createRadioButtonControl = function (fnUnit, property) {
         lines.push(' ');
     }
 
-    lines.push('    }, {mandatory: ' + (property.mandatory || false) + '});')
+    lines.push('    }, {mandatory: ' + (property.mandatory || false) + '});');
 
 
     // end of function
@@ -323,7 +353,7 @@ var _gen_createCheckBoxControl = function (fnUnit, property) {
     lines.push('            _this.controls[itemKey] = _this.createCheckBox(_this.$elements[itemKey], {}, \'brtc-va-editors-sheet-controls-width-12\')');
     lines.push('            _this.$elements[itemKey].on(\'change\', changeHandler);');
     lines.push('        }');
-    lines.push('    }, {mandatory: ' + (property.mandatory || false) + '});')
+    lines.push('    }, {mandatory: ' + (property.mandatory || false) + '});');
 
     // end of function
     lines.push('};');
@@ -345,7 +375,7 @@ var _gen_createInputControl = function (fnUnit, property) {
     lines.push('            var command = _this.createSetUDFParameterValueCommand(\'' + property.param + '\', $(this).val());');
     lines.push('            _this.executeCommand(command);');
     lines.push('        });');
-    lines.push('    }, {mandatory: ' + (property.mandatory || false) + '});')
+    lines.push('    }, {mandatory: ' + (property.mandatory || false) + '});');
 
     // end of function
     lines.push('};');
@@ -367,7 +397,7 @@ var _gen_createMultiLineInputControl = function (fnUnit, property) {
     lines.push('            var command = _this.createSetUDFParameterValueCommand(\'' + property.param + '\', $(this).val().split(\'\\n\'));');
     lines.push('            _this.executeCommand(command);');
     lines.push('        });');
-    lines.push('    }, {mandatory: ' + (property.mandatory || false) + '});')
+    lines.push('    }, {mandatory: ' + (property.mandatory || false) + '});');
 
     // end of function
     lines.push('};');
@@ -592,7 +622,7 @@ var _gen_PropertiesPanelClass = function (env) {
     var fnUnit = env.defaultFnUnit;
     var properties = env['properties-layout'];
     if (!properties) {
-        throw { message: '[properties-layout] does not exist. ' }
+        throw { message: '[properties-layout] does not exist. ' };
     }
 
     var header = [];
@@ -618,7 +648,7 @@ var _gen_PropertiesPanelClass = function (env) {
         '',
         '    this.retrieveTableInfo(this.options.fnUnit[\'inData\']);',
         '};',
-        ''
+        '',
     ];
 
     body = body.concat(_gen_createContentsAreaControls(fnUnit, properties));
@@ -676,8 +706,7 @@ var _gen_InputValidatorClass = function (env) {
     var InputCountLabel = 'Single';
     if (env['in-range'].min > 2) {
         InputCountLabel = 'Multi';
-    }
-    else if (env['in-range'].min === 2) {
+    } else if (env['in-range'].min === 2) {
         InputCountLabel = 'Pair';
     }
     // var func = env.defaultFnUnit.func;
@@ -695,7 +724,7 @@ var _gen_InputValidatorClass = function (env) {
         '',
         '__clazz__Validator.prototype = Object.create(Brightics.VA.Core.Validator.' + InputCountLabel + 'InputValidator.prototype);',
         '__clazz__Validator.prototype.constructor = __clazz__Validator;',
-        ''
+        '',
     ];
 
     body.push('__clazz__Validator.prototype.initRules = function () {');
@@ -727,31 +756,29 @@ var _gen_InputValidatorClass = function (env) {
     body = body.concat(_gen_addExistFnUnitRule());
 
     var footer = [
-        'Brightics.VA.Core.Functions.Library.__func__.validator = __clazz__Validator;'
+        'Brightics.VA.Core.Functions.Library.__func__.validator = __clazz__Validator;',
     ];
 
     return header.concat(body, footer);
 };
 
 
-
 var generateSnippet = function (options) {
-
     var header = [
         '(function () {',
         '    \'use strict\';',
         '',
         '    var root = this;',
         '    var Brightics = root.Brightics;',
-        ''
+        '',
     ];
 
     options.defaultFnUnit.display.diagram = {
-        position: { 'x': 20, 'y': 10 }
+        position: { 'x': 20, 'y': 10 },
     };
     options.defaultFnUnit.display.sheet = {
         'in': { 'partial': [{ 'panel': [], 'layout': {} }], 'full': [{ 'panel': [], 'layout': {} }] },
-        'out': { 'partial': [{ 'panel': [], 'layout': {} }], 'full': [{ 'panel': [], 'layout': {} }] }
+        'out': { 'partial': [{ 'panel': [], 'layout': {} }], 'full': [{ 'panel': [], 'layout': {} }] },
     };
 
     var body = _gen_EnvClass(options);
@@ -769,13 +796,13 @@ var generateSnippet = function (options) {
     }
 
     var footer = [
-        '}).call(this);'
+        '}).call(this);',
     ];
 
     var func = options.defaultFnUnit.func;
     var clazz = camelize(func);
-    return header.concat(body, footer).join('\n').replace(/__clazz__/g, clazz).replace(/__func__/g, func);
-
+    return header.concat(body, footer).join('\n').replace(/__clazz__/g, clazz)
+        .replace(/__func__/g, func);
 };
 
 exports.generateSnippet = generateSnippet;

@@ -680,19 +680,7 @@ const importFile = function (req, res) {
     };
     if (req.body.columnname) obj.columnname = req.body.columnname;
     options.body = JSON.stringify(obj);
-    request(options, function (error, response, body) {
-        if (error) {
-            return __BRTC_ERROR_HANDLER.sendServerError(res, error);
-        }
-        if (response.statusCode !== 200) {
-            return __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-        }
-        try {
-            return res.json(body);
-        } catch (ex) {
-            return __BRTC_ERROR_HANDLER.sendServerError(res, ex);
-        }
-    });
+    request(options, cb(res));
 };
 
 router.get('/staging/query', __BRTC_ERROR_HANDLER.checkParams(['user', 'mid', 'tab', 'offset', 'limit']), function (req, res) {
@@ -732,19 +720,7 @@ const createLink = function (req, res) {
     options.body = JSON.stringify({ links });
     __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
 
-    request(options, function (error, response, body) {
-        if (error) {
-            return __BRTC_ERROR_HANDLER.sendServerError(res, error);
-        }
-        if (response.statusCode !== 200) {
-            return __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-        }
-        try {
-            return res.json(body);
-        } catch (ex) {
-            return __BRTC_ERROR_HANDLER.sendServerError(res, ex);
-        }
-    });
+    request(options, cb(res));
 };
 
 const deleteLink = function (req, res) {
@@ -753,19 +729,7 @@ const deleteLink = function (req, res) {
     options.body = JSON.stringify({ links });
     __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
 
-    request(options, function (error, response, body) {
-        if (error) {
-            return __BRTC_ERROR_HANDLER.sendServerError(res, error);
-        }
-        if (response.statusCode !== 200) {
-            return __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-        }
-        try {
-            return res.json(body);
-        } catch (ex) {
-            return __BRTC_ERROR_HANDLER.sendServerError(res, ex);
-        }
-    });
+    request(options, cb(res));
 };
 
 const getListTable = function (req, res, next) {
