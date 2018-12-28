@@ -263,7 +263,7 @@ def paired_ttest(table, group_by=None, **params):
         return _paired_ttest(table, **params)
 
 
-def _paired_ttest(table, first_column, second_column, alternative, hypothesized_difference=0, confidence_level=0.95):
+def _paired_ttest(table, first_column, second_column, alternative = ['greater', 'less', 'twosided'], hypothesized_difference=0, confidence_level=0.95):
     df = len(table) - 1
     diff_mean = (table[first_column] - table[second_column]).mean()
     std_dev = np.std(table[first_column] - table[second_column])
