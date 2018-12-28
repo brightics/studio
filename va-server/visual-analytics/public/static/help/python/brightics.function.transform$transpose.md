@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.transform import transpose
-res = transpose(columns = ,label_col = ,label_col_name = )
+res = transpose(columns = ,label_col = ,label_col_name = ,group_by = )
 res['out_table']
 ```
 
@@ -23,6 +23,7 @@ This function exchanages rows and columns of the given table.
 3. **Label Column Name**: Label Column Name
    - Value type : String
    - Default : label
+4. **Group By**: Columns to group by
 
 #### Outputs
 1. **out_table**: table
@@ -38,6 +39,7 @@ This function exchanages rows and columns of the given table.
 3. **label_col_name**: Label Column Name
    - Value type : String
    - Default : label
+4. **group_by**: Columns to group by
 
 #### Outputs
 1. **out_table**: table
