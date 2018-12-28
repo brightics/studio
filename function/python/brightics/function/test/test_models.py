@@ -159,31 +159,34 @@ if __name__ == '__main__':
     else:
         out_f = None
     
-    _print_write_test_start(out_f)
-    
-    failed_projects = []
-    for dir_, project_label in zip(dirs, categories):
-        project_label = project_label.upper()
-        testfolder = os.path.join(dir_, 'test')
+    try:
+        _print_write_test_start(out_f)
         
-        model_label_list = [filename for filename in os.listdir(testfolder) if _is_model_json(testfolder, filename)]
-        model_json_list = [os.path.join(testfolder, filename) for filename in os.listdir(testfolder) if _is_model_json(testfolder, filename)]
-        
-        if model_json_list:
-            _print_write_project_start(out_f)
+        failed_projects = []
+        for dir_, project_label in zip(dirs, categories):
+            project_label = project_label.upper()
+            testfolder = os.path.join(dir_, 'test')
             
-            failed_models = []
-            for filename, model_label in zip(model_json_list, model_label_list):
-                try:
-                    _run_model_file(filename, out_f)
-                    message = '{}_{}: SUCCEEDED\n'.format(project_label, model_label)
-                    _print_write(message, out_f)
-                    
-                except Exception as e:
-                    message = message = '{}_{}: FAILED\n{}\n'.format(project_label, model_label, e)
-                    _print_write(message, out_f)
-                    failed_models.append(model_label)
+            model_label_list = [filename for filename in os.listdir(testfolder) if _is_model_json(testfolder, filename)]
+            model_json_list = [os.path.join(testfolder, filename) for filename in os.listdir(testfolder) if _is_model_json(testfolder, filename)]
             
-            _print_write_project_result(project_label, failed_models, out_f, failed_projects)
-     
-    _print_write_test_result(failed_projects, out_f)
+            if model_json_list:
+                _print_write_project_start(out_f)
+                
+                failed_models = []
+                for filename, model_label in zip(model_json_list, model_label_list):
+                    try:
+                        _run_model_file(filename, out_f)
+                        message = '{}_{}: SUCCEEDED\n'.format(project_label, model_label)
+                        _print_write(message, out_f)
+                        
+                    except Exception as e:
+                        message = message = '{}_{}: FAILED\n{}\n'.format(project_label, model_label, e)
+                        _print_write(message, out_f)
+                        failed_models.append(model_label)
+                
+                _print_write_project_result(project_label, failed_models, out_f, failed_projects)
+         
+        _print_write_test_result(failed_projects, out_f)
+    finally:
+        out_f.close()
