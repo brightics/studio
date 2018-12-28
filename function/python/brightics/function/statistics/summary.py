@@ -100,7 +100,7 @@ def string_summary(table, group_by=None, **params):
     if group_by is not None:
         return _function_by_group(_string_summary, table, group_by=group_by, **params)
     else:
-        return _linear_regression_train(table, **params)
+        return _string_summary(table, **params)
 
 def _string_summary(table, input_cols):
     table = table.copy()
