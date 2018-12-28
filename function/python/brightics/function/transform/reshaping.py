@@ -118,9 +118,14 @@ def _transpose(table, columns, label_col=None, label_col_name='label'):
     return{'out_table':out_table}
 
 
-def distinct(table, input_cols, shown_opt):
-    if shown_opt == 'selected':
-        out_table = table[input_cols].drop_duplicates()
+def distinct(table, group_by=None, **params):
+    check_required_parameters(_distinct, params, ['table'])
+    if group_by is not None:
+        return _function_by_group(_distinct, table, group_by=group_by, **params)
     else:
-        out_table = table.drop_duplicates(input_cols)
+        return _distinct(table, **params)
+
+        
+def _distinct(table, input_cols):
+    out_table = table.drop_duplicates(input_cols)
     return {'out_table': out_table}
