@@ -11,7 +11,14 @@ from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 
 
-def naive_bayes_train(table, feature_cols, label_col, alpha=1.0, fit_prior=True, class_prior=None):
+def naive_bayes_train(table, group_by=None, **params):
+    check_required_parameters(_naive_bayes_train, params, ['table'])
+    if group_by is not None:
+        return _function_by_group(_naive_bayes_train, table, group_by=group_by, **params)
+    else:
+        return _naive_bayes_train(table, **params)
+
+def _naive_bayes_train(table, feature_cols, label_col, alpha=1.0, fit_prior=True, class_prior=None):
 
     features = table[feature_cols]
     label = table[label_col]
@@ -30,11 +37,11 @@ def naive_bayes_train(table, feature_cols, label_col, alpha=1.0, fit_prior=True,
     nb_model.fit(features, label_correspond)
     class_log_prior = nb_model.class_log_prior_
     feature_log_prob_ = nb_model.feature_log_prob_
-    tmp_result = np.hstack((list(map(list, zip(*[label_encoder.classes_] + [class_log_prior]))), (feature_log_prob_)))
-    column_names = ['labels', 'pi']
+    tmp_result=np.hstack((list(map(list, zip(*[label_encoder.classes_]+[class_log_prior] ))),(feature_log_prob_)))
+    column_names=['labels','pi']
     for feature_col in feature_cols:
-        column_names += ['theta_' + feature_col]
-    result_table = pd.DataFrame.from_records(tmp_result, columns=column_names)
+        column_names+=['theta_'+feature_col]
+    result_table=pd.DataFrame.from_records(tmp_result,columns=column_names)
     prediction_correspond = nb_model.predict(features)
         
     get_param = dict()
@@ -97,7 +104,14 @@ def _plot_confusion_matrix(cm, classes,
     plt.tight_layout()
 
 
-def naive_bayes_predict(table, model, suffix, display_log_prob=False, prediction_col='prediction', prob_prefix='probability', log_prob_prefix='log_probability'):
+def naive_bayes_predict(table, model, group_by=None, **params):
+    check_required_parameters(_naive_bayes_predict, params, ['table', 'model'])
+    if group_by is not None:
+        return _function_by_group(_naive_bayes_predict, table, model, group_by=group_by, **params)
+    else:
+        return _naive_bayes_predict(table, model, **params)
+
+def _naive_bayes_predict(table, model, suffix, display_log_prob=False, prediction_col='prediction', prob_prefix='probability', log_prob_prefix='log_probability'):
     label_col = model['label_col']
     feature_cols = model['features']
     features = table[feature_cols]
@@ -110,15 +124,15 @@ def naive_bayes_predict(table, model, suffix, display_log_prob=False, prediction
     if(suffix == 'label'):
         suffixes = label_encoder.classes_
     else:
-        suffixes = range(0, len(label_encoder.classes_)) 
+        suffixes = range(0,len(label_encoder.classes_)) 
 
     prob = nb_model.predict_proba(features)    
-    prob_cols = ['{prefix}_{suffix}'.format(prefix=prob_prefix, suffix=suffix) for suffix in suffixes]
+    prob_cols = ['{prefix}_{suffix}'.format(prefix=prob_prefix,suffix=suffix) for suffix in suffixes]
     prob_df = pd.DataFrame(data=prob, columns=prob_cols)
     
     if display_log_prob == True:
         log_prob = nb_model.predict_log_proba(features)
-        logprob_cols = ['{prefix}_{suffix}'.format(prefix=log_prob_prefix, suffix=suffix) for suffix in suffixes]
+        logprob_cols = ['{prefix}_{suffix}'.format(prefix=log_prob_prefix,suffix=suffix) for suffix in suffixes]
         logprob_df = pd.DataFrame(data=log_prob, columns=logprob_cols)
         
     result = table

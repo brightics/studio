@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.transform import distinct
-res = distinct(input_cols = ,shown_opt = )
+res = distinct(input_cols = ,group_by = )
 res['out_table']
 ```
 
@@ -18,10 +18,7 @@ Distinct returns the table with duplicate rows removed, optionally only consider
 
 #### Parameters
 1. **Input Columns**: 
-2. **Option**: Whether to return the selected columns or all columns.
-   - Available items
-      - Show all columns
-      - Show selected columns (default)
+2. **Group By**: Columns to group by
 
 #### Outputs
 1. **out_table**: table
@@ -32,10 +29,7 @@ Distinct returns the table with duplicate rows removed, optionally only consider
 
 #### Parameters
 1. **input_cols**: 
-2. **shown_opt**: Whether to return the selected columns or all columns.
-   - Available items
-      - all
-      - selected (default)
+2. **group_by**: Columns to group by
 
 #### Outputs
 1. **out_table**: table

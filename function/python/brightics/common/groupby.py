@@ -31,7 +31,18 @@ def _function_by_group(function, table, model=None, group_by=None, **params):
                                         model=model['_grouped_data'][group], **params)
         
         for res_key in res_keys:
-            res_dict[res_key]['_grouped_data'][group] = res_group[res_key]
+            res = res_group[res_key]
+            
+            if isinstance(res, pd.DataFrame):
+                for item in group_by[::-1]:
+                    tmp_group_by = []
+                    if item not in res.keys():
+                        for i in range(len(res)):
+                            tmp_group_by += [table['_grouped_data'][group][item][0]]
+                        res.insert(0, item, tmp_group_by)
+                res_dict[res_key]['_grouped_data'][group] = res
+            else:
+                res_dict[res_key]['_grouped_data'][group] = res
     
     
     for repr_key in model_keys_containing_repr:
@@ -59,4 +70,4 @@ def _group(table, group_by):
     return res_dict, group_keys
 
 def _flatten(grouped_table):
-    return pd.concat([v for k, v in grouped_table['_grouped_data'].items() if v is not None], ignore_index=True)
+    return pd.concat([v for k, v in grouped_table['_grouped_data'].items() if v is not None], ignore_index=True, sort = False)

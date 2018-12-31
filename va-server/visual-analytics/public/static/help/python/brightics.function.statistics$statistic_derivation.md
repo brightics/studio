@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.statistics import statistic_derivation
-res = statistic_derivation(input_cols = ,statistics = ,percentile_amounts = ,trimmed_mean_amounts = )
+res = statistic_derivation(input_cols = ,statistics = ,percentile_amounts = ,trimmed_mean_amounts = ,group_by = )
 res['out_table']
 ```
 
@@ -22,6 +22,7 @@ Compute descriptive statistics by group and save the results in new columns.
 2. **Target Statistic**: Target statistic function names.
 3. **Percentile Amounts**: The amounts for the percentile statistics. It is only applied when Percentile is selected in Target Statistics. Allowed range is 0 <= (Percentile Amounts) <= 100
 4. **Trimmed Mean Amounts**: The amounts for the trimmed mean statistics. It is only applied when Trimmed Mean is selected in Target Statistics. Allowed range is 0.0 <= (Trimmed Mean Amounts) < 0.5.
+5. **Group By**: Columns to group by
 
 #### Outputs
 1. **out_table**: table
@@ -36,6 +37,7 @@ Compute descriptive statistics by group and save the results in new columns.
 2. **statistics**: Target statistic function names.
 3. **percentile_amounts**: The amounts for the percentile statistics. It is only applied when Percentile is selected in Target Statistics. Allowed range is 0 <= (Percentile Amounts) <= 100
 4. **trimmed_mean_amounts**: The amounts for the trimmed mean statistics. It is only applied when Trimmed Mean is selected in Target Statistics. Allowed range is 0.0 <= (Trimmed Mean Amounts) < 0.5.
+5. **group_by**: Columns to group by
 
 #### Outputs
 1. **out_table**: table
