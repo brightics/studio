@@ -38,6 +38,8 @@ def bucketizer(table, input_cols, radio_splits, bucket_type, splits=None, splits
                         splits.sort()
             splits += [math.inf]
         else:
+            if splits == None:
+                splits=[]
             splits += [-math.inf, math.inf]
             splits.sort()
     # else:
