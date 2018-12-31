@@ -3,6 +3,7 @@ import itertools
 import math
 import pandas as pd
 import matplotlib.pyplot as plt
+#import networkx as nx
 from brightics.common.report import ReportBuilder, strip_margin, plt2MD, pandasDF2MD, dict2MD
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
@@ -128,6 +129,7 @@ class _FPTree(object):
 
         for transaction in transactions:
             sorted_items = [x for x in transaction if x in frequent]
+            sorted_items.sort()
             sorted_items.sort(key=lambda x: frequent[x], reverse=True)
             if len(sorted_items) > 0:
                 self._insert_tree(sorted_items, root, headers)
@@ -321,8 +323,6 @@ def _dict_to_table(rules,len_trans):
     result=[]
     for items in rules.keys():
         for elements in rules[items]:
-            support_ante = elements[2]/len_trans
-            support_conse = elements[3]/len_trans
             support_both = elements[1]/len_trans
             confidence = elements[1]/elements[2]
             lift = confidence/elements[3]*len_trans
@@ -330,9 +330,9 @@ def _dict_to_table(rules,len_trans):
                 conviction = math.inf
             else:
                 conviction = (1-elements[3]/len_trans)/(1-confidence)
-            result+=[[list(items),list(elements[0]),support_both,confidence,lift,conviction,support_ante,support_conse]]
+            result+=[[list(items),list(elements[0]),support_both,confidence,lift,conviction]]
     result=pd.DataFrame.from_records(result)
-    result.columns=['antecedent','consequent','support','confidence','lift','conviction','support_antecedent','support_consequent']
+    result.columns=['antecedent','consequent','support','confidence','lift','conviction']
     return result
 
 def _table_to_transactions(table,items,user_name):
@@ -353,6 +353,8 @@ def _n_blank_strings(number):
     return result
 
 def _check_blank_string(string):
+    if(type(string)!= 'string'):
+        return False
     if(len(string))==0:
         return False
     for i in range(len(string)):
@@ -369,17 +371,17 @@ def association_rule(table, group_by=None, **params):
         return _association_rule(table, **params)
 
 def _association_rule(table,items,user_name,min_support=0.01,min_confidence=0.8,min_lift=-math.inf,max_lift=math.inf,min_conviction=-math.inf,max_conviction=math.inf):
-    table_erase_duplicates = table.copy()
-    table_erase_duplicates = table_erase_duplicates.drop_duplicates([items]+[user_name])
+    table_erase_duplicates = table.drop_duplicates([items]+[user_name])
     table_erase_duplicates = table_erase_duplicates.reset_index()
     transactions = _table_to_transactions(table_erase_duplicates,items,user_name)
     len_trans=len(transactions)
     patterns = _find_frequent_patterns(transactions, min_support)
     rules = _generate_association_rules(patterns, min_confidence)
     if len(rules) == 0:
-        return {'out_table' : rules}
+        result = pd.DataFrame()
+        return {'out_table' : result}
     result = _dict_to_table(rules,len_trans)
-    result = result[(result.lift >min_lift) & (result.conviction > min_conviction) & (result.lift < max_lift) & (result.conviction < max_conviction)]
+    result = result[(result.lift >= min_lift) & (result.conviction >= min_conviction) & (result.lift <= max_lift) & (result.conviction <= max_conviction)]
     return {'out_table' : result}
     
     
@@ -421,6 +423,8 @@ def _association_rule_visualization(table, option='multiple_to_single', edge_len
         result_network['string_conse'] = string_conse
         result_network = result_network[result_network.length_ante == 1]
         result_network = result_network[result_network.length_conse == 1]
+        result_network['support_ante'] = result_network['support']/result_network['confidence']
+        result_network['support_conse'] = result_network['confidence']/result_network['lift']
         #edges_colors = preprocessing.LabelEncoder()
         #edges_colors.fit(result_network['lift'])
 
@@ -440,7 +444,7 @@ def _association_rule_visualization(table, option='multiple_to_single', edge_len
         pos = nx.spring_layout(G,k=0.4*edge_length_scaling)
 
         node_tmp = list(result_network.string_ante)+list(result_network.string_conse)
-        support_tmp = list(result_network.support_antecedent)+list(result_network.support_consequent)
+        support_tmp = list(result_network.support_ante)+list(result_network.support_conse)
         tmp_node_support=[]
         for i in range(len(node_tmp)):
             tmp_node_support+=[[node_tmp[i],support_tmp[i]]]
