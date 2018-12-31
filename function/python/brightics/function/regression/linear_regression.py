@@ -29,7 +29,13 @@ def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True)
         lr_model_fit = sm.OLS(label, sm.add_constant(features)).fit()
     else:
         lr_model_fit = sm.OLS(label, features).fit()
-    summary = lr_model_fit.summary().as_html()
+    
+    summary = lr_model_fit.summary()
+    df_summary0 = summary.tables[0]
+    df_summary1 = summary.tables[1]
+    df_summary2 = summary.tables[2]
+    
+    html_result = summary.as_html()
 
     plt.figure()
     plt.scatter(predict, label)
@@ -78,7 +84,7 @@ def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True)
     | ### Summary
     |
     """))
-    rb.addHTML(summary)
+    rb.addHTML(html_result)
     rb.addMD(strip_margin("""
     |
     | ### Predicted vs Actual
@@ -107,7 +113,11 @@ def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True)
     model['pvalues'] = lr_model_fit.pvalues
     model['lr_model'] = lr_model
     model['report'] = rb.get()
-
+    
+    model['df_summary0'] = df_summary0
+    model['df_summary1'] = df_summary1
+    model['df_summary2'] = df_summary2
+    
     return {'model' : model}
 
 

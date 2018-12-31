@@ -47,3 +47,25 @@ def flatten_json(model, **params):
     
 def _flatten_json(model, sep='__'):
     return {'table': pd.DataFrame.from_dict([_flatten(model, sep=sep)])}
+
+
+def get_element_from_dict(d, key_list):
+    if not isinstance(d, dict):
+        raise Exception('not a dictionary.')
+    
+    for key in key_list:
+        try:
+            d = d[key]
+        except Exception as e:
+            print(e)
+    
+    return d
+
+
+def _get_table(model, key_list):
+    table = get_element_from_dict(model, key_list)
+    if not isinstance(table, pd.DataFrame):
+        raise ('item is not a DataFrame.')
+    
+    return table
+
