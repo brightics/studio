@@ -181,9 +181,10 @@ def _test(dirs, categories):
 def _delete_current_job():
     response_get = requests.get('http://localhost:9097/api/core/v2/analytics/jobs', headers=HEADERS).json()
     for job in response_get:
-        jobid = job['jobId'] 
-        response_delete = requests.delete('http://localhost:9097/api/core/v2/analytics/jobs/{}'.format(jobid), headers=HEADERS).json()
-        print(response_delete)
+        if job['status'] == 'PROCESSING' or job['status'] == 'WAIT':  
+            jobid = job['jobId'] 
+            response_delete = requests.delete('http://localhost:9097/api/core/v2/analytics/jobs/{}'.format(jobid), headers=HEADERS).json()
+            print(response_delete)
     
 
 if __name__ == '__main__':
