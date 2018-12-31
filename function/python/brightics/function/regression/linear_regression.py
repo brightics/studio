@@ -7,6 +7,7 @@ from brightics.common.report import ReportBuilder, strip_margin, plt2MD
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.common.utils.table_converters import simple_tables2df_list
 
 
 def linear_regression_train(table, group_by=None, **params):
@@ -15,6 +16,7 @@ def linear_regression_train(table, group_by=None, **params):
         return _function_by_group(_linear_regression_train, table, group_by=group_by, **params)
     else:
         return _linear_regression_train(table, **params)
+
     
 def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True):
     features = table[feature_cols]
@@ -31,9 +33,10 @@ def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True)
         lr_model_fit = sm.OLS(label, features).fit()
     
     summary = lr_model_fit.summary()
-    df_summary0 = summary.tables[0]
-    df_summary1 = summary.tables[1]
-    df_summary2 = summary.tables[2]
+    summary_tables = simple_tables2df_list(summary.tables)
+    summary0 = summary_tables[0]
+    summary1 = summary_tables[1]
+    summary2 = summary_tables[2]
     
     html_result = summary.as_html()
 
@@ -114,9 +117,9 @@ def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True)
     model['lr_model'] = lr_model
     model['report'] = rb.get()
     
-    model['df_summary0'] = df_summary0
-    model['df_summary1'] = df_summary1
-    model['df_summary2'] = df_summary2
+    model['summary0'] = summary0
+    model['summary1'] = summary1
+    model['summary2'] = summary2
     
     return {'model' : model}
 

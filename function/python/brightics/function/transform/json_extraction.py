@@ -62,10 +62,18 @@ def get_element_from_dict(d, key_list):
     return d
 
 
+def get_table(model, **params):
+    check_required_parameters(_get_table, params, ['model'])
+    if '_grouped_data' in model:
+        return _function_by_group(_get_table, model=model, **params)
+    else:
+        return _get_table(model=model, **params)    
+
+
 def _get_table(model, key_list):
     table = get_element_from_dict(model, key_list)
     if not isinstance(table, pd.DataFrame):
         raise ('item is not a DataFrame.')
     
-    return table
+    return {'table': table}
 
