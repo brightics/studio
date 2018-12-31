@@ -2,14 +2,29 @@ var router = __REQ_express.Router();
 var request = __REQ_request;
 var decryptRSA = require('../../../../../lib/rsa').decryptRSA;
 
+const responseHandler = (req, res, expectedCode = 200) => {
+    return function (error, response, body) {
+        if (error) {
+            __BRTC_ERROR_HANDLER.sendServerError(res, error);
+        } else {
+            if (response.statusCode === expectedCode) {
+                res.json({ success: true });
+            } else {
+                __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
+            }
+        }
+    };
+};
+
 var getDecryptedDatasource = function (req) {
     return Object.assign({}, req.body, {
-        secretAccessKey: decryptRSA(req.body.secretAccessKey, req)
+        secretAccessKey: decryptRSA(req.body.secretAccessKey, req),
     });
 };
 
 var _executeInPermission = function (req, res, perm, task) {
-    var permHandler = __BRTC_PERM_HELPER.checkPermission(req, [__BRTC_PERM_HELPER.PERMISSION_RESOURCE_TYPES.DATASOURCE], perm);
+    var permHandler = __BRTC_PERM_HELPER.checkPermission(req,
+        [__BRTC_PERM_HELPER.PERMISSION_RESOURCE_TYPES.DATASOURCE], perm);
     permHandler.on('accept', task);
     permHandler.on('deny', function (permissions) {
         __BRTC_ERROR_HANDLER.sendNotAllowedError(res);
@@ -19,7 +34,7 @@ var _executeInPermission = function (req, res, perm, task) {
     });
 };
 
-var convertS3 = function ({accessKeyId, bucketName, secretAccessKey, _links}) {
+var convertS3 = function ({ accessKeyId, bucketName, secretAccessKey, _links }) {
     const hrefPrefix = '/api/core/v2/entity/s3/';
 
     const url = _links.self.href;
@@ -27,9 +42,9 @@ var convertS3 = function ({accessKeyId, bucketName, secretAccessKey, _links}) {
         accessKeyId,
         bucketName,
         secretAccessKey: '',
-        datasourceName: url.substring(url.indexOf(hrefPrefix) + hrefPrefix.length)
+        datasourceName: url.substring(url.indexOf(hrefPrefix) + hrefPrefix.length),
     };
-}
+};
 
 var getDatasource = function (req, res) {
     var task = function (permissions) {
@@ -82,59 +97,19 @@ var createDatasource = function (req, res) {
         var options = __BRTC_CORE_SERVER.createRequestOptions('POST', '/api/core/v2/entity/s3');
         __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
         options.body = JSON.stringify(getDecryptedDatasource(req));
-        request(options, function (error, response, body) {
-            if (error) {
-                __BRTC_ERROR_HANDLER.sendServerError(res, error);
-            } else {
-                if (response.statusCode === 201) {
-                    res.json({
-                        success: true
-                    });
-                } else {
-                    __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
-                }
-            }
-        });
+        request(options, responseHandler(req, res, 201));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_DATASOURCE_UPDATE, task);
 };
 
-var updateDatasource = function (req, res) {
-    var task = function (permissions) {
-        var options = __BRTC_CORE_SERVER.createRequestOptions('POST', '/api/core/v2/entity/s3');
-        __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-        options.body = JSON.stringify(getDecryptedDatasource(req));
-        request(options, function (error, response, body) {
-            if (error) {
-                __BRTC_ERROR_HANDLER.sendServerError(res, error);
-            } else {
-                if (response.statusCode === 201) {
-                    res.json({success: true});
-                } else {
-                    __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
-                }
-            }
-        });
-    };
-    _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_DATASOURCE_UPDATE, task);
-};
+var updateDatasource = createDatasource;
 
 var deleteDatasource = function (req, res) {
     var task = function (permissions) {
         var datasourceName = req.params.datasourceName;
         var options = __BRTC_CORE_SERVER.createRequestOptions('DELETE', '/api/core/v2/entity/s3/' + datasourceName);
         __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-        request(options, function (error, response, body) {
-            if (error) {
-                __BRTC_ERROR_HANDLER.sendServerError(res, error);
-            } else {
-                if (response.statusCode === 204) {
-                    res.json({success: true});
-                } else {
-                    __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
-                }
-            }
-        });
+        request(options, responseHandler(req, res, 204));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_DATASOURCE_DELETE, task);
 };

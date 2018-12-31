@@ -5,6 +5,23 @@ const multiparty = require('multiparty');
 const MessageFormat = require('messageformat');
 const mf = new MessageFormat('en');
 
+
+const cb = (res) => (error, response, body) => {
+    if (error) {
+        return __BRTC_ERROR_HANDLER.sendServerError(res, error);
+    }
+    if (response.statusCode !== 200) {
+        return __BRTC_ERROR_HANDLER
+            .sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
+    }
+    try {
+        return res.json(body);
+    } catch (ex) {
+        return __BRTC_ERROR_HANDLER.sendServerError(res, ex);
+    }
+};
+
+
 const _executeInPermission = function (req, res, perm, task) {
     const permHandler = __BRTC_PERM_HELPER.checkPermission(req,
         [__BRTC_PERM_HELPER.PERMISSION_RESOURCE_TYPES.REPO], perm);
@@ -126,22 +143,6 @@ const uploadFile = function (req, res) {
             return __BRTC_ERROR_HANDLER.sendError(res, 36012);
         }
 
-
-        const cb = (error, response, body) => {
-            if (error) {
-                return __BRTC_ERROR_HANDLER.sendServerError(res, error);
-            }
-            if (response.statusCode !== 200) {
-                return __BRTC_ERROR_HANDLER
-                    .sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-            }
-            try {
-                return res.json(body);
-            } catch (ex) {
-                return __BRTC_ERROR_HANDLER.sendServerError(res, ex);
-            }
-        };
-
         const task = function () {
             const contentType = formPart.headers['content-type'];
             const formData = {
@@ -162,7 +163,7 @@ const uploadFile = function (req, res) {
             options.headers.delimiter = fields.delimiter;
             options.headers.path = fields.path;
             options.formData = formData;
-            request(options, cb);
+            request(options, cb(res));
         };
 
         if (fields.path.indexOf('../') > -1) {
@@ -375,19 +376,7 @@ const deleteFile = function (req, res) {
     const task = function (permissions) {
         let options = __BRTC_CORE_SERVER.createRequestOptions('DELETE', '/api/core/v2/data?key=' + req.body.path);
         __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-        request(options, function (error, response, body) {
-            if (error) {
-                return __BRTC_ERROR_HANDLER.sendServerError(res, error);
-            }
-            if (response.statusCode !== 200) {
-                return __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-            }
-            try {
-                return res.json(body);
-            } catch (ex) {
-                return __BRTC_ERROR_HANDLER.sendServerError(res, ex);
-            }
-        });
+        request(options, cb(res));
     };
 
     if (req.body.path.indexOf('../') > -1) {
@@ -446,19 +435,7 @@ const moveFile = function (req, res) {
         let options = __BRTC_CORE_SERVER.createRequestOptions('POST', '/api/core/v2/data/move');
         __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
         options.body = JSON.stringify(req.body);
-        request(options, function (error, response, body) {
-            if (error) {
-                return __BRTC_ERROR_HANDLER.sendServerError(res, error);
-            }
-            if (response.statusCode !== 200) {
-                return __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-            }
-            try {
-                return res.json(body);
-            } catch (ex) {
-                return __BRTC_ERROR_HANDLER.sendServerError(res, ex);
-            }
-        });
+        request(options, cb(res));
     };
 
     if (req.body.source.indexOf('/shared/upload/') === 0) {
@@ -476,19 +453,7 @@ const copyFile = function (req, res) {
         let options = __BRTC_CORE_SERVER.createRequestOptions('POST', '/api/core/v2/data/copy');
         __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
         options.body = JSON.stringify(req.body);
-        request(options, function (error, response, body) {
-            if (error) {
-                return __BRTC_ERROR_HANDLER.sendServerError(res, error);
-            }
-            if (response.statusCode !== 200) {
-                return __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-            }
-            try {
-                return res.json(body);
-            } catch (ex) {
-                return __BRTC_ERROR_HANDLER.sendServerError(res, ex);
-            }
-        });
+        request(options, cb(res));
     };
     // if (req.body.source.indexOf('/brtc/repo/shared/') == 0) {
     //     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_REPO_SHARED_UPDATE, task);
@@ -555,19 +520,7 @@ const download = function (req, res) {
         let options = __BRTC_CORE_SERVER.createRequestOptions('POST', '/api/core/v2/data/download');
         __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
         options.body = JSON.stringify(req.body);
-        request(options, function (error, response, body) {
-            if (error) {
-                return __BRTC_ERROR_HANDLER.sendServerError(res, error);
-            }
-            if (response.statusCode !== 200) {
-                return __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-            }
-            try {
-                return res.json(body);
-            } catch (ex) {
-                return __BRTC_ERROR_HANDLER.sendServerError(res, ex);
-            }
-        });
+        request(options, cb(res));
     };
 
     if (req.body.remotePath.indexOf('../') > -1) {
@@ -671,19 +624,7 @@ const head = function (req, res) {
     });
     let options = __BRTC_CORE_SERVER.createRequestOptions('GET', url);
     __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-    request(options, function (error, response, body) {
-        if (error) {
-            return __BRTC_ERROR_HANDLER.sendServerError(res, error);
-        }
-        if (response.statusCode !== 200) {
-            return __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-        }
-        try {
-            return res.json(body);
-        } catch (ex) {
-            return __BRTC_ERROR_HANDLER.sendServerError(res, ex);
-        }
-    });
+    request(options, cb(res));
 };
 
 /**
@@ -739,19 +680,7 @@ const importFile = function (req, res) {
     };
     if (req.body.columnname) obj.columnname = req.body.columnname;
     options.body = JSON.stringify(obj);
-    request(options, function (error, response, body) {
-        if (error) {
-            return __BRTC_ERROR_HANDLER.sendServerError(res, error);
-        }
-        if (response.statusCode !== 200) {
-            return __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-        }
-        try {
-            return res.json(body);
-        } catch (ex) {
-            return __BRTC_ERROR_HANDLER.sendServerError(res, ex);
-        }
-    });
+    request(options, cb(res));
 };
 
 router.get('/staging/query', __BRTC_ERROR_HANDLER.checkParams(['user', 'mid', 'tab', 'offset', 'limit']), function (req, res) {
@@ -791,19 +720,7 @@ const createLink = function (req, res) {
     options.body = JSON.stringify({ links });
     __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
 
-    request(options, function (error, response, body) {
-        if (error) {
-            return __BRTC_ERROR_HANDLER.sendServerError(res, error);
-        }
-        if (response.statusCode !== 200) {
-            return __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-        }
-        try {
-            return res.json(body);
-        } catch (ex) {
-            return __BRTC_ERROR_HANDLER.sendServerError(res, ex);
-        }
-    });
+    request(options, cb(res));
 };
 
 const deleteLink = function (req, res) {
@@ -812,19 +729,7 @@ const deleteLink = function (req, res) {
     options.body = JSON.stringify({ links });
     __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
 
-    request(options, function (error, response, body) {
-        if (error) {
-            return __BRTC_ERROR_HANDLER.sendServerError(res, error);
-        }
-        if (response.statusCode !== 200) {
-            return __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-        }
-        try {
-            return res.json(body);
-        } catch (ex) {
-            return __BRTC_ERROR_HANDLER.sendServerError(res, ex);
-        }
-    });
+    request(options, cb(res));
 };
 
 const getListTable = function (req, res, next) {

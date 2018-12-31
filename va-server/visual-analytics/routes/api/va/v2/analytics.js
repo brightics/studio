@@ -2,26 +2,57 @@ const router = __REQ_express.Router();
 const request = __REQ_request;
 const getErrorMessageFromJobStatus = require('../../../../lib/get-err-from-jobstatus');
 
-// const isFailStatus = ({ status }) => status === 'FAIL';
-// const getMessage = (f) => f.message || '';
-// const getFirstErrorMessageFromFunction = (fns) => {
-//     for (let msg of fns.filter(isFailStatus).map(getMessage)) {
-//         const s = msg.indexOf(':');
-//         const e = msg.indexOf('\n');
-//         if (s > -1 && e > -1) {
-//             return msg.substring(s + 2, e);
-//         }
-//     }
-//     return undefined;
-// };
+const cb = (res) => {
+    return function (error, response, body) {
+        if (error) {
+            __BRTC_ERROR_HANDLER.sendServerError(res, error);
+        } else {
+            if (response.statusCode === 200) {
+                res.send(body);
+            } else {
+                __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
+            }
+        }
+    };
+};
 
-// const getErrorMessageFromJobStatus = (ans) => {
-//     for (let p of ans.processes.filter(isFailStatus)) {
-//         const msg = getFirstErrorMessageFromFunction(p.functions);
-//         if (msg) return msg;
-//     }
-//     return undefined;
-// };
+const cbParse = (res) => {
+    return function (error, response, body) {
+        if (error) {
+            __BRTC_ERROR_HANDLER.sendServerError(res, error);
+        } else {
+            if (response.statusCode === 200) {
+                try {
+                    const answer = JSON.parse(response.body);
+                    res.json(answer);
+                } catch (ex) {
+                    __BRTC_ERROR_HANDLER.sendServerError(res, ex);
+                }
+            } else {
+                __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
+            }
+        }
+    };
+};
+
+const cbParseResult = (res) => {
+    return function (error, response, body) {
+        if (error) {
+            __BRTC_ERROR_HANDLER.sendServerError(res, error);
+        } else {
+            if (response.statusCode === 200) {
+                try {
+                    const answer = JSON.parse(response.body);
+                    res.json(answer.result);
+                } catch (ex) {
+                    __BRTC_ERROR_HANDLER.sendServerError(res, ex);
+                }
+            } else {
+                __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
+            }
+        }
+    };
+};
 
 /**
  * @api {get} /api/va/v2/analytics/jobs/{jobid} Read job status
@@ -108,21 +139,7 @@ const getErrorMessageFromJobStatus = require('../../../../lib/get-err-from-jobst
 router.get('/jobs', function (req, res) {
     let options = __BRTC_CORE_SERVER.createRequestOptions('GET', '/api/core/v2/analytics/jobs');
     __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-    request(options, function (error, response, body) {
-        if (error) {
-            __BRTC_ERROR_HANDLER.sendServerError(res, error);
-        } else {
-            if (response.statusCode === 200) {
-                try {
-                    res.json(JSON.parse(response.body));
-                } catch (ex) {
-                    __BRTC_ERROR_HANDLER.sendServerError(res, ex);
-                }
-            } else {
-                __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-            }
-        }
-    });
+    request(options, cbParse(res));
 });
 
 
@@ -195,34 +212,14 @@ router.post('/jobs', function (req, res) {
     let options = __BRTC_CORE_SERVER.createRequestOptions('POST', '/api/core/v2/analytics/jobs/' + req.body.jid);
     __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
     options.body = JSON.stringify(req.body);
-    request(options, function (error, response, body) {
-        if (error) {
-            __BRTC_ERROR_HANDLER.sendServerError(res, error);
-        } else {
-            if (response.statusCode === 200) {
-                res.send(body);
-            } else {
-                __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-            }
-        }
-    });
+    request(options, cb(res));
 });
 
 router.post('/jobs/execute', function (req, res) {
     let options = __BRTC_CORE_SERVER.createRequestOptions('POST', '/api/core/v2/analytics/jobs/execute');
     __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
     options.body = JSON.stringify(req.body);
-    request(options, function (error, response, body) {
-        if (error) {
-            __BRTC_ERROR_HANDLER.sendServerError(res, error);
-        } else {
-            if (response.statusCode === 200) {
-                res.send(body);
-            } else {
-                __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-            }
-        }
-    });
+    request(options, cb(res));
 });
 
 router.get('/jobs/:jid', function (req, res) {
@@ -329,106 +326,19 @@ router.post('/jobs/:jid/delete', function (req, res) {
         __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
     }
     // request(options).pipe(res);
-    request(options, function (error, response, body) {
-        if (error) {
-            __BRTC_ERROR_HANDLER.sendServerError(res, error);
-        } else {
-            if (response.statusCode === 200) {
-                try {
-                    const answer = JSON.parse(response.body);
-                    res.json(answer);
-                } catch (ex) {
-                    __BRTC_ERROR_HANDLER.sendServerError(res, ex);
-                }
-            } else {
-                __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-            }
-        }
-    });
+    request(options, cbParse(res));
 });
 
 router.get('/stream', function (req, res) {
     let options = __BRTC_CORE_SERVER.createRequestOptions('GET', '/api/core/v2/analytics/dataflow/stream');
     __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-    request(options, function (error, response, body) {
-        if (error) {
-            __BRTC_ERROR_HANDLER.sendServerError(res, error);
-        } else {
-            if (response.statusCode === 200) {
-                try {
-                    const answer = JSON.parse(response.body);
-                    res.json(answer.result);
-                } catch (ex) {
-                    __BRTC_ERROR_HANDLER.sendServerError(res, ex);
-                }
-            } else {
-                __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-            }
-        }
-    });
+    request(options, cbParseResult(res));
 });
 
 router.post('/stream/delete', function (req, res) {
     let options = __BRTC_CORE_SERVER.createRequestOptions('DELETE', '/api/core/v2/analytics/dataflow/stream');
     __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-    request(options, function (error, response, body) {
-        if (error) {
-            __BRTC_ERROR_HANDLER.sendServerError(res, error);
-        } else {
-            if (response.statusCode === 200) {
-                try {
-                    const answer = JSON.parse(response.body);
-                    res.json(answer.result);
-                } catch (ex) {
-                    __BRTC_ERROR_HANDLER.sendServerError(res, ex);
-                }
-            } else {
-                __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-            }
-        }
-    });
-});
-
-router.get('/stream', function (req, res) {
-    let options = __BRTC_CORE_SERVER.createRequestOptions('GET', '/api/core/v2/analytics/dataflow/stream');
-    __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-    request(options, function (error, response, body) {
-        if (error) {
-            __BRTC_ERROR_HANDLER.sendServerError(res, error);
-        } else {
-            if (response.statusCode === 200) {
-                try {
-                    const answer = JSON.parse(response.body);
-                    res.json(answer.result);
-                } catch (ex) {
-                    __BRTC_ERROR_HANDLER.sendServerError(res, ex);
-                }
-            } else {
-                __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-            }
-        }
-    });
-});
-
-router.post('/stream/delete', function (req, res) {
-    let options = __BRTC_CORE_SERVER.createRequestOptions('DELETE', '/api/core/v2/analytics/dataflow/stream');
-    __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-    request(options, function (error, response, body) {
-        if (error) {
-            __BRTC_ERROR_HANDLER.sendServerError(res, error);
-        } else {
-            if (response.statusCode === 200) {
-                try {
-                    const answer = JSON.parse(response.body);
-                    res.json(answer.result);
-                } catch (ex) {
-                    __BRTC_ERROR_HANDLER.sendServerError(res, ex);
-                }
-            } else {
-                __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-            }
-        }
-    });
+    request(options, cbParseResult(res));
 });
 
 router.post('/jobsandmetadata/:jid', function (req, res) {
@@ -454,84 +364,24 @@ router.post('/jobsandmetadata/:jid', function (req, res) {
 router.get('/agentuser/status', function (req, res) {
     let options = __BRTC_CORE_SERVER.createRequestOptions('GET', '/api/core/v2/agentuser/health');
     __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-    request(options, function (error, response, body) {
-        if (error) {
-            __BRTC_ERROR_HANDLER.sendServerError(res, error);
-        } else {
-            if (response.statusCode === 200) {
-                try {
-                    const answer = JSON.parse(response.body);
-                    res.json(answer.result);
-                } catch (ex) {
-                    __BRTC_ERROR_HANDLER.sendServerError(res, ex);
-                }
-            } else {
-                __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-            }
-        }
-    });
+    request(options, cbParseResult(res));
 });
 
 router.get('/current-tasks', function (req, res) {
     let options = __BRTC_CORE_SERVER.createRequestOptions('GET', '/api/core/v2/task/list-all');
     __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-    request(options, function (error, response, body) {
-        if (error) {
-            __BRTC_ERROR_HANDLER.sendServerError(res, error);
-        } else {
-            if (response.statusCode === 200) {
-                try {
-                    const answer = JSON.parse(response.body);
-                    res.json(answer);
-                } catch (ex) {
-                    __BRTC_ERROR_HANDLER.sendServerError(res, ex);
-                }
-            } else {
-                __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-            }
-        }
-    });
+    request(options, cbParse(res));
 });
 router.get('/current-tasks/:user_id', function (req, res) {
     let options = __BRTC_CORE_SERVER.createRequestOptions('GET', '/api/core/v2/task/list/' + req.params.userId);
     __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-    request(options, function (error, response, body) {
-        if (error) {
-            __BRTC_ERROR_HANDLER.sendServerError(res, error);
-        } else {
-            if (response.statusCode === 200) {
-                try {
-                    const answer = JSON.parse(response.body);
-                    res.json(answer);
-                } catch (ex) {
-                    __BRTC_ERROR_HANDLER.sendServerError(res, ex);
-                }
-            } else {
-                __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-            }
-        }
-    });
+    request(options, cbParse(res));
 });
 
 router.get('/current-session-tasks', function (req, res) {
     let options = __BRTC_CORE_SERVER.createRequestOptions('GET', '/api/core/v2/task/list');
     __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-    request(options, function (error, response, body) {
-        if (error) {
-            __BRTC_ERROR_HANDLER.sendServerError(res, error);
-        } else {
-            if (response.statusCode === 200) {
-                try {
-                    const answer = JSON.parse(response.body);
-                    res.json(answer.result);
-                } catch (ex) {
-                    __BRTC_ERROR_HANDLER.sendServerError(res, ex);
-                }
-            } else {
-                __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-            }
-        }
-    });
+    request(options, cbParseResult(res));
 });
 
 module.exports = router;

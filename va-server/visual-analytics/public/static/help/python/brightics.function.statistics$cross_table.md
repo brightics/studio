@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.statistics import cross_table
-res = cross_table(input_cols_1 = ,input_cols_2 = ,result = ,choice = )
+res = cross_table(input_cols_1 = ,input_cols_2 = ,result = ,choice = ,group_by = )
 res['table']
 ```
 
@@ -34,6 +34,7 @@ https://en.wikipedia.org/wiki/Contingency_table
       - N / Column Total
       - N / Total
 4. **Margins**: Add row/column margins (subtotals). This parameter only works when 'Result' is 'N'.
+5. **Group By**: Columns to group by
 
 #### Outputs
 1. **table**: table
@@ -54,6 +55,7 @@ https://en.wikipedia.org/wiki/Contingency_table
       - N / Column Total
       - N / Total
 4. **choice**: Add row/column margins (subtotals). This parameter only works when 'Result' is 'N'.
+5. **group_by**: Columns to group by
 
 #### Outputs
 1. **table**: table

@@ -1,7 +1,19 @@
 var router = __REQ_express.Router();
 
+
+const cb = (res) => {
+    return function (result) {
+        if (!result) {
+            __BRTC_ERROR_HANDLER.sendError(res, 10102);
+        } else {
+            res.sendStatus(200);
+        }
+    };
+};
+
 var _executeInPermission = function (req, res, perm, task) {
-    var permHandler = __BRTC_PERM_HELPER.checkPermission(req, [__BRTC_PERM_HELPER.PERMISSION_RESOURCE_TYPES.NOTICE], perm);
+    var permHandler = __BRTC_PERM_HELPER.checkPermission(req,
+        [__BRTC_PERM_HELPER.PERMISSION_RESOURCE_TYPES.NOTICE], perm);
     permHandler.on('accept', task);
     permHandler.on('deny', function (permissions) {
         __BRTC_ERROR_HANDLER.sendNotAllowedError(res);
@@ -11,7 +23,7 @@ var _executeInPermission = function (req, res, perm, task) {
     });
 };
 
-/**공지사항 목록**/
+/** 공지사항 목록**/
 var listNotices = function (req, res) {
     __BRTC_DAO.notice.selectAll({}, function (err) {
         __BRTC_ERROR_HANDLER.sendServerError(res, err);
@@ -20,7 +32,7 @@ var listNotices = function (req, res) {
     });
 };
 
-/**공지사항 추가**/
+/** 공지사항 추가**/
 var createNotice = function (req, res) {
     var task = function (permissions) {
         if (!req.body.id || !req.body.title || !req.body.content) {
@@ -48,7 +60,7 @@ var createNotice = function (req, res) {
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_NOTICE_CREATE, task);
 };
 
-/**공지사항 수정**/
+/** 공지사항 수정**/
 var updateNotice = function (req, res) {
     var task = function (permissions) {
         if (!req.body.content) {
@@ -64,20 +76,14 @@ var updateNotice = function (req, res) {
 
         __BRTC_DAO.notice.update(opt, function (err) {
             __BRTC_ERROR_HANDLER.sendServerError(res, err);
-        }, function (result) {
-            if (!result) {
-                __BRTC_ERROR_HANDLER.sendError(res, 10102);
-            } else {
-                res.sendStatus(200);
-            }
-        });
+        }, cb(res));
         return undefined;
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_NOTICE_UPDATE, task);
 };
 
 
-/**공지사항 삭제**/
+/** 공지사항 삭제**/
 var deleteNotice = function (req, res) {
     var task = function (permissions) {
         var opt = {
@@ -86,18 +92,12 @@ var deleteNotice = function (req, res) {
 
         __BRTC_DAO.notice.delete(opt, function (err) {
             __BRTC_ERROR_HANDLER.sendServerError(res, err);
-        }, function (result) {
-            if (!result) {
-                __BRTC_ERROR_HANDLER.sendError(res, 10102);
-            } else {
-                res.sendStatus(200);
-            }
-        });
+        }, cb(res));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_NOTICE_DELETE, task);
 };
 
-/**공지사항 삭제(Multi)**/
+/** 공지사항 삭제(Multi)**/
 var deleteNotices = function (req, res) {
     var task = function (permissions) {
         var opt = {
@@ -107,13 +107,7 @@ var deleteNotices = function (req, res) {
 
         __BRTC_DAO.notice.deleteByNoticeList(opt, function (err) {
             __BRTC_ERROR_HANDLER.sendServerError(res, err);
-        }, function (result) {
-            if (!result) {
-                __BRTC_ERROR_HANDLER.sendError(res, 10102);
-            } else {
-                res.sendStatus(200);
-            }
-        });
+        }, cb(res));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_NOTICE_DELETE, task);
 };

@@ -240,7 +240,7 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
         | #### Data = {response_col} by {factor_col}({first},{second})
         
         | - Statistics = t statistic, t distribution with {ttestresult2} degrees of freedom under the null hypothesis
-        | - Estimates= {ttestresult0}
+        | - T-value = {ttestresult0}
         |
         | {result_model}
         |
@@ -263,7 +263,7 @@ def paired_ttest(table, group_by=None, **params):
         return _paired_ttest(table, **params)
 
 
-def _paired_ttest(table, first_column, second_column, alternative, hypothesized_difference=0, confidence_level=0.95):
+def _paired_ttest(table, first_column, second_column, alternative = ['greater', 'less', 'twosided'], hypothesized_difference=0, confidence_level=0.95):
     df = len(table) - 1
     diff_mean = (table[first_column] - table[second_column]).mean()
     std_dev = np.std(table[first_column] - table[second_column])

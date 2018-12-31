@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.statistics import paired_ttest
-res = paired_ttest(first_column = ,second_column = ,hypothesized_difference = ,confidence_level = ,alternative = )
+res = paired_ttest(first_column = ,second_column = ,hypothesized_difference = ,confidence_level = ,alternative = ,group_by = )
 res['model']
 res['out_table']
 ```
@@ -29,6 +29,7 @@ In statistics, a paired difference test is a type of location test that is used 
    - Value type : Double
    - Default : 0.95 (0<=value<=1)
 5. **Alternatives**: Alternative hypothesis.
+6. **Group By**: Columns to group by
 
 #### Outputs
 1. **model**: model
@@ -50,6 +51,7 @@ In statistics, a paired difference test is a type of location test that is used 
    - Value type : Double
    - Default : 0.95 (0<=value<=1)
 5. **alternative**: Alternative hypothesis.
+6. **group_by**: Columns to group by
 
 #### Outputs
 1. **model**: model
