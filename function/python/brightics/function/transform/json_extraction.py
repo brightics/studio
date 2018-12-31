@@ -73,7 +73,7 @@ def get_table(model, **params):
 def _get_table(model, key_list):
     table = get_element_from_dict(model, key_list)
     if not isinstance(table, pd.DataFrame):
-        raise ('item is not a DataFrame.')
+        raise Exception('item is not a DataFrame.')
     
     return {'table': table}
 
