@@ -44,7 +44,7 @@ def _evaluate_regression(table, label_col, prediction_col):
     all_dict_list = [{'r2_score': r2, 'mean_squared_error': mse, 'mean_absolute_error': mae, 'median_absolute_error': mdae, 'explained_variance_score': evs}]
     all_df = pd.DataFrame(all_dict_list)
     all_df = all_df[['r2_score', 'mean_squared_error', 'mean_absolute_error', 'median_absolute_error', 'explained_variance_score']]
-    summary['all'] = all_df
+    summary['metrics'] = all_df
             
     rb = ReportBuilder()
     rb.addMD(strip_margin("""
@@ -105,7 +105,7 @@ def _evaluate_classification(table, label_col, prediction_col):
     all_dict_list = [{'f1': f1, 'accuracy': accuracy, 'precision': precision, 'recall': recall}]
     all_df = pd.DataFrame(all_dict_list)
     all_df = all_df[['f1', 'accuracy', 'precision', 'recall']]
-    summary['all'] = all_df
+    summary['metrics'] = all_df
             
     rb = ReportBuilder()
     rb.addMD(strip_margin("""
