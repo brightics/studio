@@ -1,9 +1,19 @@
 import pandas as pd
 import brightics.common.statistics as brtc_stats
 import numpy as np
+from brightics.common.groupby import _function_by_group
+from brightics.common.utils import check_required_parameters
 
 
-def statistic_summary(table, input_cols, statistics, percentile_amounts=[], trimmed_mean_amounts=[]):
+def statistic_summary(table, group_by=None, **params):
+    check_required_parameters(_statistic_summary, params, ['table'])
+    if group_by is not None:
+        return _function_by_group(_statistic_summary, table, group_by=group_by, **params)
+    else:
+        return _statistic_summary(table, **params)
+
+
+def _statistic_summary(table, input_cols, statistics, percentile_amounts=[], trimmed_mean_amounts=[]):
     
     _table = table.copy()
     
@@ -64,11 +74,19 @@ def statistic_summary(table, input_cols, statistics, percentile_amounts=[], trim
     return {'out_table' : result}
 
 
-def statistic_derivation(table, input_cols, statistics, percentile_amounts=[], trimmed_mean_amounts=[]):
+def statistic_derivation(table, group_by=None, **params):
+    check_required_parameters(_statistic_derivation, params, ['table'])
+    if group_by is not None:
+        return _function_by_group(_statistic_derivation, table, group_by=group_by, **params)
+    else:
+        return _statistic_summary(table, **params)
+
+
+def _statistic_derivation(table, input_cols, statistics, percentile_amounts=[], trimmed_mean_amounts=[]):
     
     _table = table.copy()
     
-    _table_stat = statistic_summary(_table, input_cols, statistics, percentile_amounts, trimmed_mean_amounts)['out_table']
+    _table_stat = _statistic_summary(_table, input_cols, statistics, percentile_amounts, trimmed_mean_amounts)['out_table']
     
     _statistics = _table_stat.columns.tolist()
     _statistics.remove('column_name')
@@ -86,7 +104,15 @@ def statistic_derivation(table, input_cols, statistics, percentile_amounts=[], t
     return {'out_table' : _table}
 
 
-def string_summary(table, input_cols):
+def string_summary(table, group_by=None, **params):
+    check_required_parameters(_string_summary, params, ['table'])
+    if group_by is not None:
+        return _function_by_group(_string_summary, table, group_by=group_by, **params)
+    else:
+        return _string_summary(table, **params)
+
+
+def _string_summary(table, input_cols):
     table = table.copy()
     if input_cols == []:
         input_cols = list(table.columns)

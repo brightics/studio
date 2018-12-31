@@ -61,7 +61,17 @@ var createVersion = function (req, res) {
             return __BRTC_ERROR_HANDLER.sendError(res, 10101);
         }
         return __BRTC_ERROR_HANDLER.sendServerError(res, err);
-    }
+    };
+
+    const task = (opt) => (permission) => {
+        __BRTC_DAO.file.version.createManually(opt, errorHandler, function (rowCount, result) {
+            if (rowCount === 0) {
+                return __BRTC_ERROR_HANDLER.sendError(res, 10102);
+            }
+            var rows = parseContents(result.rows);
+            return res.json(rows[0]);
+        });
+    };
     if (!req.body.isManual) {
         if (!req.body.version_id || !req.body.isMajor || !req.body.label) {
             return __BRTC_ERROR_HANDLER.sendError(res, '10103');
@@ -76,17 +86,8 @@ var createVersion = function (req, res) {
             isMajor: req.body.isMajor,
             versionId: req.body.version_id
         };
-        const task = (permission) => {
-            __BRTC_DAO.file.version.create(opt, errorHandler, function (rowCount, result) {
-                if (rowCount === 0) {
-                    return __BRTC_ERROR_HANDLER.sendError(res, 10102);
-                }
-                var rows = parseContents(result.rows);
-                return res.json(rows[0]);
-            });
-        };
         projectPermission.execute(req.params.project, req.apiUserId,
-            PERMISSION.FILE.UPDATE, res, task);
+            PERMISSION.FILE.UPDATE, res, task(opt));
         return undefined;
     }
     let opt = {
@@ -103,17 +104,8 @@ var createVersion = function (req, res) {
         minorVersion: typeof req.body.minorVersion === 'undefined' ? req.body.minor_version :
             req.body.minorVersion
     };
-    const task = (permission) => {
-        __BRTC_DAO.file.version.createManually(opt, errorHandler, function (rowCount, result) {
-            if (rowCount === 0) {
-                return __BRTC_ERROR_HANDLER.sendError(res, 10102);
-            }
-            var rows = parseContents(result.rows);
-            return res.json(rows[0]);
-        });
-    };
     projectPermission.execute(req.params.project, req.apiUserId,
-        PERMISSION.FILE.UPDATE, res, task);
+        PERMISSION.FILE.UPDATE, res, task(opt));
     return undefined;
 };
 

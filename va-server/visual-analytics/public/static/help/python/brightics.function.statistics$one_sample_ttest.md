@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.statistics import one_sample_ttest
-res = one_sample_ttest(input_cols = ,alternatives = ,hypothesized_mean = ,conf_level = )
+res = one_sample_ttest(input_cols = ,alternatives = ,hypothesized_mean = ,conf_level = ,group_by = )
 res['model']
 res['out_table']
 ```
@@ -27,6 +27,7 @@ One Sample T Test is used to compare the mean of one sample to a known standard 
 4. **Confidence Level**: The frequency (i.e. the proportion) of possible confidence intervals that contain the true value of the unknown population parameter. Default is 0.95 but you can change it.
    - Value type : Double
    - Default : 0.95 (0 <= value <= 1)
+5. **Group By**: Columns to group by
 
 #### Outputs
 1. **model**: model
@@ -46,6 +47,7 @@ One Sample T Test is used to compare the mean of one sample to a known standard 
 4. **conf_level**: The frequency (i.e. the proportion) of possible confidence intervals that contain the true value of the unknown population parameter. Default is 0.95 but you can change it.
    - Value type : Double
    - Default : 0.95 (0 <= value <= 1)
+5. **group_by**: Columns to group by
 
 #### Outputs
 1. **model**: model
