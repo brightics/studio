@@ -364,7 +364,7 @@ def _association_rule(table,items,user_name,min_support=0.01,min_confidence=0.8,
     patterns = _find_frequent_patterns(transactions, min_support)
     rules = _generate_association_rules(patterns, min_confidence)
     if len(rules) == 0:
-        result = pd.DataFrame()
+        result = pd.DataFrame(columns=['antecedent','consequent','support','confidence','lift','conviction'])
         return {'out_table' : result}
     result = _dict_to_table(rules,len_trans)
     result = result[(result.lift >= min_lift) & (result.conviction >= min_conviction) & (result.lift <= max_lift) & (result.conviction <= max_conviction)]
