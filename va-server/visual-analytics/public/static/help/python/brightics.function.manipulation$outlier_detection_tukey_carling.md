@@ -21,12 +21,12 @@ Remove outliers. If a value is determined as a outlier, this value is removed fr
 1. **Input Columns**<b style="color:red">*</b>: Column names to remove outlier. Data must be number type(Double, Long, Integer).
    - Allowed column type : Integer, Double, Long, Float, Decimal
 2. **Outlier Method**: Outlier-method option (carling, tukey) Two Outlier Removal methods are provided.
-1. carling: Remove Y s.t Y < (M �� multiplier*IQR) or Y > (M + multiplier*IQR) where IQR = Q3-Q1
-2. tukey: Remove Y s.t Y < (Q1 �� multiplier*IQR) or Y > (Q3 + multiplier*IQR) where IQR = Q3-Q1
+1. carling: Remove Y s.t Y < (M - multiplier*IQR) or Y > (M + multiplier*IQR) where IQR = Q3-Q1
+2. tukey: Remove Y s.t Y < (Q1 - multiplier*IQR) or Y > (Q3 + multiplier*IQR) where IQR = Q3-Q1
    - Available items
       - tukey (default)
       - carling
-3. **Multiplier**: Multiplier value used for outlier method(see explanation of �쁎utlier-Method��). Double type value is required. (default of tukey : 1.5, default of carling : 2.3)
+3. **Multiplier**: Multiplier value used for outlier method(see explanation of 'Outlier-Method'). Double type value is required. (default of tukey : 1.5, default of carling : 2.3)
    - Value type : Double
    - Default : value>=0 (default of tukey : 1.5, carling : 2.3)
 4. **Number of Outliers in a Row**: The minimum number of outliers in a row that makes a given sample outlier. (default=1)
@@ -54,12 +54,12 @@ Remove outliers. If a value is determined as a outlier, this value is removed fr
 1. **input_cols**<b style="color:red">*</b>: Column names to remove outlier. Data must be number type(Double, Long, Integer).
    - Allowed column type : Integer, Double, Long, Float, Decimal
 2. **outlier_method**: Outlier-method option (carling, tukey) Two Outlier Removal methods are provided.
-1. carling: Remove Y s.t Y < (M �� multiplier*IQR) or Y > (M + multiplier*IQR) where IQR = Q3-Q1
-2. tukey: Remove Y s.t Y < (Q1 �� multiplier*IQR) or Y > (Q3 + multiplier*IQR) where IQR = Q3-Q1
+1. carling: Remove Y s.t Y < (M - multiplier*IQR) or Y > (M + multiplier*IQR) where IQR = Q3-Q1
+2. tukey: Remove Y s.t Y < (Q1 - multiplier*IQR) or Y > (Q3 + multiplier*IQR) where IQR = Q3-Q1
    - Available items
       - tukey (default)
       - carling
-3. **multiplier**: Multiplier value used for outlier method(see explanation of �쁎utlier-Method��). Double type value is required. (default of tukey : 1.5, default of carling : 2.3)
+3. **multiplier**: Multiplier value used for outlier method(see explanation of 'Outlier-Method'). Double type value is required. (default of tukey : 1.5, default of carling : 2.3)
    - Value type : Double
    - Default : value>=0 (default of tukey : 1.5, carling : 2.3)
 4. **number_of_removal**: The minimum number of outliers in a row that makes a given sample outlier. (default=1)
