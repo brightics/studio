@@ -101,7 +101,7 @@ def _one_sample_ttest(table, input_cols, alternatives, hypothesized_mean=0, conf
         ])       
         rb.addMD(strip_margin("""
         ### Data = {input_col}
-        | - T-value = {t_value} 
+        | - t-value = {t_value} 
         |
         | {result_table}
         """.format(input_col=input_col, t_value=t_value, result_table=pandasDF2MD(result_table))))
@@ -240,7 +240,7 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
         | #### Data = {response_col} by {factor_col}({first},{second})
         
         | - Statistics = t statistic, t distribution with {ttestresult2} degrees of freedom under the null hypothesis
-        | - T-value = {ttestresult0}
+        | - t-value = {ttestresult0}
         |
         | {result_model}
         |
