@@ -33,7 +33,7 @@ def _one_sample_ttest(table, input_cols, alternatives, hypothesized_mean=0, conf
     out_table = pd.DataFrame(columns=cols) 
     n = len(table)   
     alpha = 1.0 - conf_level
-    statistics = "T statistic, T distribution with %d degrees of freedom under the null hypothesis." % (n - 1)
+    statistics = "t statistic, t distribution with %d degrees of freedom under the null hypothesis." % (n - 1)
         
     # ## Build model
     rb = ReportBuilder()
@@ -235,7 +235,7 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
             [ttestresult[0]] + [ttestresult[1]] + [confi_level] + [mean1 - mean2 - margin] + [mean1 - mean2 + margin]]
             
         result_model = pd.DataFrame.from_records(tmp_model)
-        result_model.columns = ['alternatives', 'p values', '%g%% confidence interval' % (confi_level * 100)]
+        result_model.columns = ['alternative hypothesis', 'p-value', '%g%% confidence interval' % (confi_level * 100)]
         rb.addMD(strip_margin("""
         | #### Data = {response_col} by {factor_col}({first},{second})
         
@@ -326,7 +326,7 @@ def _paired_ttest(table, first_column, second_column, alternative = ['greater', 
     if 'twosided' in alternative:
         result_table = result_table.append(result_table_ul, ignore_index=True)
 
-    ordered_result_table = pd.DataFrame(result_table, columns=['Alternative', 'H1', 't_value', 'p_value', str(confidence_level * 100) + '% confidence interval'])
+    ordered_result_table = pd.DataFrame(result_table, columns=['Alternative', 'alternative_hypothesis', 'T-value', 'p-value', str(confidence_level * 100) + '% confidence interval'])
 
     rb = ReportBuilder()
     rb.addMD(strip_margin("""
