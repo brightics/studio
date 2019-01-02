@@ -100,10 +100,10 @@ def _ftest_for_stacked_data(table, response_cols, factor_col, alternatives, firs
             [f_value] + [p_value] + [confi_level] + [f_value / (scipy.stats.f.ppf((1 + confi_level) / 2, d_num, d_denum))] + [f_value * (scipy.stats.f.ppf((1 + confi_level) / 2, d_denum, d_num))]]
             
         result_model = pd.DataFrame.from_records(tmp_model)
-        result_model.columns = ['alternatives', 'p values', '%g%% confidence interval' % (confi_level * 100)]
+        result_model.columns = ['alternative_hypothesis', 'p-value', '%g%% confidence interval' % (confi_level * 100)]
         rb.addMD(strip_margin("""
         | #### Data = {response_col} by {factor_col}({first},{second})
-        | - Estimates= {f_value}
+        | - F-value = {f_value}
         |
         | {result_model}
         |

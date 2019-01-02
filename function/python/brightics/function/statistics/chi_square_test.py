@@ -21,11 +21,11 @@ import math
 import array
 
 def chi_square_test_of_independence(table, group_by=None, **params):
-    check_required_parameters(_chi_square_test_for_independence, params, ['table'])
+    check_required_parameters(_chi_square_test_of_independence, params, ['table'])
     if group_by is not None:
-        return _function_by_group(_chi_square_test_for_independence, table, group_by=group_by, **params)
+        return _function_by_group(_chi_square_test_of_independence, table, group_by=group_by, **params)
     else:
-        return _chi_square_test_for_independence(table, **params)
+        return _chi_square_test_of_independence(table, **params)
 
 def _chi_square_test_of_independence(table, response_cols, factor_col, correction=False):
     label_list = []
