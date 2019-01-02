@@ -7468,7 +7468,7 @@ Pagination.prototype.setPageSize = function (pageSize) {
 Pagination.prototype.setTotalCount = function (total) {
     this.pageInfo.totalCount = total;
     if (this.pageInfo.totalCount < 0) {
-        this.$mainControl.find('.bcharts-pagination-showing .bcharts-pagination-showing-total').text('?');
+        this.$mainControl.find('.bcharts-pagination-showing .bcharts-pagination-showing-total').text('unknown');
     } else {
         this.$mainControl.find('.bcharts-pagination-showing .bcharts-pagination-showing-total').text(numeral(this.pageInfo.totalCount).format('0,0'));
     }
@@ -7490,7 +7490,7 @@ Pagination.prototype.setColumnCount = function (total) {
 Pagination.prototype._showTotalCountOnly = function (total) {
     this.pageInfo.totalCount = total;
     if (this.pageInfo.totalCount < 0) {
-        this.$mainControl.find('.bcharts-pagination-showing .bcharts-pagination-showing-total').text('?');
+        this.$mainControl.find('.bcharts-pagination-showing .bcharts-pagination-showing-total').text('unknown');
     } else {
         this.$mainControl.find('.bcharts-pagination-showing .bcharts-pagination-showing-total').text(numeral(this.pageInfo.totalCount).format('0,0'));
     }
@@ -11781,7 +11781,7 @@ EChartsBoxPlotOptionBuilder.prototype._buildSeriesData = function () {
         var axisType = this._getColumnDataType(this.filterNullColumn(this.bOptions.xAxis[0].selected));
         var sortRule = function sortRule(a, b) {
             var comp;
-            if (axisType === 'category') comp = _optionUtils2.default.stringSortRule(a.x, b.x);else if (axisType === 'time') comp = _optionUtils2.default.timeSortRule(a.x, b.x);else comp = _optionUtils2.default.numericSortRule(a.x * 1, b.x * 1);
+            if (axisType === 'category') comp = _optionUtils2.default.stringSortRule(a.x, b.x);else if (axisType === 'time') comp = _optionUtils2.default.timeSortRule(a.x, b.x);else comp = _optionUtils2.default.numericSortRule(('' + a.x) * 1, ('' + b.x) * 1);
 
             return comp;
         };
@@ -23116,7 +23116,7 @@ handsontableTable.prototype.destroy = function () {
 handsontableTable.prototype._createContents = function ($parent) {
     var _this = this;
 
-    this.$mainControl = $('<div class="bcharts-chart"></div>');
+    this.$mainControl = $('<div class="bcharts-chart bchart-table"></div>');
     $parent.append(this.$mainControl);
 
     this.$mainControl.hide();
@@ -23220,18 +23220,18 @@ handsontableTable.prototype._makeContextMenu = function () {
                 name: 'Copy columns to clipboard',
                 callback: function callback() {
                     var columns = this.getColHeader();
-                    var isChrome = !!window.chrome && !!window.chrome.webstore;
-                    var isIE = /* @cc_on!@*/false || !!document.documentMode;
 
-                    if (isChrome) {
+                    var isIE = /Trident/.test(navigator.userAgent);
+
+                    if (isIE) {
+                        window.clipboardData.setData("Text", columns.join(', '));
+                    } else {
                         var textField = document.createElement('textarea');
                         textField.innerText = columns.join(', ');
                         document.body.appendChild(textField);
                         textField.select();
                         document.execCommand('copy');
                         textField.remove();
-                    } else if (isIE) {
-                        window.clipboardData.setData('Text', columns.join(', '));
                     }
                 }
             }
