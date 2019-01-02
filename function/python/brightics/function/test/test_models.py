@@ -8,6 +8,12 @@ import datetime
 
 TIME_LIMIT = 3600
 
+HEADERS = {'Authorization':'Bearer ACCESS_TOKEN',
+            'cache-control':'no-cache',
+            'content-type':'application/json'
+            # ,'postman-token':'56e9d3bb-0ca7-1dd7-9e5a-823a8c3e1aa5'
+            }
+
 
 def strip_margin(text):
     return re.sub('\n[ \t]*\|', '\n', text)
@@ -46,19 +52,14 @@ def _convert_to_runnable(model_dict):
     
 
 def _run_model(model_str):
-    headers = {'Authorization':'Bearer ACCESS_TOKEN',
-                'cache-control':'no-cache',
-                'content-type':'application/json'
-                # ,'postman-token':'56e9d3bb-0ca7-1dd7-9e5a-823a8c3e1aa5'
-                }
-    response_post = requests.post('http://localhost:9097/api/core/v2/analytics/jobs/execute', data=model_str, headers=headers).json()
+    response_post = requests.post('http://localhost:9097/api/core/v2/analytics/jobs/execute', data=model_str, headers=HEADERS).json()
     print(response_post)
     jobid = response_post['result']
     
     start = time.time()
     while True:
         time.sleep(1)
-        response_get = requests.get('http://localhost:9097/api/core/v2/analytics/jobs/{}'.format(jobid), headers=headers).json()
+        response_get = requests.get('http://localhost:9097/api/core/v2/analytics/jobs/{}'.format(jobid), headers=HEADERS).json()
         print(response_get)
         status = response_get['status']
         if status == 'SUCCESS':
@@ -177,6 +178,14 @@ def _test(dirs, categories):
             
     return failed_projects
 
+def _delete_current_job():
+    response_get = requests.get('http://localhost:9097/api/core/v2/analytics/jobs', headers=HEADERS).json()
+    for job in response_get:
+        if job['status'] == 'PROCESSING' or job['status'] == 'WAIT':  
+            jobid = job['jobId'] 
+            response_delete = requests.delete('http://localhost:9097/api/core/v2/analytics/jobs/{}'.format(jobid), headers=HEADERS).json()
+            print(response_delete)
+    
 
 if __name__ == '__main__':
     suffix, dirs, categories, logging = _parse_arguments()
@@ -194,5 +203,8 @@ if __name__ == '__main__':
         failed_projects = _test(dirs, categories)
          
         _print_write_test_result(failed_projects, out_f)
-    finally:
-        out_f.close()
+    finally: # todo delete current running job
+        if out_f is not None:
+            out_f.close()
+        _delete_current_job()
+        
