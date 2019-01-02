@@ -2,9 +2,8 @@
 ### Python
 ```python
 from brightics.function.statistics import chi_square_test_for_independence
-res = chi_square_test_for_independence(response_cols = ,factor_col = ,correction = ,lambda_ = )
+res = chi_square_test_for_independence(response_cols = ,factor_col = ,correction = ,group_by = )
 res['model']
-res['result_table']
 ```
 
 ## Description
@@ -25,18 +24,10 @@ https://en.wikipedia.org/wiki/Pearson's_chi-squared_test#Testing_for_statistical
 1. **Feature Columns**<b style="color:red">*</b>: Feature columns. At least one column should be chosen.
 2. **Label Column**<b style="color:red">*</b>: Label Column
 3. **Correction**: If True, and the degrees of freedom is 1, apply Yates' correction for continuity. The effect of the correction is to adjust each observed value by 0.5 towards the corresponding expected value.
-4. **Lambda**: By default, the statistic computed in this test is Pearson's chi-squared statistic. Lambda allows a statistic from the Cressie-Read power divergence family to be used instead. See power_divergence for details.
-   - Available items
-      - Pearson (default)
-      - Log-likelihood
-      - Freeman-tukey
-      - Mod-log-likelihood
-      - Neyman
-      - Cressie-read
+4. **Group By**: Columns to group by
 
 #### Outputs
 1. **model**: model
-2. **result_table**: table
 
 ### Python
 #### Inputs
@@ -46,16 +37,8 @@ https://en.wikipedia.org/wiki/Pearson's_chi-squared_test#Testing_for_statistical
 1. **response_cols**<b style="color:red">*</b>: Feature columns. At least one column should be chosen.
 2. **factor_col**<b style="color:red">*</b>: Label Column
 3. **correction**: If True, and the degrees of freedom is 1, apply Yates' correction for continuity. The effect of the correction is to adjust each observed value by 0.5 towards the corresponding expected value.
-4. **lambda_**: By default, the statistic computed in this test is Pearson's chi-squared statistic. Lambda allows a statistic from the Cressie-Read power divergence family to be used instead. See power_divergence for details.
-   - Available items
-      - pearson (default)
-      - log-likelihood
-      - freeman-tukey
-      - mod-log-likelihood
-      - neyman
-      - cressie-read
+4. **group_by**: Columns to group by
 
 #### Outputs
 1. **model**: model
-2. **result_table**: table
 
