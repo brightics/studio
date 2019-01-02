@@ -2652,8 +2652,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function ColumnChartOption(parentId, options) {
     _chartOptionBase2.default.call(this, parentId, options);
-} 
-/**
+} /**
    * Created by SDS on 2017-05-10.
    */
 
@@ -4351,7 +4350,7 @@ ColumnSelectorDialog.prototype._getCurrentColumnType = function () {
     });
 
     if (!foundCol || $.inArray(foundCol.type, selectableColumnType) < 0) {
-        return 'string';
+        return;
     } else {
         return foundCol.type;
     }
@@ -6107,7 +6106,9 @@ Object.defineProperty(exports, "__esModule", {
 var _chartOptionBase = __webpack_require__(6);
 
 var _chartOptionBase2 = _interopRequireDefault(_chartOptionBase);
+
 var _chartOptionArea = __webpack_require__(58);
+
 var _chartOptionArea2 = _interopRequireDefault(_chartOptionArea);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -18937,12 +18938,12 @@ ListBoxFilter.prototype.createControlArea = function ($parent) {
 
     /*this._$listBox.on('checkChange', function (event) {
         if (!handleCheckChange) return;
-         if (event.args.label != '(Select All)') {
+          if (event.args.label != '(Select All)') {
             handleCheckChange = false;
             $(this).jqxListBox('checkIndex', 0);
             var checkedItems = $(this).jqxListBox('getCheckedItems');
             var items = $(this).jqxListBox('getItems');
-             if (checkedItems.length == 1) {
+              if (checkedItems.length == 1) {
                 $(this).jqxListBox('uncheckIndex', 0);
             }
             else if (items.length != checkedItems.length) {
