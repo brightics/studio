@@ -35,7 +35,7 @@ const PROJECT_SELECT_BY_MEMBER_DEFAULT = '' +
     '					WHERE a.user_id= $1                                                                                ' +
     '					AND a.resource_type = \'project\' AND b.role_category = \'role_proj_member\' )                     ' +
     '		) p                                                                                                            ' +
-    ')' + 
+    ')' +
     // '	ORDER BY label collate "C")                                                                                        ' +
     'SELECT project.*, COALESCE(model.model_count, 0) as model_count, COALESCE(report.report_count, 0) as report_count FROM ' +
     'project_list AS project                                                                                               ' +
@@ -120,20 +120,20 @@ module.exports = {
     project: {
         checkSchema: function (errCallback, doneCallback) {
             query(DDL_CHECK_TABLE, ['brtc_project'], errCallback, function (result) {
-                if (result.length == 0) {
+                if (result.length === 0) {
                     query(DDL_CREATE_PROJECT_TABLE, [], errCallback, doneCallback);
-                } else {
-                    var columns = {};
-                    for (var i in result) {
-                        columns[result[i].column_name] = true;
-                    }
-                    if (!columns['create_time']) query('ALTER TABLE brtc_project ADD COLUMN create_time timestamp', errCallback);
-                    if (!columns['updater']) query('ALTER TABLE brtc_project ADD COLUMN updater character varying(80)', errCallback);
-                    if (!columns['update_time']) query('ALTER TABLE brtc_project ADD COLUMN update_time timestamp', errCallback);
-                    if (!columns['type']) query('ALTER TABLE brtc_project ADD COLUMN type character varying(40)', errCallback);
-                    if (!columns['tag']) query('ALTER TABLE brtc_project ADD COLUMN tag character varying(80)', errCallback);
-                    if (doneCallback) doneCallback(result.rows, result, DDL_CHECK_TABLE, ['brtc_project']);
+                    return;
                 }
+                var columns = {};
+                for (var i in result) {
+                    columns[result[i].column_name] = true;
+                }
+                if (!columns['create_time']) query('ALTER TABLE brtc_project ADD COLUMN create_time timestamp', errCallback);
+                if (!columns['updater']) query('ALTER TABLE brtc_project ADD COLUMN updater character varying(80)', errCallback);
+                if (!columns['update_time']) query('ALTER TABLE brtc_project ADD COLUMN update_time timestamp', errCallback);
+                if (!columns['type']) query('ALTER TABLE brtc_project ADD COLUMN type character varying(40)', errCallback);
+                if (!columns['tag']) query('ALTER TABLE brtc_project ADD COLUMN tag character varying(80)', errCallback);
+                if (doneCallback) doneCallback(result.rows, result, DDL_CHECK_TABLE, ['brtc_project']);
             });
         },
         selectAll: function (opt, errCallback, doneCallback) {

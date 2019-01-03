@@ -17,6 +17,6 @@ def check_required_parameters(func, params, excluded_paramkeys=[]):
     required_parames_error = []
     for rp in required_params:
         if rp not in params and rp not in excluded_paramkeys:
-            error_parameters.append({'3109':[rp]})
+            required_parames_error.append({'3109':[rp]})
         if required_parames_error:
             raise BrighticsFunctionException.from_errors(required_parames_error)

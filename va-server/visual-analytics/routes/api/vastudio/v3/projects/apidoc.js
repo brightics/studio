@@ -5,7 +5,7 @@
  @api {GET} /api/vastudio/v3/projects Get project list
  @apiGroup Projects
  @apiName Get project list
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParamExample Param Example 1
  /api/vastudio/v3/projects
@@ -29,18 +29,6 @@
  ...
  ]
 
- @apiErrorExample Error Example 1
- 존재하지 않는 ID를 요청한 경우
- 400 Bad Request
- {
-     "errors": [
-         {
-             "code": "10102",
-             "message": "Your request could not be completed. The item does not exists."
-         }
-     ]
- }
-
  */
 
 // -------------------------------------------------------------------------------------------------
@@ -50,7 +38,7 @@
  @api {POST} /api/vastudio/v3/projects Create project
  @apiGroup Projects
  @apiName Create project
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParam {String} id Project ID
  @apiParam {String} label Label
@@ -112,7 +100,7 @@
  @api {GET} /api/vastudio/v3/projects/:projectId Get project
  @apiGroup Projects
  @apiName Get project
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParamExample Param Example 1
  /api/vastudio/v3/projects/p34ephjmngga3vp1
@@ -154,7 +142,7 @@
  @api {PUT} /api/vastudio/v3/projects/:projectId Update project
  @apiGroup Projects
  @apiName Update project
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParam {String} label Label
  @apiParam {String} [description] Description
@@ -201,7 +189,7 @@
  @api {DELETE} /api/vastudio/v3/projects/:projectId Delete project
  @apiGroup Projects
  @apiName Delete projects
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParamExample Param Example 1
  /api/vastudio/v3/projects/p34ephjmngga3vp1
@@ -229,7 +217,7 @@
  @api {GET} /api/vastudio/v3/projects/:projectId/members Get project member list
  @apiGroup Projects
  @apiName Get project member list
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParamExample Param Example 1
  /api/vastudio/v3/projects/p34ephjmngga3vp1/members
@@ -268,7 +256,7 @@
  @api {POST} /api/vastudio/v3/projects/:projectId/members/invite Invite members
  @apiGroup Projects
  @apiName Invite members
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParam {Array} members Members array ({"user_id": "", "role_id": "role_10001 | role_10002 | role_10003 | role_10004"})
 
@@ -319,7 +307,7 @@
  @api {POST} /api/vastudio/v3/projects/:projectId/members/withdraw Withdraw members
  @apiGroup Projects
  @apiName Withdraw members
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParam {Array} members Members array ({"user_id": ""})
 
@@ -369,7 +357,7 @@
  @api {POST} /api/vastudio/v3/projects/:projectId/members/authority Change members authority
  @apiGroup Projects
  @apiName Change members authority
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParam {Array} members Members array ({"user_id": "", "role_id": "role_10001 | role_10002 | role_10003 | role_10004"})
 

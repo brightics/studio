@@ -74,13 +74,13 @@ module.exports = {
     procedure: {
         checkSchema: function (errCallback, doneCallback) {
             query(DDL_PROCEDURE_PROJECT_AUDIT.CHECK, [], errCallback, function (result) {
-                if (result.length == 0) {
+                if (result.length === 0) {
                     query(DDL_PROCEDURE_PROJECT_AUDIT.CREATE, [], errCallback, function () {
                         query(DDL_TRIGGER_PROJECT_AUDIT.CREATE, [], errCallback);
                     });
                 } else {
                     query(DDL_TRIGGER_PROJECT_AUDIT.CHECK, [], errCallback, function (result) {
-                        if (result.length == 0) {
+                        if (result.length === 0) {
                             query(DDL_TRIGGER_PROJECT_AUDIT.CREATE, [], errCallback);
                         }
                     });
@@ -88,13 +88,13 @@ module.exports = {
             });
 
             query(DDL_PROCEDURE_USER_AUDIT.CHECK, [], errCallback, function (result) {
-                if (result.length == 0) {
+                if (result.length === 0) {
                     query(DDL_PROCEDURE_USER_AUDIT.CREATE, [], errCallback, function () {
                         query(DDL_TRIGGER_USER_AUDIT.CREATE, [], errCallback);
                     });
                 } else {
                     query(DDL_TRIGGER_USER_AUDIT.CHECK, [], errCallback, function (result) {
-                        if (result.length == 0) {
+                        if (result.length === 0) {
                             query(DDL_TRIGGER_USER_AUDIT.CREATE, [], errCallback);
                         }
                     });

@@ -67,7 +67,7 @@ module.exports = {
         user: {
             checkSchema: function (errCallback, doneCallback) {
                 query(DDL_CHECK_TABLE, ['brtc_token_user'], errCallback, function (result) {
-                    if (result.length == 0) {
+                    if (result.length === 0) {
                         query(DDL_CREATE_TOKEN_USER_TABLE, [], errCallback, doneCallback);
                     } else {
                         var columns = {};

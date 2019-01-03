@@ -3,6 +3,14 @@ var router = __REQ_express.Router();
 var projectPermission = require('../permissions/project-permission').ProjectPermission;
 var PERMISSION = require('../permissions/project-permission').PERMISSION;
 
+const parseContents = (results) => {
+    return results.map((result) => {
+        return Object.assign({}, result, {
+            contents: JSON.parse(result.contents)
+        });
+    });
+};
+
 // SELECT
 var listVersions = function (req, res) {
     var task = (permission) => {
@@ -15,11 +23,7 @@ var listVersions = function (req, res) {
             if (rows.length === 0) {
                 __BRTC_ERROR_HANDLER.sendError(res, 10102);
             } else {
-                var len = rows.length;
-                for (var i = 0; i < len; i++) {
-                    rows[i].contents = JSON.parse(rows[i].contents);
-                }
-                res.json(rows);
+                res.json(parseContents(rows));
             }
         });
     };
@@ -52,8 +56,26 @@ var listDetailVersions = function (req, res) {
 
 // INSERT
 var createVersion = function (req, res) {
+    const errorHandler = (err) => {
+        if (err.error.indexOf('duplicate key ') === 0) {
+            return __BRTC_ERROR_HANDLER.sendError(res, 10101);
+        }
+        return __BRTC_ERROR_HANDLER.sendServerError(res, err);
+    };
+
+    const task = (opt) => (permission) => {
+        __BRTC_DAO.file.version.createManually(opt, errorHandler, function (rowCount, result) {
+            if (rowCount === 0) {
+                return __BRTC_ERROR_HANDLER.sendError(res, 10102);
+            }
+            var rows = parseContents(result.rows);
+            return res.json(rows[0]);
+        });
+    };
     if (!req.body.isManual) {
-        if (!req.body.version_id || !req.body.isMajor || !req.body.label) return __BRTC_ERROR_HANDLER.sendError(res, '10103');
+        if (!req.body.version_id || !req.body.isMajor || !req.body.label) {
+            return __BRTC_ERROR_HANDLER.sendError(res, '10103');
+        }
 
         let opt = {
             fileId: req.params.mid,
@@ -64,66 +86,27 @@ var createVersion = function (req, res) {
             isMajor: req.body.isMajor,
             versionId: req.body.version_id
         };
-        const task = (permission) => {
-            __BRTC_DAO.file.version.create(opt, function (err) {
-                if (err.error.indexOf('duplicate key ') == 0) {
-                    __BRTC_ERROR_HANDLER.sendError(res, 10101);
-                } else {
-                    __BRTC_ERROR_HANDLER.sendServerError(res, err);
-                }
-            }, function (rowCount, result) {
-                if (rowCount) {
-                    var rows = result.rows;
-                    var len = rows.length;
-                    for (var i = 0; i < len; i++) {
-                        rows[i].contents = JSON.parse(rows[i].contents);
-                    }
-                    res.json(rows[0]);
-                } else {
-                    __BRTC_ERROR_HANDLER.sendError(res, 10102);
-                }
-            });
-        };
         projectPermission.execute(req.params.project, req.apiUserId,
-            PERMISSION.FILE.UPDATE, res, task);
-    } else {
-        let opt = {
-            fileId: req.params.mid,
-            user: req.apiUserId,
-            versionId: req.body.version_id,
-            tags: __BRTC_TOOLS_SANITIZE_HTML.sanitizeHtml(req.body.tags),
-            label: __BRTC_TOOLS_SANITIZE_HTML.sanitizeHtml(req.body.label),
-            description: __BRTC_TOOLS_SANITIZE_HTML.sanitizeHtml(req.body.description),
-            contents: req.body.contents,
-            type: req.body.type,
-            majorVersion: typeof req.body.majorVersion === 'undefined' ? req.body.major_version :
-                req.body.majorVersion,
-            minorVersion: typeof req.body.minorVersion === 'undefined' ? req.body.minor_version :
-                req.body.minorVersion
-        };
-        const task = (permission) => {
-            __BRTC_DAO.file.version.createManually(opt, function (err) {
-                if (err.error.indexOf('duplicate key ') == 0) {
-                    __BRTC_ERROR_HANDLER.sendError(res, 10101);
-                } else {
-                    __BRTC_ERROR_HANDLER.sendServerError(res, err);
-                }
-            }, function (rowCount, result) {
-                if (rowCount) {
-                    var rows = result.rows;
-                    var len = rows.length;
-                    for (var i = 0; i < len; i++) {
-                        rows[i].contents = JSON.parse(rows[i].contents);
-                    }
-                    res.json(rows[0]);
-                } else {
-                    __BRTC_ERROR_HANDLER.sendError(res, 10102);
-                }
-            });
-        };
-        projectPermission.execute(req.params.project, req.apiUserId,
-            PERMISSION.FILE.UPDATE, res, task);
+            PERMISSION.FILE.UPDATE, res, task(opt));
+        return undefined;
     }
+    let opt = {
+        fileId: req.params.mid,
+        user: req.apiUserId,
+        versionId: req.body.version_id,
+        tags: __BRTC_TOOLS_SANITIZE_HTML.sanitizeHtml(req.body.tags),
+        label: __BRTC_TOOLS_SANITIZE_HTML.sanitizeHtml(req.body.label),
+        description: __BRTC_TOOLS_SANITIZE_HTML.sanitizeHtml(req.body.description),
+        contents: req.body.contents,
+        type: req.body.type,
+        majorVersion: typeof req.body.majorVersion === 'undefined' ? req.body.major_version :
+            req.body.majorVersion,
+        minorVersion: typeof req.body.minorVersion === 'undefined' ? req.body.minor_version :
+            req.body.minorVersion
+    };
+    projectPermission.execute(req.params.project, req.apiUserId,
+        PERMISSION.FILE.UPDATE, res, task(opt));
+    return undefined;
 };
 
 // UPDATE
@@ -144,6 +127,7 @@ var updateVersion = function (req, res) {
             } else {
                 return res.json(200);
             }
+            return undefined;
         });
     };
     projectPermission.execute(req.params.project, req.apiUserId, PERMISSION.FILE.UPDATE, res, task);

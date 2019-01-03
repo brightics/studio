@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.transform import pivot
-res = pivot(values = ,index = ,columns = ,aggfunc = )
+res = pivot(values = ,index = ,columns = ,aggfunc = ,group_by = )
 res['out_table']
 ```
 
@@ -21,6 +21,7 @@ Create a spreadsheet-style pivot table as a DataFrame.
 2. **Index**: column, Grouper
 3. **Columns**: Column fields.
 4. **Aggregate Function**<b style="color:red">*</b>: Aggregate function
+5. **Group By**: Columns to group by
 
 #### Outputs
 1. **out_table**: table
@@ -34,6 +35,7 @@ Create a spreadsheet-style pivot table as a DataFrame.
 2. **index**: column, Grouper
 3. **columns**: Column fields.
 4. **aggfunc**<b style="color:red">*</b>: Aggregate function
+5. **group_by**: Columns to group by
 
 #### Outputs
 1. **out_table**: table

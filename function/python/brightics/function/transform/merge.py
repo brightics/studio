@@ -1,3 +1,5 @@
+from brightics.common.groupby import _function_by_group
+from brightics.common.utils import check_required_parameters
 import pandas as pd
 
 
@@ -17,6 +19,13 @@ def bind_row_column(first_table, second_table, row_or_col):
         table = pd.concat([first_table.reset_index(drop=True), second_table.reset_index(drop=True)], axis=1)
         
     return {'table' : table}
+
+#def merge(table, group_by=None, **params):
+#    check_required_parameters(_merge, params, ['table'])
+#    if group_by is not None:
+#        return _function_by_group(_merge, table, group_by=group_by, **params)
+#    else:
+#        return _merge(table, **params)
 
 
 def merge(left_table, right_table, left_on, right_on, how='inner', lsuffix='_left', rsuffix='_right', sort=False):

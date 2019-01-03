@@ -84,7 +84,7 @@ module.exports = {
     role: {
         checkSchema: function (errCallback, doneCallback) {
             query(DDL_CHECK_TABLE, ['brtc_role'], errCallback, function (result) {
-                if (result.length == 0) {
+                if (result.length === 0) {
                     query(DDL_CREATE_ROLE_TABLE, [], errCallback, function () {
                         var records = [];
                         records.push(['role_10001', 'role_proj_member', 'Owner', 'Project Owner']);

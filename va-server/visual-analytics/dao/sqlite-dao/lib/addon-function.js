@@ -92,7 +92,7 @@ module.exports = {
     addon_function: {
         checkSchema: function (errCallback, doneCallback) {
             query(DDL_CHECK_TABLE, ['brtc_addon_function'], errCallback, function (result) {
-                if (result.length == 0) {
+                if (result.length === 0) {
                     query(DDL_CREATE_ADDON_FUNCTION_TABLE, [], errCallback, doneCallback);
                 } else {
                     var columns = {};

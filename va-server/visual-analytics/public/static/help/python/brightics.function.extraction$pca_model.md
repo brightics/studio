@@ -21,6 +21,10 @@ This function transforms the features using the result of PCA.
 1. **New Column Name**: New column name
    - Value type : String
    - Default : projected_
+<<<<<<< HEAD
+=======
+2. **Group By**: Columns to group by
+>>>>>>> refs/heads/master
 
 #### Outputs
 1. **out_table**: table
@@ -34,6 +38,10 @@ This function transforms the features using the result of PCA.
 1. **new_column_name**: New column name
    - Value type : String
    - Default : projected_
+<<<<<<< HEAD
+=======
+2. **group_by**: Columns to group by
+>>>>>>> refs/heads/master
 
 #### Outputs
 1. **out_table**: table

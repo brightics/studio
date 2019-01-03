@@ -775,6 +775,14 @@ function bindMouseWheelHandler(element, i) {
     }
     return false;
   }
+  
+  function shouldBeConsumedByHandsonTable(deltaX, deltaY) {
+      var hoveredTable = element.querySelector('.handsontable:hover');
+      if(hoveredTable){
+          return true;
+      }
+      return false;
+  }
 
   function mousewheelHandler(e) {
     var delta = getDeltaFromEvent(e);
@@ -784,6 +792,9 @@ function bindMouseWheelHandler(element, i) {
 
     if (shouldBeConsumedByTextarea(deltaX, deltaY)) {
       return;
+    }
+    if(shouldBeConsumedByHandsonTable(deltaX, deltaY)){
+        return;
     }
 
     shouldPrevent = false;

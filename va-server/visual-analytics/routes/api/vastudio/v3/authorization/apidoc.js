@@ -5,7 +5,7 @@
  @api {GET} /api/vastudio/v3/authorization/roles List Role
  @apiGroup Authorization
  @apiName List Role
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParam {String} [userId] User Id
  @apiParam {String} [roleLabel] Role Label
@@ -83,7 +83,7 @@
  @api {PUT} /api/vastudio/v3/authorization/roles/:roleId Update Role
  @apiGroup Authorization
  @apiName Update Role
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParam {Array} userIdList User Id List
 
@@ -130,7 +130,7 @@
  @api {GET} /api/vastudio/v3/authorization/roles/:roleId/users List Users by Role ID
  @apiGroup Authorization
  @apiName List Users by Role ID
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParamExample Param Example 1
  /api/vastudio/v3/authorization/roles/role_10101/users
@@ -158,7 +158,7 @@
  @api {GET} /api/vastudio/v3/authorization/roles/:roleId/permissions List Permissions by Role ID
  @apiGroup Authorization
  @apiName ListPermissionsbyRoleID
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParamExample Param Example 1
  /api/vastudio/v3/authorization/roles/role_10101/permissions
@@ -187,7 +187,7 @@
  @api {GET} /api/vastudio/v3/authorization/:userId/resourcetype List Permission Resource Type By User ID
  @apiGroup Authorization
  @apiName List Permission Resource Type By User ID
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParamExample Param Example 1
  /api/vastudio/v3/authorization/brightics@samsung.com/resourcetype

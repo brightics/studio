@@ -5,7 +5,7 @@
  @api {GET} /api/vastudio/v3/udfs Get User Define Function list
  @apiGroup User Define Function
  @apiName Get User Define Function list
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParamExample Param Example 1
  /api/vastudio/v3/udfs
@@ -38,7 +38,7 @@
  @api {POST} /api/vastudio/v3/udfs Create User Define Function
  @apiGroup User Define Function
  @apiName Create user define function
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParam {Object} script Script
  @apiParam {Object} specJson Spec json
@@ -94,7 +94,7 @@
  @api {GET} /api/vastudio/v3/udfs/:functionId Get User Define Function by Function Id
  @apiGroup User Define Function
  @apiName Get user define function by function id
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParamExample Param Example 1
  /api/vastudio/v3/udfs/g3f7xrngsh5z8gta
@@ -139,7 +139,7 @@
  @api {DELETE} /api/vastudio/v3/udfs/:functionId Delete User Define Function
  @apiGroup User Define Function
  @apiName Delete User Define Function
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParamExample Param Example 1
  /api/vastudio/v3/udfs/g3f7xrngsh5z8gta

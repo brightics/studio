@@ -3,7 +3,7 @@ var events = require('events');
 var ProjectPermission = {
     hasPermission: function (permissions, perm) {
         for (var i in permissions) {
-            if (permissions[i].permission_id == perm) {
+            if (permissions[i].permission_id === perm) {
                 return true;
             }
         }

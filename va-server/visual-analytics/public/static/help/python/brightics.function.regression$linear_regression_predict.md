@@ -21,6 +21,10 @@ Predict data using a linear regression model.
 1. **Prediction Column Name**: Column name for prediction
    - Value type : String
    - Default : prediction
+<<<<<<< HEAD
+=======
+2. **Group By**: Columns to group by
+>>>>>>> refs/heads/master
 
 #### Outputs
 1. **out_table**: table
@@ -34,6 +38,10 @@ Predict data using a linear regression model.
 1. **prediction_col**: Column name for prediction
    - Value type : String
    - Default : prediction
+<<<<<<< HEAD
+=======
+2. **group_by**: Columns to group by
+>>>>>>> refs/heads/master
 
 #### Outputs
 1. **out_table**: table

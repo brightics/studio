@@ -17,23 +17,27 @@ Please visit our web site http://www.brightics.ai
 
 ## Getting started
 ### Prerequisite
-Mac OS users have to install [graphviz](http://graphviz.org/download/) using [Homebrew](https://brew.sh/)
+* Mac OS users have to install [graphviz](http://graphviz.org/download/) using [Homebrew](https://brew.sh/)
 ```
 brew install graphviz
 ```
+* Some functions which interact with database need client libraries such as [Oracle Instant Client](http://www.oracle.com/technetwork/database/database-technologies/instant-client/overview/index.html)
 
 ### Download
-In a beta phase, the releases and patches would be updated everyweek.<br>
+In the beta phase, the releases and patches will probably be updated every week.<br>
 Download release files are available from github release or our web site http://www.brightics.ai/downloads
 
 ### Installation
-Unzip the downloaded file in somewhere.
+Execute the downloaded file. It will extract files automatically.
+
+	BrighticsStudio-\<version\>-\<os name\>.exe : for windows
+	BrighticsStudio-\<version\>-\<os name\>.sh : for linux and mac
+
+Details of the directory is as follows:
 
 	/brightics-studio/brightics-server : core home
 	/brightics-studio/visual-analytics : GUI home
 	/brightics-studio/lib : external libs
-
-※ for windows, running exe file will extract files automatically.
 
 ### Launch
 You don't need to prepare anything before running it. Our releases contain all requirements in a package itself.<br>
@@ -43,7 +47,7 @@ Go to unzipped directory and run.
 	start-brightics.sh : for linux and mac
 
 ### Patch
-If a new version is releases, You should move these files to newer version of brightics-studio to maintain data and projects.
+If a new version is released, you should move these files to newer version of brightics-studio to maintain data and projects.
 
 	/brightics-studio/visual-analytics/brightics.db
 	/brightics-studio/brightics-server/data/*
@@ -64,14 +68,14 @@ for windows:
     SET NODEJS_HOME=<Your Node.js installation path>
     SET PATH=%PATH;%PYTHON_HOME%\bin;%JAVA_HOME%\bin;%NODEJS_HOME%\bin
 
-for linux like systems:
+for linux-like systems:
 
     export JAVA_HOME=<Your Java installation path>
     export PYTHON_HOME=<Your Python installation path>
     export NODEJS_HOME=<Your Node.js installation path>
     export PATH=$PATH:$PYTHON_HOME/bin:$JAVA_HOME/bin:$NODEJS_HOME/bin
     
-Most common cases you don't need to set above parameters because those projects automatically add paths during its installation process. 
+Most common cases you don't need to set above parameters because those projects automatically add paths during their installation process. 
 
 ### Build
 Build a package with maven.
@@ -86,7 +90,7 @@ When the build process is finished, a distribution will be created under build/t
 ```
 
 Some of python packages need Microsoft Visual C++ Build Tools.<br>
-Please make sure [Microsoft Visual C++ 14.0](https://go.microsoft.com/fwlink/?LinkId=691126) installed when you run a setup command in windows.<br>
+Please make sure [Microsoft Visual C++ 14.0](https://go.microsoft.com/fwlink/?LinkId=691126) installed when you run the setup command in windows.<br>
 Reference : [Python wiki for WindowsCompilers](https://wiki.python.org/moin/WindowsCompilers)<br>
 
 ## License
@@ -97,12 +101,13 @@ The others are licensed under the terms of the Apache 2.0 license.
 Source codes of the Web GUI are not yet fully opened due to some license issues from its submodules.<br>
 The purpose of personal use for commercial or non-commercial is allowed but only the redistribution is prohibited.<br>
 See [the documentation about this license](BRIGHTICS_VA_LICENSE) for more details.<br>
-We work hard to solve these issues and soon it will be public.
+We are working hard to solve these issues and soon it will be public.
 
 ## Roadmap
 
 <img src="docs/images/roadmap.png" width="960px" height="481px" alt="Brightics Studio"></img>
 
 ## Contact us
-If you like to use brightics studio, please let us know your usage and feedback.<br>
-Or you have questions while using brightics studio, don't hesitate and feel free to contact brightics@samsung.com.
+If you like to use Brightics Studio, please let us know your usage and feedback.<br>
+Or you have questions while using Brightics Studio, don't hesitate and feel free to contact brightics@samsung.com
+

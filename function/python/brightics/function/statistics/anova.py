@@ -1,5 +1,7 @@
 from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD, \
     pandasDF2MD, keyValues2MD
+from brightics.common.groupby import _function_by_group
+from brightics.common.utils import check_required_parameters
 
 from scipy.stats import bartlett
 import seaborn as sns
@@ -49,9 +51,16 @@ def bartletts_test(table, response_cols, factor_col):
     result['_repr_brtc_'] = rb.get()
         
     return {'result': result}
+
+def oneway_anova(table, group_by=None, **params):
+    check_required_parameters(_oneway_anova, params, ['table'])
+    if group_by is not None:
+        return _function_by_group(_oneway_anova, table, group_by=group_by, **params)
+    else:
+        return _oneway_anova(table, **params)
     
     
-def oneway_anova(table, response_cols, factor_col):
+def _oneway_anova(table, response_cols, factor_col):
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     ## One-way Analysis of Variance Result
@@ -110,9 +119,16 @@ def oneway_anova(table, response_cols, factor_col):
         
     result['_repr_brtc_'] = rb.get()
     return {'result': result}
+
+def tukeys_range_test(table, group_by=None, **params):
+    check_required_parameters(_tukeys_range_test, params, ['table'])
+    if group_by is not None:
+        return _function_by_group(_tukeys_range_test, table, group_by=group_by, **params)
+    else:
+        return _tukeys_range_test(table, **params)
     
     
-def tukeys_range_test(table, response_cols, factor_col, alpha=0.05):
+def _tukeys_range_test(table, response_cols, factor_col, alpha=0.05):
     if alpha < 0.001 or alpha >= 0.9: 
         raise BrighticsFunctionException("0006", ['alpha', 0.001, 0.9])
     

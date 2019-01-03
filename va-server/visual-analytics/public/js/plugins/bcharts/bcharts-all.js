@@ -7468,7 +7468,7 @@ Pagination.prototype.setPageSize = function (pageSize) {
 Pagination.prototype.setTotalCount = function (total) {
     this.pageInfo.totalCount = total;
     if (this.pageInfo.totalCount < 0) {
-        this.$mainControl.find('.bcharts-pagination-showing .bcharts-pagination-showing-total').text('?');
+        this.$mainControl.find('.bcharts-pagination-showing .bcharts-pagination-showing-total').text('unknown');
     } else {
         this.$mainControl.find('.bcharts-pagination-showing .bcharts-pagination-showing-total').text(numeral(this.pageInfo.totalCount).format('0,0'));
     }
@@ -7490,7 +7490,7 @@ Pagination.prototype.setColumnCount = function (total) {
 Pagination.prototype._showTotalCountOnly = function (total) {
     this.pageInfo.totalCount = total;
     if (this.pageInfo.totalCount < 0) {
-        this.$mainControl.find('.bcharts-pagination-showing .bcharts-pagination-showing-total').text('?');
+        this.$mainControl.find('.bcharts-pagination-showing .bcharts-pagination-showing-total').text('unknown');
     } else {
         this.$mainControl.find('.bcharts-pagination-showing .bcharts-pagination-showing-total').text(numeral(this.pageInfo.totalCount).format('0,0'));
     }
@@ -11781,7 +11781,7 @@ EChartsBoxPlotOptionBuilder.prototype._buildSeriesData = function () {
         var axisType = this._getColumnDataType(this.filterNullColumn(this.bOptions.xAxis[0].selected));
         var sortRule = function sortRule(a, b) {
             var comp;
-            if (axisType === 'category') comp = _optionUtils2.default.stringSortRule(a.x, b.x);else if (axisType === 'time') comp = _optionUtils2.default.timeSortRule(a.x, b.x);else comp = _optionUtils2.default.numericSortRule(a.x * 1, b.x * 1);
+            if (axisType === 'category') comp = _optionUtils2.default.stringSortRule(a.x, b.x);else if (axisType === 'time') comp = _optionUtils2.default.timeSortRule(a.x, b.x);else comp = _optionUtils2.default.numericSortRule(('' + a.x) * 1, ('' + b.x) * 1);
 
             return comp;
         };
@@ -18856,13 +18856,13 @@ EChartsColumnCalculatedOptionBuilder.prototype._newSeriesExtractor = function ()
     extractor.setTarget({
         index: xIndexes,
         type: 'category',
-        isKey: false
+        isKey: true
     });
 
     extractor.setTarget({
         index: yIndexes,
         type: 'value',
-        isKey: true
+        isKey: false
     });
 
     return extractor;
@@ -23107,6 +23107,7 @@ handsontableTable.prototype.destroy = function () {
     try {
         $(window).off('resize', this.resizeHandler);
         this.table.destroy();
+        delete this.table;
     } catch (ex) {
         // ignore exception
     }
@@ -23115,9 +23116,7 @@ handsontableTable.prototype.destroy = function () {
 handsontableTable.prototype._createContents = function ($parent) {
     var _this = this;
 
-    this.$mainControl = $('<div class="bcharts-chart"></div>');
-    this.$tableControl = $('<div id="bchart-handson-table"></div>');
-    this.$mainControl.append(this.$tableControl);
+    this.$mainControl = $('<div class="bcharts-chart bchart-table"></div>');
     $parent.append(this.$mainControl);
 
     this.$mainControl.hide();
@@ -23128,7 +23127,13 @@ handsontableTable.prototype._createContents = function ($parent) {
     $(window).resize(this.resizeHandler);
 };
 
-handsontableTable.prototype.clear = function () {};
+handsontableTable.prototype.clear = function () {
+    if (this.table) {
+        $(window).off('resize', this.resizeHandler);
+        this.table.destroy();
+        delete this.table;
+    }
+};
 
 handsontableTable.prototype.render = function () {
     var _this = this;
@@ -23140,16 +23145,16 @@ handsontableTable.prototype.render = function () {
         this.$mainControl.css('border', this.options.plotOptions.table.border);
     }
 
-    var builderOptions = {
-        columnWidth: _this.columnWidth
-    };
-
     this.builder = new handsontableTableOptionBuilder();
-    this.builder.setBuilderOptions(builderOptions);
 
-    var opt = this.builder.buildOptions(this.options, this.$mainControl.width(), this.$mainControl.height(), this._makeContextMenu());
+    var opt = this.builder.buildOptions(this.options, this.$parent.width(), this.$parent.height(), this._makeContextMenu());
 
-    this.table = new Handsontable(this.$tableControl[0], opt);
+    // 있으면 update 없으면 생성.. 다른 좋은 방법이 필요한...
+    if (this.table) {
+        this.table.updateSettings(opt);
+    } else {
+        this.table = new Handsontable(this.$mainControl[0], opt);
+    }
 
     this.$mainControl.show();
 };
@@ -23193,7 +23198,7 @@ handsontableTable.prototype._makeContextMenu = function () {
                     var colHeaders = this.getColHeader();
                     var plugin = this.getPlugin('manualColumnResize');
                     var selectedCol = selection[0].start.col;
-                    plugin.setManualSize(selectedCol, colHeaders[selectedCol].length * 10 > 70 ? colHeaders[selectedCol].length * 10 : 70);
+                    plugin.setManualSize(selectedCol, colHeaders[selectedCol].length * 10 > 80 ? colHeaders[selectedCol].length * 10 : 80);
                     this.updateSettings({});
                 }
             },
@@ -23201,11 +23206,10 @@ handsontableTable.prototype._makeContextMenu = function () {
                 name: 'Auto resize all columns',
                 callback: function callback() {
                     var colHeaders = this.getColHeader();
-                    var colWidths = [];
                     var plugin = this.getPlugin('manualColumnResize');
 
                     for (var i = 0; i < colHeaders.length; i++) {
-                        plugin.setManualSize(i, colHeaders[i].length * 10 > 70 ? colHeaders[i].length * 10 : 70);
+                        plugin.setManualSize(i, colHeaders[i].length * 10 > 80 ? colHeaders[i].length * 10 : 80);
                     }
                     // plugin.updatePlugin();
                     // manual에서는 위에걸로 하라고 하는데 안먹어서 그냥 이걸로....
@@ -23216,18 +23220,18 @@ handsontableTable.prototype._makeContextMenu = function () {
                 name: 'Copy columns to clipboard',
                 callback: function callback() {
                     var columns = this.getColHeader();
-                    var isChrome = !!window.chrome && !!window.chrome.webstore;
-                    var isIE = /* @cc_on!@*/false || !!document.documentMode;
 
-                    if (isChrome) {
+                    var isIE = /Trident/.test(navigator.userAgent);
+
+                    if (isIE) {
+                        window.clipboardData.setData("Text", columns.join(', '));
+                    } else {
                         var textField = document.createElement('textarea');
                         textField.innerText = columns.join(', ');
                         document.body.appendChild(textField);
                         textField.select();
                         document.execCommand('copy');
                         textField.remove();
-                    } else if (isIE) {
-                        window.clipboardData.setData('Text', columns.join(', '));
                     }
                 }
             }
@@ -23297,10 +23301,6 @@ function handsontableTableOptionBuilder() {
 handsontableTableOptionBuilder.prototype = Object.create(_chartOptionBuilder2.default.prototype);
 handsontableTableOptionBuilder.prototype.constructor = handsontableTableOptionBuilder;
 
-handsontableTableOptionBuilder.prototype.setBuilderOptions = function (options) {
-    this.options = options;
-};
-
 handsontableTableOptionBuilder.prototype.buildOptions = function (options, width, height, contextMenu) {
     this.bOptions = options;
     this.handsontableTableOptions = this._defaultOptions(width, height);
@@ -23347,7 +23347,7 @@ handsontableTableOptionBuilder.prototype._buildColumns = function () {
         colHeaders.push(column.name);
 
         // header Width 설정
-        colWidths.push(column.name.length * 10 > 70 ? column.name.length * 10 : 70);
+        colWidths.push(column.name.length * 10 > 80 ? column.name.length * 10 : 80);
 
         // column value 설정
         var columnSetting = {};

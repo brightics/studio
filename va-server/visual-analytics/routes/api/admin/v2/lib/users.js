@@ -9,8 +9,32 @@ var decryptRSA = require('../../../../../lib/rsa').decryptRSA;
 
 var ACC_URL_USER_PREFIX = '/api/account/v2/users';
 
+const cb = (res) => {
+    return function (error, response, body) {
+        if (error) {
+            __BRTC_ERROR_HANDLER.sendServerError(res, error);
+        } else {
+            if (response.statusCode === 200) {
+                res.json(JSON.parse(body));
+            } else {
+                res.status(response.statusCode).send(response.body);
+            }
+        }
+    };
+};
+
+const reponseHandler = (req, res) => {
+    return function (error, response, body) {
+        if (error) {
+            return res.status(400).json(JSON.parse(body));
+        }
+        return res.json(JSON.parse(body));
+    };
+};
+
 var _executeInPermission = function (req, res, perm, task) {
-    var permHandler = __BRTC_PERM_HELPER.checkPermission(req, [__BRTC_PERM_HELPER.PERMISSION_RESOURCE_TYPES.USER], perm);
+    var permHandler = __BRTC_PERM_HELPER.checkPermission(req,
+        [__BRTC_PERM_HELPER.PERMISSION_RESOURCE_TYPES.USER], perm);
     permHandler.on('accept', task);
     permHandler.on('deny', function (permissions) {
         __BRTC_ERROR_HANDLER.sendNotAllowedError(res);
@@ -25,28 +49,31 @@ var listUsers = function (req, res) {
     if (req.query.pattern) {
         var compile = mf.compile('/api/account/v2/users?search={search}');
         url = compile({
-            search: encodeURIComponent(req.query.pattern)
+            search: encodeURIComponent(req.query.pattern),
         });
     }
     var options = __BRTC_ACCOUNT_SERVER.createRequestOptions('GET', url);
     __BRTC_ACCOUNT_SERVER.setBearerToken(options, req.accessToken);
-    request(options, function (error, response, body) {
-        if (error) {
-            return res.status(400).json(JSON.parse(body));
-        }
-        return res.json(JSON.parse(body));
-    });
+    request(options, reponseHandler(req, res));
+
+    // function (error, response, body) {
+    // if (error) {
+    //     return res.status(400).json(JSON.parse(body));
+    // }
+    // return res.json(JSON.parse(body));
+    // });
 };
 
 var getUserById = function (req, res) {
     var options = __BRTC_ACCOUNT_SERVER.createRequestOptions('GET', ACC_URL_USER_PREFIX + '/' + req.params.userId);
     __BRTC_ACCOUNT_SERVER.setBearerToken(options, req.accessToken);
-    request(options, function (error, response, body) {
-        if (error) {
-            return res.status(400).json(JSON.parse(body));
-        }
-        return res.json(JSON.parse(body));
-    });
+    request(options, reponseHandler(req, res));
+    // function (error, response, body) {
+    //     if (error) {
+    //         return res.status(400).json(JSON.parse(body));
+    //     }
+    //     return res.json(JSON.parse(body));
+    // });
 };
 
 var createUser = function (req, res) {
@@ -54,34 +81,22 @@ var createUser = function (req, res) {
         var rsaOption = __BRTC_ACCOUNT_SERVER.createRequestOptions('GET', '/api/account/v2/rsa/publickey?type=pem', req.accessToken);
         request(rsaOption, function (error, response, body) {
             if (error) {
-                __BRTC_ERROR_HANDLER.sendServerError(res, error);
+                return __BRTC_ERROR_HANDLER.sendServerError(res, error);
+            }
+            if (response.statusCode === 200) {
+                var rsaKey = JSON.parse(body);
+                var publicKey = new NodeRSA(rsaKey.publicKey, 'pkcs8-public-pem');
+                var opt = __BRTC_ACCOUNT_SERVER.createRequestOptions('POST', ACC_URL_USER_PREFIX, req.accessToken);
+                opt.form = {
+                    id: req.params.userId,
+                    password: publicKey.encrypt(decryptRSA(req.body.password, req), 'base64'),
+                    name: req.body.name,
+                    email: req.body.email,
+                    publicKey: rsaKey.publicKey,
+                };
+                return request(opt, cb(res));
             } else {
-                if (response.statusCode == 200) {
-
-                    var rsaKey = JSON.parse(body);
-                    var publicKey = new NodeRSA(rsaKey.publicKey, 'pkcs8-public-pem');
-                    var opt = __BRTC_ACCOUNT_SERVER.createRequestOptions('POST', ACC_URL_USER_PREFIX, req.accessToken);
-                    opt.form = {
-                        id: req.params.userId,
-                        password: publicKey.encrypt(decryptRSA(req.body.password, req), 'base64'),
-                        name: req.body.name,
-                        email: req.body.email,
-                        publicKey: rsaKey.publicKey
-                    };
-                    request(opt, function (error, response, body) {
-                        if (error) {
-                            __BRTC_ERROR_HANDLER.sendServerError(res, error);
-                        } else {
-                            if (response.statusCode == 200) {
-                                res.json(JSON.parse(body));
-                            } else {
-                                res.status(response.statusCode).send(response.body);
-                            }
-                        }
-                    });
-                } else {
-                    res.status(response.statusCode).send(response.body);
-                }
+                return res.status(response.statusCode).send(response.body);
             }
         });
     };
@@ -94,19 +109,9 @@ var updateUser = function (req, res) {
         opt.form = {
             id: req.params.userId,
             name: req.body.name,
-            email: req.body.email
+            email: req.body.email,
         };
-        request(opt, function (error, response, body) {
-            if (error) {
-                __BRTC_ERROR_HANDLER.sendServerError(res, error);
-            } else {
-                if (response.statusCode == 200) {
-                    res.json(JSON.parse(body));
-                } else {
-                    res.status(response.statusCode).send(response.body);
-                }
-            }
-        });
+        request(opt, cb(res));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_ACCOUNT_UPDATE, task);
 };
@@ -115,19 +120,9 @@ var deleteUser = function (req, res) {
     var task = function (permissions) {
         var opt = __BRTC_ACCOUNT_SERVER.createRequestOptions('POST', ACC_URL_USER_PREFIX + '/' + req.params.userId + '/delete', req.accessToken);
         opt.form = {
-            id: req.params.userId
+            id: req.params.userId,
         };
-        request(opt, function (error, response, body) {
-            if (error) {
-                __BRTC_ERROR_HANDLER.sendServerError(res, error);
-            } else {
-                if (response.statusCode == 200) {
-                    res.json(JSON.parse(body));
-                } else {
-                    res.status(response.statusCode).send(response.body);
-                }
-            }
-        });
+        request(opt, cb(res));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_ACCOUNT_DELETE, task);
 };
@@ -138,7 +133,7 @@ var getRsaPublicKeyFromAccountServer = function (req, res, next) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 var rsaKey = JSON.parse(body);
                 res.json(rsaKey);
             } else {

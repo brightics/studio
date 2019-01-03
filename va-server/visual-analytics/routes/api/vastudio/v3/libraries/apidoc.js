@@ -5,7 +5,7 @@
  @api {GET} /api/vastudio/v3/libraries Get library list
  @apiGroup Libraries
  @apiName Get library list
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParamExample Param Example 1
  /api/vastudio/v3/libraries
@@ -46,7 +46,7 @@
  @api {GET} /api/vastudio/v3/libraries/:libraryId/templates Get library template list
  @apiGroup Libraries
  @apiName Get library template list
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParamExample Param Example 1
  /api/vastudio/v3/libraries/apitester@samsung.com/templates
@@ -135,7 +135,7 @@
  @api {POST} /api/vastudio/v3/libraries/:libraryId/templates Create library template
  @apiGroup Libraries
  @apiName Create library template
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParam {String} label Label
  @apiParam {String} contents Content
@@ -231,7 +231,7 @@
  @api {PUT} /api/vastudio/v3/libraries/:libraryId/templates/:templateId Update library template
  @apiGroup Libraries
  @apiName Update library template
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParam {String} label Label
  @apiParam {String} [description] Description
@@ -289,7 +289,7 @@
  @api {DELETE} /api/vastudio/v3/libraries/:libraryId/templates/:templateId Delete library template
  @apiGroup Libraries
  @apiName Delete library template
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParamExample Param Example 1
  /api/vastudio/v3/libraries/apites@samsung.com/templates/nnnnininidididid
