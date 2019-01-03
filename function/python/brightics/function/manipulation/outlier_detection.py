@@ -1,4 +1,4 @@
-from brightics.common.report import ReportBuilder, strip_margin, plt2MD, dict2MD
+from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD, dict2MD
 from brightics.function.utils import _model_dict
 import numpy as np
 import pandas as pd
@@ -52,7 +52,7 @@ def _outlier_detection_tukey_carling(table, input_cols, outlier_method="tukey", 
         
     prediction = out_table[new_column_names].apply(lambda row: np.sum(row == 'out') < number_of_removal, axis=1)
     
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     params = { 
         'Input Columns': input_cols,
         'Outlier Method': outlier_method,
@@ -83,7 +83,7 @@ def _outlier_detection_tukey_carling(table, input_cols, outlier_method="tukey", 
     model['q3'] = q3s
     model['iqr'] = iqrs
     model['multiplier'] = multiplier
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
     
     return {'out_table': out_table, 'model' : model}
 
@@ -120,7 +120,7 @@ def _outlier_detection_lof(table, input_cols, choice='add_prediction', n_neighbo
     #    'Contamination': contamination
     }
     
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## Outlier Detection (Local Outlier Factor) Result
     | ### Parameters
@@ -131,6 +131,6 @@ def _outlier_detection_lof(table, input_cols, choice='add_prediction', n_neighbo
     model = _model_dict('outlier_detection_lof')
     model['params'] = params
     model['lof_model'] = lof_model
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
     
     return {'out_table':out_table, 'model':model}

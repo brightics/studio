@@ -1,4 +1,4 @@
-from brightics.common.report import ReportBuilder, strip_margin, plt2MD, \
+from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD, \
     pandasDF2MD, keyValues2MD
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
@@ -41,7 +41,7 @@ def _timeseries_decomposition(table, input_col, frequency, choice='additive', fi
     out_table['seasonalTSD'] = decomposition.seasonal
     out_table['residualTSD'] = decomposition.resid
     
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## Time Series Decomposition Result
     | Model : {choice}
@@ -54,6 +54,6 @@ def _timeseries_decomposition(table, input_col, frequency, choice='additive', fi
     
     model = _model_dict('timeseries_decomposition')
     model['model'] = choice
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
     
     return {'table':out_table, 'model':model}

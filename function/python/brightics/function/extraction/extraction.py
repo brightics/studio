@@ -1,4 +1,4 @@
-from brightics.common.report import ReportBuilder, strip_margin, plt2MD, dict2MD, \
+from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD, dict2MD, \
     pandasDF2MD, keyValues2MD
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
@@ -40,7 +40,7 @@ def _discretize_quantile(table, input_col, num_of_buckets=2, out_col_name='bucke
     out_table[out_col_name], buckets = pd.qcut(table[input_col], num_of_buckets, labels=False, retbins=True, precision=10, duplicates='drop')    
             
     # Build model
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     ## Quantile-based Discretization Result
     """))
@@ -75,7 +75,7 @@ def _discretize_quantile(table, input_col, num_of_buckets=2, out_col_name='bucke
     |
     | {result_table}
     """.format(input_col=input_col, n=num_of_buckets, result_table=pandasDF2MD(result_table))))
-    result['report'] = rb.get()
+    result['_repr_brtc_'] = rb.get()
     
     return {'out_table': out_table, 'model': result}
 

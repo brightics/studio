@@ -1,4 +1,4 @@
-from brightics.common.report import ReportBuilder, strip_margin, plt2MD, \
+from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD, \
     pandasDF2MD, keyValues2MD
 
 from scipy.stats import bartlett
@@ -75,7 +75,7 @@ def _chi_square_test_of_independence(table, response_cols, factor_col, correctio
     result = dict()
     result['result_table'] = result_table
     
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## Chi-square Test of Independence Result
     |  - H0: the two categorical variables are independent.
@@ -127,7 +127,7 @@ def _chi_square_test_of_independence(table, response_cols, factor_col, correctio
 
     model = _model_dict('Chi-square test of independence')
     
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
     
     result_table = result_table.copy()
     

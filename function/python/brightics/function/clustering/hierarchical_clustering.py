@@ -1,4 +1,4 @@
-from brightics.common.report import ReportBuilder, strip_margin, plt2MD, \
+from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD, \
     pandasDF2MD, keyValues2MD, dict2MD
 import matplotlib.pyplot as plt
 import numpy as np
@@ -97,7 +97,7 @@ def _hierarchical_clustering(table, input_cols, link='complete', met='euclidean'
     plt2 = plt2MD(plt)
     plt.clf()
     
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     params = { 
         'Input Columns': input_cols,
         'Linkage Method': link,
@@ -125,7 +125,7 @@ def _hierarchical_clustering(table, input_cols, link='complete', met='euclidean'
     model['input_cols'] = input_cols
     model['parameters'] = params
     model['outtable'] = out_table
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
         
     return { 'model':model}
 
@@ -165,7 +165,7 @@ def _hierarchical_clustering_post(table, model, num_clusters, cluster_col='predi
     # data = {'cluster_name': ['prediction' + str(i) for i in range(1, num_clusters + 1)]}
     out_table3['num_of_entities'] = list(cluster_count)
     
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""### Hierarchical Clustering Post Process Result"""))
     rb.addMD(strip_margin("""
     |### Parameters
@@ -179,6 +179,6 @@ def _hierarchical_clustering_post(table, model, num_clusters, cluster_col='predi
     """.format(display_params=dict2MD(params), out_table3=pandasDF2MD(out_table3))))
 
     model = _model_dict('hierarchical_clustering_post')
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
     
     return {'out_table2' : out_table2, 'model': model}

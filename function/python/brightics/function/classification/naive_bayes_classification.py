@@ -5,7 +5,7 @@ import pandas as pd
 from sklearn import preprocessing
 import itertools
 from sklearn.naive_bayes import MultinomialNB
-from brightics.common.report import ReportBuilder, strip_margin, plt2MD, pandasDF2MD, dict2MD
+from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD, pandasDF2MD, dict2MD
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
@@ -59,7 +59,7 @@ def _naive_bayes_train(table, feature_cols, label_col, alpha=1.0, fit_prior=True
     fig_confusion_matrix = plt2MD(plt)
     accuracy = nb_model.score(features, label_correspond) * 100
     
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## Naive Bayes Classification Result
     |
@@ -78,7 +78,7 @@ def _naive_bayes_train(table, feature_cols, label_col, alpha=1.0, fit_prior=True
     model['label_col'] = label_col
     model['label_encoder'] = label_encoder
     model['nb_model'] = nb_model
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
     
     return {'model' : model}
 
