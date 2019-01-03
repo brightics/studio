@@ -83,14 +83,12 @@ def _discretize_quantile(table, input_col, num_of_buckets=2, out_col_name='bucke
 def binarizer(table, column, threshold=0, threshold_type='greater', out_col_name=None):
     if out_col_name is None:
         out_col_name = 'binarized_' + str(column)
-    table[out_col_name] = 0
-    for t in range(0, len(table[column])):
-        if threshold_type == 'greater':
-            if table[column][t] > threshold:
-                table[out_col_name][t] = 1
-        else:
-            if table[column][t] >= threshold:
-                table[out_col_name][t] = 1
+        
+    if threshold_type == 'greater':
+        table[out_col_name] = table[column].apply(lambda x: 1 if x > threshold else 0)
+    else :
+        table[out_col_name] = table[column].apply(lambda x: 1 if x >= threshold else 0)
+
     return{'table':table}
 
 
