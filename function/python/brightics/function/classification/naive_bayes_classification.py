@@ -104,10 +104,10 @@ def _plot_confusion_matrix(cm, classes,
     plt.tight_layout()
 
 
-def naive_bayes_predict(table, model, group_by=None, **params):
+def naive_bayes_predict(table, model, **params):
     check_required_parameters(_naive_bayes_predict, params, ['table', 'model'])
-    if group_by is not None:
-        return _function_by_group(_naive_bayes_predict, table, model, group_by=group_by, **params)
+    if 'group_by' in model:
+        return _function_by_group(_naive_bayes_predict, table, model, **params)
     else:
         return _naive_bayes_predict(table, model, **params)
 

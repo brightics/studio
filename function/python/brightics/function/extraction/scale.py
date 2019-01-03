@@ -9,7 +9,6 @@ def scale(table, group_by=None, **params):
     check_required_parameters(_scale, params, ['table'])
     if group_by is not None:
         grouped_model = _function_by_group(_scale, table, group_by=group_by, **params)
-        grouped_model['model']['_grouped_key'] = group_by
         return grouped_model
     else:
         return _scale(table, **params)
@@ -50,11 +49,10 @@ def _scale(table, input_cols, scaler, suffix=None):
     return {'out_table' : out_table, 'model' : out_model}
 
 
-def scale_model(table, model, group_by=None, **params):
+def scale_model(table, model, **params):
     check_required_parameters(_scale_model, params, ['table', 'model'])
-    if '_grouped_key' in model:
-        group_by = model['_grouped_key']
-        return _function_by_group(_scale_model, table, model, group_by=group_by, **params)
+    if '_group_by' in model:
+        return _function_by_group(_scale_model, table, model, **params)
     else:
         return _scale_model(table, model, **params)
     

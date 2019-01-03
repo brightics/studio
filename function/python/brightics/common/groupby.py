@@ -2,33 +2,43 @@ import pandas as pd
 from brightics.common.repr import BrtcReprBuilder
 
 
-def _function_by_group(function, table, model=None, group_by=None, **params):
-    if table is not None:
-        if isinstance(table, pd.DataFrame) and group_by is not None:  # table and group_by
-            table, group_keys = _group(table, group_by)
-        elif isinstance(table, dict) and '_grouped_data' in table:  # grouped_data
-            group_keys = [*table['_grouped_data']]
-            group_by = table['_group_by']
-        
-        elif isinstance(table, pd.DataFrame) and group_by is None:
-            raise Exception('This function requires group_by')
-        else:
-            raise Exception('Unknown type.')
-    elif model is not None:
-        if isinstance(model, dict) and '_grouped_data' in model:
-            group_keys = [*model['_grouped_data']]
-            group_by = model['_group_by']
-    else:
-        raise Exception('This function requires a table or a model as an input.')
-   
+def _sample_result(function, table, model, params, group_keys):
     sample_group = group_keys[0]
+    sample_result = _run_function(function, table, model, params, sample_group)
+
+    return sample_result
+
+
+def _run_function(function, table, model, params, group):
     if table is not None and model is None:
-        sample_result = function(table=table['_grouped_data'][sample_group], **params)
+        res_group = function(table=table['_grouped_data'][group], **params)
     elif table is not None and model is not None:
-        sample_result = function(table=table['_grouped_data'][sample_group],
-                                  model=model['_grouped_data'][sample_group], **params)
+        res_group = function(table=table['_grouped_data'][group],
+                                    model=model['_grouped_data'][group], **params)
     else:
-        sample_result = function(model=model['_grouped_data'][sample_group], **params)
+        res_group = function(model=model['_grouped_data'][group], **params)
+    
+    return res_group
+        
+
+def _function_by_group(function, table=None, model=None, group_by=None, **params):
+    if table is None and model is None:
+        raise Exception('This function requires at least one of a table or a model')
+    
+    if isinstance(table, pd.DataFrame) and group_by is None:
+        raise Exception('This function requires group_by.')
+    
+    if isinstance(model, dict) and ('_grouped_data' not in model or '_group_by' not in model):
+        raise Exception('Unsupported model. model requires _grouped_data and _grouped_key')
+    
+    if isinstance(model, dict):
+        group_keys = [*model['_grouped_data']]
+        group_by = model['_group_by']
+    
+    if isinstance(table, pd.DataFrame):
+        table, group_keys = _group(table, group_by)
+    
+    sample_result = _sample_result(function, table, model, params, group_keys)
         
     res_keys = [*sample_result]
     df_keys = [k for k, v in sample_result.items() if isinstance(v, pd.DataFrame)]
@@ -39,13 +49,7 @@ def _function_by_group(function, table, model=None, group_by=None, **params):
         res_dict[res_key] = {'_grouped_data':dict(), '_group_by':group_by}
         
     for group in group_keys:
-        if table is not None and model is None:
-            res_group = function(table=table['_grouped_data'][group], **params)
-        elif table is not None and model is not None:
-            res_group = function(table=table['_grouped_data'][group],
-                                        model=model['_grouped_data'][group], **params)
-        else:
-            res_group = function(model=model['_grouped_data'][group], **params)
+        res_group = _run_function(function, table, model, params, group)
         
         for res_key in res_keys:
             res_dict[res_key]['_grouped_data'][group] = res_group[res_key]

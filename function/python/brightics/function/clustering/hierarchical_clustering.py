@@ -129,10 +129,10 @@ def _hierarchical_clustering(table, input_cols, link='complete', met='euclidean'
         
     return { 'model':model}
 
-def hierarchical_clustering_post(table, model, group_by=None, **params):
+def hierarchical_clustering_post(table, model, **params):
     check_required_parameters(_hierarchical_clustering_post, params, ['table', 'model'])
-    if group_by is not None:
-        return _function_by_group(_hierarchical_clustering_post, table, model, group_by=group_by, **params)
+    if 'group_by' in model:
+        return _function_by_group(_hierarchical_clustering_post, table, model, **params)
     else:
         return _hierarchical_clustering_post(table, model, **params)
 
