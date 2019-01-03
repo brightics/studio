@@ -300,3 +300,5 @@ def _plot_roc_pr_curve(table, label_col, probability_col, fig_w=6.4, fig_h=4.8, 
                fig_confusion=fig_confusion
                )))     
     summary['_repr_brtc_'] = rb.get()
+    
+    return {'result' : summary}
