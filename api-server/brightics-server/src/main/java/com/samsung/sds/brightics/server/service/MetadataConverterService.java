@@ -68,7 +68,7 @@ public class MetadataConverterService {
         public JsonElement apply(JsonObject t) {
             BrtcDatasources brtcDatasource = JsonUtil.fromJson(t, BrtcDatasources.class);
             BrtcDatasources datasourceResult = brtcDatasourcesRepository.findOne(brtcDatasource.getDatasourceName());
-            ValidationUtil.throwIfEmpty(datasourceResult, "datasource for db");
+            ValidationUtil.throwIfEmpty(datasourceResult, "Data Source for db");
             Map<String, Object> resultMap = new HashMap<>();
             resultMap.put("ip", datasourceResult.getIp());
             resultMap.put("port", datasourceResult.getPort());
