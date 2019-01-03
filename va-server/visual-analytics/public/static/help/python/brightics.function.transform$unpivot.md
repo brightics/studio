@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.transform import unpivot
-res = unpivot(value_vars = ,var_name = ,value_name = ,group_by = )
+res = unpivot(value_vars = ,var_name = ,value_name = )
 res['out_table']
 ```
 
@@ -24,10 +24,6 @@ This function 'unpivots' measured variables, leaving just two non-identifier col
 3. **Value Column Name**: Value column name
    - Value type : String
    - Default : value
-<<<<<<< HEAD
-=======
-4. **Group By**: Columns to group by
->>>>>>> refs/heads/master
 
 #### Outputs
 1. **out_table**: table
@@ -44,10 +40,6 @@ This function 'unpivots' measured variables, leaving just two non-identifier col
 3. **value_name**: Value column name
    - Value type : String
    - Default : value
-<<<<<<< HEAD
-=======
-4. **group_by**: Columns to group by
->>>>>>> refs/heads/master
 
 #### Outputs
 1. **out_table**: table
