@@ -131,7 +131,7 @@ module.exports = {
             role: {
                 checkSchema: function (errCallback, doneCallback) {
                     query(DDL_CHECK_TABLE, ['brtc_user_resource_role'], errCallback, function (result) {
-                        if (result.length == 0) {
+                        if (result.length === 0) {
                             query(DDL_CREATE_USER_RESOURCE_ROLE_TABLE, [], errCallback, function () {
                                 // query(DDL_CREATE_USER_RESOURCE_ROLE_IDX_01, [], errCallback, doneCallback);
                                 // query(DDL_CREATE_USER_RESOURCE_ROLE_IDX_02, [], errCallback, doneCallback);

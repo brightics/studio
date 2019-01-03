@@ -1,8 +1,11 @@
 var router = __REQ_express.Router();
 var request = __REQ_request;
+var url = require('url');
 
 var MessageFormat = require('messageformat');
 var mf = new MessageFormat('en');
+
+var getErrorMessageFromJobStatus = require('../../../../../lib/get-err-from-jobstatus');
 
 var subPath = __BRTC_CONF['sub-path'] || '';
 var subPathUrl = subPath ? ('/' + subPath) : ('');
@@ -32,7 +35,7 @@ var parseStagingData = function (body) {
             type: convertedType.type,
             internalType: convertedType.internalType
         });
-        if (convertedType.type == 'byte[]') {
+        if (convertedType.type === 'byte[]') {
             arrColIndexes.push(c);
         }
     }
@@ -62,7 +65,7 @@ router.post('/jobs', function (req, res) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 res.send(body);
             } else {
                 __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_CORE_SERVER.parseError(body));
@@ -78,23 +81,27 @@ router.get('/jobs/:jid', function (req, res) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 var answer = JSON.parse(response.body);
                 if (answer.status === 'FAIL') {
-                    for (var p in answer.processes) {
-                        if (answer.processes[p].status === 'FAIL') {
-                            for (var f in answer.processes[p].functions) {
-                                if (answer.processes[p].functions[f].status === 'FAIL' && answer.processes[p].functions[f].message) {
-                                    var beginIdx = answer.processes[p].functions[f].message.indexOf(':');
-                                    var endIdx = answer.processes[p].functions[f].message.indexOf('\n');
-                                    if (beginIdx > -1 && endIdx > -1) {
-                                        answer.message = answer.processes[p].functions[f].message.substring(beginIdx + 2, endIdx);
-                                        break;
-                                    }
-                                }
-                            }
-                        }
+                    const msg = getErrorMessageFromJobStatus(answer);
+                    if (msg) {
+                        answer.message = msg;
                     }
+                    // for (var p in answer.processes) {
+                    //     if (answer.processes[p].status === 'FAIL') {
+                    //         for (var f in answer.processes[p].functions) {
+                    //             if (answer.processes[p].functions[f].status === 'FAIL' && answer.processes[p].functions[f].message) {
+                    //                 var beginIdx = answer.processes[p].functions[f].message.indexOf(':');
+                    //                 var endIdx = answer.processes[p].functions[f].message.indexOf('\n');
+                    //                 if (beginIdx > -1 && endIdx > -1) {
+                    //                     answer.message = answer.processes[p].functions[f].message.substring(beginIdx + 2, endIdx);
+                    //                     break;
+                    //                 }
+                    //             }
+                    //         }
+                    //     }
+                    // }
                 }
                 res.json(answer);
             } else {
@@ -116,6 +123,23 @@ router.get('/:publishId', function (req, res) {
 });
 
 var readPublishReport = function (req, res) {
+    const getReportContents = (result) => {
+        var publishReport = result;
+        var reportContent = JSON.parse(publishReport.publishing_contents);
+        reportContent.publishId = publishReport.publish_id;
+
+        if (reportContent.contents && reportContent.contents.functions) {
+            var functions = reportContent.contents.functions;
+            for (var i = 0; i < functions.length; i++) {
+                delete functions[i].display.label;
+            }
+        }
+
+        return {
+            reportContent: reportContent,
+            userId: publishReport.publisher
+        };
+    };
     var task = function (permissions) {
         var opt = {
             publish_id: req.params.publishId,
@@ -128,43 +152,43 @@ var readPublishReport = function (req, res) {
             __BRTC_ERROR_HANDLER.sendServerError(res, err);
         }, function (result) {
             try {
-                if (result.length == 0) {
+                if (result.length === 0) {
                     __BRTC_DAO.publishreport.selectByUrl(opt, function (err) {
                     }, function (urlResult) {
-                        var publishReport = urlResult[0];
-                        var reportContent = JSON.parse(publishReport.publishing_contents);
-                        reportContent.publishId = publishReport.publish_id;
+                        // var publishReport = urlResult[0];
+                        // var reportContent = JSON.parse(publishReport.publishing_contents);
+                        // reportContent.publishId = publishReport.publish_id;
 
-                        if (reportContent.contents && reportContent.contents.functions) {
-                            var functions = reportContent.contents.functions;
-                            for (var i = 0; i < functions.length; i++) {
-                                delete functions[i].display.label;
-                            }
-                        }
+                        // if (reportContent.contents && reportContent.contents.functions) {
+                        //     var functions = reportContent.contents.functions;
+                        //     for (var i = 0; i < functions.length; i++) {
+                        //         delete functions[i].display.label;
+                        //     }
+                        // }
 
-                        var result = {
-                            reportContent: reportContent,
-                            userId: publishReport.publisher
-                        };
-                        res.json(result);
+                        // var result = {
+                        //     reportContent: reportContent,
+                        //     userId: publishReport.publisher
+                        // };
+                        res.json(getReportContents(urlResult[0]));
                     })
                 } else {
-                    var publishReport = result[0];
-                    var reportContent = JSON.parse(publishReport.publishing_contents);
-                    reportContent.publishId = publishReport.publish_id;
+                    // var publishReport = result[0];
+                    // var reportContent = JSON.parse(publishReport.publishing_contents);
+                    // reportContent.publishId = publishReport.publish_id;
 
-                    if (reportContent.contents && reportContent.contents.functions) {
-                        var functions = reportContent.contents.functions;
-                        for (var i = 0; i < functions.length; i++) {
-                            delete functions[i].display.label;
-                        }
-                    }
+                    // if (reportContent.contents && reportContent.contents.functions) {
+                    //     var functions = reportContent.contents.functions;
+                    //     for (var i = 0; i < functions.length; i++) {
+                    //         delete functions[i].display.label;
+                    //     }
+                    // }
 
-                    var result = {
-                        reportContent: reportContent,
-                        userId: publishReport.publisher
-                    };
-                    res.json(result);
+                    // var result = {
+                    //     reportContent: reportContent,
+                    //     userId: publishReport.publisher
+                    // };
+                    res.json(getReportContents(result[0]));
                 }
             } catch (e) {
                 return res.render('notexistreport', {title: title, baseUrl: baseUrl});
@@ -195,7 +219,7 @@ router.get('/staging/query', __BRTC_ERROR_HANDLER.checkParams(['user', 'mid', 't
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 try {
                     res.json(parseStagingData(body));
                 } catch (err) {
@@ -213,9 +237,17 @@ var knoxPublishAuth = function (req, res, next) {
         return response.body;
     };
 
+    // const handleAuthResponse = (err, httpResponse) => {
+    //         var body = parseResponse(httpResponse);
+    //         if (err) return reject(err);
+    //         if (check(httpResponse, body)) return resolve(body);
+    //         return reject();
+    //     }
+    // }
+
     var checkPermission = (data, res) => {
         var pr = new Promise((resolve, reject) => {
-                const check = (httpResponse, body) => {
+            const check = (httpResponse, body) => {
                 return parseInt(body.returnCode) === 200;
             };
 
@@ -235,8 +267,7 @@ var knoxPublishAuth = function (req, res, next) {
                 publish_url: publish_url
             };
 
-            var authUrl = conf['uri-knox-auth-api'];
-            // if (!url) reject(t'"uri-knox-auth-api" is not specified.');
+            var authUrl = __BRTC_CONF['uri-knox-auth-api'];
             if (!authUrl) return resolve();
             request.post(
                 {
@@ -249,17 +280,17 @@ var knoxPublishAuth = function (req, res, next) {
                 },
                 function (err, httpResponse) {
                     var body = parseResponse(httpResponse);
-                    if (err) return reject(err);
-                    if (check(httpResponse, body)) return resolve(body);
-                    return reject();
+                    if (err || !check(httpResponse, body)) return reject(err);
+                    return resolve(body);
                 }
             );
+            return undefined;
         });
         return pr;
     };
 
     var knoxConfKey = 'publish-knox';
-    var knoxRequired = typeof conf[knoxConfKey] !== 'undefined' ? !!conf[knoxConfKey] : false;
+    var knoxRequired = typeof __BRTC_CONF[knoxConfKey] !== 'undefined' ? !!__BRTC_CONF[knoxConfKey] : false;
     if (!knoxRequired) return next();
 
     var totaldata = req.body.totaldata;
@@ -270,7 +301,8 @@ var knoxPublishAuth = function (req, res, next) {
     var data = sso.decrypt(totaldata, remoteAddress);
     checkPermission(data, req)
         .then(() => next())
-    .catch(() => next('Permission Denied'));
+        .catch(() => next('Permission Denied'));
+    return undefined;
 };
 
 router.post('/:publishId', knoxPublishAuth, readPublishReport);

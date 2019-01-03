@@ -5,14 +5,166 @@ var camelize = function (str) {
     return result.charAt(0).toUpperCase() + result.slice(1);
 };
 
+var _gen_addColumnsRule = function (property) {
+    var lines = [];
+    lines.push('__clazz__Validator.prototype.add' + camelize(property.param) + 'Rule = function () {');
+    lines.push('    var _this = this;');
+
+    if (property.mandatory) {
+        lines.push('    this.addRule(function (fnUnit) {');
+        lines.push('        return _this.checkColumnIsEmpty(fnUnit, \'' + property.param + '\', fnUnit.param[\'' + property.param + '\'], \'' + property.label + '\');');
+        lines.push('    });');
+    }
+
+    lines.push('    this.addRule(function (fnUnit) {');
+    lines.push('        return _this.checkColumnExists(fnUnit, \'' + property.param + '\', fnUnit.param[\'' + property.param + '\']);');
+    lines.push('    });');
+
+    if (property.control['ref-table']['column-type'] && property.control['ref-table']['column-type'].length > 0) {
+        lines.push('    this.addRule(function (fnUnit) {');
+        lines.push('        return _this.checkColumnType(fnUnit, \'' + property.param + '\', fnUnit.param[\'' + property.param + '\'], ' + JSON.stringify(property.control['ref-table']['column-type']) + ');');
+        lines.push('    });');
+    }
+
+    // end of function
+    lines.push('};');
+    lines.push(' ');
+    return lines;
+};
+
+const _gen_addInputRuleCommon = (property) => {
+    var lines = [];
+    lines.push('__clazz__Validator.prototype.add' + camelize(property.param) + 'Rule = function () {');
+    lines.push('    var _this = this;');
+
+    lines.push('    this.addRule(function (fnUnit) {');
+    lines.push('        var msg = {');
+    lines.push('            errorCode: \'EE001\',');
+    lines.push('            param: \'' + property.param + '\',');
+    lines.push('            messageParam: [\'' + property.label + '\']');
+    lines.push('        };');
+    lines.push('        for(var i in fnUnit.param[\'input-variables\'])');
+    lines.push('        {');
+    lines.push('              if(fnUnit.param[\'input-variables\'][i][0]===\'' + property.param + '\'){');
+    lines.push('                return _this._checkStringIsEmpty(msg, fnUnit, fnUnit.param[\'input-variables\'][i][2]);');
+    lines.push('              }');
+    lines.push('        }');
+    lines.push('        //return _this._checkStringIsEmpty(msg, fnUnit, fnUnit.param[\'' + property.param + '\']);');
+    lines.push('    });');
+
+    // end of function
+    lines.push('};');
+    lines.push(' ');
+    return lines;
+};
+
+var _gen_addNumericInputRule = _gen_addInputRuleCommon;
+// function (property) {
+//     var lines = [];
+//     lines.push('__clazz__Validator.prototype.add' + camelize(property.param) + 'Rule = function () {');
+//     lines.push('    var _this = this;');
+
+//     lines.push('    this.addRule(function (fnUnit) {');
+//     lines.push('        var msg = {');
+//     lines.push('            errorCode: \'EE001\',');
+//     lines.push('            param: \'' + property.param + '\',');
+//     lines.push('            messageParam: [\'' + property.label + '\']');
+//     lines.push('        };');
+//     lines.push('        for(var i in fnUnit.param[\'input-variables\'])');
+//     lines.push('        {');
+//     lines.push('              if(fnUnit.param[\'input-variables\'][i][0]===\'' + property.param + '\'){');
+//     lines.push('                return _this._checkStringIsEmpty(msg, fnUnit, fnUnit.param[\'input-variables\'][i][2]);');
+//     lines.push('              }');
+//     lines.push('        }');
+//     lines.push('        //return _this._checkStringIsEmpty(msg, fnUnit, fnUnit.param[\'' + property.param + '\']);');
+//     lines.push('    });');
+
+//     // end of function
+//     lines.push('};')
+//     lines.push(' ');
+//     return lines;
+// };
+
+var _gen_addInputRule = _gen_addInputRuleCommon;
+// function (property) {
+//     var lines = [];
+//     lines.push('__clazz__Validator.prototype.add' + camelize(property.param) + 'Rule = function () {');
+//     lines.push('    var _this = this;');
+
+//     lines.push('    this.addRule(function (fnUnit) {');
+//     lines.push('        var msg = {');
+//     lines.push('            errorCode: \'EE001\',');
+//     lines.push('            param: \'' + property.param + '\',');
+//     lines.push('            messageParam: [\'' + property.label + '\']');
+//     lines.push('        };');
+//     lines.push('        for(var i in fnUnit.param[\'input-variables\'])');
+//     lines.push('        {');
+//     lines.push('              if(fnUnit.param[\'input-variables\'][i][0]===\'' + property.param + '\'){');
+//     lines.push('                return _this._checkStringIsEmpty(msg, fnUnit, fnUnit.param[\'input-variables\'][i][2]);');
+//     lines.push('              }');
+//     lines.push('        }');
+//     lines.push('        //return _this._checkStringIsEmpty(msg, fnUnit, fnUnit.param[\'' + property.param + '\']);');
+//     lines.push('    });');
+
+//     // end of function
+//     lines.push('};')
+//     lines.push(' ');
+//     return lines;
+// };
+
+var _gen_addMultiLineInputRule = function (property) {
+    var lines = [];
+    lines.push('__clazz__Validator.prototype.add' + camelize(property.param) + 'Rule = function () {');
+    lines.push('    var _this = this;');
+
+    lines.push('    this.addRule(function (fnUnit) {');
+    lines.push('        var msg = {');
+    lines.push('            errorCode: \'EE001\',');
+    lines.push('            param: \'' + property.param + '\',');
+    lines.push('            messageParam: [\'' + property.label + '\']');
+    lines.push('        };');
+    lines.push('        return _this._checkArrayIsEmpty(msg, fnUnit, fnUnit.param[\'' + property.param + '\']);');
+    lines.push('    });');
+
+    // end of function
+    lines.push('};');
+    lines.push(' ');
+    return lines;
+};
+
+var _gen_addExistFnUnitRule = function () {
+    var lines = [];
+    lines.push('__clazz__Validator.prototype.addExistFnUnitRule = function () {');
+    lines.push('    var _this = this;');
+
+    lines.push('    this.addRule(function (fnUnit) {');
+    lines.push('        var messageInfo = {');
+    lines.push('            errorCode: \'EF001\',');
+    lines.push('            messageParam: [fnUnit.func]');
+    lines.push('        };');
+    lines.push('        var udfs = Brightics.VA.Core.Utils.WidgetUtils.getUdfRef($(document.body));');
+    lines.push('        if (typeof udfs === \'undefined\') return _this.problemFactory.createProblem(messageInfo, fnUnit);');
+    lines.push('        var udfNames = $.map(udfs, function (udf) {');
+    lines.push('             return udf.func');
+    lines.push('        });');
+    lines.push('        if ($.inArray(fnUnit.func, udfNames) == -1)return _this.problemFactory.createProblem(messageInfo, fnUnit);');
+    lines.push('    });');
+
+    // end of function
+    lines.push('};');
+    lines.push(' ');
+    return lines;
+};
+
 var _gen_createContentsAreaControls = function (fnUnit, properties) {
     var lines = [];
 
     lines.push('__clazz__Properties.prototype.createContentsAreaControls = function ($parent) {');
-    lines.push('    Brightics.VA.Core.Editors.Sheet.Panels.PropertiesPanel.prototype.createContentsAreaControls.call(this, $parent);')
+    lines.push('    Brightics.VA.Core.Editors.Sheet.Panels.PropertiesPanel.prototype.createContentsAreaControls.call(this, $parent);');
 
     lines.push('    this.render = {');
-    var i, del;
+    var i;
+    var del;
     for (i = 0; i < properties.length; i++) {
         del = (i < properties.length - 1 && properties.length > 1) ? ',' : '';
         lines.push('        ' + '\'' + properties[i].param + '\': this.render' + camelize(properties[i].param) + 'Control' + del);
@@ -71,7 +223,7 @@ var _gen_fillControlValues = function (fnUnit, properties) {
         }
     }
 
-// end of function
+    // end of function
     lines.push('};');
     lines.push(' ');
     return lines;
@@ -88,7 +240,7 @@ var _gen_createColumnsControl = function (fnUnit, property) {
     lines.push('        var opt = ' + JSON.stringify(property.control.options) + ';');
     lines.push('        opt.changed = function (type, data) { ');
     if (!fnUnit.param[property.param]) {
-        throw {message: '[' + property.param + '] does not exist in FnUnit Parameters.'};
+        throw { message: '[' + property.param + '] does not exist in FnUnit Parameters.' };
     }
     if (Array.isArray(fnUnit.param[property.param][0])) {
         lines.push('            var command = _this.createSetUDFParameterValueCommand(\'' + property.param + '\', [ data.items ]);');
@@ -98,7 +250,7 @@ var _gen_createColumnsControl = function (fnUnit, property) {
     lines.push('            _this.executeCommand(command)');
     lines.push('        };');
     lines.push('        _this.controls[\'' + property.param + '\'] = _this.createColumnList(_this.$elements[\'' + property.param + '\'], opt);');
-    lines.push('    }, {mandatory: ' + (property.mandatory || false) + '});')
+    lines.push('    }, {mandatory: ' + (property.mandatory || false) + '});');
 
     // end of function
     lines.push('};');
@@ -120,10 +272,10 @@ var _gen_createNumericInputControl = function (fnUnit, property) {
     lines.push('            var command = _this.createSetUDFParameterValueCommand(\'' + property.param + '\', this.getValue());');
     lines.push('            _this.executeCommand(command);');
     lines.push('        });');
-    lines.push('    }, {mandatory: ' + (property.mandatory || false) + '});')
+    lines.push('    }, {mandatory: ' + (property.mandatory || false) + '});');
 
 
-    // end of function  
+    // end of function
     lines.push('};');
     lines.push(' ');
     return lines;
@@ -135,14 +287,14 @@ var _gen_createRadioButtonControl = function (fnUnit, property) {
 
     lines.push('    var _this = this;');
 
-    for (var i in property.control.options.items) {
+    for (let i in property.control.options.items) {
         lines.push('    _this.$elements[\'' + property.param + '.' + property.control.options.items[i].value + '\'] = $(\'<div class="brtc-va-editors-sheet-controls-propertycontrol-radiobutton">' + property.control.options.items[i].label + '</div>\');');
     }
 
     lines.push('    _this.addPropertyControl(\'' + property.label + '\', function ($container) {');
     lines.push(' ');
 
-    for (var i in property.control.options.items) {
+    for (let i in property.control.options.items) {
         var itemKey = property.param + '.' + property.control.options.items[i].value;
         lines.push('        $container.append(_this.$elements[\'' + itemKey + '\']);');
         lines.push('        _this.controls[\'' + itemKey + '\'] = _this.createRadioButton(_this.$elements[\'' + itemKey + '\'], {width: \'' + property.control.options.items[i].width + '\', groupName: \'' + property.control.options.groupName + '\'});');
@@ -153,10 +305,10 @@ var _gen_createRadioButtonControl = function (fnUnit, property) {
         lines.push(' ');
     }
 
-    lines.push('    }, {mandatory: ' + (property.mandatory || false) + '});')
+    lines.push('    }, {mandatory: ' + (property.mandatory || false) + '});');
 
 
-    // end of function  
+    // end of function
     lines.push('};');
     lines.push(' ');
     return lines;
@@ -201,9 +353,9 @@ var _gen_createCheckBoxControl = function (fnUnit, property) {
     lines.push('            _this.controls[itemKey] = _this.createCheckBox(_this.$elements[itemKey], {}, \'brtc-va-editors-sheet-controls-width-12\')');
     lines.push('            _this.$elements[itemKey].on(\'change\', changeHandler);');
     lines.push('        }');
-    lines.push('    }, {mandatory: ' + (property.mandatory || false) + '});')
+    lines.push('    }, {mandatory: ' + (property.mandatory || false) + '});');
 
-    // end of function  
+    // end of function
     lines.push('};');
     lines.push(' ');
     return lines;
@@ -223,9 +375,9 @@ var _gen_createInputControl = function (fnUnit, property) {
     lines.push('            var command = _this.createSetUDFParameterValueCommand(\'' + property.param + '\', $(this).val());');
     lines.push('            _this.executeCommand(command);');
     lines.push('        });');
-    lines.push('    }, {mandatory: ' + (property.mandatory || false) + '});')
+    lines.push('    }, {mandatory: ' + (property.mandatory || false) + '});');
 
-    // end of function  
+    // end of function
     lines.push('};');
     lines.push(' ');
     return lines;
@@ -245,7 +397,7 @@ var _gen_createMultiLineInputControl = function (fnUnit, property) {
     lines.push('            var command = _this.createSetUDFParameterValueCommand(\'' + property.param + '\', $(this).val().split(\'\\n\'));');
     lines.push('            _this.executeCommand(command);');
     lines.push('        });');
-    lines.push('    }, {mandatory: ' + (property.mandatory || false) + '});')
+    lines.push('    }, {mandatory: ' + (property.mandatory || false) + '});');
 
     // end of function
     lines.push('};');
@@ -460,17 +612,17 @@ var _gen_EnvClass = function (options) {
     var func = env.defaultFnUnit.func;
     // var envLine = ('Brightics.VA.Core.Functions.Library.' + func + ' = ' + JSON.stringify(env, null, 4) + ';');
     var envLine = ('Brightics.VA.Implementation.DataFlow.Functions.' + func + ' = ' + JSON.stringify(env, null, 4) + '; \n' +
-    'root.Brightics.VA.Core.Functions.Library.addFunction(\'' + func + '\', Brightics.VA.Implementation.DataFlow.Functions[\'' + func + '\']);');
+        'root.Brightics.VA.Core.Functions.Library.addFunction(\'' + func + '\', Brightics.VA.Implementation.DataFlow.Functions[\'' + func + '\']);');
     var body = envLine.split('\n');
     return header.concat(body);
 };
 
 var _gen_PropertiesPanelClass = function (env) {
-    var func = env.defaultFnUnit.func;
+    // var func = env.defaultFnUnit.func;
     var fnUnit = env.defaultFnUnit;
     var properties = env['properties-layout'];
     if (!properties) {
-        throw {message: '[properties-layout] does not exist. '}
+        throw { message: '[properties-layout] does not exist. ' };
     }
 
     var header = [];
@@ -496,14 +648,14 @@ var _gen_PropertiesPanelClass = function (env) {
         '',
         '    this.retrieveTableInfo(this.options.fnUnit[\'inData\']);',
         '};',
-        ''
+        '',
     ];
 
     body = body.concat(_gen_createContentsAreaControls(fnUnit, properties));
 
     var hasColumnSelector = false;
     var hasCodeMirror = false;
-    for (var i = 0; i < properties.length; i++) {
+    for (let i = 0; i < properties.length; i++) {
         if (properties[i].control.type === 'ColumnSelector') {
             body = body.concat(_gen_createColumnsControl(fnUnit, properties[i]));
             body = body.concat(_gen_renderColumnsControl(fnUnit, properties[i]));
@@ -554,11 +706,10 @@ var _gen_InputValidatorClass = function (env) {
     var InputCountLabel = 'Single';
     if (env['in-range'].min > 2) {
         InputCountLabel = 'Multi';
-    }
-    else if (env['in-range'].min === 2) {
+    } else if (env['in-range'].min === 2) {
         InputCountLabel = 'Pair';
     }
-    var func = env.defaultFnUnit.func;
+    // var func = env.defaultFnUnit.func;
     var properties = env['properties-layout'];
 
     var header = [];
@@ -573,7 +724,7 @@ var _gen_InputValidatorClass = function (env) {
         '',
         '__clazz__Validator.prototype = Object.create(Brightics.VA.Core.Validator.' + InputCountLabel + 'InputValidator.prototype);',
         '__clazz__Validator.prototype.constructor = __clazz__Validator;',
-        ''
+        '',
     ];
 
     body.push('__clazz__Validator.prototype.initRules = function () {');
@@ -591,169 +742,43 @@ var _gen_InputValidatorClass = function (env) {
     body.push('};');
     body.push('');
 
-    for (var i = 0; i < properties.length; i++) {
-        if (properties[i].control.type === 'ColumnSelector') {
-            body = body.concat(_gen_addColumnsRule(properties[i]));
-        } else if (properties[i].mandatory && properties[i].control.type === 'NumericInput') {
-            body = body.concat(_gen_addNumericInputRule(properties[i]));
-        } else if (properties[i].mandatory && properties[i].control.type === 'Input') {
-            body = body.concat(_gen_addInputRule(properties[i]));
-        } else if (properties[i].mandatory && properties[i].control.type === 'MultiLineInput') {
-            body = body.concat(_gen_addMultiLineInputRule(properties[i]));
-        } else if (properties[i].mandatory && properties[i].control.type === 'CodeMirrorInput') {
-            body = body.concat(_gen_addInputRule(properties[i]));
-        }
+    for (let i = 0; i < properties.length; i++) {
+        const rule = {
+            ColumnSelector: _gen_addColumnsRule,
+            NumericInput: _gen_addNumericInputRule,
+            Input: _gen_addInputRule,
+            MultiLineInput: _gen_addMultiLineInputRule,
+            CodeMirrorInput: _gen_addInputRule,
+        }[properties[i].control.type];
+        if (rule) body = body.concat(rule(properties[i]));
     }
 
     body = body.concat(_gen_addExistFnUnitRule());
 
     var footer = [
-        'Brightics.VA.Core.Functions.Library.__func__.validator = __clazz__Validator;'
+        'Brightics.VA.Core.Functions.Library.__func__.validator = __clazz__Validator;',
     ];
 
     return header.concat(body, footer);
 };
 
-var _gen_addColumnsRule = function (property) {
-    var lines = [];
-    lines.push('__clazz__Validator.prototype.add' + camelize(property.param) + 'Rule = function () {');
-    lines.push('    var _this = this;');
-
-    if (property.mandatory) {
-        lines.push('    this.addRule(function (fnUnit) {');
-        lines.push('        return _this.checkColumnIsEmpty(fnUnit, \'' + property.param + '\', fnUnit.param[\'' + property.param + '\'], \'' + property.label + '\');');
-        lines.push('    });');
-    }
-
-    lines.push('    this.addRule(function (fnUnit) {');
-    lines.push('        return _this.checkColumnExists(fnUnit, \'' + property.param + '\', fnUnit.param[\'' + property.param + '\']);');
-    lines.push('    });');
-
-    if (property.control['ref-table']['column-type'] && property.control['ref-table']['column-type'].length > 0) {
-        lines.push('    this.addRule(function (fnUnit) {');
-        lines.push('        return _this.checkColumnType(fnUnit, \'' + property.param + '\', fnUnit.param[\'' + property.param + '\'], ' + JSON.stringify(property.control['ref-table']['column-type']) + ');');
-        lines.push('    });');
-    }
-
-    // end of function  
-    lines.push('};');
-    lines.push(' ');
-    return lines;
-};
-
-var _gen_addNumericInputRule = function (property) {
-    var lines = [];
-    lines.push('__clazz__Validator.prototype.add' + camelize(property.param) + 'Rule = function () {');
-    lines.push('    var _this = this;');
-
-    lines.push('    this.addRule(function (fnUnit) {');
-    lines.push('        var msg = {');
-    lines.push('            errorCode: \'EE001\',');
-    lines.push('            param: \'' + property.param + '\',');
-    lines.push('            messageParam: [\'' + property.label + '\']');
-    lines.push('        };');
-    lines.push('        for(var i in fnUnit.param[\'input-variables\'])');
-    lines.push('        {');
-    lines.push('              if(fnUnit.param[\'input-variables\'][i][0]===\'' + property.param + '\'){');
-    lines.push('                return _this._checkStringIsEmpty(msg, fnUnit, fnUnit.param[\'input-variables\'][i][2]);');
-    lines.push('              }');
-    lines.push('        }');
-    lines.push('        //return _this._checkStringIsEmpty(msg, fnUnit, fnUnit.param[\'' + property.param + '\']);');
-    lines.push('    });');
-
-    // end of function  
-    lines.push('};')
-    lines.push(' ');
-    return lines;
-};
-
-var _gen_addInputRule = function (property) {
-    var lines = [];
-    lines.push('__clazz__Validator.prototype.add' + camelize(property.param) + 'Rule = function () {');
-    lines.push('    var _this = this;');
-
-    lines.push('    this.addRule(function (fnUnit) {');
-    lines.push('        var msg = {');
-    lines.push('            errorCode: \'EE001\',');
-    lines.push('            param: \'' + property.param + '\',');
-    lines.push('            messageParam: [\'' + property.label + '\']');
-    lines.push('        };');
-    lines.push('        for(var i in fnUnit.param[\'input-variables\'])');
-    lines.push('        {');
-    lines.push('              if(fnUnit.param[\'input-variables\'][i][0]===\'' + property.param + '\'){');
-    lines.push('                return _this._checkStringIsEmpty(msg, fnUnit, fnUnit.param[\'input-variables\'][i][2]);');
-    lines.push('              }');
-    lines.push('        }');
-    lines.push('        //return _this._checkStringIsEmpty(msg, fnUnit, fnUnit.param[\'' + property.param + '\']);');
-    lines.push('    });');
-
-    // end of function
-    lines.push('};')
-    lines.push(' ');
-    return lines;
-};
-
-var _gen_addMultiLineInputRule = function (property) {
-    var lines = [];
-    lines.push('__clazz__Validator.prototype.add' + camelize(property.param) + 'Rule = function () {');
-    lines.push('    var _this = this;');
-
-    lines.push('    this.addRule(function (fnUnit) {');
-    lines.push('        var msg = {');
-    lines.push('            errorCode: \'EE001\',');
-    lines.push('            param: \'' + property.param + '\',');
-    lines.push('            messageParam: [\'' + property.label + '\']');
-    lines.push('        };');
-    lines.push('        return _this._checkArrayIsEmpty(msg, fnUnit, fnUnit.param[\'' + property.param + '\']);');
-    lines.push('    });');
-
-    // end of function
-    lines.push('};')
-    lines.push(' ');
-    return lines;
-};
-
-var _gen_addExistFnUnitRule = function () {
-    var lines = [];
-    lines.push('__clazz__Validator.prototype.addExistFnUnitRule = function () {');
-    lines.push('    var _this = this;');
-
-    lines.push('    this.addRule(function (fnUnit) {');
-    lines.push('        var messageInfo = {');
-    lines.push('            errorCode: \'EF001\',');
-    lines.push('            messageParam: [fnUnit.func]');
-    lines.push('        };');
-    lines.push('        var udfs = Brightics.VA.Core.Utils.WidgetUtils.getUdfRef($(document.body));');
-    lines.push('        if (typeof udfs === \'undefined\') return _this.problemFactory.createProblem(messageInfo, fnUnit);');
-    lines.push('        var udfNames = $.map(udfs, function (udf) {');
-    lines.push('             return udf.func');
-    lines.push('        });');
-    lines.push('        if ($.inArray(fnUnit.func, udfNames) == -1)return _this.problemFactory.createProblem(messageInfo, fnUnit);');
-    lines.push('    });');
-
-    // end of function
-    lines.push('};');
-    lines.push(' ');
-    return lines;
-};
 
 var generateSnippet = function (options) {
-
     var header = [
         '(function () {',
         '    \'use strict\';',
         '',
         '    var root = this;',
         '    var Brightics = root.Brightics;',
-        ''
+        '',
     ];
 
     options.defaultFnUnit.display.diagram = {
-        position: {'x': 20, 'y': 10}
+        position: { 'x': 20, 'y': 10 },
     };
     options.defaultFnUnit.display.sheet = {
-        'in': {'partial': [{'panel': [], 'layout': {}}], 'full': [{'panel': [], 'layout': {}}]},
-        'out': {'partial': [{'panel': [], 'layout': {}}], 'full': [{'panel': [], 'layout': {}}]}
+        'in': { 'partial': [{ 'panel': [], 'layout': {} }], 'full': [{ 'panel': [], 'layout': {} }] },
+        'out': { 'partial': [{ 'panel': [], 'layout': {} }], 'full': [{ 'panel': [], 'layout': {} }] },
     };
 
     var body = _gen_EnvClass(options);
@@ -771,13 +796,13 @@ var generateSnippet = function (options) {
     }
 
     var footer = [
-        '}).call(this);'
+        '}).call(this);',
     ];
 
     var func = options.defaultFnUnit.func;
     var clazz = camelize(func);
-    return header.concat(body, footer).join('\n').replace(/__clazz__/g, clazz).replace(/__func__/g, func);
-
+    return header.concat(body, footer).join('\n').replace(/__clazz__/g, clazz)
+        .replace(/__func__/g, func);
 };
 
 exports.generateSnippet = generateSnippet;

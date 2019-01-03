@@ -46,14 +46,14 @@ const DBLoadPromise = (req, res, palette) => new Promise((resolve, reject) => {
         if (error) {
             reject(response);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 const list = JSON.parse(response.body);
                 list.forEach(fn => {
                     const name = fn.id
                     const item = {func: name, visible: true, deletable: fn.creator === req.user.id? true: false}
                     const category = JSON.parse(fn.contents).category
                     const list = palette.filter(p => p.key === category)
-                    const action =
+                    // const action =
                         list.reduce((s, i) => s || !i.functions.some(obj => obj.func === name), false) ?
                             list.map(obj => obj.functions.push(item)) && `success ${name}` :
                             `fail ${name}`;
@@ -74,7 +74,7 @@ const JSLoader = (palette, list) => {
             const name = fileName[1];
             const item = {func: name, visible: true};
             const list = palette.filter(p => p.key === category)
-            const action =
+            // const action =
                 list.reduce((s, i) => s || !i.functions.some(obj => obj.func === name), false) ?
                     list.map(obj => obj.functions.push(item)) && `success ${name}` :
                     `fail ${name}`;
@@ -103,7 +103,7 @@ const JSONLoader = async (palette, list) => {
         const name = file.specJson.func;
         const item = {func: name, visible: true};
         const list = palette.filter(p => p.key === category)
-        const action =
+        // const action =
             list.reduce((s, i) => s || !i.functions.some(obj => obj.func === name), false) ?
                 list.map(obj => obj.functions.push(item)) && `success ${name}` :
                 `fail ${name}`;
@@ -132,6 +132,7 @@ exports.makePalette = async (req, res, palette = [], type = 'data') => {
         const result = await makeCustomPalette(req, res, palette)
         return result;
     }
+    return undefined;
 }
 
 exports.getPaletteModelType = (req, res, modelType = '') =>

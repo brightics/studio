@@ -17,6 +17,22 @@ var _executeInPermission = function (req, res, perm, task) {
 };
 
 var readPublishReport = function (req, res) {
+    const getReportContent = (publishReport) => {
+        var reportContent = JSON.parse(publishReport.publishing_contents);
+        reportContent.publishId = publishReport.publish_id;
+
+        if (reportContent.contents && reportContent.contents.functions) {
+            var functions = reportContent.contents.functions;
+            for (var i = 0; i < functions.length; i++) {
+                delete functions[i].display.label;
+            }
+        }
+
+        return {
+            reportContent: reportContent,
+            userId: publishReport.pulisher
+        };
+    };
     var task = function (permissions) {
         var opt = {
             publish_id: req.params.publishId,
@@ -29,43 +45,12 @@ var readPublishReport = function (req, res) {
             __BRTC_ERROR_HANDLER.sendServerError(res, err);
         }, function (result) {
             try {
-                if (result.length == 0) {
-                    __BRTC_DAO.publishreport.selectByUrl(opt, function (err) { }, function (urlResult) {
-                        var publishReport = urlResult[0];
-                        var reportContent = JSON.parse(publishReport.publishing_contents);
-                        reportContent.publishId = publishReport.publish_id;
-
-                        if (reportContent.contents && reportContent.contents.functions) {
-                            var functions = reportContent.contents.functions;
-                            for (var i = 0; i < functions.length; i++) {
-                                delete functions[i].display.label;
-                            }
-                        }
-
-                        var result = {
-                            reportContent: reportContent,
-                            userId: publishReport.publisher
-                        };
-                        res.json(result);
-                    })
-                } else {
-                    var publishReport = result[0];
-                    var reportContent = JSON.parse(publishReport.publishing_contents);
-                    reportContent.publishId = publishReport.publish_id;
-    
-                    if (reportContent.contents && reportContent.contents.functions) {
-                        var functions = reportContent.contents.functions;
-                        for (var i = 0; i < functions.length; i++) {
-                            delete functions[i].display.label;
-                        }
-                    }
-    
-                    var result = {
-                        reportContent: reportContent,
-                        userId: publishReport.publisher
-                    };
-                    res.json(result);
+                if (result.length === 0) {
+                    return __BRTC_DAO.publishreport.selectByUrl(opt, function (err) { }, function (urlResult) {
+                        return res.json(getReportContent(urlResult[0]));
+                    });
                 }
+                return res.json(getReportContent(result[0]));
             } catch (e) {
                 return res.render('notexistreport', { title: title, baseUrl: baseUrl });
             }

@@ -62,7 +62,8 @@ var updateRole = function (req, res, nex) {
                     res.sendStatus(200);
                 }
             });
-        })
+        });
+        return undefined;
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_AUTHORIZATION_UPDATE, task);
 };
@@ -103,7 +104,7 @@ var listUserByRole = function (req, res, nex) {
                     return res.status(400).json(JSON.parse(body));
                 }
 
-                var userByRoleId = result.map(x => Object.assign(x, JSON.parse(body).find(y => y.id == x.user_id)));
+                var userByRoleId = result.map(x => Object.assign(x, JSON.parse(body).find(y => y.id === x.user_id)));
                 return res.json(userByRoleId);
             });
         });

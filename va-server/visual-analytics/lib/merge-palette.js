@@ -73,7 +73,7 @@ var mergeCategory = function (_a, b) {
 var checkLegacy = function (_palette) {
     var palette = _palette || [];
     return palette.filter(function (category) {
-        if (!category.key) return true;
+        return !category.key;
     }).length > 0;
 };
 

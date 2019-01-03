@@ -20,6 +20,7 @@ This function transforms the features using the result of PCA.
 #### Parameters
 1. **New Column Name**: New column name
    - Value type : String
+   - Default : projected_
 
 #### Outputs
 1. **out_table**: table
@@ -32,6 +33,7 @@ This function transforms the features using the result of PCA.
 #### Parameters
 1. **new_column_name**: New column name
    - Value type : String
+   - Default : projected_
 
 #### Outputs
 1. **out_table**: table

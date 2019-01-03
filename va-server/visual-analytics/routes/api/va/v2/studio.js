@@ -37,7 +37,7 @@ router.get('/templates/:modelType', function (req, res) {
             templates = [], contents = {},
             path = './public/static/model-template/' + modelType + '/';
 
-        if (typeof modelType == 'undefined') {
+        if (typeof modelType === 'undefined') {
             res.send([]);
         }
 
@@ -89,9 +89,9 @@ router.get('/optcontrol', function (req, res) {
         if (controlSpec && Array.isArray(controlSpec)) {
             resultMethodSpec = controlSpec.find(function (methodObj) {
                 if (methodType !== 'undefined') {
-                    return methodObj.key == method && methodObj.type == methodType
+                    return methodObj.key ===  method && methodObj.type ===  methodType
                 } else {
-                    return methodObj.key == method
+                    return methodObj.key ===  method
                 }
             })
         }
@@ -111,7 +111,7 @@ router.get('/message/:locale', function (req, res) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode ===  200) {
                 try {
                     res.json(JSON.parse(response.body));
                 } catch (ex) {
@@ -135,7 +135,7 @@ router.get('/functionlabel/:locale', function (req, res) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 try {
                     res.json(JSON.parse(response.body));
                 } catch (ex) {

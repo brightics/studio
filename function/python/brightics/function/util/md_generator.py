@@ -10,7 +10,7 @@ def json_to_md(in_file_name):
     MESSAGE_NOINPUT = 'This function has no input data.'
     MESSAGE_NOOUTPUT = 'This function has no output data.'
 
-    in_file_json = json.loads(open(in_file_name, 'r').read())
+    in_file_json = json.loads(open(in_file_name, 'r', encoding='UTF-8').read())
     
     if('disableMDGenerator' in in_file_json and in_file_json['disableMDGenerator'] == True):
         print('Skip {} : disableMDGenerator is true.'.format(in_file_name))
@@ -18,9 +18,9 @@ def json_to_md(in_file_name):
     
     func_jsonspec = in_file_json['specJson']
     
-    mdformat_doc = open('md_format/help_format_doc.md', 'r').read()
-    mdformat_param = open('md_format/help_format_param.md', 'r').read()
-    mdformat_param_mandatory = open('md_format/help_format_param_mandatory.md', 'r').read()
+    mdformat_doc = open('md_format/help_format_doc.md', 'r', encoding='UTF-8').read()
+    mdformat_param = open('md_format/help_format_param.md', 'r', encoding='UTF-8').read()
+    mdformat_param_mandatory = open('md_format/help_format_param_mandatory.md', 'r', encoding='UTF-8').read()
     
     # Descripttion
     func_description = func_jsonspec['description'].strip()
@@ -63,6 +63,9 @@ def json_to_md(in_file_name):
     func_vaparams = []
     func_pythonparams = []
     for idx, func_param in enumerate(func_jsonspec['params'], start=1):
+        
+        LEFT_INDENT = ('' if idx < 10 else ' ') + INDENT
+        
         if func_param['mandatory'] is True:
             mdformat = mdformat_param_mandatory
         else:
@@ -77,18 +80,18 @@ def json_to_md(in_file_name):
         if func_param['control'] == 'ColumnSelector':
             # Type
             if len(func_param['columnType']) > 0:
-                additional_type_column = INDENT + '- Allowed column type : {0}'.format(', '.join(func_param['columnType']))
+                additional_type_column = LEFT_INDENT + '- Allowed column type : {0}'.format(', '.join(func_param['columnType']))
                 vaparam_additionals.append(additional_type_column)
                 pythonparam_additionals.append(additional_type_column)
         # Additional Info : InputBox
         elif func_param['control'] == 'InputBox':
             # Type
-            additional_type = INDENT + '- Value type : {0}'.format(func_param['type'])
+            additional_type = LEFT_INDENT + '- Value type : {0}'.format(func_param['type'])
             vaparam_additionals.append(additional_type)
             pythonparam_additionals.append(additional_type)
             # Default Value
-            if 'defaultValue' in func_param:
-                additional_default = INDENT + '- Default : {0}'.format(func_param['defaultValue'])
+            if 'placeHolder' in func_param and len(func_param['placeHolder']) > 0:
+                additional_default = LEFT_INDENT + '- Default : {0}'.format(func_param['placeHolder'])
                 vaparam_additionals.append(additional_default)
                 pythonparam_additionals.append(additional_default)
         # Additional Info : RadioButton
@@ -105,10 +108,10 @@ def json_to_md(in_file_name):
                     md_item_description = ' ' + item['description']
                 else:
                     md_item_description = ''
-                va_available_items.append(INDENT + INDENT + '- ' + item['label'] + md_defaultitem + md_item_description)
-                python_available_items.append(INDENT + INDENT + '- ' + item['value'] + md_defaultitem + md_item_description)
-            vaparam_additionals.append(INDENT + '- Available items\n' + '\n'.join(va_available_items))
-            pythonparam_additionals.append(INDENT + '- Available items\n' + '\n'.join(python_available_items))
+                va_available_items.append(LEFT_INDENT + INDENT + '- ' + item['label'] + md_defaultitem + md_item_description)
+                python_available_items.append(LEFT_INDENT + INDENT + '- ' + item['value'] + md_defaultitem + md_item_description)
+            vaparam_additionals.append(LEFT_INDENT + '- Available items\n' + '\n'.join(va_available_items))
+            pythonparam_additionals.append(LEFT_INDENT + '- Available items\n' + '\n'.join(python_available_items))
         
         if len(vaparam_additionals) > 0:
             vaparam_md += '\n' + '\n'.join(vaparam_additionals)
@@ -166,15 +169,15 @@ if __name__ == "__main__":
         
         in_file_path = os.path.abspath(in_file_name)
         
-        #out_file_dir = os.path.dirname(os.path.dirname(in_file_path)) + os.sep + 'help'
+#         out_file_dir = os.path.dirname(os.path.dirname(in_file_path)) + os.sep + 'help'
+#         in_json_str = json.loads(open(in_file_name, 'r').read())
+#         out_file_header = in_json_str['specJson']['name']
+#         out_file_path = out_file_dir + os.sep + re.sub(r'\.json$', '.md', os.path.basename(in_file_path))
         out_file_dir = os.path.abspath('../../../../../va-server/visual-analytics/public/static/help/python/')
-              
-        in_json_str = json.loads(open(in_file_name, 'r').read())
+        in_json_str = json.loads(open(in_file_name, 'r', encoding='UTF-8').read())
         out_file_header = in_json_str['specJson']['name']
-        
-        #out_file_path = out_file_dir + os.sep + re.sub(r'\.json$', '.md', os.path.basename(in_file_path))
-        #out_file_path = out_file_dir + os.sep + out_file_header + '.md'
         out_file_path = out_file_dir + os.sep + out_file_header + '.md'
+        
         mdstr = ''
         error_occur = False
         try:
@@ -188,7 +191,7 @@ if __name__ == "__main__":
             
             if not os.path.exists(out_file_dir):
                 os.makedirs(out_file_dir)
-            wf = open(out_file_path, 'w')
+            wf = open(out_file_path, 'w', encoding='UTF-8')
             wf.write(mdstr)
             wf.close()
             print("MD is generated in {0}".format(out_file_path))

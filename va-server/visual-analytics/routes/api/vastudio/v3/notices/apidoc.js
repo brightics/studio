@@ -5,7 +5,7 @@
  @api {GET} /api/vastudio/v3/notices Get notice list
  @apiGroup Notice
  @apiName Get notice list
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParamExample Param Example 1
  /api/vastudio/v3/notices
@@ -57,7 +57,7 @@
  @api {POST} /api/vastudio/v3/notices Create notice
  @apiGroup Notice
  @apiName Create notice
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParam {String} id ID
  @apiParam {String} title Title
@@ -106,7 +106,7 @@
  @api {PUT} /api/vastudio/v3/notices/:noticeId Update notice
  @apiGroup Notice
  @apiName Update notice
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParam {String} title Title
  @apiParam {String} content Content
@@ -152,7 +152,7 @@
  @api {DELETE} /api/vastudio/v3/notices/:noticeId Delete notice
  @apiGroup Notice
  @apiName Delete notice
- @apiVersion 3.0.0
+ @apiVersion 3.6.0
 
  @apiParamExample Param Example 1
  /api/vastudio/v3/notices/n34ephjmngga3vpt

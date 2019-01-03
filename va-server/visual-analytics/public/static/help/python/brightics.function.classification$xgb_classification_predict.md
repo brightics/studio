@@ -23,6 +23,7 @@ Using the result of 'XGB Classification Train', this function predicts with the 
    - Default : prediction
 2. **Probability Column Prefix**: Probability Column Name
    - Value type : String
+   - Default : probability
 3. **Suffix Type**: Choose suffix type.
    - Available items
       - Index (default)
@@ -43,6 +44,7 @@ Using the result of 'XGB Classification Train', this function predicts with the 
    - Default : prediction
 2. **probability_col**: Probability Column Name
    - Value type : String
+   - Default : probability
 3. **suffix**: Choose suffix type.
    - Available items
       - index (default)

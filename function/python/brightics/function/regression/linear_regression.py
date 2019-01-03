@@ -7,6 +7,7 @@ from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.common.utils.table_converters import simple_tables2df_list
 
 
 def linear_regression_train(table, group_by=None, **params):
@@ -32,7 +33,14 @@ def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True)
         lr_model_fit = sm.OLS(label, sm.add_constant(features)).fit()
     else:
         lr_model_fit = sm.OLS(label, features).fit()
-    summary = lr_model_fit.summary().as_html()
+    
+    summary = lr_model_fit.summary()
+    summary_tables = simple_tables2df_list(summary.tables)
+    summary0 = summary_tables[0]
+    summary1 = summary_tables[1]
+    summary2 = summary_tables[2]
+    
+    html_result = summary.as_html()
 
     plt.figure()
     plt.scatter(predict, label)
@@ -81,7 +89,7 @@ def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True)
     | ### Summary
     |
     """))
-    rb.addHTML(summary)
+    rb.addHTML(html_result)
     rb.addMD(strip_margin("""
     |
     | ### Predicted vs Actual
@@ -110,7 +118,11 @@ def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True)
     model['pvalues'] = lr_model_fit.pvalues
     model['lr_model'] = lr_model
     model['_repr_brtc_'] = rb.get()
-
+    
+    model['summary0'] = summary0
+    model['summary1'] = summary1
+    model['summary2'] = summary2
+    
     return {'model' : model}
 
 

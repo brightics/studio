@@ -5,8 +5,8 @@ global.__basedir = __dirname;
 
 const args = require('yargs').argv;
 global.__BRTC_ARGS = {
-    user_id: args['user_id'] || 'brightics@samsung.com',
-    access_token: args['access_token'] || 'ACCESS_TOKEN'
+    user_id: args.user_id || 'brightics@samsung.com',
+    access_token: args.access_token || 'ACCESS_TOKEN',
 };
 
 global.__REQ_fs = require('fs');
@@ -32,7 +32,6 @@ var vastudio = __BRTC_API_SERVER.getVaStudio();
 global.__BRTC_DAO = vastudio.dao;
 
 
-var request = __REQ_request;
 var session = require('express-session');
 var favicon = require('serve-favicon');
 var ip = require('ip');
@@ -55,7 +54,8 @@ for (var appender in logAppenders) {
     if (logAppenders.hasOwnProperty(appender)) {
         var filename = logAppenders[appender].filename;
         if (filename) {
-            logAppenders[appender].filename = __REQ_path.join(logDir, logAppenders[appender].filename);
+            logAppenders[appender].filename =
+                __REQ_path.join(logDir, logAppenders[appender].filename);
         }
     }
 }
@@ -68,7 +68,7 @@ var subPath = __BRTC_CONF['sub-path'] || '';
 var subPathUrl = subPath ? ('/' + subPath) : ('');
 
 var sessionTimeout = (typeof __BRTC_CONF['session-timeout'] === 'string') ? (parseInt(sessionTimeout)) : (sessionTimeout);
-sessionTimeout = (sessionTimeout !== null) ? (sessionTimeout || (30 * 60 * 1000)) : (sessionTimeout);
+sessionTimeout = sessionTimeout !== null ? sessionTimeout || (30 * 60 * 1000) : sessionTimeout;
 
 __BRTC_CORE_SERVER.env({ 'URI': __BRTC_CONF['uri-core-server'] });
 __BRTC_API_SERVER.env({ 'URI': __BRTC_CONF['uri-api-server'] });
@@ -81,11 +81,11 @@ var app = __REQ_express();
 app.set('env', __BRTC_CONF.env);
 app.set('views', __REQ_path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-app.use('*/favicon.ico', favicon(__REQ_path.join(__dirname, 'public', 'favicon.ico')));
+app.use('*/favicon.ico', favicon(__REQ_path.join(__dirname, 'public', 'favicon1.ico')));
 app.use(compression());
 
 // log4js
-app.use(log4js.connectLogger(log4js.getLogger("HTTP"), {
+app.use(log4js.connectLogger(log4js.getLogger('HTTP'), {
     level: 'auto',
     format: function (req, res, defaultReplace) {
         var format = (req.user) ?
@@ -97,7 +97,7 @@ app.use(log4js.connectLogger(log4js.getLogger("HTTP"), {
         }
         return format;
     },
-    nolog: '(\\.(gif|jpe?g|png)$)|/api/va/log4js'
+    nolog: '(\\.(gif|jpe?g|png)$)|/api/va/log4js',
 }));
 
 // setup parser
@@ -132,14 +132,14 @@ app.use(session({
     cookie: {
         httpOnly: false,
         maxAge: null,
-        secure: false
+        secure: false,
     },
     name: 'brightics.va.sid' + subPathUrl,
     resave: false,
     rolling: true,
     saveUninitialized: false,
     secret: 'dis.av.scithgirb',
-    unset: 'destroy'
+    unset: 'destroy',
 }));
 
 passport.serializeUser(function (user, done) {
@@ -187,7 +187,9 @@ router.use('/api/va/v2/toolkit', validateToken, __BRTC_API_SERVER.proxy);
 
 router.use('/api/va/v2', validateToken, vastudio.routes.va_v2);
 
-router.use('/api/admin/v2/notices', function (req, res) { return res.sendStatus(200) });
+router.use('/api/admin/v2/notices', function (req, res) {
+    return res.sendStatus(200);
+});
 router.use('/api/admin/v2', validateToken, require('./routes/api/admin/v2'));
 router.use('/api/va/log4js', validateToken, require('./routes/api/va/v2/log4js'));
 
@@ -217,17 +219,18 @@ app.use(function (error, req, res, next) {
                 {
                     'code': error.errorCode || 500,
                     'message': 'Sorry! An unexpected error occurred. Please contact administrator.',
-                    'detailMessage': error.stack
-                }
-            ]
+                    'detailMessage': error.stack,
+                },
+            ],
         });
     }
+    return undefined;
 });
 
 // error handlers, catch 404 and forward to error handler
 app.use(function (req, res, next) {
     if (req.url.startsWith(subPathUrl + '/api') || req.url.startsWith(subPathUrl + '/auth')) {
-        if (__BRTC_CONF['use-login-page']) res.redirect(subPathUrl + '/auth/brightics-user'); //Account Login 페이지로 이동
+        if (__BRTC_CONF['use-login-page']) res.redirect(subPathUrl + '/auth/brightics-user'); // Account Login 페이지로 이동
         else res.redirect(subPathUrl + '/'); // Index 페이지로 이동
     } else {
         res.status(404);
@@ -239,19 +242,19 @@ process.on('uncaughtException', function (err) {
     log.error(err.stack);
 });
 
-var removePasswordInfo = function (dbInfo) {
-    var infoToken, dbType, dbUserName, dbAddress;
+// var removePasswordInfo = function (dbInfo) {
+//     var infoToken, dbType, dbUserName, dbAddress;
 
-    infoToken = dbInfo.split('://');
-    dbType = infoToken[0];
+//     infoToken = dbInfo.split('://');
+//     dbType = infoToken[0];
 
-    infoToken = infoToken[1].split('@');
-    dbAddress = infoToken[1];
+//     infoToken = infoToken[1].split('@');
+//     dbAddress = infoToken[1];
 
-    infoToken = infoToken[0].split(':');
-    dbUserName = infoToken[0];
-    return dbType + '://' + dbUserName + '@' + dbAddress;
-};
+//     infoToken = infoToken[0].split(':');
+//     dbUserName = infoToken[0];
+//     return dbType + '://' + dbUserName + '@' + dbAddress;
+// };
 
 var server = http.createServer(app).listen(__BRTC_CONF.port, function () {
     log.info('   O');

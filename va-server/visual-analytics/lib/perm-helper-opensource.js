@@ -82,7 +82,7 @@ var queryPermissions = function (req, resourceTypes, errCallback, doneCallback) 
 var hasPermission = function (permissions, perm) {
     if (perm) {
         for (var i in permissions) {
-            if (permissions[i].permission_id == perm) {
+            if (permissions[i].permission_id === perm) {
                 return true;
             }
         }

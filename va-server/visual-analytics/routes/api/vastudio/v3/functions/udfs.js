@@ -62,7 +62,9 @@ var createFunction = function (req, res) {
         var specJson = toolSpec.specJson || {};
         var userId = req.apiUserId;
 
-        if (!toolSpec.id || !specJson.label || !specJson.context || !specJson.scriptId) return __BRTC_ERROR_HANDLER.sendError(res, '10103');
+        if (!toolSpec.id || !specJson.label || !specJson.context || !specJson.scriptId) {
+            return __BRTC_ERROR_HANDLER.sendError(res, '10103');
+        }
 
         var specOpt = {
             id: toolSpec.id,
@@ -76,7 +78,7 @@ var createFunction = function (req, res) {
         };
 
         __BRTC_DAO.addon_function.create(specOpt, function (err) {
-            if (err.error.indexOf('duplicate key ') == 0) {
+            if (err.error.indexOf('duplicate key ') === 0) {
                 __BRTC_ERROR_HANDLER.sendError(res, 10101);
             } else {
                 __BRTC_ERROR_HANDLER.sendServerError(res, err);
@@ -99,15 +101,16 @@ var createFunction = function (req, res) {
                 if (error) {
                     __BRTC_DAO.addon_function.deleteById({id: specJson.id});
                     __BRTC_ERROR_HANDLER.sendServerError(res, error);
+                    return;
+                }
+                if (response.statusCode === 200 || response.statusCode === 201) {
+                    res.send(200);
                 } else {
-                    if (response.statusCode == 200 || response.statusCode == 201) {
-                        res.send(200);
-                    } else {
-                        __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_CORE_SERVER.parseError(body));
-                    }
+                    __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_CORE_SERVER.parseError(body));
                 }
             });
         });
+        return undefined;
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_UDF_CREATE, task);
 };
@@ -135,8 +138,7 @@ var deleteFunction = function (req, res) {
                         }, function (result) {
                             res.sendStatus(200);
                         });
-                        if (response.statusCode == 200 || response.statusCode == 204) {
-                        } else {
+                        if (!(response.statusCode === 200 || response.statusCode === 204)) {
                             __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_CORE_SERVER.parseError(body));
                         }
                     }

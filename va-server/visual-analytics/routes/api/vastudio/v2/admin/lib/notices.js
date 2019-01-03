@@ -31,7 +31,7 @@ var createNotice = function (req, res) {
             hits: 0
         };
         __BRTC_DAO.notice.create(opt, function (err) {
-            if (err.error.indexOf('duplicate key ') == 0) {
+            if (err.error.indexOf('duplicate key ') === 0) {
                 __BRTC_ERROR_HANDLER.sendError(res, 22012);
             } else {
                 __BRTC_ERROR_HANDLER.sendServerError(res, err);

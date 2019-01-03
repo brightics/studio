@@ -25,8 +25,10 @@ def _evaluate_regression(table, label_col, prediction_col):
     
     # compute metrics
     evs = explained_variance_score(label, predict)
-    mae = mean_absolute_error(label, predict)
     mse = mean_squared_error(label, predict)
+    rmse = np.sqrt(mse)
+    mae = mean_absolute_error(label, predict)
+    mape = _mean_absolute_percentage_error(label, predict)
     mdae = median_absolute_error(label, predict)
     r2 = r2_score(label, predict)
                     
@@ -36,15 +38,16 @@ def _evaluate_regression(table, label_col, prediction_col):
     summary['prediction_col'] = prediction_col
     summary['r2_score'] = r2
     summary['mean_squared_error'] = mse
+    summary['root_mean_squared_error'] = rmse
     summary['mean_absolute_error'] = mae
     summary['median_absolute_error'] = mdae
     summary['explained_variance_score'] = evs
     
     # report
-    all_dict_list = [{'r2_score': r2, 'mean_squared_error': mse, 'mean_absolute_error': mae, 'median_absolute_error': mdae, 'explained_variance_score': evs}]
+    all_dict_list = [{'r2_score': r2, 'mean_squared_error': mse, 'root_mean_squared_error': rmse, 'mean_absolute_error': mae, 'mean_absolute_percentage_error': mape, 'median_absolute_error': mdae, 'explained_variance_score': evs}]
     all_df = pd.DataFrame(all_dict_list)
-    all_df = all_df[['r2_score', 'mean_squared_error', 'mean_absolute_error', 'median_absolute_error', 'explained_variance_score']]
-    summary['all'] = all_df
+    all_df = all_df[['r2_score', 'mean_squared_error', 'root_mean_squared_error', 'mean_absolute_error', 'mean_absolute_percentage_error', 'median_absolute_error', 'explained_variance_score']]
+    summary['metrics'] = all_df
             
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
@@ -58,6 +61,10 @@ def _evaluate_regression(table, label_col, prediction_col):
     summary['_repr_brtc_'] = rb.get()   
                
     return {'result' : summary}
+
+
+def _mean_absolute_percentage_error(y_true, y_pred): 
+    return np.mean(np.abs((np.array(y_true) - np.array(y_pred)) / np.array(y_true))) * 100
 
 
 def evaluate_classification(table, group_by=None, **params):
@@ -105,7 +112,7 @@ def _evaluate_classification(table, label_col, prediction_col):
     all_dict_list = [{'f1': f1, 'accuracy': accuracy, 'precision': precision, 'recall': recall}]
     all_df = pd.DataFrame(all_dict_list)
     all_df = all_df[['f1', 'accuracy', 'precision', 'recall']]
-    summary['all'] = all_df
+    summary['metrics'] = all_df
             
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
@@ -293,5 +300,3 @@ def _plot_roc_pr_curve(table, label_col, probability_col, fig_w=6.4, fig_h=4.8, 
                fig_confusion=fig_confusion
                )))     
     summary['_repr_brtc_'] = rb.get()
-                   
-    return {'result' : summary}
