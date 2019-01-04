@@ -264,69 +264,41 @@ def paired_ttest(table, group_by=None, **params):
 
 
 def _paired_ttest(table, first_column, second_column, alternative = ['greater', 'less', 'twosided'], hypothesized_difference=0, confidence_level=0.95):
-    df = len(table) - 1
-    diff_mean = (table[first_column] - table[second_column]).mean()
-    std_dev = np.std(table[first_column] - table[second_column])
+
+    df = len(table) - 1    
+    first_col = table[first_column]
+    second_col = table[second_column]
+    
+    diff_mean = (first_col - second_col).mean()
+    std_dev = np.std(first_col - second_col)
     t_value = stats.ttest_rel(table[first_column], table[second_column] + hypothesized_difference)[0]
-    p_value_ul = stats.ttest_rel(table[first_column], table[second_column] + hypothesized_difference)[1]
-    p_value_u = stats.t.sf(t_value, df)
-    p_value_l = stats.t.cdf(t_value, df)
-
-    left_u = diff_mean - std_dev * stats.t.isf((1 - confidence_level), df) / np.sqrt(df)
-    right_l = diff_mean + std_dev * stats.t.isf((1 - confidence_level), df) / np.sqrt(df)
-    left_ul = diff_mean - std_dev * stats.t.isf((1 - confidence_level) / 2, df) / np.sqrt(df)
-    right_ul = diff_mean + std_dev * stats.t.isf((1 - confidence_level) / 2, df) / np.sqrt(df)
-
-    result_value_u = [{'data' : first_column + " , " + second_column,
-                 'alternative_hypothesis' : "true difference in means > " + str(hypothesized_difference),
-                 'statistics' : "t statistics, t distribution with " + str(df) + " degrees of freedom under the null hypothesis",
-                 'estimates' : t_value,
-                 'p_value' : p_value_u,
-                 'confidence_level' : confidence_level,
-                 'low_confidence_interval' : left_u,
-                 'upper_confidence_interval' : np.Infinity}]
-    result_value_l = [{'data' : first_column + " , " + second_column,
-                 'alternative_hypothesis' : "true difference in means < " + str(hypothesized_difference),
-                 'statistics' : "t statistics, t distribution with " + str(df) + " degrees of freedom under the null hypothesis",
-                 'estimates' : t_value,
-                 'p_value' : p_value_l,
-                 'confidence_level' : confidence_level,
-                 'low_confidence_interval' :-np.Infinity,
-                 'upper_confidence_interval' : right_l}]
-    result_value_ul = [{'data' : first_column + " , " + second_column,
-                 'alternative_hypothesis' : "true difference in means != " + str(hypothesized_difference),
-                 'statistics' : "t statistics, t distribution with " + str(df) + " degrees of freedom under the null hypothesis",
-                 'estimates' : t_value,
-                 'p_value' : p_value_ul,
-                 'confidence_level' : confidence_level,
-                 'low_confidence_interval' : left_ul,
-                 'upper_confidence_interval' : right_ul}]
-
-    df_result = pd.DataFrame()
-    df_u = pd.DataFrame(result_value_u, columns=['data', 'alternative_hypothesis', 'statistics', 'estimates', 'p_value', 'confidence_level', 'low_confidence_interval', 'upper_confidence_interval'])
-    df_l = pd.DataFrame(result_value_l, columns=['data', 'alternative_hypothesis', 'statistics', 'estimates', 'p_value', 'confidence_level', 'low_confidence_interval', 'upper_confidence_interval'])
-    df_ul = pd.DataFrame(result_value_ul, columns=['data', 'alternative_hypothesis', 'statistics', 'estimates', 'p_value', 'confidence_level', 'low_confidence_interval', 'upper_confidence_interval'])
-
+    
+    result = []
+    alternative_hypothesis = []
+    p_value = []
+    confidence_interval = []
+    
     if 'greater' in alternative:
-        df_result = df_result.append(df_u, ignore_index=True)
+        alternative_hypothesis.append('true difference in means > ' + str(hypothesized_difference))
+        p_value.append(stats.t.sf(t_value, df))
+        confidence_interval.append((diff_mean - std_dev * stats.t.isf((1 - confidence_level), df) / np.sqrt(df), np.Infinity))
+    
     if 'less' in alternative:
-        df_result = df_result.append(df_l, ignore_index=True)
+        alternative_hypothesis.append('true difference in means < ' + str(hypothesized_difference))
+        p_value.append(stats.t.cdf(t_value, df))
+        confidence_interval.append((-np.Infinity, diff_mean + std_dev * stats.t.isf((1 - confidence_level), df) / np.sqrt(df)))
+    
     if 'twosided' in alternative:
-        df_result = df_result.append(df_ul, ignore_index=True)
-
-    result_table_ul = pd.DataFrame([{'Alternative': 'Two Sided', 'H1': 'true difference in means != ' + str(hypothesized_difference), 't_value': t_value, 'p_value': p_value_ul, str(confidence_level * 100) + '% confidence interval': '(' + str(left_ul) + ', ' + str(right_ul) + ')'}])
-    result_table_u = pd.DataFrame([{'Alternative': 'Greater', 'H1': 'true difference in means > ' + str(hypothesized_difference), 't_value': t_value, 'p_value': p_value_u, str(confidence_level * 100) + '% confidence interval': '(' + str(left_u) + ', ' + str(np.Infinity) + ')'}])
-    result_table_l = pd.DataFrame([{'Alternative': 'Less', 'H1': 'true difference in means < ' + str(hypothesized_difference), 't_value': t_value, 'p_value': p_value_l, str(confidence_level * 100) + '% confidence interval': '(' + str(-np.Infinity) + ', ' + str(right_l) + ')'}])
-    result_table = pd.DataFrame()
-
-    if 'greater' in alternative:
-        result_table = result_table.append(result_table_u, ignore_index=True)
-    if 'less' in alternative:
-        result_table = result_table.append(result_table_l, ignore_index=True)
-    if 'twosided' in alternative:
-        result_table = result_table.append(result_table_ul, ignore_index=True)
-
-    ordered_result_table = pd.DataFrame(result_table, columns=['Alternative', 'alternative_hypothesis', 'T-value', 'p-value', str(confidence_level * 100) + '% confidence interval'])
+        alternative_hypothesis.append('true difference in means != ' + str(hypothesized_difference))
+        p_value.append(stats.ttest_rel(first_col, second_col + hypothesized_difference)[1])
+        other_term = std_dev * stats.t.isf((1 - confidence_level) / 2, df) / np.sqrt(df)
+        confidence_interval.append((diff_mean - other_term, diff_mean + other_term))
+    
+    result.append(['alternative hypothesis',alternative_hypothesis])
+    result.append(['t-value',t_value])
+    result.append(['p-value',p_value])
+    result.append(['%g%% confidence Interval' % (confidence_level * 100), confidence_interval])
+    result_table = pd.DataFrame.from_items(result)
 
     rb = ReportBuilder()
     rb.addMD(strip_margin("""
@@ -337,9 +309,9 @@ def _paired_ttest(table, first_column, second_column, alternative = ['greater', 
     |
     |{result_table}
     |
-    """.format(deg_f=df, dm=diff_mean, sd=std_dev, result_table=pandasDF2MD(ordered_result_table))))
+    """.format(deg_f=df, dm=diff_mean, sd=std_dev, result_table=pandasDF2MD(result_table))))
 
     model = dict()
     model['report'] = rb.get()
 
-    return{'out_table':df_result, 'model':model}
+    return{'model':model}
