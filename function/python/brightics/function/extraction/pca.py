@@ -16,7 +16,6 @@ def pca(table, group_by=None, **params):
     check_required_parameters(_pca, params, ['table'])
     if group_by is not None:
         grouped_model = _function_by_group(_pca, table, group_by=group_by, **params)
-        grouped_model['model']['_grouped_key'] = group_by
         return grouped_model
     else:
         return _pca(table, **params)
@@ -192,11 +191,10 @@ def _biplot(xidx, yidx, data, pc_columns, columns, singular_values, components,
     return plt_two
 
 
-def pca_model(table, model, group_by=None, **params):
+def pca_model(table, model, **params):
     check_required_parameters(_pca_model, params, ['table', 'model'])
-    if '_grouped_key' in model:
-        group_by = model['_grouped_key']
-        return _function_by_group(_pca_model, table, model, group_by=group_by, **params)
+    if '_group_by' in model:
+        return _function_by_group(_pca_model, table, model, **params)
     else:
         return _pca_model(table, model, **params)
     

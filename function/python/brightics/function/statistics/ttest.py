@@ -1,4 +1,4 @@
-from brightics.common.report import ReportBuilder, strip_margin, plt2MD, dict2MD, \
+from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD, dict2MD, \
     pandasDF2MD, keyValues2MD
 from brightics.function.utils import _model_dict
 from brightics.common.utils import check_required_parameters
@@ -36,7 +36,7 @@ def _one_sample_ttest(table, input_cols, alternatives, hypothesized_mean=0, conf
     statistics = "t statistic, t distribution with %d degrees of freedom under the null hypothesis." % (n - 1)
         
     # ## Build model
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     ## One Sample T Test Result
     | - Statistics = {s}
@@ -107,7 +107,7 @@ def _one_sample_ttest(table, input_cols, alternatives, hypothesized_mean=0, conf
         """.format(input_col=input_col, t_value=t_value, result_table=pandasDF2MD(result_table))))
         
     model = dict()    
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
         
     return {'out_table':out_table, 'model':model}
 
@@ -159,7 +159,7 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
     table_second = table[table[factor_col] == second]
     tmp_table = []
 
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     ## Two Sample T Test for Stacked Data Result
     | - Hypothesized mean = {hypo_diff}
@@ -251,7 +251,7 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
     result.columns = ['data', 'alternative_hypothesis', 'statistics', 'estimates', 'p_value', 'confidence_level', 'lower_confidence_interval', 'upper_confidence_interval']
 
     model = dict()
-    model['report'] = rb.get()    
+    model['_repr_brtc_'] = rb.get()    
     return {'out_table' : result, 'model' : model}
 
 
@@ -328,7 +328,7 @@ def _paired_ttest(table, first_column, second_column, alternative = ['greater', 
 
     ordered_result_table = pd.DataFrame(result_table, columns=['Alternative', 'alternative_hypothesis', 'T-value', 'p-value', str(confidence_level * 100) + '% confidence interval'])
 
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     |## Paired T Test Result
     |##### df : {deg_f}
@@ -340,6 +340,6 @@ def _paired_ttest(table, first_column, second_column, alternative = ['greater', 
     """.format(deg_f=df, dm=diff_mean, sd=std_dev, result_table=pandasDF2MD(ordered_result_table))))
 
     model = dict()
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
 
     return{'out_table':df_result, 'model':model}

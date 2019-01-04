@@ -12,7 +12,6 @@ def label_encoder(table, group_by=None, **params):
     check_required_parameters(_label_encoder, params, ['table'])
     if group_by is not None:
         grouped_model = _function_by_group(_label_encoder, table, group_by=group_by, **params) 
-        grouped_model['model']['_grouped_key'] = group_by
         return grouped_model
     else:
         return _label_encoder(table, **params)
@@ -30,11 +29,10 @@ def _label_encoder(table, input_col, new_column_name='encoded_column'):
     return {'out_table' : out_table, 'model' : out_model}
 
 
-def label_encoder_model(table, model, group_by=None, **params):
+def label_encoder_model(table, model, **params):
     check_required_parameters(_label_encoder_model, params, ['table', 'model'])
-    if '_grouped_key' in model:
-        group_by = model['_grouped_key']
-        return _function_by_group(_label_encoder_model, table, model, group_by=group_by, **params)
+    if '_group_by' in model:
+        return _function_by_group(_label_encoder_model, table, model, **params)
     else:
         return _label_encoder_model(table, model, **params)
     
@@ -50,7 +48,6 @@ def one_hot_encoder(table, group_by=None, **params):
     check_required_parameters(_one_hot_encoder, params, ['table'])
     if group_by is not None:
         grouped_model = _function_by_group(_one_hot_encoder, table, group_by=group_by, **params) 
-        grouped_model['model']['_grouped_key'] = group_by
         return grouped_model
     else:
         return _one_hot_encoder(table, **params)
@@ -112,11 +109,10 @@ def _one_hot_encoder(table, input_cols, prefix='list', prefix_list=None, suffix=
     return {'out_table' : out_table, 'model' : out_model}
 
 
-def one_hot_encoder_model(table, model, group_by=None, **params):
+def one_hot_encoder_model(table, model, **params):
     check_required_parameters(_one_hot_encoder_model, params, ['table', 'model'])
-    if '_grouped_key' in model:
-        group_by = model['_grouped_key']
-        return _function_by_group(_one_hot_encoder_model, table, model, group_by=group_by, **params)
+    if '_group_by' in model:
+        return _function_by_group(_one_hot_encoder_model, table, model, **params)
     else:
         return _one_hot_encoder_model(table, model, **params)
     

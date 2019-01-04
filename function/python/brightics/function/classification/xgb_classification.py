@@ -14,7 +14,6 @@ def xgb_classification_train(table, group_by=None, **params):
     check_required_parameters(_xgb_classification_train, params, ['table'])
     if group_by is not None:
         grouped_model = _function_by_group(_xgb_classification_train, table, group_by=group_by, **params) 
-        grouped_model['model']['_grouped_key'] = group_by
         return grouped_model
     else:
         return _xgb_classification_train(table, **params)
@@ -99,9 +98,8 @@ def _xgb_classification_train(table, feature_cols, label_col, max_depth=3, learn
 
 def xgb_classification_predict(table, model, **params):
     check_required_parameters(_xgb_classification_predict, params, ['table', 'model'])
-    if '_grouped_key' in model:
-        group_by = model['_grouped_key']
-        return _function_by_group(_xgb_classification_predict, table, model, group_by=group_by, **params)
+    if '_group_by' in model:
+        return _function_by_group(_xgb_classification_predict, table, model, **params)
     else:
         return _xgb_classification_predict(table, model, **params)        
 

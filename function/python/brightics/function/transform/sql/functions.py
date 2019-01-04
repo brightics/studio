@@ -38,8 +38,8 @@ factorial = lambda _: np.math.factorial(_)
 
 pow = lambda a, b: np.math.pow(a,b)
 
-lpad = lambda str, length, lpad_str: str.ljust(length, lpad_str)
-rpad = lambda str, length, rpad_str: str.rjust(length, rpad_str)
+ljust = lambda item, length, lpad_str: str(item).ljust(length, lpad_str) #?
+rjust = lambda item, length, rpad_str: str(item).rjust(length, rpad_str) #?
 
 
 is_null = lambda _: 1 if _ is None else 0
@@ -48,7 +48,7 @@ is_null = lambda _: 1 if _ is None else 0
 regular expression related functions
 """
 
-regexp = lambda exp, str: False if re.search(exp, str) is None else True
+regexp = lambda exp, str_: False if re.search(exp, str_) is None else True
 regexp_replace = lambda initial_str, pattern, replacement: re.sub(pattern, replacement, initial_str)
 
 
@@ -68,15 +68,15 @@ datetime related functions
 # todo weekofmonth, datediff, timediff
 
 
-def strftime_a(isotime):
+def strftime_a(isotime): #?
     return dateutil.parser.parse(isotime).strftime('%a')
 
 
-def strftime_aa(isotime):
+def strftime_aa(isotime): #?
     return dateutil.parser.parse(isotime).strftime('%A')
 
 
-def strftime_aak(isotime):
+def strftime_aak(isotime): #?
     w_dict = {'Monday':'월요일',
               'Tuesday':'화요일',
               'Wednesday':'수요일',
@@ -88,7 +88,7 @@ def strftime_aak(isotime):
     return w_dict[dateutil.parser.parse(isotime).strftime('%A')]
 
 
-def strftime_ak(isotime):
+def strftime_ak(isotime): #?
     w_dict = {'Monday':'월',
               'Tuesday':'화',
               'Wednesday':'수',
@@ -120,7 +120,7 @@ def concat_ws(sep, serialized_list):
 def split(str, *sep):
     nargs = len(sep)
     if nargs == 0:
-        return _serialize(np.array(str.split()))
+        return _serialize(str.split())
     else:  # todo elif nargs == 1:
-        return _serialize(np.array(str.split(sep[0])))
+        return _serialize(str.split(sep[0]))
     

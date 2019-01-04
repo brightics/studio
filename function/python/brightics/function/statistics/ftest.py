@@ -1,4 +1,4 @@
-from brightics.common.report import ReportBuilder, strip_margin, plt2MD, \
+from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD, \
     pandasDF2MD, keyValues2MD
 import pandas as pd
 import scipy.stats
@@ -55,7 +55,7 @@ def _ftest_for_stacked_data(table, response_cols, factor_col, alternatives, firs
     number2 = len(table_second[factor_col])
     d_num = number1 - 1
     d_denum = number2 - 1
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     ## F Test for Stacked Data Result
     | - Confidence level = {confi_level}
@@ -113,5 +113,5 @@ def _ftest_for_stacked_data(table, response_cols, factor_col, alternatives, firs
     result.columns = ['data', 'alternative_hypothesis', 'statistics', 'estimates', 'p_value', 'confidence_level', 'lower_confidence_interval', 'upper_confidence_interval']
 
     model = dict()
-    model['report'] = rb.get()    
+    model['_repr_brtc_'] = rb.get()    
     return {'out_table' : result, 'model' : model}
