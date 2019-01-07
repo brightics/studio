@@ -51,7 +51,7 @@ def _scale(table, input_cols, scaler, suffix=None):
 
 def scale_model(table, model, **params):
     check_required_parameters(_scale_model, params, ['table', 'model'])
-    if '_group_by' in model:
+    if '_grouped_data' in model:
         return _function_by_group(_scale_model, table, model, **params)
     else:
         return _scale_model(table, model, **params)

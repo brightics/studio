@@ -84,7 +84,7 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
 
 def logistic_regression_predict(table, model, **params):
     check_required_parameters(_logistic_regression_predict, params, ['table', 'model'])
-    if '_group_by' in model:
+    if '_grouped_data' in model:
         return _function_by_group(_logistic_regression_predict, table, model, **params)
     else:
         return _logistic_regression_predict(table, model, **params)
