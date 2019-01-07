@@ -51,8 +51,8 @@ const TOOLS_FUNCTION_UPDATE_DEFAULT = '' +
     '   SET (label, contents, description, updater, update_time, event_key, type) = ($1, $2, $3, $4, now(), to_char(current_timestamp, \'YYMMDD_HH24MISS_US\'), $5) ' +
     ' WHERE id=$6 AND tools_project_id=$7 AND (event_key=$8 OR event_key IS NULL)';
 const TOOLS_FUNCTION_UPDATE_SQLITE = `
-    UPDATE brtc_tools_function 
-       SET (label, contents, description, updater, update_time, event_key, type) = ($1, $2, $3, $4, datetime('now'), strftime('%Y_%H%M%f', current_timestamp), $5) 
+    UPDATE brtc_tools_function
+       SET (label, contents, description, updater, update_time, event_key, type) = ($1, $2, $3, $4, datetime('now'), strftime('%Y_%H%M%f', current_timestamp), $5)
      WHERE id=$6 AND tools_project_id=$7 AND (event_key=$8 OR event_key IS NULL)`;
 const TOOLS_FUNCTION_DELETE_DEFAULT = 'DELETE FROM brtc_tools_function WHERE id=$1 AND tools_project_id=$2';
 const TOOLS_FUNCTION_DELETE_BY_PROJECTID_DEFAULT = 'DELETE FROM brtc_tools_function WHERE tools_project_id=$1';

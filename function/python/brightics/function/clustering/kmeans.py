@@ -70,7 +70,6 @@ def kmeans_train_predict(table, group_by=None, **params):
     check_required_parameters(_kmeans_train_predict, params, ['table'])
     if group_by is not None:
         grouped_model = _function_by_group(_kmeans_train_predict, table, group_by=group_by, **params)
-        grouped_model['model']['_grouped_key'] = group_by
         return grouped_model
     else:
         return _kmeans_train_predict(table, **params)
@@ -133,11 +132,10 @@ def _kmeans_train_predict(table, input_cols, n_clusters=3, prediction_col='predi
     return {'out_table':out_table, 'model':model}
 
 
-def kmeans_predict(table, model, group_by=None, **params):
+def kmeans_predict(table, model, **params):
     check_required_parameters(_kmeans_predict, params, ['table', 'model'])
-    if '_grouped_key' in model:
-        group_by = model['_grouped_key']
-        return _function_by_group(_kmeans_predict, table, model, group_by=group_by, **params)
+    if '_group_by' in model:
+        return _function_by_group(_kmeans_predict, table, model, **params)
     else:
         return _kmeans_predict(table, model, **params)
 
@@ -166,7 +164,6 @@ def kmeans_silhouette_train_predict(table, group_by=None, **params):
     check_required_parameters(_kmeans_silhouette_train_predict, params, ['table'])
     if group_by is not None:
         grouped_model = _function_by_group(_kmeans_silhouette_train_predict, table, group_by=group_by, **params) 
-        grouped_model['model']['_grouped_key'] = group_by
         return grouped_model
     else:
         return _kmeans_silhouette_train_predict(table, **params)

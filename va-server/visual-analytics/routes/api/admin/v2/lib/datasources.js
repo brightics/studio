@@ -2,8 +2,23 @@ var router = __REQ_express.Router();
 var request = __REQ_request;
 var decryptRSA = require('../../../../../lib/rsa').decryptRSA;
 
+const coreResponseHandler = (req, res) => {
+    return function (error, response, body) {
+        if (error) {
+            __BRTC_ERROR_HANDLER.sendServerError(res, error);
+        } else {
+            if (response.statusCode === 200) {
+                res.json({ success: true });
+            } else {
+                __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
+            }
+        }
+    };
+};
+
 var _executeInPermission = function (req, res, perm, task) {
-    var permHandler = __BRTC_PERM_HELPER.checkPermission(req, [__BRTC_PERM_HELPER.PERMISSION_RESOURCE_TYPES.DATASOURCE], perm);
+    var permHandler = __BRTC_PERM_HELPER.checkPermission(req,
+        [__BRTC_PERM_HELPER.PERMISSION_RESOURCE_TYPES.DATASOURCE], perm);
     permHandler.on('accept', task);
     permHandler.on('deny', function (permissions) {
         __BRTC_ERROR_HANDLER.sendNotAllowedError(res);
@@ -16,13 +31,13 @@ var _executeInPermission = function (req, res, perm, task) {
 
 var getDecryptedDatasource = function (req) {
     return Object.assign({}, req.body, {
-        password: decryptRSA(req.body.password, req)
+        password: decryptRSA(req.body.password, req),
     });
 };
 
 var getPasswordDeletedDatasource = function (datasource) {
     return Object.assign({}, datasource, {
-        password: ''
+        password: '',
     });
 };
 
@@ -34,7 +49,7 @@ var getDbType = function (req, res) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     res.json(JSON.parse(body));
                 } else {
                     __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
@@ -54,7 +69,7 @@ var getDatasource = function (req, res) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     res.json(getPasswordDeletedDatasource(JSON.parse(body)));
                 } else {
                     // __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
@@ -76,7 +91,7 @@ var listDatasource = function (req, res) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     res.json(JSON.parse(body).map(getPasswordDeletedDatasource));
                 } else {
                     __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
@@ -92,17 +107,7 @@ var createDatasource = function (req, res) {
         var options = __BRTC_CORE_SERVER.createRequestOptions('PUT', '/api/core/v2/datasources');
         __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
         options.body = JSON.stringify(getDecryptedDatasource(req));
-        request(options, function (error, response, body) {
-            if (error) {
-                __BRTC_ERROR_HANDLER.sendServerError(res, error);
-            } else {
-                if (response.statusCode == 200) {
-                    res.json(body);
-                } else {
-                    __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
-                }
-            }
-        });
+        request(options, coreResponseHandler(req, res));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_DATASOURCE_UPDATE, task);
 };
@@ -112,17 +117,7 @@ var updateDatasource = function (req, res) {
         var options = __BRTC_CORE_SERVER.createRequestOptions('POST', '/api/core/v2/datasources');
         __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
         options.body = JSON.stringify(getDecryptedDatasource(req));
-        request(options, function (error, response, body) {
-            if (error) {
-                __BRTC_ERROR_HANDLER.sendServerError(res, error);
-            } else {
-                if (response.statusCode == 200) {
-                    res.json({success: true});
-                } else {
-                    __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
-                }
-            }
-        });
+        request(options, coreResponseHandler(req, res));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_DATASOURCE_UPDATE, task);
 };
@@ -132,17 +127,7 @@ var deleteDatasource = function (req, res) {
         var datasourceName = req.params.datasourceName;
         var options = __BRTC_CORE_SERVER.createRequestOptions('DELETE', '/api/core/v2/datasources/' + datasourceName);
         __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-        request(options, function (error, response, body) {
-            if (error) {
-                __BRTC_ERROR_HANDLER.sendServerError(res, error);
-            } else {
-                if (response.statusCode == 200) {
-                    res.json({success: true});
-                } else {
-                    __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
-                }
-            }
-        });
+        request(options, coreResponseHandler(req, res));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_DATASOURCE_DELETE, task);
 };
@@ -152,17 +137,7 @@ var deleteDatasources = function (req, res) {
         var options = __BRTC_CORE_SERVER.createRequestOptions('DELETE', '/api/core/v2/datasources'); // core 와 API 정의 필요
         __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
         options.body = JSON.stringify(req.body);
-        request(options, function (error, response, body) {
-            if (error) {
-                __BRTC_ERROR_HANDLER.sendServerError(res, error);
-            } else {
-                if (response.statusCode == 200) {
-                    res.json({success: true});
-                } else {
-                    __BRTC_ERROR_HANDLER.sendServerError(res, JSON.parse(body));
-                }
-            }
-        });
+        request(options, coreResponseHandler(req, res));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_DATASOURCE_DELETE, task);
 };

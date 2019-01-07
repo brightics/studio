@@ -17,7 +17,7 @@ var listMembers = function (req, res) {
             request(options, function (error, response, body) {
                 if (error) return res.status(response.status).json(JSON.parse(body));
 
-                var projectMembers = result.map(x => Object.assign(x, JSON.parse(body).find(y => y.id == x.user_id)));
+                var projectMembers = result.map(x => Object.assign(x, JSON.parse(body).find(y => y.id === x.user_id)));
                 projectMembers.forEach(function (member) {
                     member['user_name'] = member['name'];
                     delete member['name'];
@@ -43,6 +43,7 @@ var inviteMember = function (req, res) {
         }, function (result) {
             res.json(result);
         });
+        return undefined;
     };
     projectPermission.execute(req.params.project, req.apiUserId, PERMISSION.PROJECT.UPDATE, res, task);
 };
@@ -62,11 +63,12 @@ var withdrawMember = function (req, res) {
         }, function (result) {
             res.json(result);
         });
+        return undefined;
     };
 
     // 본인만 With
     var permission = PERMISSION.PROJECT.UPDATE;
-    if (req.body.members.length === 1 && req.apiUserId == req.body.members[0].user_id) {
+    if (req.body.members.length === 1 && req.apiUserId === req.body.members[0].user_id) {
         permission = PERMISSION.PROJECT.READ;
     }
 
@@ -87,6 +89,7 @@ var changeAuthority = function (req, res) {
         }, function (result) {
             res.json(result);
         });
+        return undefined;
     };
     projectPermission.execute(req.params.project, req.apiUserId, PERMISSION.PROJECT.UPDATE, res, task);
 };

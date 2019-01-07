@@ -120,7 +120,7 @@ module.exports = {
         checkSchema: function (errCallback, doneCallback) {
             var _this = this;
             query(DDL_CHECK_TABLE, ['brtc_library'], errCallback, function (result) {
-                if (result.length == 0) {
+                if (result.length === 0) {
                     query(DDL_CREATE_LIBRARY_TABLE, [], errCallback, function () {
                         var opt = {
                             id: 'brtc-va-shared',
@@ -161,7 +161,7 @@ module.exports = {
     template: {
         checkSchema: function (errCallback, doneCallback) {
             query(DDL_CHECK_TABLE, ['brtc_library_template'], errCallback, function (result) {
-                if (result.length == 0) {
+                if (result.length === 0) {
                     query(DDL_CREATE_LIBRARY_TEMPLATE_TABLE, [], errCallback, doneCallback);
                 }
                 else {
@@ -189,6 +189,6 @@ module.exports = {
         },
         delete: function (opt, errCallback, doneCallback) {
             query(LIBRARY_TEMPLATE_DELETE, [opt.id, opt.library_id], errCallback, doneCallback);
-        }        
+        }
     }
 };

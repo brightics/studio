@@ -29,9 +29,9 @@ var parseStagingData = function (body) {
         resultSet.columns.push({
             name: name,
             type: convertedType.type,
-            internalType: convertedType.internalType
+            internalType: convertedType.internalType,
         });
-        if (convertedType.type == 'byte[]') {
+        if (convertedType.type === 'byte[]') {
             arrColIndexes.push(c);
         }
     }
@@ -54,52 +54,12 @@ var parseStagingData = function (body) {
     return resultSet;
 };
 
-router.get('/', function (req, res) {
-    var options = __BRTC_CORE_SERVER.createRequestOptions('GET', '/api/core/v2/datasources');
-    __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-    request(options, function (error, response, body) {
+const cb = (res) => {
+    return function (error, response, body) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
-                try {
-                    var answer = []
-                        , resultSet = JSON.parse(body);
-                    if (req.query.type) {
-                        for (var i in resultSet) {
-                            if (req.query.type == resultSet[i].datasourceType ||
-                                (req.query.type === 'RDB' && resultSet[i].datasourceType === 'JDBC') ||
-                                (req.query.type === 'RDB' && resultSet[i].datasourceType === 'HIVE')) {
-                                answer.push(resultSet[i]);
-                            }
-                        }
-                    } else {
-                        answer = resultSet;
-                    }
-                    res.status(200).json(answer);
-                } catch (err) {
-                    __BRTC_ERROR_HANDLER.sendServerError(res, err);
-                }
-            } else {
-                __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-            }
-        }
-    });
-});
-
-router.get('/:source/tables', function (req, res) {
-    var compile = mf.compile('/api/v2/datasources/{source}/tables');
-    var url = compile({
-        source: req.params.source
-    });
-
-    var options = __BRTC_CORE_SERVER.createRequestOptions('GET', url);
-    __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-    request(options, function (error, response, body) {
-        if (error) {
-            __BRTC_ERROR_HANDLER.sendServerError(res, error);
-        } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 try {
                     var answer = JSON.parse(body).result;
                     res.status(200).json(answer);
@@ -110,53 +70,15 @@ router.get('/:source/tables', function (req, res) {
                 __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
             }
         }
-    });
-});
+    };
+};
 
-router.get('/:source/columns', __BRTC_ERROR_HANDLER.checkParams(['tableName']), function (req, res) {
-    var compile = mf.compile('/api/v2/datasources/{source}/columns?tableName={tableName}');
-    var url = compile({
-        source: req.params.source,
-        tableName: req.query.tableName
-    });
-
-    var options = __BRTC_CORE_SERVER.createRequestOptions('GET', url);
-    __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-    request(options, function (error, response, body) {
+const cbStaging = (res) => {
+    return function (error, response, body) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
-                try {
-                    var answer = JSON.parse(body).result;
-                    res.status(200).json(answer);
-                } catch (err) {
-                    __BRTC_ERROR_HANDLER.sendServerError(res, err);
-                }
-            } else {
-                __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-            }
-        }
-    });
-});
-
-router.get('/staging/query', __BRTC_ERROR_HANDLER.checkParams(['user', 'mid', 'tab', 'offset', 'limit']), function (req, res) {
-    var compile = mf.compile('/api/v2/datasources/staging/{user}/{mid}/{tab}?offset={offset}&limit={limit}');
-    var url = compile({
-        user: req.query.user,
-        mid: req.query.mid,
-        tab: req.query.tab,
-        offset: req.query.offset,
-        limit: req.query.limit
-    });
-    var options = __BRTC_CORE_SERVER.createRequestOptions('GET', url);
-    __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-    options.timeout = 30 * 1000;
-    request(options, function (error, response, body) {
-        if (error) {
-            __BRTC_ERROR_HANDLER.sendServerError(res, error);
-        } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 try {
                     res.json(parseStagingData(body));
                 } catch (err) {
@@ -166,42 +88,121 @@ router.get('/staging/query', __BRTC_ERROR_HANDLER.checkParams(['user', 'mid', 't
                 __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
             }
         }
+    };
+};
+
+const cbQuery = (res, done) => {
+    return function (err, result) {
+        if (err) {
+            __BRTC_ERROR_HANDLER.sendMessage(res, err.message);
+        } else {
+            done();
+            res.send(result.rows);
+        }
+    };
+};
+
+router.get('/', function (req, res) {
+    var options = __BRTC_CORE_SERVER.createRequestOptions('GET', '/api/core/v2/datasources');
+    __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
+    request(options, function (error, response, body) {
+        if (error) {
+            return __BRTC_ERROR_HANDLER.sendServerError(res, error);
+        }
+        if (response.statusCode !== 200) {
+            return __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
+        }
+        try {
+            var answer = [];
+            var resultSet = JSON.parse(body);
+            if (req.query.type) {
+                for (var i in resultSet) {
+                    if (req.query.type === resultSet[i].datasourceType ||
+                        (req.query.type === 'RDB' && resultSet[i].datasourceType === 'JDBC') ||
+                        (req.query.type === 'RDB' && resultSet[i].datasourceType === 'HIVE')) {
+                        answer.push(resultSet[i]);
+                    }
+                }
+            } else {
+                answer = resultSet;
+            }
+            res.status(200).json(answer);
+        } catch (err) {
+            __BRTC_ERROR_HANDLER.sendServerError(res, err);
+        }
     });
 });
 
+
+router.get('/:source/tables', function (req, res) {
+    var compile = mf.compile('/api/v2/datasources/{source}/tables');
+    var url = compile({
+        source: req.params.source,
+    });
+
+    var options = __BRTC_CORE_SERVER.createRequestOptions('GET', url);
+    __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
+    request(options, cb(res));
+});
+
+router.get('/:source/columns', __BRTC_ERROR_HANDLER.checkParams(['tableName']), function (req, res) {
+    var compile = mf.compile('/api/v2/datasources/{source}/columns?tableName={tableName}');
+    var url = compile({
+        source: req.params.source,
+        tableName: req.query.tableName,
+    });
+
+    var options = __BRTC_CORE_SERVER.createRequestOptions('GET', url);
+    __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
+    request(options, cb(res));
+});
+
+
+router.get('/staging/query', __BRTC_ERROR_HANDLER.checkParams(['user', 'mid', 'tab', 'offset', 'limit']), function (req, res) {
+    var compile = mf.compile('/api/v2/datasources/staging/{user}/{mid}/{tab}?offset={offset}&limit={limit}');
+    var url = compile({
+        user: req.query.user,
+        mid: req.query.mid,
+        tab: req.query.tab,
+        offset: req.query.offset,
+        limit: req.query.limit,
+    });
+    var options = __BRTC_CORE_SERVER.createRequestOptions('GET', url);
+    __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
+    options.timeout = 30 * 1000;
+    request(options, cbStaging(res));
+});
+
 router.post('/staging/delete', __BRTC_ERROR_HANDLER.checkParams(['user']), function (req, res) {
-    if (req.query.user != req.session.userId) {
-        __BRTC_ERROR_HANDLER.sendNotAllowedError(res);
-    } else {
-        var url = '/api/v2/datasources/staging/' + req.query.user;
-        if (req.query.mid) {
-            url += '/' + req.query.mid;
-            if (req.query.tab) {
-                url += '/' + req.query.tab
-            }
-        }
-        var options = __BRTC_CORE_SERVER.createRequestOptions('DELETE', url);
-        __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-        request(options, function (error, response, body) {
-            if (error) {
-                __BRTC_ERROR_HANDLER.sendServerError(res, error);
-            } else {
-                if (response.statusCode == 200) {
-                    try {
-                        res.json(JSON.parse(body));
-                    } catch (err) {
-                        __BRTC_ERROR_HANDLER.sendServerError(res, err);
-                    }
-                } else {
-                    __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-                }
-            }
-        });
+    if (req.query.user !== req.session.userId) {
+        return __BRTC_ERROR_HANDLER.sendNotAllowedError(res);
     }
+    var url = '/api/v2/datasources/staging/' + req.query.user;
+    if (req.query.mid) {
+        url += '/' + req.query.mid;
+        if (req.query.tab) {
+            url += '/' + req.query.tab;
+        }
+    }
+    var options = __BRTC_CORE_SERVER.createRequestOptions('DELETE', url);
+    __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
+    return request(options, function (error, response, body) {
+        if (error) {
+            return __BRTC_ERROR_HANDLER.sendServerError(res, error);
+        }
+        if (response.statusCode !== 200) {
+            return __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
+        }
+        try {
+            res.json(JSON.parse(body));
+        } catch (err) {
+            __BRTC_ERROR_HANDLER.sendServerError(res, err);
+        }
+    });
 });
 
 var urlParser = function (req) {
-    var dbType = req.body.dbtype;
+    // var dbType = req.body.dbtype;
     var host = req.body.host;
     var port = req.body.port;
     var service = req.body.service;
@@ -213,9 +214,10 @@ var urlParser = function (req) {
         database: service,
         password: decrypted,
         host: host,
-        port: port
+        port: port,
     };
 };
+
 
 const PG_TABLE_SCHEMA = 'SELECT column_name, data_type FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = $1 and table_schema = $2';
 router.post('/external/schema', function (req, res, next) {
@@ -225,14 +227,7 @@ router.post('/external/schema', function (req, res, next) {
         if (err) {
             __BRTC_ERROR_HANDLER.sendMessage(res, err.message);
         } else {
-            client.query(PG_TABLE_SCHEMA, [table, schema], function (err, result) {
-                if (err) {
-                    __BRTC_ERROR_HANDLER.sendMessage(res, err.message);
-                } else {
-                    done();
-                    res.send(result.rows);
-                }
-            });
+            client.query(PG_TABLE_SCHEMA, [table, schema], cbQuery(res, done));
         }
     });
 });
@@ -245,14 +240,7 @@ router.post('/external/query', function (req, res, next) {
             __BRTC_ERROR_HANDLER.sendMessage(res, err.message);
         } else {
             var query = table ? 'SELECT * FROM ' + table + ' LIMIT 20' : PG_VALIDATION;
-            client.query(query, [], function (err, result) {
-                if (err) {
-                    __BRTC_ERROR_HANDLER.sendMessage(res, err.message);
-                } else {
-                    done();
-                    res.send(result.rows);
-                }
-            });
+            client.query(query, [], cbQuery(res, done));
         }
     });
 });
@@ -266,7 +254,7 @@ router.post('/etl/query/:sqlId/:site', function (req, res) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 try {
                     res.json(JSON.parse(body));
                 } catch (err) {
@@ -287,7 +275,7 @@ var removeData = function (req, res) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 try {
                     res.json(JSON.parse(response.body));
                 } catch (ex) {
@@ -307,26 +295,11 @@ var queryRef = function (req, res) {
         table: req.body.table,
         group: (req.body.group) ? req.body.group : '',
         columns: req.body.columns.split('|'),
-        limit: req.body.limit
+        limit: req.body.limit,
     };
     options.body = JSON.stringify(param);
     __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-    request(options, function (error, response, body) {
-        if (error) {
-            __BRTC_ERROR_HANDLER.sendServerError(res, error);
-        } else {
-
-            if (response.statusCode == 200) {
-                try {
-                    res.json(parseStagingData(body));
-                } catch (err) {
-                    __BRTC_ERROR_HANDLER.sendServerError(res, err);
-                }
-            } else {
-                __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-            }
-        }
-    });
+    request(options, cbStaging(res));
 };
 
 var queryResult = function (req, res, next) {
@@ -337,12 +310,12 @@ var queryResult = function (req, res, next) {
         sql: {
             metadata: 'sql',
             sqlId: req.params.sqlId,
-            condition: req.body
+            condition: req.body,
         },
         datasource: {
-            metadata: "datasource",
-            datasourceName: datasourceName
-        }
+            metadata: 'datasource',
+            datasourceName: datasourceName,
+        },
 
     };
     options.body = JSON.stringify(param);
@@ -352,7 +325,7 @@ var queryResult = function (req, res, next) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 try {
                     var jsonObject = JSON.parse(body);
                     res.json(jsonObject.result);

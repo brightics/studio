@@ -21,10 +21,12 @@ import traceback
 
 import uuid
 
+import pandas as pd
 
 def execute(tables, query):
-#     from sqlalchemy import create_engine
-#     engine = create_engine('sqlite:///:memory:', echo=True)
+    if isinstance(tables, pd.DataFrame):
+        tables = [tables]
+
     sqlite3.enable_callback_tracebacks(True)
     con = sqlite3.connect(':memory:', detect_types=sqlite3.PARSE_DECLTYPES)
     

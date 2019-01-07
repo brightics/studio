@@ -20,7 +20,7 @@ exports.listDeployTarget = function (req, res) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 res.send(body);
             } else {
                 __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_CORE_SERVER.parseError(body));
@@ -55,7 +55,7 @@ exports.createDeploy = function (req, res) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
                 var resultData = JSON.parse(body);
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     res.send(resultData.result);
                 } else {
                     __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_CORE_SERVER.parseError(body));
@@ -86,7 +86,7 @@ exports.updateDeploy = function (req, res) {
             if (error) {
                 __BRTC_ERROR_HANDLER.sendServerError(res, error);
             } else {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     res.send();
                 } else {
                     __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_CORE_SERVER.parseError(body));

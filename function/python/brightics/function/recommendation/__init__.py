@@ -1,0 +1,1 @@
+from .association_rule import association_rule
