@@ -300,7 +300,7 @@ def _paired_ttest(table, first_column, second_column, alternative = ['greater', 
     result.append(['%g%% confidence Interval' % (confidence_level * 100), confidence_interval])
     result_table = pd.DataFrame.from_items(result)
 
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     |## Paired T Test Result
     |##### df : {deg_f}
