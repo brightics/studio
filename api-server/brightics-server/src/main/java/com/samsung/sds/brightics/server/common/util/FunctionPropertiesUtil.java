@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.io.CharStreams;
 import com.samsung.sds.brightics.common.core.util.JsonUtil;
+import com.samsung.sds.brightics.common.core.util.SystemEnvUtil;
 import com.samsung.sds.brightics.server.model.param.FunctionMetaParam;
 
 public class FunctionPropertiesUtil {
@@ -26,7 +27,7 @@ public class FunctionPropertiesUtil {
 	private static Map<String, String> functionHelpMap;
 	private static Map<String, String> functionLabelMap;
 
-	private static final String FUNCTION_FOLDER = "function";
+	private static final String FUNCTION_FOLDER = SystemEnvUtil.BRIGHTICS_SERVER_HOME + File.separator + "functions";
 	private static final String FUNC = "func";
 	private static final String NAME = "name";
 	private static final String PARAMS = "params";
@@ -41,12 +42,10 @@ public class FunctionPropertiesUtil {
 		functionHelpMap = new HashMap<>();
 		functionLabelMap = new HashMap<>();
 		try {
-			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-			File functionFolder = new File(classLoader.getResource(FUNCTION_FOLDER).getFile());
+			File functionFolder = new File(FUNCTION_FOLDER);
 			for (File functonContextFolder : functionFolder.listFiles()) {
-				String context = functonContextFolder.getName(); // spark or
-																	// python
-				Files.find(functonContextFolder.toPath(), 5,
+				String context = functonContextFolder.getName();
+				Files.find(functonContextFolder.toPath(), 6,
 						(path, basicFileAttributes) -> path.toFile().getName().matches(".*.json")
 								|| path.toFile().getName().matches(".*.md"))
 						.forEach(path -> setFucntionProperties(context, path));
@@ -57,6 +56,7 @@ public class FunctionPropertiesUtil {
 	}
 
 	private static void setFucntionProperties(String context, Path path) {
+		logger.debug("Get function meta path : " + path);
 		File functionHelpFile = path.toFile();
 		String filename = functionHelpFile.getName();
 		if (path.toFile().getName().matches(".*.json")) {
