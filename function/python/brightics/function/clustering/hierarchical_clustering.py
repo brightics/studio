@@ -1,18 +1,14 @@
-from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD, \
-    pandasDF2MD, keyValues2MD, dict2MD
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-import matplotlib.cm as cm
+from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, dict2MD, plt2MD
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 
 import matplotlib.pyplot as plt
-from scipy.cluster.hierarchy import dendrogram, ward, single, average, complete, linkage, fcluster, leaders
-from sklearn.cluster import AgglomerativeClustering
+from scipy.cluster.hierarchy import dendrogram, linkage, fcluster, leaders
 from sklearn.metrics import pairwise_distances
 from sklearn.metrics.pairwise import pairwise_kernels
+import numpy as np
+import pandas as pd
 
 
 def _fancy_dendrogram(*args, **kwargs):
@@ -32,8 +28,6 @@ def _fancy_dendrogram(*args, **kwargs):
                 plt.annotate("%.3g" % y, (x, y), xytext=(0, -5),
                              textcoords='offset points',
                              va='top', ha='center')
-        # if max_d != 0:
-        #    plt.axhline(y=max_d, c='k')
     return ddata
 
 def hierarchical_clustering(table, group_by=None, **params):
@@ -84,7 +78,6 @@ def _hierarchical_clustering(table, input_cols, link='complete', met='euclidean'
         leaf_font_size=5.,
         show_contracted=False,  # to get a distribution impression in truncated branches
         annotate_above=float(10),  # useful in small plots so annotations don't overlap
-        # max_d=distance_threshold, # will plot a horizontal cut-off line, max_d as in max_distance
     )
     plt.title('Hierarchical Clustering Dendrogram')
     if orient=='top':
@@ -122,29 +115,27 @@ def _hierarchical_clustering(table, input_cols, link='complete', met='euclidean'
 
     model = _model_dict('hierarchical_clustering')
     model['model'] = Z
-    model['input_cols'] = input_cols
     model['parameters'] = params
-    model['outtable'] = out_table
-    model['_repr_brtc_'] = rb.get()
+    model['linkage_matrix'] = out_table
+    model['report'] = rb.get()
         
-    return { 'model':model}
+    return {'model':model}
 
-def hierarchical_clustering_post(table, model, **params):
+def hierarchical_clustering_post(table, model, group_by=None, **params):
     check_required_parameters(_hierarchical_clustering_post, params, ['table', 'model'])
-    if 'group_by' in model:
-        return _function_by_group(_hierarchical_clustering_post, table, model, **params)
+    if group_by is not None:
+        return _function_by_group(_hierarchical_clustering_post, table, model, group_by=group_by, **params)
     else:
         return _hierarchical_clustering_post(table, model, **params)
 
 
 def _hierarchical_clustering_post(table, model, num_clusters, cluster_col='prediction'):
     Z = model['model']
-    input_cols = model['input_cols']
     params = model['parameters']
-    out_table = model['outtable']
+    out_table = model['linkage_matrix']
     predict = fcluster(Z, t=num_clusters, criterion='maxclust')
-    out_table2 = table.copy()
-    out_table2[cluster_col] = predict
+    prediction_table = table.copy()
+    prediction_table[cluster_col] = predict
     
     L, M = leaders(Z, predict)
     which_cluster = []
@@ -156,14 +147,13 @@ def _hierarchical_clustering_post(table, model, num_clusters, cluster_col='predi
             select_indices = np.where(Z[:, 1] == leader)[0][0]
             which_cluster.append(out_table['joined_column2'][select_indices])
     
-    out_table3 = pd.DataFrame([])
-    out_table3[cluster_col] = M
-    out_table3['name_of_clusters'] = which_cluster
-    out_table3 = out_table3.sort_values(cluster_col)
-    cluster_count = np.bincount(out_table2[cluster_col])
+    clusters_info_table = pd.DataFrame([])
+    clusters_info_table[cluster_col] = M
+    clusters_info_table['name_of_clusters'] = which_cluster
+    clusters_info_table = clusters_info_table.sort_values(cluster_col)
+    cluster_count = np.bincount(prediction_table[cluster_col])
     cluster_count = cluster_count[cluster_count != 0]
-    # data = {'cluster_name': ['prediction' + str(i) for i in range(1, num_clusters + 1)]}
-    out_table3['num_of_entities'] = list(cluster_count)
+    clusters_info_table['num_of_entities'] = list(cluster_count)
     
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""### Hierarchical Clustering Post Process Result"""))
@@ -174,11 +164,13 @@ def _hierarchical_clustering_post(table, model, num_clusters, cluster_col='predi
     |
     |## Clusters Information
     |
-    |{out_table3}
+    |{clusters_info_table}
     |
-    """.format(display_params=dict2MD(params), out_table3=pandasDF2MD(out_table3))))
+    """.format(display_params=dict2MD(params), clusters_info_table=pandasDF2MD(clusters_info_table))))
 
     model = _model_dict('hierarchical_clustering_post')
-    model['_repr_brtc_'] = rb.get()
+    model['params']=params
+    model['clusters_info']=clusters_info_table
+    model['report'] = rb.get()
     
-    return {'out_table2' : out_table2, 'model': model}
+    return {'out_table2' : prediction_table, 'model': model}
