@@ -5,8 +5,6 @@ from brightics.common.utils import check_required_parameters
 
 import matplotlib.pyplot as plt
 from scipy.cluster.hierarchy import dendrogram, linkage, fcluster, leaders
-from sklearn.metrics import pairwise_distances
-from sklearn.metrics.pairwise import pairwise_kernels
 import numpy as np
 import pandas as pd
 
@@ -38,7 +36,7 @@ def hierarchical_clustering(table, group_by=None, **params):
         return _hierarchical_clustering(table, **params)
 
 
-def _hierarchical_clustering(table, input_cols, link='complete', met='euclidean', p=2, num_rows=20, figure_height=6.4, orient='right'):
+def _hierarchical_clustering(table, input_cols, link='complete', met='euclidean', num_rows=20, figure_height=6.4, orient='right'):
     table = table.copy()
     df = table[input_cols]
     Z = linkage(df, method=link, metric=met)
@@ -61,10 +59,10 @@ def _hierarchical_clustering(table, input_cols, link='complete', met='euclidean'
     out_table1 = out_table.head(num_rows)
     
     # calculate full dendrogram
-    def _llf(id):
+    def _llf(idx):
         n = len(df)
-        if id < n:
-                return 'pt_' + str(id)
+        if idx < n:
+                return 'pt_' + str(idx)
  
     plt.figure(figsize=(8.4, figure_height))
     _fancy_dendrogram(
