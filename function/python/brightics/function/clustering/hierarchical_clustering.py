@@ -28,6 +28,7 @@ def _fancy_dendrogram(*args, **kwargs):
                              va='top', ha='center')
     return ddata
 
+
 def hierarchical_clustering(table, group_by=None, **params):
     check_required_parameters(_hierarchical_clustering, params, ['table'])
     if group_by is not None:
@@ -37,31 +38,29 @@ def hierarchical_clustering(table, group_by=None, **params):
 
 
 def _hierarchical_clustering(table, input_cols, link='complete', met='euclidean', num_rows=20, figure_height=6.4, orient='right'):
-    table = table.copy()
-    df = table[input_cols]
-    Z = linkage(df, method=link, metric=met)
-    out_table = pd.DataFrame([])
-    out_table['linkage_step'] = [x + 1 for x in reversed(range(len(Z)))]
-    out_table['joined_column1'] = ['pt_' + str(int(Z[:, 0][i])) for i in range(len(Z))]
-    out_table['joined_column2'] = ['pt_' + str(int(Z[:, 1][i])) for i in range(len(Z))]
-    out_table['name_of_clusters'] = ['CL_' + str(i + 1) for i in reversed(range(len(Z)))]
-    out_table['distance'] = [distance for distance in Z[:, 2]]
-    out_table['number_of_original'] = [int(entities) for entities in Z[:, 3]]
+    features = table[input_cols]
+    len_features = len(features)
+    Z = linkage(features, method=link, metric=met)
+    range_len_Z = range(len(Z))
+    linkage_matrix = pd.DataFrame([])
+    linkage_matrix['linkage_step'] = [x + 1 for x in reversed(range_len_Z)]
+    linkage_matrix['joined_column1'] = ['pt_' + str(int(Z[:, 0][i])) for i in range_len_Z]
+    linkage_matrix['joined_column2'] = ['pt_' + str(int(Z[:, 1][i])) for i in range_len_Z]
+    linkage_matrix['name_of_clusters'] = ['CL_' + str(i + 1) for i in reversed(range_len_Z)]
+    linkage_matrix['distance'] = [distance for distance in Z[:, 2]]
+    linkage_matrix['number_of_original'] = [int(entities) for entities in Z[:, 3]]
     
     # switch name of  point to cluster name
-
-    for i in range(len(Z)):
-        if Z[:, 0][i] >= len(df) :
-            out_table['joined_column1'][i] = out_table['name_of_clusters'][Z[:, 0][i] - len(df)]
-        if Z[:, 1][i] >= len(df) :
-            out_table['joined_column2'][i] = out_table['name_of_clusters'][Z[:, 1][i] - len(df)]
-    out_table = out_table.reindex(index=out_table.index[::-1])[0:]
-    out_table1 = out_table.head(num_rows)
+    for i in range_len_Z:
+        if Z[:, 0][i] >= len_features:
+            linkage_matrix['joined_column1'][i] = linkage_matrix['name_of_clusters'][Z[:, 0][i] - len_features]
+        if Z[:, 1][i] >= len_features:
+            linkage_matrix['joined_column2'][i] = linkage_matrix['name_of_clusters'][Z[:, 1][i] - len_features]
+    linkage_matrix = linkage_matrix.reindex(index=linkage_matrix.index[::-1])[0:]
     
     # calculate full dendrogram
     def _llf(idx):
-        n = len(df)
-        if idx < n:
+        if idx < len_features:
                 return 'pt_' + str(idx)
  
     plt.figure(figsize=(8.4, figure_height))
@@ -78,23 +77,23 @@ def _hierarchical_clustering(table, input_cols, link='complete', met='euclidean'
         annotate_above=float(10),  # useful in small plots so annotations don't overlap
     )
     plt.title('Hierarchical Clustering Dendrogram')
-    if orient=='top':
+    if orient == 'top':
         plt.xlabel('Samples')
         plt.ylabel('Distance')
-    elif orient=='right':
+    elif orient == 'right':
         plt.xlabel('Distance')
         plt.ylabel('Samples')
-    
     plt2 = plt2MD(plt)
     plt.clf()
     
-    rb = BrtcReprBuilder()
     params = { 
         'Input Columns': input_cols,
         'Linkage Method': link,
         'Metric': met,
         'Number of Rows in Linkage Matrix': num_rows
     }
+    
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""### Hierarchical Clustering Result"""))
     rb.addMD(strip_margin("""
     |## Dendrogram
@@ -109,15 +108,16 @@ def _hierarchical_clustering(table, input_cols, link='complete', met='euclidean'
     |
     |{out_table1}
     |
-    """.format(image=plt2, display_params=dict2MD(params), out_table1=pandasDF2MD(out_table1))))
+    """.format(image=plt2, display_params=dict2MD(params), out_table1=pandasDF2MD(linkage_matrix.head(num_rows)))))
 
     model = _model_dict('hierarchical_clustering')
     model['model'] = Z
     model['parameters'] = params
-    model['linkage_matrix'] = out_table
+    model['linkage_matrix'] = linkage_matrix
     model['report'] = rb.get()
         
     return {'model':model}
+
 
 def hierarchical_clustering_post(table, model, group_by=None, **params):
     check_required_parameters(_hierarchical_clustering_post, params, ['table', 'model'])
@@ -129,7 +129,6 @@ def hierarchical_clustering_post(table, model, group_by=None, **params):
 
 def _hierarchical_clustering_post(table, model, num_clusters, cluster_col='prediction'):
     Z = model['model']
-    params = model['parameters']
     out_table = model['linkage_matrix']
     predict = fcluster(Z, t=num_clusters, criterion='maxclust')
     prediction_table = table.copy()
@@ -164,11 +163,10 @@ def _hierarchical_clustering_post(table, model, num_clusters, cluster_col='predi
     |
     |{clusters_info_table}
     |
-    """.format(display_params=dict2MD(params), clusters_info_table=pandasDF2MD(clusters_info_table))))
+    """.format(display_params=dict2MD(model['parameters']), clusters_info_table=pandasDF2MD(clusters_info_table))))
 
     model = _model_dict('hierarchical_clustering_post')
-    model['params']=params
-    model['clusters_info']=clusters_info_table
+    model['clusters_info'] = clusters_info_table
     model['report'] = rb.get()
     
-    return {'out_table2' : prediction_table, 'model': model}
+    return {'out_table' : prediction_table, 'model': model}

@@ -28,6 +28,7 @@ def _timeseries_decomposition(table, input_col, frequency, choice='additive', fi
     matplotlib.rcParams['ytick.labelsize'] = 12
     matplotlib.rcParams['text.color'] = 'k'
     rcParams['figure.figsize'] = 8.6, 6.4
+    # plt.figure(figsize=(6.4, 4.8))
     
     decomposition = sm.tsa.seasonal_decompose(out_table[input_col], model=choice, filt=filteration, freq=frequency, two_sided=two_side, extrapolate_trend=extrapolate_tren)
     decomposition.plot()
@@ -45,12 +46,10 @@ def _timeseries_decomposition(table, input_col, frequency, choice='additive', fi
     |
     | {image2}
     |
-    | 
-    |
     """.format(choice=choice, image2=plt2)))
     
     model = _model_dict('timeseries_decomposition')
     model['model'] = choice
     model['report'] = rb.get()
     
-    return {'table':out_table, 'model':model}
+    return {'out_table':out_table, 'model':model}

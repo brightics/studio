@@ -1,8 +1,7 @@
 from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD
-
-from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.function.utils import _model_dict
 
 from scipy import stats
 import pandas as pd
@@ -19,8 +18,7 @@ def chi_square_test_of_independence(table, group_by=None, **params):
 
 
 def _chi_square_test_of_independence(table, feature_cols, label_col, correction=False):
-    table = table.copy()
-    
+        
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## Chi-square Test of Independence Result
@@ -38,7 +36,7 @@ def _chi_square_test_of_independence(table, feature_cols, label_col, correction=
         
         test = stats.chi2_contingency(np.array(temporary), correction, 1)
         stat_chi = test[0]
-        dof = dof = test[2]
+        dof = test[2]
         p_chi = test[1]
         
         if p_chi < 0.05:
@@ -47,13 +45,9 @@ def _chi_square_test_of_independence(table, feature_cols, label_col, correction=
             dependence = 'No association was found between two categorical variables at 5% significance level.'
         elif math.isnan(p_chi):
             dependence = 'Independence of two categorical variables cannot be decided.'
+            
+        result_table = pd.DataFrame([stat_chi, dof, p_chi], columns=['estimate', 'df', 'p_value'])
         
-        data = {
-            'estimate': stat_chi,
-            'df': dof,
-            'p_value': p_chi
-        }
-        result_table = pd.DataFrame([data], columns=['estimate', 'df', 'p_value'])
         
         model['result{}'.format(idx)] = result_table
         
