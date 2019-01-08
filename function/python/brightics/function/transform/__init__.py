@@ -8,4 +8,6 @@ from .merge import merge
 from .merge import bind_row_column
 from .sample import random_sampling
 from .split_data import split_data
+from .json_extraction import flatten_json
+from .json_extraction import get_table
 from .sql import execute as sql_execute
