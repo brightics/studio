@@ -83,15 +83,15 @@ def all_elements_from_to(var, from_v, to_v, var_name):
 
 
 def all_elements_from_under(var, from_v, under_v, var_name):
-    return get_error(all([from_v <= var < under_v for x in var]), '0007', [var_name, from_v, under_v])
+    return get_error(all([from_v <= x < under_v for x in var]), '0007', [var_name, from_v, under_v])
 
 
 def all_elements_over_to(var, over_v, to_v, var_name):
-    return get_error(all([over_v < var <= to_v for x in var]), '0017', [var_name, over_v, to_v])
+    return get_error(all([over_v < x <= to_v for x in var]), '0017', [var_name, over_v, to_v])
 
 
 def all_elements_over_under(var, over_v, under_v, var_name):
-    return get_error(all([over_v < var < under_v for x in var]), '0019', [var_name, over_v, under_v])
+    return get_error(all([over_v < x < under_v for x in var]), '0019', [var_name, over_v, under_v])
 
 
 def raise_error(error_code, error_message_params, true_condition=False):
