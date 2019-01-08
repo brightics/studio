@@ -1,6 +1,7 @@
 from brightics.brightics_data_api import _generate_matplotlib_data, _png2uri
 import re
 import numpy as np
+from brightics.function.test_data import get_iris
 
 
 class BrtcReprBuilder:
@@ -50,15 +51,14 @@ def strip_margin(text):
 def pandasDF2MD(table, num_rows=20, precision=None, col_max_width=None):
     
     if precision is None:
-        _table = table.copy()
+        _table = table[:num_rows].copy()
     else:
-        _table = table.copy().round(precision)
+        _table = table[:num_rows].copy().round(precision)
     
     COL_DIVIDER = '|'
     md_line = []
     
     cols = list(_table.columns)
-    print(cols)
     types = _table.dtypes.values
     
     def get_align(dtype): 
@@ -75,7 +75,7 @@ def pandasDF2MD(table, num_rows=20, precision=None, col_max_width=None):
             else:
                 return s[0:col_max_width - 3] + '...'
     
-    data = _table.values[:num_rows]
+    data = _table.values
     
     md_line.append(COL_DIVIDER + COL_DIVIDER.join([str(c) for c in cols]) + COL_DIVIDER)
     md_line.append(COL_DIVIDER + COL_DIVIDER.join([get_align(dt) for dt in types]) + COL_DIVIDER)
@@ -100,4 +100,3 @@ def _display_value(value, precision=6):
         return '{:.{prec}f}'.format(value, prec=precision)
     else:
         return value
-            
