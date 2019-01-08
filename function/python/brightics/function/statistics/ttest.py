@@ -278,7 +278,7 @@ def paired_ttest(table, group_by=None, **params):
         return _paired_ttest(table, **params)
 
 
-def _paired_ttest(table, first_column, second_column, alternative = ['greater', 'less', 'twosided'], hypothesized_difference=0, confidence_level=0.95):
+def _paired_ttest(table, first_column, second_column, alternative=['greater', 'less', 'twosided'], hypothesized_difference=0, confidence_level=0.95):
 
     df = len(table) - 1    
     first_col = table[first_column]
@@ -309,9 +309,9 @@ def _paired_ttest(table, first_column, second_column, alternative = ['greater', 
         other_term = std_dev * stats.t.isf((1 - confidence_level) / 2, df) / np.sqrt(df)
         confidence_interval.append((diff_mean - other_term, diff_mean + other_term))
     
-    result.append(['alternative hypothesis',alternative_hypothesis])
-    result.append(['t-value',t_value])
-    result.append(['p-value',p_value])
+    result.append(['alternative hypothesis', alternative_hypothesis])
+    result.append(['t-value', t_value])
+    result.append(['p-value', p_value])
     result.append(['%g%% confidence Interval' % (confidence_level * 100), confidence_interval])
     result_table = pd.DataFrame.from_items(result)
 
