@@ -26,7 +26,7 @@ def _ewma(table, input_cols, ratio_type, custom_ratio=0.5, period_number=1):
         else:
             ratio = 1 / period_number
 
-        for i in range(period_number, len(out_table[column] + period_number - 1)):
+        for i in range(period_number, len(out_table)):
             result_col.append(ratio * out_table[column][i] + (1 - ratio) * result_col[i - 1])
         return result_col
 
