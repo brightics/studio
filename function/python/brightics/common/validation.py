@@ -1,17 +1,21 @@
-import brightics.common.validation as common_validation
-
-'''
-*** NOTE *** 
-This is a deprecated module. Use brightics.common.validation alternatively.
-'''
+from brightics.common.exception import BrighticsFunctionException
 
 
 def validate(*bfe):
-    common_validation.validate(*bfe)
+    elist = []
+    for e in bfe:
+        if e is not None and type(e) is tuple and len(e) == 2:
+            elist.append({e[0]: e[1]})
+    if len(elist) > 0:
+        print(elist)
+        raise BrighticsFunctionException.from_errors(elist)
 
 
 def get_error(true_condition, error_code, error_message_params):
-    return common_validation.get_error(true_condition, error_code, error_message_params)
+    if not true_condition:
+        return (error_code, error_message_params)
+    else:
+        None
 
 
 def error(error_code, error_message_params, true_condition=False):
@@ -91,8 +95,10 @@ def all_elements_over_under(var, over_v, under_v, var_name):
 
 
 def raise_error(error_code, error_message_params, true_condition=False):
-    common_validation.raise_error(error_code, error_message_params, true_condition)
+    if not true_condition:
+        raise BrighticsFunctionException(error_code, error_message_params)
 
 
 def raise_runtime_error(error_message, true_condition=False):
-    common_validation.raise_runtime_error(error_message, true_condition)
+    if not true_condition:
+        raise BrighticsFunctionException('0100', [error_message])
