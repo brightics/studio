@@ -54,7 +54,7 @@ def _test_result(alter, hypothesized_mean, mean, t_value, p_value_two, width_one
     return (H1, p_value, lower_conf_interval, upper_conf_interval)
 
 
-def _one_sample_ttest(table, input_cols, alternatives=['Greater', 'Less', 'Two Sided'], hypothesized_mean=0, conf_level=0.95):
+def _one_sample_ttest(table, input_cols, alternatives, hypothesized_mean=0, conf_level=0.95):
 
     out_cols = ['data', 'alternative_hypothesis', 'statistics', 't_value', 'p_value', 'confidence_level', 'lower_confidence_interval', 'upper_confidence_interval']  
     out_table = pd.DataFrame(columns=out_cols) 
