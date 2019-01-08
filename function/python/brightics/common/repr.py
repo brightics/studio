@@ -1,6 +1,5 @@
 from brightics.brightics_data_api import _generate_matplotlib_data, _png2uri
 import re
-import pandas as pd
 import numpy as np
 
 
