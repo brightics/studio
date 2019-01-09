@@ -81,7 +81,7 @@ var app = __REQ_express();
 app.set('env', __BRTC_CONF.env);
 app.set('views', __REQ_path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-app.use('*/favicon.ico', favicon(__REQ_path.join(__dirname, 'public', 'favicon1.ico')));
+app.use('*/favicon.ico', favicon(__REQ_path.join(__dirname, 'public', 'favicon.ico')));
 app.use(compression());
 
 // log4js
