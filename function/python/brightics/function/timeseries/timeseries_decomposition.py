@@ -17,9 +17,6 @@ def timeseries_decomposition(table, group_by=None, **params):
     
 def _timeseries_decomposition(table, input_col, frequency, model_type='additive', filteration=None, two_sided=True, extrapolate_trend=0):
     out_table = table.copy()
- 
-    plt.figure(figsize=(6.4, 4.8))
-    
     decomposition = sm.tsa.seasonal_decompose(out_table[input_col], model=model_type, filt=filteration, freq=frequency, two_sided=two_sided, extrapolate_trend=extrapolate_trend)
     decomposition.plot()
     plt2 = plt2MD(plt)
