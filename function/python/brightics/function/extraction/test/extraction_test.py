@@ -2,13 +2,13 @@ import unittest
 import pandas as pd
 from brightics.function.extraction import add_expression_column, add_expression_column_if
 from sklearn import datasets
+from brightics.function.test_data import get_iris
+from brightics.function.extraction.shift import add_shift
+from brightics.common.repr import pandasDF2MD
 
 df_example1 = pd.DataFrame({'num1':[1, 2, 3, 4, 5],
                             'num2':[10, 20, 30, 40, 50],
                             'str1':['a', 'b', 'c', 'd', 'e']}) 
-
-datasets_iris = datasets.load_iris()
-df_iris = pd.read_csv('../../testdata/sample_iris.csv')
 
 
 class AddFunctionColumnTest(unittest.TestCase):
@@ -53,7 +53,7 @@ class AddFunctionColumnIfTest(unittest.TestCase):
     
     def test2(self):
         # df = df_iris.copy().query(''' species != 'setosa' ''')
-        df = df_iris.copy()
+        df = get_iris()
         print(df)
         out = add_expression_column_if(df,
                                      'encoded_species',
@@ -64,7 +64,7 @@ class AddFunctionColumnIfTest(unittest.TestCase):
         
     def test3(self):
         # df = df_iris.copy().query(''' species != 'setosa' ''')
-        df = df_iris.copy()
+        df = get_iris()
         print(df)
         out = add_expression_column_if(df,
                                      'encoded_species',
@@ -72,3 +72,13 @@ class AddFunctionColumnIfTest(unittest.TestCase):
                                      ['1.0', '2.0'],
                                      '0.0')['out_table']
         print(out['encoded_species'][48:102])
+
+
+class AddShiftTest(unittest.TestCase):
+    
+    def test_orderby(self):
+        df = get_iris()
+        out_shift = add_shift(df, input_col='petal_length', shift_list=[1, -1, 0], shifted_col='pl', order_by=['species', 'sepal_length'], ordering='desc')['out_table']
+        print(pandasDF2MD(out_shift, num_rows=150))
+        
+        
