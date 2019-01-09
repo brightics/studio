@@ -1,8 +1,8 @@
 ## Format
 ### Python
 ```python
-from brightics.function.statistics import chi_square_test_for_independence
-res = chi_square_test_for_independence(response_cols = ,factor_col = ,correction = ,group_by = )
+from brightics.function.statistics import chi_square_test_of_independence
+res = chi_square_test_of_independence(response_cols = ,factor_col = ,correction = ,group_by = )
 res['model']
 ```
 

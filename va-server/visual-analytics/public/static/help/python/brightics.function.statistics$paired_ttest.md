@@ -4,7 +4,6 @@
 from brightics.function.statistics import paired_ttest
 res = paired_ttest(first_column = ,second_column = ,hypothesized_difference = ,confidence_level = ,alternative = ,group_by = )
 res['model']
-res['out_table']
 ```
 
 ## Description
@@ -33,7 +32,6 @@ In statistics, a paired difference test is a type of location test that is used 
 
 #### Outputs
 1. **model**: model
-2. **out_table**: table
 
 ### Python
 #### Inputs
@@ -55,5 +53,4 @@ In statistics, a paired difference test is a type of location test that is used 
 
 #### Outputs
 1. **model**: model
-2. **out_table**: table
 
