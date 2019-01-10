@@ -21,7 +21,7 @@ def _group_key_dict(group_keys, groups):  # todo
     group_key_dict = dict()
     for key, group in zip(group_keys, groups):
         if key not in group_key_dict:
-            group_key_dict[key] = group.tolist()
+            group_key_dict[key] = group
     
     return group_key_dict
 
@@ -52,11 +52,7 @@ def _function_by_group(function, table=None, model=None, group_by=None, **params
     
     for repr_key in model_keys_containing_repr:
         rb = BrtcReprBuilder()
-        from brightics.common.json import to_json
-        print(to_json(res_dict[repr_key]['_grouped_data']))
         for group in group_key_dict:
-            print(group)
-            print(type(group))
             rb.addMD('{group}'.format(group=group))
             rb.merge(res_dict[repr_key]['_grouped_data']['data'][group]['_repr_brtc_'])
         res_dict[repr_key]['_repr_brtc_'] = rb.get()
@@ -69,20 +65,20 @@ def _function_by_group(function, table=None, model=None, group_by=None, **params
 
 @time_usage
 def _group(table, group_by):
-    groups = table[group_by].values
+    groups = table[group_by].drop_duplicates().values
     group_keys = np.array([_group_key_from_list(row) for row in groups])
     # group_keys = np.apply_along_axis(_group_key_from_list, axis=1, arr=groups)
-    group_key_dict = _group_key_dict(group_keys, groups)
+    group_key_dict = {k:v.tolist() for k, v in zip(group_keys, groups)}
     
     res_dict = {'_grouped_data': _grouped_data(group_by=group_by, group_key_dict=group_key_dict)}  # todo dict?
     for group_key in group_key_dict:
-        data = table[group_keys == group_key]
+        mask = np.where(table[group_by].values == group_key_dict[group_key], True, False)
+        data = table[mask]
         data.reset_index(drop=True)
         res_dict['_grouped_data']['data'][group_key] = data
     return res_dict, group_key_dict
 
 
-@time_usage
 def _flatten(grouped_table):
     group_cols = grouped_table['_grouped_data']['group_by']
     group_key_dict = grouped_table['_grouped_data']['group_key_dict']
@@ -103,9 +99,8 @@ def _sample_result(function, table, model, params, group_key_dict):
     return sample_result  # if all the cases failed
 
 
-@time_usage
 def _function_by_group_key(function, table, model, params, res_dict, group_key_dict, res_keys):
-    for group_key in group_key_dict: # todo try except
+    for group_key in group_key_dict:  # todo try except
         res_group = _run_function(function, table, model, params, group_key)
         
         for res_key in res_keys:
@@ -140,10 +135,8 @@ def _group_key_from_list(list_):
     return GROUP_KEY_SEP.join([str(item) for item in list_])
 
 
-@time_usage
 def _add_group_cols_front_if_required(table, keys, group_cols, group_key_dict):
     reverse_keys = group_key_dict[keys]  # todo
-    print(type(reverse_keys))
     reverse_keys.reverse()
     columns = table.columns
     reverse_group_cols = group_cols.copy()
