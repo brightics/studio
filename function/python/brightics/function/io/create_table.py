@@ -5,7 +5,7 @@ import numpy as np
 def create_table(col_names, data_array, type_array):
 
     new_data_array = data_array.copy()
-    string_to_type = {'int' : float, 'string' : str, 'double' : float}
+    string_to_type = {'int' : int, 'string' : str, 'double' : float}
     
     for j in range(0, len(col_names)):
         for i in range(0, len(data_array)):
