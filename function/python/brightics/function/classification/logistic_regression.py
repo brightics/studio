@@ -2,19 +2,22 @@ import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from brightics.common.validator import NumberValidator
-from brightics.common.report import ReportBuilder, strip_margin, pandasDF2MD, plt2MD
+from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, plt2MD
 import statsmodels.api as sm
 from brightics.function.utils import _model_dict
 from brightics.function.evaluation import _plot_roc_pr_curve
 from statsmodels.sandbox.distributions.quantize import prob_bv_rectangle
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.function.validation import raise_runtime_error, raise_error
+import sklearn.utils as sklearn_utils
 
 
 def logistic_regression_train(table, group_by=None, **params):
     check_required_parameters(_logistic_regression_train, params, ['table'])
     if group_by is not None:
-        return _function_by_group(_logistic_regression_train, table, group_by=group_by, **params)
+        grouped_model = _function_by_group(_logistic_regression_train, table, group_by=group_by, **params)
+        return grouped_model
     else:
         return _logistic_regression_train(table, **params)
 
@@ -22,6 +25,10 @@ def logistic_regression_train(table, group_by=None, **params):
 def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dual=False, tol=0.0001, C=1.0, fit_intercept=True, intercept_scaling=1, class_weight=None, random_state=None, solver='liblinear', max_iter=100, multi_class='ovr', verbose=0, warm_start=False, n_jobs=1):
     features = table[feature_cols]
     label = table[label_col]
+
+    if(sklearn_utils.multiclass.type_of_target(label) == 'continuous'):
+        raise_runtime_error('''Label Column should not be continuous.''')
+    
     lr_model = LogisticRegression(penalty, dual, tol, C, fit_intercept, intercept_scaling, class_weight, random_state, solver, max_iter, multi_class, verbose, warm_start, n_jobs)
     lr_model.fit(features, label)
 
@@ -53,7 +60,7 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
     
     prob = lr_model.predict_proba(features)
     
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## Logistic Regression Result
     | ### Summary
@@ -70,15 +77,15 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
     model['penalty'] = penalty
     model['solver'] = solver
     model['lr_model'] = lr_model
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
 
     return {'model' : model}
 
 
-def logistic_regression_predict(table, model, group_by=None, **params):
+def logistic_regression_predict(table, model, **params):
     check_required_parameters(_logistic_regression_predict, params, ['table', 'model'])
-    if group_by is not None:
-        return _function_by_group(_logistic_regression_predict, table, model, group_by=group_by, **params)
+    if '_grouped_data' in model:
+        return _function_by_group(_logistic_regression_predict, table, model, **params)
     else:
         return _logistic_regression_predict(table, model, **params)
 
@@ -98,6 +105,11 @@ def _logistic_regression_predict(table, model, prediction_col='prediction', prob
             thresholds = np.array([thresholds[0], 1 - thresholds[0]])
         else:
             thresholds = np.array(thresholds)
+    
+    len_thresholds = len(thresholds)
+    if len_classes > 0 and len_thresholds > 0 and len_classes != len_thresholds:
+        # FN-0613='%s' must have length equal to the number of classes.
+        raise_error('0613', ['thresholds'])
     
     prob = lr_model.predict_proba(features)
     prediction = pd.DataFrame(prob).apply(lambda x: classes[np.argmax(x / thresholds)], axis=1)

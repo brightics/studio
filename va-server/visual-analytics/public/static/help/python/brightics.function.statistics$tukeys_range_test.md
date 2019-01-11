@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.statistics import tukeys_range_test
-res = tukeys_range_test(response_cols = ,factor_col = ,alpha = ,group_by = )
+res = tukeys_range_test(response_cols = ,factor_col = ,alpha = )
 res['result']
 ```
 
@@ -26,7 +26,6 @@ Reference:
 3. **Significance Level**: Significant level
    - Value type : Double
    - Default : 0.05
-4. **Group By**: Columns to group by
 
 #### Outputs
 1. **result**: model
@@ -42,7 +41,6 @@ Reference:
 3. **alpha**: Significant level
    - Value type : Double
    - Default : 0.05
-4. **group_by**: Columns to group by
 
 #### Outputs
 1. **result**: model

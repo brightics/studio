@@ -37,7 +37,6 @@ def simple_tables2df_list(simple_tables):
     table_list = []
     for simple_table in simple_tables:
         header = _replace_column_names(_header(simple_table))
-        print(header)
         if header is not None:
             data = [row.data for row in simple_table[1:]]
             table_list.append(_to_float(pd.DataFrame(data, columns=header)))

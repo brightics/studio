@@ -1,5 +1,6 @@
-from brightics.common.report import ReportBuilder, strip_margin, plt2MD, dict2MD, \
+from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD, dict2MD, \
     pandasDF2MD, keyValues2MD
+from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 
@@ -38,49 +39,50 @@ def discretize_quantile(table, group_by=None, **params):
 def _discretize_quantile(table, input_col, num_of_buckets=2, out_col_name='bucket_number'):
     out_table = table.copy()
     out_table[out_col_name], buckets = pd.qcut(table[input_col], num_of_buckets, labels=False, retbins=True, precision=10, duplicates='drop')    
-            
-    # Build model
-    rb = ReportBuilder()
-    rb.addMD(strip_margin("""
-    ## Quantile-based Discretization Result
-    """))
-    
+                
     # index_list, bucket_list
     index_list = []
     bucket_list = []     
-    for i, bucket in enumerate(buckets):
+    for i in range(len(buckets)):
         if i == 1:
+            left = '['
+        else:
+            left = '('
+    
+        if i > 0:
             index_list.append(i - 1)
-            bucket_list.append("[{left}, {bucket}]".format(left=left, bucket=bucket))
-        elif i > 1:
-            index_list.append(i - 1)
-            bucket_list.append("({left}, {bucket}]".format(left=left, bucket=bucket))
-        left = bucket
-        
+            bucket_list.append("{left}{lower}, {upper}]".format(left=left, lower=buckets[i - 1], upper=buckets[i]))  # 'buckets' is tuple type data.  
+              
     # cnt_array
     cnt = np.zeros(len(index_list), int)
     for i in range(len(table)):
             cnt[out_table[out_col_name][i]] += 1
    
     # Build model
-    result = dict()
-    result_table = pd.DataFrame.from_items([ 
+    result = pd.DataFrame.from_items([ 
         ['bucket number', index_list],
         ['buckets', bucket_list],
         ['count', cnt]
     ])
-    result['result_table'] = result_table
+    
+    # Build model
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
+    ## Quantile-based Discretization Result
     ### Data = {input_col}
     |
-    | {result_table}
-    """.format(input_col=input_col, n=num_of_buckets, result_table=pandasDF2MD(result_table))))
-    result['report'] = rb.get()
+    | {result}
+    """.format(input_col=input_col, n=num_of_buckets, result=pandasDF2MD(result))))
     
-    return {'out_table': out_table, 'model': result}
+    model = _model_dict()
+    model['result'] = result
+    model['report'] = rb.get()
+    
+    return {'out_table': out_table, 'model': model}
 
 
 def binarizer(table, column, threshold=0, threshold_type='greater', out_col_name=None):
+    out_table = table.copy()
     if out_col_name is None:
         out_col_name = 'binarized_' + str(column)
         

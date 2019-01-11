@@ -2,17 +2,19 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.tree import DecisionTreeClassifier
-from brightics.common.report import ReportBuilder, strip_margin, pandasDF2MD, plt2MD, dict2MD
+from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, plt2MD, dict2MD
 from brightics.function.utils import _model_dict
 from sklearn.tree.export import export_graphviz
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.function.validation import validate, greater_than_or_equal_to
 
 
 def decision_tree_classification_train(table, group_by=None, **params):
     check_required_parameters(_decision_tree_classification_train, params, ['table'])
     if group_by is not None:
-        return _function_by_group(_decision_tree_classification_train, table, group_by=group_by, **params)
+        grouped_model = _function_by_group(_decision_tree_classification_train, table, group_by=group_by, **params)
+        return grouped_model
     else:
         return _decision_tree_classification_train(table, **params)
 
@@ -22,6 +24,15 @@ def _decision_tree_classification_train(table, feature_cols, label_col,  # fig_s
                                        min_weight_fraction_leaf=0.0, max_features=None, random_state=None, max_leaf_nodes=None,
                                        min_impurity_decrease=0.0, min_impurity_split=None, class_weight=None, presort=False,
                                        sample_weight=None, check_input=True, X_idx_sorted=None):
+    
+    param_validation_check = [greater_than_or_equal_to(min_samples_split, 2, 'min_samples_split'),
+             greater_than_or_equal_to(min_samples_leaf, 1, 'min_samples_leaf'),
+             greater_than_or_equal_to(min_weight_fraction_leaf, 0.0, 'min_weight_fraction_leaf')]
+    if max_depth is not None:
+        param_validation_check.append(greater_than_or_equal_to(max_depth, 1, 'max_depth'))
+        
+    validate(*param_validation_check)
+    
     classifier = DecisionTreeClassifier(criterion, splitter, max_depth, min_samples_split, min_samples_leaf,
                                        min_weight_fraction_leaf, max_features, random_state, max_leaf_nodes,
                                        min_impurity_decrease, min_impurity_split, class_weight, presort)
@@ -38,7 +49,7 @@ def _decision_tree_classification_train(table, feature_cols, label_col,  # fig_s
                         filled=True, rounded=True,
                         special_characters=True)
         graph = pydotplus.graph_from_dot_data(dot_data.getvalue())
-        from brightics.common.report import png2MD
+        from brightics.common.repr import png2MD
         fig_tree = png2MD(graph.create_png())
     except:
         fig_tree = "Graphviz is needed to draw a Decision Tree graph. Please download it from http://graphviz.org/download/ and install it to your computer."
@@ -80,7 +91,7 @@ def _decision_tree_classification_train(table, feature_cols, label_col,  # fig_s
     
     # Add tree plot
         
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## Decision Tree Classification Train Result
     | ### Decision Tree
@@ -96,15 +107,15 @@ def _decision_tree_classification_train(table, feature_cols, label_col,  # fig_s
                fig_feature_importances=fig_feature_importances,
                list_parameters=params            
                )))     
-    model['report'] = rb.get()   
+    model['_repr_brtc_'] = rb.get()   
                
     return {'model' : model}
 
 
-def decision_tree_classification_predict(table, model, group_by=None, **params):
+def decision_tree_classification_predict(table, model, **params):
     check_required_parameters(_decision_tree_classification_predict, params, ['table', 'model'])
-    if group_by is not None:
-        return _function_by_group(_decision_tree_classification_predict, table, model, group_by=group_by, **params)
+    if '_grouped_data' in model:
+        return _function_by_group(_decision_tree_classification_predict, table, model, **params)
     else:
         return _decision_tree_classification_predict(table, model, **params)
 

@@ -100,14 +100,22 @@ def json_to_md(in_file_name):
             va_available_items = []
             python_available_items = []
             for item in func_param['items']:
-                if item['default']:
-                    md_defaultitem = ' (default)'
-                else:
-                    md_defaultitem = ''
-                if 'description' in item:
-                    md_item_description = ' ' + item['description']
-                else:
-                    md_item_description = ''
+                md_defaultitem = ' (default)' if item['default'] else ''
+                md_item_description = ' ' + item['description'] if 'description' in item else ''
+                
+                va_available_items.append(LEFT_INDENT + INDENT + '- ' + item['label'] + md_defaultitem + md_item_description)
+                python_available_items.append(LEFT_INDENT + INDENT + '- ' + item['value'] + md_defaultitem + md_item_description)
+            vaparam_additionals.append(LEFT_INDENT + '- Available items\n' + '\n'.join(va_available_items))
+            pythonparam_additionals.append(LEFT_INDENT + '- Available items\n' + '\n'.join(python_available_items))
+        # Additional Info : Checkbox
+        elif func_param['control'] == 'CheckBox':
+            # Items
+            va_available_items = []
+            python_available_items = []
+            for item in func_param['items']:
+                md_defaultitem = ' (default)' if item['default'] else ''
+                md_item_description = ' ' + item['description'] if 'description' in item else ''
+                
                 va_available_items.append(LEFT_INDENT + INDENT + '- ' + item['label'] + md_defaultitem + md_item_description)
                 python_available_items.append(LEFT_INDENT + INDENT + '- ' + item['value'] + md_defaultitem + md_item_description)
             vaparam_additionals.append(LEFT_INDENT + '- Available items\n' + '\n'.join(va_available_items))
@@ -122,7 +130,6 @@ def json_to_md(in_file_name):
         func_vaparams.append(vaparam_md)
         func_pythonparams.append(pythonparam_md)
         
-        
     func_vaparams_str = '\n'.join(func_vaparams)
     func_pythonparams_str = '\n'.join(func_pythonparams)
     
@@ -135,27 +142,27 @@ from {function_package} import {function_name}
     script_output_var_name = 'res'
     script_function_package_name = func_jsonspec['name'].split('$')
     script_function_params = ','.join([x['id'] + ' = ' for x in func_jsonspec['params']])
-    script_function_call = '''{var} = {function_name}({parameters})'''.format(var = script_output_var_name, 
-                                                                              function_name = script_function_package_name[1], 
-                                                                              parameters = script_function_params)
+    script_function_call = '''{var} = {function_name}({parameters})'''.format(var=script_output_var_name,
+                                                                              function_name=script_function_package_name[1],
+                                                                              parameters=script_function_params)
     script_function_outs = ''
     if 'outputs' in func_jsonspec: 
         script_function_outs = '\n'.join(['''res['{outputs}']'''.format(outputs=k) for k, v in func_jsonspec['outputs'].items()])
-    func_usage_script = format_usage_script.format(function_package=script_function_package_name[0], 
-                                                   function_name=script_function_package_name[1], 
-                                                   function_call_statement=script_function_call, 
+    func_usage_script = format_usage_script.format(function_package=script_function_package_name[0],
+                                                   function_name=script_function_package_name[1],
+                                                   function_call_statement=script_function_call,
                                                    function_output=script_function_outs)
     
     # Example
     func_example = ''
     
     return mdformat_doc.format(
-        usage_script = func_usage_script,
+        usage_script=func_usage_script,
         description=func_description,
-        va_inputs=func_vainputs_str, 
+        va_inputs=func_vainputs_str,
         va_params=func_vaparams_str,
         va_outputs=func_vaoutputs_str,
-        python_inputs=func_pythoninputs_str, 
+        python_inputs=func_pythoninputs_str,
         python_params=func_pythonparams_str,
         python_outputs=func_pythonoutputs_str,
         example=func_example)
@@ -163,14 +170,14 @@ from {function_package} import {function_name}
 
 if __name__ == "__main__":
     
-    python_visual_files = glob.glob('''../../../../../va-server/visual-analytics/public/js/va/functions/json/*.json''')
-    #va-server\visual-analytics\public\js\va\functions\json
+    python_visual_files = glob.glob('''../**/meta/*.json''')
+    
     for in_file_name in python_visual_files:
-        print('json filename: {}'.format(in_file_name))
+        
         in_file_path = os.path.abspath(in_file_name)
         
 #         out_file_dir = os.path.dirname(os.path.dirname(in_file_path)) + os.sep + 'help'
-#         in_json_str = json.loads(open(in_file_name, 'r', encoding='UTF-8').read())
+#         in_json_str = json.loads(open(in_file_name, 'r').read())
 #         out_file_header = in_json_str['specJson']['name']
 #         out_file_path = out_file_dir + os.sep + re.sub(r'\.json$', '.md', os.path.basename(in_file_path))
         out_file_dir = os.path.abspath('../../../../../va-server/visual-analytics/public/static/help/python/')

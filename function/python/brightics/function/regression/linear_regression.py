@@ -3,9 +3,9 @@ import seaborn as sns
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
-from brightics.common.report import ReportBuilder, strip_margin, plt2MD
+from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD
 from brightics.function.utils import _model_dict
-from brightics.common.groupby import _function_by_group
+from brightics.common.groupby import _function_by_group, time_usage
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils.table_converters import simple_tables2df_list
 
@@ -13,7 +13,8 @@ from brightics.common.utils.table_converters import simple_tables2df_list
 def linear_regression_train(table, group_by=None, **params):
     check_required_parameters(_linear_regression_train, params, ['table'])
     if group_by is not None:
-        return _function_by_group(_linear_regression_train, table, group_by=group_by, **params)
+        grouped_model = _function_by_group(_linear_regression_train, table, group_by=group_by, **params)
+        return grouped_model
     else:
         return _linear_regression_train(table, **params)
 
@@ -81,7 +82,7 @@ def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True)
     plt.xlabel('Residuals')
     fig_residual_3 = plt2MD(plt)
 
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## Linear Regression Result
     | ### Summary
@@ -115,7 +116,7 @@ def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True)
     model['tvalues'] = lr_model_fit.tvalues
     model['pvalues'] = lr_model_fit.pvalues
     model['lr_model'] = lr_model
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
     
     model['summary0'] = summary0
     model['summary1'] = summary1
@@ -124,10 +125,10 @@ def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True)
     return {'model' : model}
 
 
-def linear_regression_predict(table, model, group_by=None, **params):
+def linear_regression_predict(table, model, **params):
     check_required_parameters(_linear_regression_predict, params, ['table', 'model'])
-    if group_by is not None:
-        return _function_by_group(_linear_regression_predict, table, model, group_by=group_by, **params)
+    if '_grouped_data' in model:
+        return _function_by_group(_linear_regression_predict, table, model, **params)
     else:
         return _linear_regression_predict(table, model, **params)
 

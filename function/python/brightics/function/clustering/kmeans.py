@@ -1,5 +1,5 @@
 from sklearn.cluster import KMeans as SKKMeans
-from brightics.common.report import ReportBuilder, strip_margin, dict2MD, plt2MD
+from brightics.common.repr import BrtcReprBuilder, strip_margin, dict2MD, plt2MD
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 import numpy as np
@@ -9,6 +9,8 @@ from sklearn.metrics.cluster.unsupervised import silhouette_score, \
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.function.validation import validate, greater_than_or_equal_to, \
+    greater_than, all_elements_greater_than, raise_runtime_error
 
 
 def _kmeans_centers_plot(input_cols, cluster_centers):
@@ -67,7 +69,8 @@ def _kmeans_pca_plot(labels, cluster_centers, pca2_model, pca2):
 def kmeans_train_predict(table, group_by=None, **params):
     check_required_parameters(_kmeans_train_predict, params, ['table'])
     if group_by is not None:
-        return _function_by_group(_kmeans_train_predict, table, group_by=group_by, **params)
+        grouped_model = _function_by_group(_kmeans_train_predict, table, group_by=group_by, **params)
+        return grouped_model
     else:
         return _kmeans_train_predict(table, **params)
     
@@ -78,7 +81,14 @@ def _kmeans_train_predict(table, input_cols, n_clusters=3, prediction_col='predi
     inputarr = table[input_cols]
     if n_samples is None:
         n_samples = len(inputarr)
-    
+        
+    validate(greater_than_or_equal_to(n_clusters, 1, 'n_clusters'),
+             greater_than_or_equal_to(n_init, 1, 'n_init'),
+             greater_than_or_equal_to(max_iter, 1, 'max_iter'),
+             greater_than(tol, 0.0, 'tol'),
+             greater_than_or_equal_to(n_jobs, 1, 'n_jobs'),
+             greater_than_or_equal_to(n_samples, 0, 'n_samples'))
+        
     k_means = SKKMeans(n_clusters=n_clusters, init=init, n_init=n_init,
              max_iter=max_iter, tol=tol, precompute_distances=precompute_distances,
              verbose=0, random_state=seed, copy_x=True, n_jobs=n_jobs, algorithm=algorithm)
@@ -98,7 +108,7 @@ def _kmeans_train_predict(table, input_cols, n_clusters=3, prediction_col='predi
     fig_samples = _kmeans_samples_plot(table, input_cols, n_samples, cluster_centers)
     fig_pca = _kmeans_pca_plot(labels, cluster_centers, pca2_model, pca2)
     
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## Kmeans Result
     | - Number of iterations run: {n_iter_}.
@@ -115,17 +125,17 @@ def _kmeans_train_predict(table, input_cols, n_clusters=3, prediction_col='predi
     model = _model_dict('kmeans')
     model['model'] = k_means
     model['input_cols'] = input_cols
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
     
     out_table = table.copy()
     out_table[prediction_col] = labels
     return {'out_table':out_table, 'model':model}
 
 
-def kmeans_predict(table, model, group_by=None, **params):
+def kmeans_predict(table, model, **params):
     check_required_parameters(_kmeans_predict, params, ['table', 'model'])
-    if group_by is not None:
-        return _function_by_group(_kmeans_predict, table, model, group_by=group_by, **params)
+    if '_grouped_data' in model:
+        return _function_by_group(_kmeans_predict, table, model, **params)
     else:
         return _kmeans_predict(table, model, **params)
 
@@ -144,7 +154,8 @@ def _kmeans_predict(table, model, prediction_col='prediction'):
         out_table = table.copy()
         out_table[prediction_col] = predict
     else:
-        raise Exception("Unsupported model")
+        raise_runtime_error("Unsupported model")
+        # raise Exception("Unsupported model")
     
     return {'out_table':out_table}
 
@@ -152,7 +163,8 @@ def _kmeans_predict(table, model, prediction_col='prediction'):
 def kmeans_silhouette_train_predict(table, group_by=None, **params):
     check_required_parameters(_kmeans_silhouette_train_predict, params, ['table'])
     if group_by is not None:
-        return _function_by_group(_kmeans_silhouette_train_predict, table, group_by=group_by, **params)
+        grouped_model = _function_by_group(_kmeans_silhouette_train_predict, table, group_by=group_by, **params) 
+        return grouped_model
     else:
         return _kmeans_silhouette_train_predict(table, **params)
     
@@ -163,6 +175,13 @@ def _kmeans_silhouette_train_predict(table, input_cols, n_clusters_list=range(2,
     if n_samples is None:
         n_samples = len(table)
     inputarr = table[input_cols]
+    
+    validate(all_elements_greater_than(n_clusters_list, 1, 'n_clusters_list'),
+         greater_than_or_equal_to(n_init, 1, 'n_init'),
+         greater_than_or_equal_to(max_iter, 1, 'max_iter'),
+         greater_than(tol, 0.0, 'tol'),
+         greater_than_or_equal_to(n_jobs, 1, 'n_jobs'),
+         greater_than_or_equal_to(n_samples, 0, 'n_samples'))
     
     pca2_model = PCA(n_components=2).fit(inputarr)
     pca2 = pca2_model.transform(inputarr)
@@ -232,7 +251,7 @@ def _kmeans_silhouette_train_predict(table, input_cols, n_clusters_list=range(2,
     fig_silhouette = plt2MD(plt)
     plt.clf()
     
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## Kmeans Silhouette Result
     | - silloutte metrics:
@@ -257,7 +276,7 @@ def _kmeans_silhouette_train_predict(table, input_cols, n_clusters_list=range(2,
     model['best_centers'] = best_centers
     model['best_model'] = best_model
     model['input_cols'] = input_cols
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
     
     out_table = table.copy()
     out_table[prediction_col] = predict
