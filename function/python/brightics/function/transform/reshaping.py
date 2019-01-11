@@ -101,25 +101,25 @@ def transpose(table, group_by=None, **params):
         return _transpose(table, **params)
 
 
-def _transpose(table, columns, label_col=None, label_col_name='label'):
+def _transpose(table, input_cols, label_col=None, label_col_name='label'):
 
     sort_table = pd.DataFrame()
     feature_col_name = []
     
-    for i in range(0, len(table.transpose())):
-        if table.columns[i] in columns:
+    for i in range(0, len(table.columns)):
+        if table.columns[i] in input_cols:
             sort_table[table.columns[i]] = table[table.columns[i]]
             feature_col_name.append(table.columns[i])
-
+    
     out_table = sort_table.transpose()
-
+    
     if label_col is None:
         for i in range(0, len(table)):
             out_table = out_table.rename(columns={len(table) - i - 1:'x' + str(len(table) - i)})
     else:
         for i in range(0, len(table)):
             out_table = out_table.rename(columns={i:str(table[label_col][i])})
-
+    
     out_table.insert(loc=0, column=label_col_name, value=feature_col_name)
 
     return{'out_table':out_table}
