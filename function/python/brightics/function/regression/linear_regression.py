@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD
 from brightics.function.utils import _model_dict
-from brightics.common.groupby import _function_by_group
+from brightics.common.groupby import _function_by_group, time_usage
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils.table_converters import simple_tables2df_list
 
@@ -127,7 +127,7 @@ def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True)
 
 def linear_regression_predict(table, model, **params):
     check_required_parameters(_linear_regression_predict, params, ['table', 'model'])
-    if '_group_by' in model:
+    if '_grouped_data' in model:
         return _function_by_group(_linear_regression_predict, table, model, **params)
     else:
         return _linear_regression_predict(table, model, **params)

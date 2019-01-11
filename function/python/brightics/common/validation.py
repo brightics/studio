@@ -1,17 +1,21 @@
-import brightics.common.validation as common_validation
-
-'''
-*** NOTE *** 
-This is a deprecated module. Use brightics.common.validation alternatively.
-'''
+from brightics.common.exception import BrighticsFunctionException
 
 
 def validate(*bfe):
-    common_validation.validate(*bfe)
+    elist = []
+    for e in bfe:
+        if e is not None and type(e) is tuple and len(e) == 2:
+            elist.append({e[0]: e[1]})
+    if len(elist) > 0:
+        print(elist)
+        raise BrighticsFunctionException.from_errors(elist)
 
 
 def get_error(true_condition, error_code, error_message_params):
-    return common_validation.get_error(true_condition, error_code, error_message_params)
+    if not true_condition:
+        return (error_code, error_message_params)
+    else:
+        None
 
 
 def error(error_code, error_message_params, true_condition=False):
@@ -79,20 +83,22 @@ def all_elements_from_to(var, from_v, to_v, var_name):
 
 
 def all_elements_from_under(var, from_v, under_v, var_name):
-    return get_error(all([from_v <= var < under_v for x in var]), '0007', [var_name, from_v, under_v])
+    return get_error(all([from_v <= x < under_v for x in var]), '0007', [var_name, from_v, under_v])
 
 
 def all_elements_over_to(var, over_v, to_v, var_name):
-    return get_error(all([over_v < var <= to_v for x in var]), '0017', [var_name, over_v, to_v])
+    return get_error(all([over_v < x <= to_v for x in var]), '0017', [var_name, over_v, to_v])
 
 
 def all_elements_over_under(var, over_v, under_v, var_name):
-    return get_error(all([over_v < var < under_v for x in var]), '0019', [var_name, over_v, under_v])
+    return get_error(all([over_v < x < under_v for x in var]), '0019', [var_name, over_v, under_v])
 
 
 def raise_error(error_code, error_message_params, true_condition=False):
-    common_validation.raise_error(error_code, error_message_params, true_condition)
+    if not true_condition:
+        raise BrighticsFunctionException(error_code, error_message_params)
 
 
 def raise_runtime_error(error_message, true_condition=False):
-    common_validation.raise_runtime_error(error_message, true_condition)
+    if not true_condition:
+        raise BrighticsFunctionException('0100', [error_message])

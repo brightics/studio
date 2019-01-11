@@ -1,15 +1,14 @@
-
 import unittest
 import pandas as pd
 from brightics.function.extraction import add_expression_column, add_expression_column_if
 from sklearn import datasets
-from brightics.function.test_data import get_iris
-from brightics.function.extraction.shift import add_shift
-from brightics.common.repr import pandasDF2MD
 
 df_example1 = pd.DataFrame({'num1':[1, 2, 3, 4, 5],
                             'num2':[10, 20, 30, 40, 50],
                             'str1':['a', 'b', 'c', 'd', 'e']}) 
+
+datasets_iris = datasets.load_iris()
+df_iris = pd.read_csv('../../testdata/sample_iris.csv')
 
 
 class AddFunctionColumnTest(unittest.TestCase):
@@ -54,7 +53,7 @@ class AddFunctionColumnIfTest(unittest.TestCase):
     
     def test2(self):
         # df = df_iris.copy().query(''' species != 'setosa' ''')
-        df = get_iris()
+        df = df_iris.copy()
         print(df)
         out = add_expression_column_if(df,
                                      'encoded_species',
@@ -65,7 +64,7 @@ class AddFunctionColumnIfTest(unittest.TestCase):
         
     def test3(self):
         # df = df_iris.copy().query(''' species != 'setosa' ''')
-        df = get_iris()
+        df = df_iris.copy()
         print(df)
         out = add_expression_column_if(df,
                                      'encoded_species',

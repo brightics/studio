@@ -1,6 +1,8 @@
 from brightics.common.exception import BrighticsCoreException
 from brightics.common.exception import BrighticsFunctionException
 
+import time
+
 
 def get_required_parameters(func):
     import inspect
@@ -20,3 +22,15 @@ def check_required_parameters(func, params, excluded_paramkeys=[]):
             required_parames_error.append({'3109':[rp]})
         if required_parames_error:
             raise BrighticsFunctionException.from_errors(required_parames_error)
+
+        
+def time_usage(func):
+
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        res = func(*args, **kwargs)
+        end = time.time()
+        print("{} elapsed time: {} s".format(func, end - start))
+        return res
+
+    return wrapper

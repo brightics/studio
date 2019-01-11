@@ -82,17 +82,15 @@ def _discretize_quantile(table, input_col, num_of_buckets=2, out_col_name='bucke
 
 
 def binarizer(table, column, threshold=0, threshold_type='greater', out_col_name=None):
+    out_table = table.copy()
     if out_col_name is None:
         out_col_name = 'binarized_' + str(column)
-    table[out_col_name] = 0
-    for t in range(0, len(table[column])):
-        if threshold_type == 'greater':
-            if table[column][t] > threshold:
-                table[out_col_name][t] = 1
-        else:
-            if table[column][t] >= threshold:
-                table[out_col_name][t] = 1
-    return{'table':table}
+    
+    if threshold_type == 'greater':
+        out_table[out_col_name] = np.where(table[column] > threshold, 1, 0)
+    else:
+        out_table[out_col_name] = np.where(table[column] >= threshold, 1, 0)
+    return{'out_table':out_table}
 
 
 def capitalize_variable(table, input_cols, replace, out_col_suffix=None):

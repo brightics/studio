@@ -31,7 +31,7 @@ def _label_encoder(table, input_col, new_column_name='encoded_column'):
 
 def label_encoder_model(table, model, **params):
     check_required_parameters(_label_encoder_model, params, ['table', 'model'])
-    if '_group_by' in model:
+    if '_grouped_data' in model:
         return _function_by_group(_label_encoder_model, table, model, **params)
     else:
         return _label_encoder_model(table, model, **params)
@@ -111,7 +111,7 @@ def _one_hot_encoder(table, input_cols, prefix='list', prefix_list=None, suffix=
 
 def one_hot_encoder_model(table, model, **params):
     check_required_parameters(_one_hot_encoder_model, params, ['table', 'model'])
-    if '_group_by' in model:
+    if '_grouped_data' in model:
         return _function_by_group(_one_hot_encoder_model, table, model, **params)
     else:
         return _one_hot_encoder_model(table, model, **params)
