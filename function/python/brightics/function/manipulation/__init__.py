@@ -5,6 +5,7 @@ import numpy as np
 import math
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.function.validation import validate, greater_than_or_equal_to
 
 
 def filter(table, query):
@@ -52,6 +53,10 @@ def replace_missing_number(table, group_by=None, **params):
 
 
 def _replace_missing_number(table, input_cols, fill_method=None, fill_value='value', fill_value_to=0.0, limit=None, downcast=None):
+    # Validation : limit >= 1
+    if limit is not None:
+        validate(greater_than_or_equal_to(limit, 1, 'limit'))
+
     _table = table.copy()
     
     if input_cols is None or len(input_cols) == 0:
@@ -87,6 +92,10 @@ def replace_missing_string(table, group_by=None, **params):
 
 
 def _replace_missing_string(table, input_cols, fill_method=None, fill_string='', limit=None, downcast=None):
+    # Validation : limit >= 1
+    if limit is not None:
+        validate(greater_than_or_equal_to(limit, 1, 'limit'))
+
     _table = table.copy()
     
     if input_cols is None or len(input_cols) == 0:
