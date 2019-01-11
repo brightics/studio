@@ -78,6 +78,7 @@ def _discretize_quantile(table, input_col, num_of_buckets=2, out_col_name='bucke
     
     model = _model_dict('discretize_quantile')
     model['result'] = result
+    model['params'] = params
     model['_repr_brtc_'] = rb.get()
     
     return {'out_table': out_table, 'model': model}
