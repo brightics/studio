@@ -17,14 +17,11 @@ def add_row_number(table, group_by=None, **params):
 
         
 def _add_row_number(table, new_col='add_row_number'):
-
-    df = pd.DataFrame()
     n = len(table)
-
-    for i in range(1, n + 1):
-        df2 = pd.DataFrame([{new_col:i}])
-        df = df.append(df2, ignore_index=True)
-    out_table = pd.concat([df, table], axis=1)
+    out_table = table.copy()
+    out_table[new_col] = range(n)
+    columns = table.columns.insert(0,new_col)
+    out_table = out_table.reindex(columns=columns)
     return {'out_table': out_table}
 
 
