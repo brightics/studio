@@ -2,12 +2,12 @@
 ### Python
 ```python
 from brightics.function.extraction import scale_model
-res = scale_model(group_by = )
+res = scale_model()
 res['out_table']
 ```
 
 ## Description
-This function transforms the features using the result of Scale.
+This function transforms the features using the result of Normalization.
 
 ---
 
@@ -18,7 +18,7 @@ This function transforms the features using the result of Scale.
 2. **model**: model
 
 #### Parameters
-1. **Group By**: Columns to group by
+
 
 #### Outputs
 1. **out_table**: table
@@ -29,7 +29,7 @@ This function transforms the features using the result of Scale.
 2. **model**: model
 
 #### Parameters
-1. **group_by**: Columns to group by
+
 
 #### Outputs
 1. **out_table**: table

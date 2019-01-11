@@ -2,22 +2,42 @@
 
 import sqlite3
 from pandas.io import sql
+<<<<<<< HEAD
+=======
+import numpy as np
+>>>>>>> brightics/development
 
 from . import functions
 from . import aggregate_functions
 from .serializer import _get_columns_to_serialize
+<<<<<<< HEAD
 from .serializer import _get_serialized_table
 from .serializer import _get_deserialized_table
+=======
+from .serializer import _get_serialized_cols
+from .serializer import _get_serialized_table
+from .serializer import _get_deserialized_table
+from .serializer import _is_serialized
+>>>>>>> brightics/development
 from inspect import signature
 from inspect import getmembers
 from inspect import isfunction
 from inspect import isclass
+<<<<<<< HEAD
+=======
+# from common.exception import BrighticsFunctionException
+import sys
+import traceback
+>>>>>>> brightics/development
 
 import uuid
 
 import pandas as pd
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> brightics/development
 def execute(tables, query):
     if isinstance(tables, pd.DataFrame):
         tables = [tables]
@@ -39,6 +59,19 @@ def execute(tables, query):
         query = query.replace("""#{{DF({i})}}""".format(i=i), table_name)
     res = _get_deserialized_table(sql.read_sql(query, con))
         
+<<<<<<< HEAD
+=======
+#     except Exception as e:
+#         exc_info = sys.exc_info()
+#         print(e.args)
+#         print(traceback.format_stack())
+#         raise e
+
+        # raise BrighticsFunctionException("0100",str(e)).add_detail_message()
+                      
+    # data_utils.validate_column_name(res)
+    
+>>>>>>> brightics/development
     con.close()  # delete tables?
     
     return {'out_table': res}
@@ -46,7 +79,11 @@ def execute(tables, query):
 
 def _write_table(tables, con):
     table_names = []
+<<<<<<< HEAD
     for table in tables:
+=======
+    for idx, table in enumerate(tables):
+>>>>>>> brightics/development
         cols_to_pickle = _get_columns_to_serialize(table)
         pickled_table = _get_serialized_table(table, cols_to_pickle)
         table_name = 'df_' + str(uuid.uuid4())[:8]

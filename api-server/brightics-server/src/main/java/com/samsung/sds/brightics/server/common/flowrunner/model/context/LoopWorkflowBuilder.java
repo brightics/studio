@@ -1,10 +1,14 @@
 package com.samsung.sds.brightics.server.common.flowrunner.model.context;
 
+import java.util.Map.Entry;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.samsung.sds.brightics.common.core.exception.AbsBrighticsException;
 import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
-import com.samsung.sds.brightics.common.core.exception.provider.FunctionLabelProvider;
+import com.samsung.sds.brightics.common.core.legacy.provider.LegacyFunctionLabelProvider;
 import com.samsung.sds.brightics.common.variable.resolver.ExpressionPattern;
 import com.samsung.sds.brightics.common.workflow.context.WorkflowContext;
 import com.samsung.sds.brightics.common.workflow.context.parameter.ParametersBuilder;
@@ -21,8 +25,6 @@ import com.samsung.sds.brightics.server.common.flowrunner.status.Status;
 import com.samsung.sds.brightics.server.common.util.JsonObjectUtil;
 import com.samsung.sds.brightics.server.common.util.LoggerUtil;
 import com.samsung.sds.brightics.server.common.util.ValidationUtil;
-import java.util.Map.Entry;
-import org.apache.commons.lang3.StringUtils;
 
 public class LoopWorkflowBuilder {
 
@@ -184,7 +186,7 @@ public class LoopWorkflowBuilder {
             boolean isEmptyProp =
                 !props.has(name) || props.get(name).isJsonNull() || StringUtils.isBlank(ExpressionPattern.extractBody(props.get(name).getAsString()));
             if (isEmptyProp) {
-                throw new BrighticsCoreException("3109", FunctionLabelProvider.getFunctionLabel(functionName, name));
+                throw new BrighticsCoreException("3109", LegacyFunctionLabelProvider.getFunctionLabel(functionName, name));
             }
         }
     }

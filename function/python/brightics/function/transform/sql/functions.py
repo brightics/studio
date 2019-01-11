@@ -1,7 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import dateutil.parser
+<<<<<<< HEAD
 import numpy as np
+=======
+import datetime
+import numpy as np
+import math
+>>>>>>> brightics/development
 from .serializer import _serialize
 from .serializer import _deserialize
 import re
@@ -115,10 +121,19 @@ def concat_ws(sep, serialized_list):
     return sep.join([str(item) for item in arr])
 
 
+<<<<<<< HEAD
 def split(str_, *sep):
     nargs = len(sep)
     if nargs == 0:
         return _serialize(str_.split())
     else:  # todo elif nargs == 1:
         return _serialize(str_.split(sep[0]))
+=======
+def split(str, *sep):
+    nargs = len(sep)
+    if nargs == 0:
+        return _serialize(str.split())
+    else:  # todo elif nargs == 1:
+        return _serialize(str.split(sep[0]))
+>>>>>>> brightics/development
     

@@ -103,6 +103,9 @@ class BrighticsJavaGateway(object):
     def notify_brightics_core_exception(self, result, code, message):
         self._gateway.entry_point.notifyBrighticsCoreException(result, code, message)
 
+    def notify_brightics_function_exception(self, result, errors):
+        self._gateway.entry_point.notifyBrighticsFunctionException(result, errors)
+
     def notify_data_updated(self, key, status):
         self._gateway.entry_point.notifyDataUpdated(key, status)
 

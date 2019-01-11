@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.extraction import label_encoder_model
-res = label_encoder_model(new_column_name = ,group_by = )
+res = label_encoder_model(new_column_name = )
 res['out_table']
 ```
 
@@ -21,7 +21,6 @@ This function transforms the features using the result of Label Encoder.
 1. **New Column Name**: New column name
    - Value type : String
    - Default : encoded_column
-2. **Group By**: Columns to group by
 
 #### Outputs
 1. **out_table**: table
@@ -35,7 +34,6 @@ This function transforms the features using the result of Label Encoder.
 1. **new_column_name**: New column name
    - Value type : String
    - Default : encoded_column
-2. **group_by**: Columns to group by
 
 #### Outputs
 1. **out_table**: table

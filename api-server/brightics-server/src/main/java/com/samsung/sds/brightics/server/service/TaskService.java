@@ -94,7 +94,7 @@ public class TaskService {
             } catch (BrighticsCoreException e) {
                 String errorMessage = e.getMessage();
                 return taskErrorResultFomatter(taskId, JobRepository.STATE_FAIL, 0,
-                        new ExceptionInfoVO(errorMessage, e.detailMessage));
+                        new ExceptionInfoVO(errorMessage, e.detailedCause));
             } catch (Exception e) {
                 return taskErrorResultFomatter(taskId, JobRepository.STATE_FAIL, 0,
                         new ExceptionInfoVO(e.getMessage(), ExceptionUtils.getStackTrace(e)));
