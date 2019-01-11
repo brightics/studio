@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.manipulation import outlier_detection_tukey_carling
-res = outlier_detection_tukey_carling(input_cols = ,outlier_method = ,multiplier = ,number_of_removal = ,choice = ,new_column_prefix = ,group_by = )
+res = outlier_detection_tukey_carling(input_cols = ,outlier_method = ,multiplier = ,number_of_removal = ,result_type = ,new_column_prefix = ,group_by = )
 res['out_table']
 res['model']
 ```
@@ -28,7 +28,7 @@ Remove outliers. If a value is determined as a outlier, this value is removed fr
       - carling
 3. **Multiplier**: Multiplier value used for outlier method(see explanation of 'Outlier-Method'). Double type value is required. (default of tukey : 1.5, default of carling : 2.3)
    - Value type : Double
-   - Default : value>=0 (default of tukey : 1.5, carling : 2.3)
+   - Default : value>=0 (tukey : 1.5, carling : 2.3)
 4. **Number of Outliers in a Row**: The minimum number of outliers in a row that makes a given sample outlier. (default=1)
    - Value type : Integer
    - Default : 1
@@ -37,7 +37,7 @@ Remove outliers. If a value is determined as a outlier, this value is removed fr
       - Remove Outliers
       - Add Prediction (default)
       - Both
-6. **Prefix**: 
+6. **New Column Prefix**: 
    - Value type : String
    - Default : is_outlier_
 7. **Group By**: Columns to group by
@@ -61,11 +61,11 @@ Remove outliers. If a value is determined as a outlier, this value is removed fr
       - carling
 3. **multiplier**: Multiplier value used for outlier method(see explanation of 'Outlier-Method'). Double type value is required. (default of tukey : 1.5, default of carling : 2.3)
    - Value type : Double
-   - Default : value>=0 (default of tukey : 1.5, carling : 2.3)
+   - Default : value>=0 (tukey : 1.5, carling : 2.3)
 4. **number_of_removal**: The minimum number of outliers in a row that makes a given sample outlier. (default=1)
    - Value type : Integer
    - Default : 1
-5. **choice**: Can choose result table between inlier/outlier detection table, filtered table that outliers are removed, or both. (default = Add Prediction)
+5. **result_type**: Can choose result table between inlier/outlier detection table, filtered table that outliers are removed, or both. (default = Add Prediction)
    - Available items
       - remove_outliers
       - add_prediction (default)

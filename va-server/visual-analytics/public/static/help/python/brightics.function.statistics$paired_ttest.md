@@ -27,7 +27,11 @@ In statistics, a paired difference test is a type of location test that is used 
 4. **Confidence Level**: Confidence level. Default: 0.95
    - Value type : Double
    - Default : 0.95 (0<=value<=1)
-5. **Alternatives**: Alternative hypothesis.
+5. **Alternatives**<b style="color:red">*</b>: Alternative hypothesis.
+   - Available items
+      - Greater
+      - Less
+      - Two Sided
 6. **Group By**: Columns to group by
 
 #### Outputs
@@ -48,7 +52,11 @@ In statistics, a paired difference test is a type of location test that is used 
 4. **confidence_level**: Confidence level. Default: 0.95
    - Value type : Double
    - Default : 0.95 (0<=value<=1)
-5. **alternative**: Alternative hypothesis.
+5. **alternative**<b style="color:red">*</b>: Alternative hypothesis.
+   - Available items
+      - greater
+      - less
+      - twosided
 6. **group_by**: Columns to group by
 
 #### Outputs

@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.transform import transpose
-res = transpose(columns = ,label_col = ,label_col_name = ,group_by = )
+res = transpose(input_cols = ,label_col = ,label_col_name = ,group_by = )
 res['out_table']
 ```
 
@@ -17,7 +17,7 @@ This function exchanages rows and columns of the given table.
 1. **table**: table
 
 #### Parameters
-1. **Columns**<b style="color:red">*</b>: Columns of the table to transpose
+1. **Input Columns**<b style="color:red">*</b>: Columns of the table to transpose
    - Allowed column type : Integer, Long, Float, Double, Decimal, Boolean
 2. **Label Column**: Label Column
 3. **Label Column Name**: Label Column Name
@@ -33,7 +33,7 @@ This function exchanages rows and columns of the given table.
 1. **table**: table
 
 #### Parameters
-1. **columns**<b style="color:red">*</b>: Columns of the table to transpose
+1. **input_cols**<b style="color:red">*</b>: Columns of the table to transpose
    - Allowed column type : Integer, Long, Float, Double, Decimal, Boolean
 2. **label_col**: Label Column
 3. **label_col_name**: Label Column Name

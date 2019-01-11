@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.manipulation import outlier_detection_lof
-res = outlier_detection_lof(input_cols = ,choice = ,n_neighbors = ,new_column_name = ,group_by = )
+res = outlier_detection_lof(input_cols = ,n_neighbors = ,result_type = ,new_column_name = ,group_by = )
 res['out_table']
 res['model']
 ```
@@ -20,15 +20,15 @@ This function detects outliers based on Local Outlier Factor (LOF) algorithm. Th
 #### Parameters
 1. **Input Columns**<b style="color:red">*</b>: Input columns.
    - Allowed column type : Integer, Long, Double, Decimal, Float
-2. **Result**: Can choose result table between inlier/outlier detection table and filtered table that outliers are removed. (default = Add Prediction)
+2. **Number of Neighbors**: Number of neighbors to use by default for k-neighbors queries. If n_neighbors is larger than the number of samples provided, all samples will be used.
+   - Value type : Integer
+   - Default : 20
+3. **Result**: Can choose result table between inlier/outlier detection table and filtered table that outliers are removed. (default = Add Prediction)
    - Available items
       - Remove Outliers
       - Add Prediction (default)
       - Both
-3. **Number of Neighbors**: Number of neighbors to use by default for k-neighbors queries. If n_neighbors is larger than the number of samples provided, all samples will be used.
-   - Value type : Integer
-   - Default : 20
-4. **Prefix**: 
+4. **New Column Name**: 
    - Value type : String
    - Default : is_outlier
 5. **Group By**: Columns to group by
@@ -44,14 +44,14 @@ This function detects outliers based on Local Outlier Factor (LOF) algorithm. Th
 #### Parameters
 1. **input_cols**<b style="color:red">*</b>: Input columns.
    - Allowed column type : Integer, Long, Double, Decimal, Float
-2. **choice**: Can choose result table between inlier/outlier detection table and filtered table that outliers are removed. (default = Add Prediction)
+2. **n_neighbors**: Number of neighbors to use by default for k-neighbors queries. If n_neighbors is larger than the number of samples provided, all samples will be used.
+   - Value type : Integer
+   - Default : 20
+3. **result_type**: Can choose result table between inlier/outlier detection table and filtered table that outliers are removed. (default = Add Prediction)
    - Available items
       - remove_outliers
       - add_prediction (default)
       - both
-3. **n_neighbors**: Number of neighbors to use by default for k-neighbors queries. If n_neighbors is larger than the number of samples provided, all samples will be used.
-   - Value type : Integer
-   - Default : 20
 4. **new_column_name**: 
    - Value type : String
    - Default : is_outlier

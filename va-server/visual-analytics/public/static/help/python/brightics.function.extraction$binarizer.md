@@ -3,7 +3,7 @@
 ```python
 from brightics.function.extraction import binarizer
 res = binarizer(column = ,threshold_type = ,threshold = ,out_col_name = )
-res['table']
+res['out_table']
 ```
 
 ## Description
@@ -31,7 +31,7 @@ Binarize a column of continuous features given a threshold. The features greater
    - Default : Enter value
 
 #### Outputs
-1. **table**: table
+1. **out_table**: table
 
 ### Python
 #### Inputs
@@ -52,5 +52,5 @@ Binarize a column of continuous features given a threshold. The features greater
    - Default : Enter value
 
 #### Outputs
-1. **table**: table
+1. **out_table**: table
 

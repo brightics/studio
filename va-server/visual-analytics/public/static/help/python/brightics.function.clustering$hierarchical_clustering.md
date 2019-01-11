@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.clustering import hierarchical_clustering
-res = hierarchical_clustering(input_cols = ,link = ,met = ,p = ,num_rows = ,figure_height = ,orient = ,group_by = )
+res = hierarchical_clustering(input_cols = ,link = ,met = ,num_rows = ,figure_height = ,orient = ,group_by = )
 res['model']
 ```
 
@@ -25,22 +25,19 @@ https://en.wikipedia.org/wiki/Hierarchical_clustering
    - Allowed column type : Integer, Long, Float, Double, Decimal
 2. **Linkage Method**: linkage method name to be used in Hierarchical Clustering. It must be one of 'Single', 'Complete', 'Average', 'Weighted', 'Centroid', 'Median', 'Ward'. (default = 'Complete')
 3. **Metric**: The distance metric to use in the case that input is a collection of observation vectors; ignored otherwise. (default='euclidean')
-4. **Minkowski Exponent**: 
-   - Value type : Integer
-   - Default : 2 (value>=1)
-5. **Number of Rows of Linkage Matrix**: number of rows of linkage matrix (default=20)
+4. **Number of Rows of Linkage Matrix**: number of rows of linkage matrix (default=20)
    - Value type : Integer
    - Default : 20
-6. **Figure Height**: height of figure (default=6.4)
+5. **Figure Height**: height of figure (default=6.4)
    - Value type : Double
    - Default : 6.4
-7. **Figure Orientation**: The direction to plot the dendrogram:
+6. **Figure Orientation**: The direction to plot the dendrogram:
 if 'top', plots the root at the top, and plot descendent links going downwards.
 if 'right', plots the root at the right, and plot descendent links going left. (default)
    - Available items
       - Right (default)
       - Top
-8. **Group By**: Columns to group by
+7. **Group By**: Columns to group by
 
 #### Outputs
 1. **model**: model
@@ -54,22 +51,19 @@ if 'right', plots the root at the right, and plot descendent links going left. (
    - Allowed column type : Integer, Long, Float, Double, Decimal
 2. **link**: linkage method name to be used in Hierarchical Clustering. It must be one of 'Single', 'Complete', 'Average', 'Weighted', 'Centroid', 'Median', 'Ward'. (default = 'Complete')
 3. **met**: The distance metric to use in the case that input is a collection of observation vectors; ignored otherwise. (default='euclidean')
-4. **p**: 
-   - Value type : Integer
-   - Default : 2 (value>=1)
-5. **num_rows**: number of rows of linkage matrix (default=20)
+4. **num_rows**: number of rows of linkage matrix (default=20)
    - Value type : Integer
    - Default : 20
-6. **figure_height**: height of figure (default=6.4)
+5. **figure_height**: height of figure (default=6.4)
    - Value type : Double
    - Default : 6.4
-7. **orient**: The direction to plot the dendrogram:
+6. **orient**: The direction to plot the dendrogram:
 if 'top', plots the root at the top, and plot descendent links going downwards.
 if 'right', plots the root at the right, and plot descendent links going left. (default)
    - Available items
       - right (default)
       - top
-8. **group_by**: Columns to group by
+7. **group_by**: Columns to group by
 
 #### Outputs
 1. **model**: model

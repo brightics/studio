@@ -29,6 +29,10 @@ https://en.wikipedia.org/wiki/F-test_of_equality_of_variances
 2. **Factor Column**<b style="color:red">*</b>: 
    - Allowed column type : String, Integer, Double, Long, Float, Boolean
 3. **Alternatives**: Array[String] Alternative hypothesis. "two_sided","less","greater" are possible. 
+   - Available items
+      - Greater
+      - Less
+      - Two Sided
 4. **Confidence Level**: Confidence level. Default: 0.95
    - Value type : Double
    - Default : 0.95 (0 <= value <= 1)
@@ -54,6 +58,10 @@ https://en.wikipedia.org/wiki/F-test_of_equality_of_variances
 2. **factor_col**<b style="color:red">*</b>: 
    - Allowed column type : String, Integer, Double, Long, Float, Boolean
 3. **alternatives**: Array[String] Alternative hypothesis. "two_sided","less","greater" are possible. 
+   - Available items
+      - larger
+      - smaller
+      - two-sided
 4. **confi_level**: Confidence level. Default: 0.95
    - Value type : Double
    - Default : 0.95 (0 <= value <= 1)

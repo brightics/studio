@@ -2,8 +2,8 @@
 ### Python
 ```python
 from brightics.function.clustering import hierarchical_clustering_post
-res = hierarchical_clustering_post(num_clusters = ,cluster_col = ,group_by = )
-res['out_table2']
+res = hierarchical_clustering_post(num_clusters = ,cluster_col = )
+res['out_table']
 res['model']
 ```
 
@@ -30,10 +30,9 @@ https://en.wikipedia.org/wiki/Hierarchical_clustering
 2. **New Column Name**: name of cluster column
    - Value type : String
    - Default : prediction
-3. **Group By**: Columns to group by
 
 #### Outputs
-1. **out_table2**: table
+1. **out_table**: table
 2. **model**: model
 
 ### Python
@@ -47,9 +46,8 @@ https://en.wikipedia.org/wiki/Hierarchical_clustering
 2. **cluster_col**: name of cluster column
    - Value type : String
    - Default : prediction
-3. **group_by**: Columns to group by
 
 #### Outputs
-1. **out_table2**: table
+1. **out_table**: table
 2. **model**: model
 

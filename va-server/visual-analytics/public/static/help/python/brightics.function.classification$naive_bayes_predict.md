@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.classification import naive_bayes_predict
-res = naive_bayes_predict(prediction_col = ,prob_prefix = ,log_prob_prefix = ,suffix = ,display_log_prob = ,group_by = )
+res = naive_bayes_predict(prediction_col = ,prob_prefix = ,log_prob_prefix = ,suffix = ,display_log_prob = )
 res['out_table']
 ```
 
@@ -32,7 +32,6 @@ Predict data using a Naive Bayes model.
       - Index (default)
       - Label
 5. **Display Log Probability**: 
-6. **Group By**: Columns to group by
 
 #### Outputs
 1. **out_table**: table
@@ -57,7 +56,6 @@ Predict data using a Naive Bayes model.
       - index (default)
       - label
 5. **display_log_prob**: 
-6. **group_by**: Columns to group by
 
 #### Outputs
 1. **out_table**: table

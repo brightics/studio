@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.statistics import chi_square_test_of_independence
-res = chi_square_test_of_independence(response_cols = ,factor_col = ,correction = ,group_by = )
+res = chi_square_test_of_independence(feature_cols = ,label_col = ,correction = ,group_by = )
 res['model']
 ```
 
@@ -34,8 +34,8 @@ https://en.wikipedia.org/wiki/Pearson's_chi-squared_test#Testing_for_statistical
 1. **table**: table
 
 #### Parameters
-1. **response_cols**<b style="color:red">*</b>: Feature columns. At least one column should be chosen.
-2. **factor_col**<b style="color:red">*</b>: Label Column
+1. **feature_cols**<b style="color:red">*</b>: Feature columns. At least one column should be chosen.
+2. **label_col**<b style="color:red">*</b>: Label Column
 3. **correction**: If True, and the degrees of freedom is 1, apply Yates' correction for continuity. The effect of the correction is to adjust each observed value by 0.5 towards the corresponding expected value.
 4. **group_by**: Columns to group by
 

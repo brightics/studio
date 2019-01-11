@@ -21,6 +21,10 @@ One Sample T Test is used to compare the mean of one sample to a known standard 
 1. **Input Columns**<b style="color:red">*</b>: 
    - Allowed column type : Integer, Long, Float, Double, Decimal
 2. **Alternatives**: The alternative hypothesis. Allowed value is one of Two Sided (default), Greater or Less.
+   - Available items
+      - Greater
+      - Less
+      - Two Sided
 3. **Hypothesized Mean**: The theoretical mean. Default is 0 but you can change it.
    - Value type : Double
    - Default : 0
@@ -41,6 +45,10 @@ One Sample T Test is used to compare the mean of one sample to a known standard 
 1. **input_cols**<b style="color:red">*</b>: 
    - Allowed column type : Integer, Long, Float, Double, Decimal
 2. **alternatives**: The alternative hypothesis. Allowed value is one of Two Sided (default), Greater or Less.
+   - Available items
+      - Greater
+      - Less
+      - Two Sided
 3. **hypothesized_mean**: The theoretical mean. Default is 0 but you can change it.
    - Value type : Double
    - Default : 0
