@@ -54,7 +54,6 @@ class SummaryTest(unittest.TestCase):
         d1 = [random.random() * 100 for _ in range(20)]
         d2 = d1.copy()
         d2[0] = None
-        print(d2)
         table1 = pd.DataFrame({'d1':d1, 'd2':d2})
         
         input_cols = ['d1', 'd2']
