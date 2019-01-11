@@ -52,11 +52,11 @@ def _discretize_quantile(table, input_col, num_of_buckets=2, out_col_name='bucke
     index_list = []
     bucket_list = []
     cnt_list = []     
-    for i in range(len(buckets)-1):
+    for i in range(len(buckets) - 1):
         left = '[' if i == 0 else '('
         index_list.append(i)
         cnt_list.append(cnt[i])
-        bucket_list.append("{left}{lower}, {upper}]".format(left=left, lower=buckets[i], upper=buckets[i+1]))  # 'buckets' is tuple type data.  
+        bucket_list.append("{left}{lower}, {upper}]".format(left=left, lower=buckets[i], upper=buckets[i + 1]))  # 'buckets' is tuple type data.  
    
     # Build model
     result = pd.DataFrame.from_items([ 
@@ -99,15 +99,13 @@ def capitalize_variable(table, input_cols, replace, out_col_suffix=None):
     if out_col_suffix is None:
         out_col_suffix = '_' + replace
      
-    out_table = table
+    out_table = table.copy()
     for input_col in input_cols: 
         out_col_name = input_col + out_col_suffix
-        out_col = pd.DataFrame(columns=[out_col_name])
-    
+        
         if replace == 'upper':
-            out_col[out_col_name] = table[input_col].str.upper()
+            out_table[out_col_name] = table[input_col].str.upper() 
         else:
-            out_col[out_col_name] = table[input_col].str.lower()
+            out_table[out_col_name] = table[input_col].str.lower()
     
-        out_table = pd.concat([out_table, out_col], axis=1)
     return {'out_table': out_table}
