@@ -77,7 +77,7 @@ def _one_sample_ttest_repr(statistics, result_dict, params):
     
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
-    | One Sample T Test Result
+    | ## One Sample T Test Result
     | - Statistics = {s}
     | - Hypothesized mean = {h} 
     | - Confidence level = {cl}
