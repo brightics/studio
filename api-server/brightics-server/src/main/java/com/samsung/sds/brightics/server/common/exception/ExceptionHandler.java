@@ -25,7 +25,7 @@ public class ExceptionHandler {
 	public @ResponseBody ExceptionInfoVO handleServerException(Exception exception) {
 		if (exception instanceof BrighticsUncodedException) { //message from agent.
 			String message = exception.getMessage();
-			String detailMessage = ((AbsBrighticsException) exception).detailMessage;
+			String detailMessage = ((AbsBrighticsException) exception).detailedCause;
 			if(StringUtils.isNotEmpty(detailMessage)){
 				logger.error("[SYSTEM]" + exception.getMessage() + " , detail : " + detailMessage);
 			} else {
@@ -35,7 +35,7 @@ public class ExceptionHandler {
 		} else if (exception instanceof AbsBrighticsException) {
 			logger.error("[SYSTEM]", exception);
 			String message = exception.getMessage();
-			String detailMessage = ((AbsBrighticsException) exception).detailMessage;
+			String detailMessage = ((AbsBrighticsException) exception).detailedCause;
 			return new ExceptionInfoVO(message, detailMessage);
 		} else {
 			logger.error("[SYSTEM]", exception);

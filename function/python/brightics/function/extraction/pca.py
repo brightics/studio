@@ -1,7 +1,7 @@
 from sklearn.decomposition import PCA
 import pandas as pd
 import matplotlib.pyplot as plt
-from brightics.common.report import ReportBuilder, strip_margin, pandasDF2MD, plt2MD, dict2MD
+from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, plt2MD, dict2MD
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
@@ -9,22 +9,26 @@ import seaborn as sns
 import numpy as np
 import matplotlib.cm as cm
 from matplotlib.patches import Patch
+from brightics.function.validation import validate, greater_than_or_equal_to
 
 
 def pca(table, group_by=None, **params):
     check_required_parameters(_pca, params, ['table'])
     if group_by is not None:
-        return _function_by_group(_pca, table, group_by=group_by, **params)
+        grouped_model = _function_by_group(_pca, table, group_by=group_by, **params)
+        return grouped_model
     else:
         return _pca(table, **params)
     
     
 def _pca(table, input_cols, new_column_name='projected_', n_components=None, copy=True, whiten=False, svd_solver='auto',
             tol=0.0, iterated_power='auto', random_state=None, hue=None, alpha=0, key_col=None):
-                    
+    
     num_feature_cols = len(input_cols)
     if n_components is None:
         n_components = num_feature_cols
+    
+    validate(greater_than_or_equal_to(n_components, 1, 'n_components'))
         
     pca = PCA(None, copy, whiten, svd_solver, tol, iterated_power, random_state)
     pca_model = pca.fit(table[input_cols])
@@ -71,7 +75,7 @@ def _pca(table, input_cols, new_column_name='projected_', n_components=None, cop
     table_explained_variance['explained_variance_ratio'] = res_explained_variance_ratio
     table_explained_variance['cum_explained_variance_ratio'] = res_explained_variance_ratio.cumsum()
                 
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## PCA Result
     | ### Plot
@@ -104,7 +108,7 @@ def _pca(table, input_cols, new_column_name='projected_', n_components=None, cop
     model['parameters'] = res_get_param
     model['covariance'] = res_get_covariance
     model['precision'] = res_get_precision
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
     model['pca_model'] = pca_model
     model['input_cols'] = input_cols
     
@@ -187,10 +191,10 @@ def _biplot(xidx, yidx, data, pc_columns, columns, singular_values, components,
     return plt_two
 
 
-def pca_model(table, model, group_by=None, **params):
+def pca_model(table, model, **params):
     check_required_parameters(_pca_model, params, ['table', 'model'])
-    if group_by is not None:
-        return _function_by_group(_pca_model, table, model, group_by=group_by, **params)
+    if '_grouped_data' in model:
+        return _function_by_group(_pca_model, table, model, **params)
     else:
         return _pca_model(table, model, **params)
     

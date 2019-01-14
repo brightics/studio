@@ -168,7 +168,7 @@ public class PythonContextTest {
                     isNotBlank().
                     isEqualToIgnoringNewLines("Python script error : " + errorMsg);
 
-            assertThat(e.detailMessage).isNotBlank();
+            assertThat(e.detailedCause).isNotBlank();
 
             String[] traceback = e.getCause().toString().split("[\r\n]+");
             assertThat(traceback[0]).isEqualToIgnoringNewLines("java.lang.Throwable: Traceback (most recent call last):");

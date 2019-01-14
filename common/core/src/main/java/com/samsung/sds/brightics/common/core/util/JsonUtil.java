@@ -1,6 +1,8 @@
 package com.samsung.sds.brightics.common.core.util;
 
 import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Set;
@@ -162,5 +164,10 @@ public class JsonUtil {
     public static <T> T fromJson(FileReader fileReader, Class<T> classOfT) {
         JsonReader reader = new JsonReader(fileReader);
         return gson.fromJson(reader, classOfT);
+    }
+    
+    public static <T> T fromJson(InputStream inputStream, Class<T> classOfT) {
+    	JsonReader reader = new JsonReader(new InputStreamReader(inputStream));
+    	return gson.fromJson(reader, classOfT);
     }
 }

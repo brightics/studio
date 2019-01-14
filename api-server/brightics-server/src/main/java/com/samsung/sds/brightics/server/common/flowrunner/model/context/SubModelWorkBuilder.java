@@ -9,7 +9,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.samsung.sds.brightics.common.core.exception.AbsBrighticsException;
 import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
-import com.samsung.sds.brightics.common.core.exception.provider.FunctionLabelProvider;
+import com.samsung.sds.brightics.common.core.legacy.provider.LegacyFunctionLabelProvider;
 import com.samsung.sds.brightics.common.core.util.IdGenerator;
 import com.samsung.sds.brightics.common.variable.context.VariableContext;
 import com.samsung.sds.brightics.common.variable.resolver.IVariableResolver;
@@ -131,7 +131,7 @@ class SubModelWorkBuilder {
             return result;
         } catch (AbsBrighticsException e) {
             if ("3109".equals(e.code)) {
-                throw new BrighticsCoreException("3109", FunctionLabelProvider.getFunctionLabel("Flow", name));
+                throw new BrighticsCoreException("3109", LegacyFunctionLabelProvider.getFunctionLabel("Flow", name));
             }
             throw e;
         }

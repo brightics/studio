@@ -26,4 +26,14 @@ public interface FailResultOrBuilder extends
    */
   com.google.protobuf.ByteString
       getDetailMessageBytes();
+
+  /**
+   * <code>string errors = 3;</code>
+   */
+  java.lang.String getErrors();
+  /**
+   * <code>string errors = 3;</code>
+   */
+  com.google.protobuf.ByteString
+      getErrorsBytes();
 }

@@ -20,7 +20,7 @@ Merge DataFrame objects by performing a database-style join operation by columns
 #### Parameters
 1. **Left Columns**<b style="color:red">*</b>: Columns to join on in the left(first) table.
 2. **Right Columns**<b style="color:red">*</b>: Columns to join on in the right(second) table.
-3. **Type**: How to handle the operation of the two objects.
+3. **Type**<b style="color:red">*</b>: How to handle the operation of the two objects.
 4. **Left Suffix**: Left Suffix.
    - Value type : String
 5. **Right Suffix**: Right Suffix.

@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+<<<<<<< HEAD
+=======
+import pickle
+>>>>>>> refs/remotes/origin/development
 import numpy as np
 
 

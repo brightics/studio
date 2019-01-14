@@ -1,4 +1,4 @@
-from brightics.common.report import ReportBuilder, strip_margin, plt2MD, \
+from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD, \
     pandasDF2MD, keyValues2MD
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
@@ -13,6 +13,7 @@ from statsmodels.stats.anova import anova_lm
 from statsmodels.stats.multicomp import pairwise_tukeyhsd
 import numpy as np
 import pandas as pd
+from brightics.common.exception import BrighticsFunctionException
 
 
 def bartletts_test(table, response_cols, factor_col):
@@ -38,7 +39,7 @@ def bartletts_test(table, response_cols, factor_col):
     result = dict()
     result['result_table'] = result_table
     
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     ## Bartlett's Test Result
     | - H0: k population variances are equal.
@@ -47,7 +48,7 @@ def bartletts_test(table, response_cols, factor_col):
     | {result_table}
     """.format(result_table=pandasDF2MD(result_table))))
     
-    result['report'] = rb.get()
+    result['_repr_brtc_'] = rb.get()
         
     return {'result': result}
 
@@ -60,7 +61,7 @@ def oneway_anova(table, group_by=None, **params):
     
     
 def _oneway_anova(table, response_cols, factor_col):
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     ## One-way Analysis of Variance Result
     """))
@@ -116,7 +117,7 @@ def _oneway_anova(table, response_cols, factor_col):
         
         result['_grouped_data'][response_col]['p_value'] = p_value
         
-    result['report'] = rb.get()
+    result['_repr_brtc_'] = rb.get()
     return {'result': result}
 
 def tukeys_range_test(table, group_by=None, **params):
@@ -128,7 +129,10 @@ def tukeys_range_test(table, group_by=None, **params):
     
     
 def _tukeys_range_test(table, response_cols, factor_col, alpha=0.05):
-    rb = ReportBuilder()
+    if alpha < 0.001 or alpha >= 0.9: 
+        raise BrighticsFunctionException("0006", ['alpha', 0.001, 0.9])
+    
+    rb = BrtcReprBuilder()
     rb.addMD("""## Tukey's range test Result""")
     
     for response_col in response_cols:
@@ -142,4 +146,4 @@ def _tukeys_range_test(table, response_cols, factor_col, alpha=0.05):
         rb.addPlt(plt)
         plt.clf()
     
-    return {'result': {'report': rb.get()}}
+    return {'result': {'_repr_brtc_': rb.get()}}

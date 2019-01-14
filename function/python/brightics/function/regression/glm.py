@@ -1,23 +1,26 @@
 import statsmodels.api as sm
-from brightics.common.report import ReportBuilder, strip_margin
+from brightics.common.repr import BrtcReprBuilder, strip_margin
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.function.validation import raise_runtime_error
 
 
 def glm_train(table, group_by=None, **params):
     check_required_parameters(_glm_train, params, ['table'])
     if group_by is not None:
-        return _function_by_group(_glm_train, table, group_by=group_by, **params)
+        grouped_model = _function_by_group(_glm_train, table, group_by=group_by, **params)
+        return grouped_model
     else:
         return _glm_train(table, **params)
+
 
 def _glm_train(table, feature_cols, label_col, family="Gaussian", link="ident", fit_intercept=True):
     features = table[feature_cols]
     label = table[label_col]
 
     if label_col in feature_cols:
-        raise Exception("%s is duplicated." % label_col)
+        raise_runtime_error("%s is duplicated." % label_col)
 
     if family == "Gaussian": 
         sm_family = sm.families.Gaussian()
@@ -55,7 +58,7 @@ def _glm_train(table, feature_cols, label_col, family="Gaussian", link="ident", 
         glm_model = sm.GLM(label, features, family=sm_family, link=sm_link).fit()
     summary = glm_model.summary().as_html()
 
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## GLM Result
     | ### Summary
@@ -75,15 +78,15 @@ def _glm_train(table, feature_cols, label_col, family="Gaussian", link="ident", 
     model['pvalues'] = glm_model.pvalues
     model['fit_intercept'] = fit_intercept
     model['glm_model'] = glm_model
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
 
     return {'model' : model}
 
 
-def glm_predict(table, model, group_by=None, **params):
+def glm_predict(table, model, **params):
     check_required_parameters(_glm_predict, params, ['table', 'model'])
-    if group_by is not None:
-        return _function_by_group(_glm_predict, table, model, group_by=group_by, **params)
+    if '_grouped_data' in model:
+        return _function_by_group(_glm_predict, table, model, **params)
     else:
         return _glm_predict(table, model, **params)       
 

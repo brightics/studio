@@ -112,8 +112,8 @@ public class TaskService {
             }
         } catch (AbsBrighticsException e) {
             String detailMessage = "";
-            if (StringUtils.isNoneBlank(e.detailMessage)) {
-                detailMessage = e.detailMessage;
+            if (StringUtils.isNoneBlank(e.detailedCause)) {
+                detailMessage = e.detailedCause;
             }
             logger.error("Task(" + taskId + ") by " + userId + " is failed. " + detailMessage, e);
             return getFailResult(taskId, e);
@@ -256,8 +256,8 @@ public class TaskService {
 
     private static FailResult getFailBuild(AbsBrighticsException e) {
         Builder failResult = FailResult.newBuilder().setMessage(SafeParser.nullToString(e.getMessage()));
-        if (StringUtils.isNoneBlank(e.detailMessage)) {
-            failResult.setDetailMessage(e.detailMessage);
+        if (StringUtils.isNoneBlank(e.detailedCause)) {
+            failResult.setDetailMessage(e.detailedCause);
         }
         return failResult.build();
     }
