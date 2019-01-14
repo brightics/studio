@@ -114,7 +114,7 @@ def _hierarchical_clustering(table, input_cols, link='complete', met='euclidean'
     model['model'] = Z
     model['parameters'] = params
     model['linkage_matrix'] = linkage_matrix
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
         
     return {'model':model}
 
@@ -167,6 +167,6 @@ def _hierarchical_clustering_post(table, model, num_clusters, cluster_col='predi
 
     model = _model_dict('hierarchical_clustering_post')
     model['clusters_info'] = clusters_info_table
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
     
     return {'out_table' : prediction_table, 'model': model}

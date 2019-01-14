@@ -62,7 +62,7 @@ def _chi_square_test_of_independence(table, feature_cols, label_col, correction=
         |
         """.format(label=label_col, feature=feature_col, idx=idx, result_table=pandasDF2MD(result_table), dependence=dependence)))
     
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
     
     return {'model':model}
 
