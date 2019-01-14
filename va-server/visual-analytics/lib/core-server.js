@@ -254,6 +254,10 @@ var createRequestOptions = function (method, url, token) {
     return options;
 };
 
+var setBasicAuth = function (options, id, pw) {
+    options.headers.authorization = `Basic ${Buffer.from(id + ':' + pw).toString('base64')}`;
+};
+
 exports.env = function (options) {
     URI_CORE_SERVER = options['URI'];
 };
@@ -261,3 +265,4 @@ exports.env = function (options) {
 exports.createRequestOptions = createRequestOptions;
 exports.setBearerToken = setBearerToken;
 exports.convertColumnType = convertColumnType;
+exports.setBasicAuth = setBasicAuth;
