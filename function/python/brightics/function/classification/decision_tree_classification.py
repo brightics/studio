@@ -114,7 +114,7 @@ def _decision_tree_classification_train(table, feature_cols, label_col,  # fig_s
 
 def decision_tree_classification_predict(table, model, **params):
     check_required_parameters(_decision_tree_classification_predict, params, ['table', 'model'])
-    if '_group_by' in model:
+    if '_grouped_data' in model:
         return _function_by_group(_decision_tree_classification_predict, table, model, **params)
     else:
         return _decision_tree_classification_predict(table, model, **params)

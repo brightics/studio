@@ -2,6 +2,53 @@
 
 import sqlite3
 from pandas.io import sql
+<<<<<<< HEAD
+
+from . import functions
+from . import aggregate_functions
+from .serializer import _get_columns_to_serialize
+from .serializer import _get_serialized_table
+from .serializer import _get_deserialized_table
+from inspect import signature
+from inspect import getmembers
+from inspect import isfunction
+from inspect import isclass
+
+import uuid
+
+import pandas as pd
+
+
+def execute(tables, query):
+    if isinstance(tables, pd.DataFrame):
+        tables = [tables]
+
+    sqlite3.enable_callback_tracebacks(True)
+    con = sqlite3.connect(':memory:', detect_types=sqlite3.PARSE_DECLTYPES)
+    
+    _register_adapters(sqlite3)
+    _register_converters(sqlite3)
+    _create_functions(con, functions)
+    _create_aggregate_functions(con, aggregate_functions)
+    
+    con.execute("PRAGMA temp_store = MEMORY")
+    con.execute("PRAGMA journal_mode = OFF")
+    
+    table_names = _write_table(tables, con)
+    
+    for i, table_name in enumerate(table_names):
+        query = query.replace("""#{{DF({i})}}""".format(i=i), table_name)
+    res = _get_deserialized_table(sql.read_sql(query, con))
+        
+    con.close()  # delete tables?
+    
+    return {'out_table': res}
+
+
+def _write_table(tables, con):
+    table_names = []
+    for table in tables:
+=======
 import numpy as np
 
 from . import functions
@@ -62,6 +109,7 @@ def execute(tables, query):
 def _write_table(tables, con):
     table_names = []
     for idx, table in enumerate(tables):
+>>>>>>> refs/remotes/origin/development
         cols_to_pickle = _get_columns_to_serialize(table)
         pickled_table = _get_serialized_table(table, cols_to_pickle)
         table_name = 'df_' + str(uuid.uuid4())[:8]

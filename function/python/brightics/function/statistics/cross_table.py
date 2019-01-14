@@ -1,11 +1,12 @@
-from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD, \
-    pandasDF2MD, keyValues2MD
+from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.function.validation import raise_runtime_error
 
 import numpy as np
 import pandas as pd
+
 
 def cross_table(table, group_by=None, **params):
     check_required_parameters(_cross_table, params, ['table'])
@@ -15,179 +16,69 @@ def cross_table(table, group_by=None, **params):
         return _cross_table(table, **params)
 
 
-def _cross_table(table, input_cols_1, input_cols_2, result='N', choice=False):
-    data = pd.DataFrame(table)
-    num_input_cols_1 = len(input_cols_1)
-    num_input_cols_2 = len(input_cols_2)
+def _cross_table(table, input_cols_1, input_cols_2, result='N', margins=False):
     
-    input_cols1_names = []
-    for i in input_cols_1:
-        input_cols1_names.append(i)
+    df1 = [table[col] for col in input_cols_1]
+    df2 = [table[col] for col in input_cols_2]
         
-    input_cols2_names = []
-    for j in input_cols_2:
-        input_cols2_names.append(j)
-    
-    df1 = []
-    df2 = []
-    for column in input_cols_1:
-        df1.append(data[column])
-    for column in input_cols_2:
-        df2.append(data[column])
-        
-    # cross table
-    
-    out_table_count = pd.DataFrame(pd.crosstab(df1, df2, margins=choice))
-    a_count = list(out_table_count.index)[:]
-    b_count = []
-    name1 = ""
-    
-    if num_input_cols_1 == 1:
-        for i in a_count:
-            name1 = str(i)
-            b_count.append(name1)
-            name1 = ""
-  
-    elif num_input_cols_1 != 1:
-        for i in range(len(a_count)):
-            name1 = '_'.join(str(s) for s in a_count[i])
-            b_count.append(name1)
-            name1 = ""
-  
-    c_count = list(out_table_count.columns)[:]
-    d_count = []
-    name2 = ""
-    
-    if num_input_cols_2 == 1:
-        for i in c_count:
-            name2 = str(i)
-            d_count.append(name2)
-            name2 = ""
-    elif num_input_cols_2 != 1:
-        for i in range(len(c_count)):
-            name2 = '_'.join(str(s) for s in c_count[i])
-            d_count.append(name2)
-            name2 = ""
-
-    out_table_count.insert(loc=0, column=' ', value=b_count)
-    out_table_count.columns = np.append('N', d_count)
-    out_table_count.name = 'N'
-    
-    result_table = []
+    # cross table    
     if result == 'N':
-        result_table = out_table_count
-    
-    # cross table normalize by row
-    
-    if result == 'N / Row Total':
-        out_table_row_total = pd.DataFrame(pd.crosstab(df1, df2, margins=False, normalize='index'))
-        a_row = list(out_table_row_total.index)[:]
-        b_row = []
-        name3 = ""
-    
-        if num_input_cols_1 == 1:
-            for i in a_row:
-                name3 = str(i)
-                b_row.append(name3)
-                name3 = ""
-        elif num_input_cols_1 != 1:
-            for i in range(len(a_row)):
-                name3 = '_'.join(str(s) for s in a_row[i])
-                b_row.append(name3)
-                name3 = ""
+        result_table = pd.crosstab(df1, df2, margins=margins)  
+    elif result == 'N / Row Total':
+        result_table = pd.crosstab(df1, df2, margins=margins, normalize='index')
+    elif result == 'N / Column Total':   
+        result_table = pd.crosstab(df1, df2, margins=margins, normalize='columns')
+    elif result == 'N / Total':    
+        result_table = pd.crosstab(df1, df2, margins=margins, normalize='all')
+    else:
+        raise_runtime_error("Please check 'result'.")
         
-        c_row = list(out_table_row_total.columns)[:]
-        d_row = []
-        name4 = ""
-        if num_input_cols_2 == 1:
-            for i in c_row:
-                name4 = str(i)
-                d_row.append(name4)
-                name4 = ""
-        elif num_input_cols_2 != 1:
-            for i in range(len(c_row)):
-                name4 = '_'.join(str(s) for s in c_row[i])
-                d_row.append(name4)
-                name4 = ""
-    
-        out_table_row_total.insert(loc=0, column=' ', value=b_row)
-        out_table_row_total.columns = np.append('N / Row Total', d_row)
-        out_table_row_total.name = 'N / Row Total'
-        result_table = out_table_row_total
-
-    # cross table normalize by column
-    if result == 'N / Column Total':
-    
-        out_table_column_total = pd.DataFrame(pd.crosstab(df1, df2, margins=False, normalize='columns'))
-        a_column = list(out_table_column_total.index)[:]
-        b_column = []
-        name5 = ""
-        if num_input_cols_1 == 1:
-            for i in a_column:
-                name5 = str(i)
-                b_column.append(name5)
-                name5 = ""
-        elif num_input_cols_1 != 1:
-                for i in range(len(a_column)):
-                    name5 = '_'.join(str(s) for s in a_column[i])
-                    b_column.append(name5)
-                    name5 = ""
-        
-        c_column = list(out_table_column_total.columns)[:]
-        d_column = []
-        name6 = ""
-        if num_input_cols_2 == 1:
-            for i in c_column:
-                name6 = str(i)
-                d_column.append(name6)
-                name6 = ""
-        elif num_input_cols_2 != 1:
-            for i in range(len(c_column)):
-                name6 = '_'.join(str(s) for s in c_column[i])
-                d_column.append(name6)
-                name6 = ""
-    
-        out_table_column_total.insert(loc=0, column=' ', value=b_column)
-        out_table_column_total.columns = np.append('N / Column Total', d_column)
-        out_table_column_total.name = 'N / Column Total'
-        result_table = out_table_column_total
-    
-    # cross table normalize by all values
-    
-    if result == 'N / Total':
-    
-        out_table_total = pd.DataFrame(pd.crosstab(df1, df2, margins=False, normalize='all'))
-        a_total = list(out_table_total.index)[:]
-        b_total = []
-        name7 = ""
-        c_total = list(out_table_total.columns)[:]
-        d_total = []
-        name8 = ""
-    
-        if num_input_cols_1 == 1:
-            for i in a_total:
-                name7 = str(i)
-                b_total.append(name7)
-                name7 = ""
-        elif num_input_cols_1 != 1:
-            for i in range(len(a_total)):
-                name7 = '_'.join(str(s) for s in a_total[i])
-                b_total.append(name7)
-                name7 = ""
-        if num_input_cols_2 == 1:
-            for i in c_total:
-                name8 = str(i)
-                d_total.append(name8)
-                name8 = ""
-        elif num_input_cols_2 != 1:   
-            for i in range(len(c_total)):
-                name8 = '_'.join(str(s) for s in c_total[i])
-                d_total.append(name8)
-                name8 = ""
-    
-        out_table_total.insert(loc=0, column=' ', value=b_total)
-        out_table_total.columns = np.append('N / Total', d_total)
-        out_table_total.name = 'N / Total'
-        result_table = out_table_total
+    # each row and column name    
+    row_names = list(result_table.index)[:]    
+    if len(input_cols_1) == 1:
+        joined_row_name = [str(i) for i in row_names]
+    else:
+        joined_row_name = ['_'.join(str(s) for s in row_names[i]) for i in range(len(row_names))]
   
-    return {'table': result_table}
+    column_names = list(result_table.columns)[:]
+    if len(input_cols_2) == 1:
+        joined_column_name = [str(i) for i in column_names]
+    else:
+        joined_column_name = ['_'.join(str(s) for s in column_names[i]) for i in range(len(column_names))]
+
+    # cross table
+    if result == 'N':
+        result_table.insert(loc=0, column=' ', value=joined_row_name)
+        result_table.columns = np.append('N', joined_column_name)    
+    # cross table normalize by row    
+    elif result == 'N / Row Total':
+        result_table.insert(loc=0, column=' ', value=joined_row_name)
+        result_table.columns = np.append('N / Row Total', joined_column_name)
+    # cross table normalize by column
+    elif result == 'N / Column Total':    
+        result_table.insert(loc=0, column=' ', value=joined_row_name)
+        result_table.columns = np.append('N / Column Total', joined_column_name)    
+    # cross table normalize by all values    
+    elif result == 'N / Total':    
+        result_table.insert(loc=0, column=' ', value=joined_row_name)
+        result_table.columns = np.append('N / Total', joined_column_name)        
+    else:
+        raise_runtime_error("Please check 'result'.")
+        
+    rb = BrtcReprBuilder()
+    rb.addMD(strip_margin("""
+    | ## Cross Table Result
+    | ### Result Type : {result}
+    |
+    | #### Result Table
+    |
+    | {result_table}
+    |
+    """.format(result=result, result_table=pandasDF2MD(result_table, num_rows=500))))
+
+    model = _model_dict('cross_table')
+    model['result'] = result
+    model['result_table'] = result_table
+    model['report'] = rb.get()
+  
+    return {'model': model}
