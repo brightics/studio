@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.extraction import one_hot_encoder
-res = one_hot_encoder(input_cols = ,prefix = ,prefix_list = ,suffix = ,group_by = )
+res = one_hot_encoder(input_cols = ,prefix = ,prefix_list = ,suffix = ,drop_last = ,group_by = )
 res['out_table']
 res['model']
 ```
@@ -29,7 +29,8 @@ Encode categorical integer features using a one-hot aka one-of-K scheme.
    - Available items
       - Index (default)
       - Label
-5. **Group By**: Columns to group by.
+5. **Drop Last**: Drop the last column.
+6. **Group By**: Columns to group by.
 
 #### Outputs
 1. **out_table**: table
@@ -51,7 +52,8 @@ Encode categorical integer features using a one-hot aka one-of-K scheme.
    - Available items
       - index (default)
       - label
-5. **group_by**: Columns to group by.
+5. **drop_last**: Drop the last column.
+6. **group_by**: Columns to group by.
 
 #### Outputs
 1. **out_table**: table

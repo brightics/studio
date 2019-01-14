@@ -19,7 +19,6 @@ This function writes a table to a csv file.
 #### Parameters
 1. **Path**<b style="color:red">*</b>: csv file path.
    - Value type : String
-   - Default : 
 
 #### Outputs
 This function has no output data.
@@ -31,7 +30,6 @@ This function has no output data.
 #### Parameters
 1. **path**<b style="color:red">*</b>: csv file path.
    - Value type : String
-   - Default : 
 
 #### Outputs
 This function has no output data.

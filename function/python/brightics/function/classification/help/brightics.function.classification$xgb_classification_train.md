@@ -19,18 +19,18 @@ The gradient boosted trees has been around for a while, and there are a lot of m
 
 #### Parameters
 1. **Feature Columns**<b style="color:red">*</b>: Feature columns.
-   - Allowed column type : Integer, Long, Double, Boolean
+   - Allowed column type : Integer, Long, Double, Float, Boolean
 2. **Label Column**<b style="color:red">*</b>: Label column.
-   - Allowed column type : Integer, Long, Double, String
+   - Allowed column type : Integer, Long, Double, Float, String
 3. **Max Depth**: Maximum tree depth for base learners.
    - Value type : Integer
-   - Default : 3
+   - Default : 3 (1 <= value)
 4. **Learning Rate**: Boosting learning rate.
    - Value type : Double
-   - Default : 0.1
+   - Default : 0.1 (0< value)
 5. **Number of Trees**: Number of boosted trees to fit.
    - Value type : Integer
-   - Default : 100
+   - Default : 100 (1<= value)
 6. **Seed**: The seed used by the random number generator.
    - Value type : Integer
 7. **Group By**: Columns to group by
@@ -44,18 +44,18 @@ The gradient boosted trees has been around for a while, and there are a lot of m
 
 #### Parameters
 1. **feature_cols**<b style="color:red">*</b>: Feature columns.
-   - Allowed column type : Integer, Long, Double, Boolean
+   - Allowed column type : Integer, Long, Double, Float, Boolean
 2. **label_col**<b style="color:red">*</b>: Label column.
-   - Allowed column type : Integer, Long, Double, String
+   - Allowed column type : Integer, Long, Double, Float, String
 3. **max_depth**: Maximum tree depth for base learners.
    - Value type : Integer
-   - Default : 3
+   - Default : 3 (1 <= value)
 4. **learning_rate**: Boosting learning rate.
    - Value type : Double
-   - Default : 0.1
+   - Default : 0.1 (0< value)
 5. **n_estimators**: Number of boosted trees to fit.
    - Value type : Integer
-   - Default : 100
+   - Default : 100 (1<= value)
 6. **random_state**: The seed used by the random number generator.
    - Value type : Integer
 7. **group_by**: Columns to group by

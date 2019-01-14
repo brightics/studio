@@ -22,9 +22,11 @@ Reference:
 #### Parameters
 1. **Bins**: Number of bins in histogram.
    - Value type : Integer
+   - Default : 10
 2. **Check Correlation**: Whether or not to check correlation.
 3. **Correlation Threshold**: Threshold to determine if the variable pair is correlated.
    - Value type : Double
+   - Default : 0.9
 4. **Correlation Overrides**: Variable names not to be rejected because they are correlated.
 5. **Group By**: Columns to group by
 
@@ -38,9 +40,11 @@ Reference:
 #### Parameters
 1. **bins**: Number of bins in histogram.
    - Value type : Integer
+   - Default : 10
 2. **check_correlation**: Whether or not to check correlation.
 3. **correlation_threshold**: Threshold to determine if the variable pair is correlated.
    - Value type : Double
+   - Default : 0.9
 4. **correlation_overrides**: Variable names not to be rejected because they are correlated.
 5. **group_by**: Columns to group by
 
