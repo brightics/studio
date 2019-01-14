@@ -24,8 +24,10 @@ This function fits and predicts using sklearn.cluster.KMeans model.
    - Allowed column type : Integer, Long, Double
 2. **Number of Clusters**: The number of clusters to form as well as the number of centroids to generate.
    - Value type : Integer
+   - Default : 3
 3. **Prediction Column Name**: Column name for prediction
    - Value type : String
+   - Default : prediction
 4. **Method for initialization**: Method for initialization.
    - Available items
       - k-means++ (default)
@@ -35,20 +37,24 @@ This function fits and predicts using sklearn.cluster.KMeans model.
    - Default : 3
 6. **Maximum Number of Iterations**: Maximum number of iterations of the k-means algorithm for a single run.
    - Value type : Integer
+   - Default : 300
 7. **Relative Tolerance**: Relative tolerance with regards to inertia to declare convergence.
    - Value type : Double
+   - Default : 0.0001
 8. **Precompute Distances**: Precompute distances (faster but takes more memory).
 9. **Seed**: Random seed.
    - Value type : Integer
 10. **Number of Jobs**: The number of jobs to use for the computation. This works by computing each of the n_init runs in parallel.
-   - Value type : Integer
+    - Value type : Integer
+    - Default : 1
 11. **Kmeans Algorithm**: K-means algorithm to use. The classical EM-style algorithm is 'full'. The 'Elkan' variation is more efficient by using the triangle inequality, but currently doesn't support sparse data. 'auto' chooses 'Elkan' for dense data and 'full' for sparse data.
-   - Available items
-      - auto (default)
-      - full
-      - elkan
+    - Available items
+       - auto (default)
+       - full
+       - elkan
 12. **Number of Samples**: Number of samples
-   - Value type : Integer
+    - Value type : Integer
+    - Default : 50
 13. **Group By**: Columns to group by
 
 #### Outputs
@@ -64,8 +70,10 @@ This function fits and predicts using sklearn.cluster.KMeans model.
    - Allowed column type : Integer, Long, Double
 2. **n_clusters**: The number of clusters to form as well as the number of centroids to generate.
    - Value type : Integer
+   - Default : 3
 3. **prediction_col**: Column name for prediction
    - Value type : String
+   - Default : prediction
 4. **init**: Method for initialization.
    - Available items
       - k-means++ (default)
@@ -75,20 +83,24 @@ This function fits and predicts using sklearn.cluster.KMeans model.
    - Default : 3
 6. **max_iter**: Maximum number of iterations of the k-means algorithm for a single run.
    - Value type : Integer
+   - Default : 300
 7. **tol**: Relative tolerance with regards to inertia to declare convergence.
    - Value type : Double
+   - Default : 0.0001
 8. **precompute_distances**: Precompute distances (faster but takes more memory).
 9. **seed**: Random seed.
    - Value type : Integer
 10. **n_jobs**: The number of jobs to use for the computation. This works by computing each of the n_init runs in parallel.
-   - Value type : Integer
+    - Value type : Integer
+    - Default : 1
 11. **algorithm**: K-means algorithm to use. The classical EM-style algorithm is 'full'. The 'Elkan' variation is more efficient by using the triangle inequality, but currently doesn't support sparse data. 'auto' chooses 'Elkan' for dense data and 'full' for sparse data.
-   - Available items
-      - auto (default)
-      - full
-      - elkan
+    - Available items
+       - auto (default)
+       - full
+       - elkan
 12. **n_samples**: Number of samples
-   - Value type : Integer
+    - Value type : Integer
+    - Default : 50
 13. **group_by**: Columns to group by
 
 #### Outputs

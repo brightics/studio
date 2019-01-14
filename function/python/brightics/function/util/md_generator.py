@@ -175,16 +175,7 @@ if __name__ == "__main__":
     for in_file_name in python_visual_files:
         
         in_file_path = os.path.abspath(in_file_name)
-        
-#         out_file_dir = os.path.dirname(os.path.dirname(in_file_path)) + os.sep + 'help'
-#         in_json_str = json.loads(open(in_file_name, 'r').read())
-#         out_file_header = in_json_str['specJson']['name']
-#         out_file_path = out_file_dir + os.sep + re.sub(r'\.json$', '.md', os.path.basename(in_file_path))
-        out_file_dir = os.path.abspath('../../../../../va-server/visual-analytics/public/static/help/python/')
-        in_json_str = json.loads(open(in_file_name, 'r', encoding='UTF-8').read())
-        out_file_header = in_json_str['specJson']['name']
-        out_file_path = out_file_dir + os.sep + out_file_header + '.md'
-        
+                
         mdstr = ''
         error_occur = False
         try:
@@ -193,8 +184,15 @@ if __name__ == "__main__":
             print("Error occurs in json : " + in_file_path)
             print("Exception Message : {e}".format(e=e))
             error_occur = True
-            
+        
+        # save helpdocs to function
         if not error_occur and mdstr:
+            
+            out_file_dir = os.path.dirname(os.path.dirname(in_file_path)) + os.sep + 'help'
+            in_json_str = json.loads(open(in_file_name, 'r', encoding='UTF-8').read())
+            out_file_header = in_json_str['specJson']['name']
+            #out_file_path = out_file_dir + os.sep + re.sub(r'\.json$', '.md', os.path.basename(in_file_path))
+            out_file_path = out_file_dir + os.sep + out_file_header + '.md'
             
             if not os.path.exists(out_file_dir):
                 os.makedirs(out_file_dir)
@@ -203,3 +201,18 @@ if __name__ == "__main__":
             wf.close()
             print("MD is generated in {0}".format(out_file_path))
             
+        # save helpdocs to va
+        if not error_occur and mdstr:
+            out_file_dir = os.path.abspath('../../../../../va-server/visual-analytics/public/static/help/python/')
+            in_json_str = json.loads(open(in_file_name, 'r', encoding='UTF-8').read())
+            out_file_header = in_json_str['specJson']['name']
+            #out_file_path = out_file_dir + os.sep + re.sub(r'\.json$', '.md', os.path.basename(in_file_path))
+            out_file_path = out_file_dir + os.sep + out_file_header + '.md'
+            
+            
+            if not os.path.exists(out_file_dir):
+                os.makedirs(out_file_dir)
+            wf = open(out_file_path, 'w', encoding='UTF-8')
+            wf.write(mdstr)
+            wf.close()
+            print("MD is generated in {0}".format(out_file_path))

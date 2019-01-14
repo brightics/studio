@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.statistics import oneway_anova
-res = oneway_anova(response_cols = ,factor_col = )
+res = oneway_anova(response_cols = ,factor_col = ,group_by = )
 res['result']
 ```
 
@@ -23,6 +23,7 @@ Reference:
 1. **Response Columns**<b style="color:red">*</b>: Response columns
    - Allowed column type : Integer, Long, Float, Double
 2. **Factor Column**<b style="color:red">*</b>: Factor column
+3. **Group By**: Columns to group by
 
 #### Outputs
 1. **result**: model
@@ -35,6 +36,7 @@ Reference:
 1. **response_cols**<b style="color:red">*</b>: Response columns
    - Allowed column type : Integer, Long, Float, Double
 2. **factor_col**<b style="color:red">*</b>: Factor column
+3. **group_by**: Columns to group by
 
 #### Outputs
 1. **result**: model

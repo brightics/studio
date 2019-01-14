@@ -22,6 +22,7 @@ Encode labels with value between 0 and n_classes-1.
    - Allowed column type : String, Integer, Float, Double, Long, Boolean
 2. **New Column Name**: New column name
    - Value type : String
+   - Default : encoded_column
 3. **Group By**: Columns to group by
 
 #### Outputs
@@ -37,6 +38,7 @@ Encode labels with value between 0 and n_classes-1.
    - Allowed column type : String, Integer, Float, Double, Long, Boolean
 2. **new_column_name**: New column name
    - Value type : String
+   - Default : encoded_column
 3. **group_by**: Columns to group by
 
 #### Outputs
