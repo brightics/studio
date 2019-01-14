@@ -62,7 +62,7 @@ def svm_classification_predict(table, model, **params):
         return _svm_classification_predict(table, model, **params)
 
 
-def _svm_classification_predict(table, model, prediction_col='prediction', probability_col='probability', log_probability_col='log_probability', thresholds=None, suffix='index'):
+def _svm_classification_predict(table, model, prediction_col='prediction', prob_prefix='probability', display_log_prob=False, log_prob_prefix='log_probability', thresholds=None, suffix='index'):
     _table = table.copy()
     
     feature_cols = model['features']
@@ -88,19 +88,23 @@ def _svm_classification_predict(table, model, prediction_col='prediction', proba
     else:
         suffixes = classes
     
-    log_prob = svc_model.predict_log_proba(features)
     prob = svc_model.predict_proba(features)
     
-    prob_cols = ['{probability_col}_{suffix}'.format(probability_col=probability_col, suffix=suffix) for suffix in suffixes]
+    prob_cols = ['{probability_col}_{suffix}'.format(probability_col=prob_prefix, suffix=suffix) for suffix in suffixes]
     prob_df = pd.DataFrame(data=prob, columns=prob_cols)
-     
-    logprob_cols = ['{log_probability_col}_{suffix}'.format(log_probability_col=log_probability_col, suffix=suffix) for suffix in suffixes]
-    logprob_df = pd.DataFrame(data=log_prob, columns=logprob_cols)
     
     prediction = pd.DataFrame(prob).apply(lambda x: classes[np.argmax(x / thresholds)], axis=1)
     
-    result = table.copy()
-    result[prediction_col] = prediction
-    result = pd.concat([result, prob_df, logprob_df], axis=1)
+    out_table = table.copy()
+    out_table[prediction_col] = prediction
     
-    return {'out_table' : result}
+    if display_log_prob == True:
+        log_prob = svc_model.predict_log_proba(features)
+        logprob_cols = ['{log_probability_col}_{suffix}'.format(log_probability_col=log_prob_prefix, suffix=suffix) for suffix in suffixes]
+        logprob_df = pd.DataFrame(data=log_prob, columns=logprob_cols)
+        out_table = pd.concat([out_table, prob_df, logprob_df], axis=1)
+    else:
+        out_table = pd.concat([out_table, prob_df], axis=1)
+        
+    
+    return {'out_table' : out_table}

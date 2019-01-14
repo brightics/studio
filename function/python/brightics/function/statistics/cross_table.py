@@ -79,6 +79,6 @@ def _cross_table(table, input_cols_1, input_cols_2, result='N', margins=False):
     model = _model_dict('cross_table')
     model['result'] = result
     model['result_table'] = result_table
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
   
     return {'model': model}

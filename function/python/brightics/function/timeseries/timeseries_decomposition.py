@@ -37,6 +37,6 @@ def _timeseries_decomposition(table, input_col, frequency, model_type='additive'
     
     model = _model_dict('timeseries_decomposition')
     model['model_type'] = model_type
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
     
     return {'out_table':out_table, 'model':model}
