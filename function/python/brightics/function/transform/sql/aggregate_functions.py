@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 
-<<<<<<< HEAD
-=======
 import pickle
->>>>>>> brightics/development
 import numpy as np
 
 

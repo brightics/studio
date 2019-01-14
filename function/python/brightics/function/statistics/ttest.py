@@ -321,9 +321,6 @@ def _paired_ttest(table, first_column, second_column, alternative=['greater', 'l
     |##### df : {deg_f}
     |##### Mean of differences : {dm}
     |##### Standard deviation : {sd}
-    |##### t-value : {tv}
-    |
-    |#### Summary
     |
     |{result_table}
     |
@@ -331,10 +328,5 @@ def _paired_ttest(table, first_column, second_column, alternative=['greater', 'l
 
     model = dict()
     model['_repr_brtc_'] = rb.get()
-    model['degree_of_freedom'] = df
-    model['mean_of_differences'] = diff_mean
-    model['standard_deviation'] = std_dev
-    model['t_value'] = t_value    
-    model['summary'] = result_table
 
     return{'model':model}
