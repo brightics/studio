@@ -18,6 +18,7 @@ private static final long serialVersionUID = 0L;
   private FailResult() {
     message_ = "";
     detailMessage_ = "";
+    errors_ = "";
   }
 
   @java.lang.Override
@@ -61,6 +62,12 @@ private static final long serialVersionUID = 0L;
             java.lang.String s = input.readStringRequireUtf8();
 
             detailMessage_ = s;
+            break;
+          }
+          case 26: {
+            java.lang.String s = input.readStringRequireUtf8();
+
+            errors_ = s;
             break;
           }
         }
@@ -155,6 +162,40 @@ private static final long serialVersionUID = 0L;
     }
   }
 
+  public static final int ERRORS_FIELD_NUMBER = 3;
+  private volatile java.lang.Object errors_;
+  /**
+   * <code>string errors = 3;</code>
+   */
+  public java.lang.String getErrors() {
+    java.lang.Object ref = errors_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      errors_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>string errors = 3;</code>
+   */
+  public com.google.protobuf.ByteString
+      getErrorsBytes() {
+    java.lang.Object ref = errors_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      errors_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
   private byte memoizedIsInitialized = -1;
   public final boolean isInitialized() {
     byte isInitialized = memoizedIsInitialized;
@@ -173,6 +214,9 @@ private static final long serialVersionUID = 0L;
     if (!getDetailMessageBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 2, detailMessage_);
     }
+    if (!getErrorsBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 3, errors_);
+    }
     unknownFields.writeTo(output);
   }
 
@@ -186,6 +230,9 @@ private static final long serialVersionUID = 0L;
     }
     if (!getDetailMessageBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, detailMessage_);
+    }
+    if (!getErrorsBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, errors_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -207,6 +254,8 @@ private static final long serialVersionUID = 0L;
         .equals(other.getMessage());
     result = result && getDetailMessage()
         .equals(other.getDetailMessage());
+    result = result && getErrors()
+        .equals(other.getErrors());
     result = result && unknownFields.equals(other.unknownFields);
     return result;
   }
@@ -222,6 +271,8 @@ private static final long serialVersionUID = 0L;
     hash = (53 * hash) + getMessage().hashCode();
     hash = (37 * hash) + DETAILMESSAGE_FIELD_NUMBER;
     hash = (53 * hash) + getDetailMessage().hashCode();
+    hash = (37 * hash) + ERRORS_FIELD_NUMBER;
+    hash = (53 * hash) + getErrors().hashCode();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -355,6 +406,8 @@ private static final long serialVersionUID = 0L;
 
       detailMessage_ = "";
 
+      errors_ = "";
+
       return this;
     }
 
@@ -379,6 +432,7 @@ private static final long serialVersionUID = 0L;
       com.samsung.sds.brightics.common.network.proto.FailResult result = new com.samsung.sds.brightics.common.network.proto.FailResult(this);
       result.message_ = message_;
       result.detailMessage_ = detailMessage_;
+      result.errors_ = errors_;
       onBuilt();
       return result;
     }
@@ -426,6 +480,10 @@ private static final long serialVersionUID = 0L;
       }
       if (!other.getDetailMessage().isEmpty()) {
         detailMessage_ = other.detailMessage_;
+        onChanged();
+      }
+      if (!other.getErrors().isEmpty()) {
+        errors_ = other.errors_;
         onChanged();
       }
       this.mergeUnknownFields(other.unknownFields);
@@ -589,6 +647,75 @@ private static final long serialVersionUID = 0L;
   checkByteStringIsUtf8(value);
       
       detailMessage_ = value;
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object errors_ = "";
+    /**
+     * <code>string errors = 3;</code>
+     */
+    public java.lang.String getErrors() {
+      java.lang.Object ref = errors_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        errors_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>string errors = 3;</code>
+     */
+    public com.google.protobuf.ByteString
+        getErrorsBytes() {
+      java.lang.Object ref = errors_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        errors_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>string errors = 3;</code>
+     */
+    public Builder setErrors(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  
+      errors_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string errors = 3;</code>
+     */
+    public Builder clearErrors() {
+      
+      errors_ = getDefaultInstance().getErrors();
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string errors = 3;</code>
+     */
+    public Builder setErrorsBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      
+      errors_ = value;
       onChanged();
       return this;
     }

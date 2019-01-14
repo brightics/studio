@@ -164,6 +164,7 @@ public class MessageSender {
                     @Override
                     public void onNext(WriteMessage value) {
                         if (StringUtils.isNoneBlank(value.getErrorMessage())) { //receive error
+                        	doneSignal.countDown();
                             errorSignal.add(value.getErrorMessage());
                           } else if("done".equals(value.getParameters())){
                               logger.debug("Partial data written complete.");

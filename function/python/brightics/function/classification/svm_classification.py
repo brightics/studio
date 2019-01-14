@@ -2,25 +2,34 @@ import pandas as pd
 import numpy as np
 from sklearn import svm
 from brightics.function.utils import _model_dict
-from brightics.common.report import ReportBuilder, strip_margin, pandasDF2MD, dict2MD
+from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, dict2MD
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.function.validation import validate, greater_than, \
+    raise_runtime_error
+import sklearn.utils as sklearn_utils
 
 
 def svm_classification_train(table, group_by=None, **params):
     check_required_parameters(_svm_classification_train, params, ['table'])
     if group_by is not None:
-        return _function_by_group(_svm_classification_train, table, group_by=group_by, **params)
+        grouped_model = _function_by_group(_svm_classification_train, table, group_by=group_by, **params)
+        return grouped_model
     else:
         return _svm_classification_train(table, **params)
 
 
 def _svm_classification_train(table, feature_cols, label_col, c=1.0, kernel='rbf', degree=3, gamma='auto', coef0=0.0, shrinking=True,
               probability=True, tol=1e-3, max_iter=-1, random_state=None):
+    validate(greater_than(c, 0.0, 'c'))
+    
     _table = table.copy()
     
     _feature_cols = _table[feature_cols]
     _label_col = _table[label_col]
+    
+    if(sklearn_utils.multiclass.type_of_target(_label_col) == 'continuous'):
+        raise_runtime_error('''Label Column should not be continuous.''')
     
     _svc = svm.SVC(C=c, kernel=kernel, degree=degree, gamma=gamma, coef0=coef0, shrinking=shrinking,
               probability=probability, tol=tol, max_iter=max_iter, random_state=random_state)
@@ -30,7 +39,7 @@ def _svm_classification_train(table, feature_cols, label_col, c=1.0, kernel='rbf
     get_param['feature_cols'] = feature_cols
     get_param['label_col'] = label_col
     
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## SVM Classification Result
     | ### Parameters
@@ -40,15 +49,15 @@ def _svm_classification_train(table, feature_cols, label_col, c=1.0, kernel='rbf
     _model = _model_dict('svc_model')
     _model['svc_model'] = _svc_model
     _model['features'] = feature_cols
-    _model['report'] = rb.get()
+    _model['_repr_brtc_'] = rb.get()
     
     return {'model':_model}
 
 
-def svm_classification_predict(table, model, group_by=None, **params):
+def svm_classification_predict(table, model, **params):
     check_required_parameters(_svm_classification_predict, params, ['table', 'model'])
-    if group_by is not None:
-        return _function_by_group(_svm_classification_predict, table, model, group_by=group_by, **params)
+    if '_grouped_data' in model:
+        return _function_by_group(_svm_classification_predict, table, model, **params)
     else:
         return _svm_classification_predict(table, model, **params)
 
@@ -72,12 +81,12 @@ def _svm_classification_predict(table, model, prediction_col='prediction', proba
         else:
             thresholds = np.array(thresholds)
     
+    # validation: the lengths of classes and thresholds must be equal.
+    
     if suffix == 'index':
         suffixes = [i for i, _ in enumerate(classes)]
     else:
         suffixes = classes
-    
-    result = _table.copy()
     
     log_prob = svc_model.predict_log_proba(features)
     prob = svc_model.predict_proba(features)

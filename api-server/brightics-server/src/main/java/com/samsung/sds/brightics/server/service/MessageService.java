@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.samsung.sds.brightics.common.core.exception.provider.ExceptionProvider;
-import com.samsung.sds.brightics.common.core.exception.provider.FunctionLabelProvider;
+import com.samsung.sds.brightics.common.core.legacy.provider.LegacyFunctionLabelProvider;
 import com.samsung.sds.brightics.common.core.util.SystemEnvUtil;
 import com.samsung.sds.brightics.server.model.vo.BrtcFunctionLabelVO;
 import com.samsung.sds.brightics.server.model.vo.BrtcMessageVO;
@@ -35,14 +35,14 @@ public class MessageService {
 
     public BrtcFunctionLabelVO getFunctionLabelInfo(String functionName, String parameter, String locale) {
         // skip request locale.
-        String label = FunctionLabelProvider.getFunctionLabel(functionName, parameter);
+        String label = LegacyFunctionLabelProvider.getFunctionLabel(functionName, parameter);
         return new BrtcFunctionLabelVO(functionName, parameter, SystemEnvUtil.CURRENT_LOCALE, label);
     }
 
     public List<BrtcFunctionLabelVO> getFunctionLabelList(String locale) {
         // skip request locale.
         List<BrtcFunctionLabelVO> brtcFunctionLabelVOList = new ArrayList<>();
-        ArrayList<Entry<Object, Object>> functionLabelList = FunctionLabelProvider.getFunctionLabelList();
+        ArrayList<Entry<Object, Object>> functionLabelList = LegacyFunctionLabelProvider.getFunctionLabelList();
         for (Entry<Object, Object> entry : functionLabelList) {
             String key = String.valueOf(entry.getKey());
             String[] splitKey = key.split("[.]");

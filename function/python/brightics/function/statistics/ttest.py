@@ -1,14 +1,13 @@
-from brightics.common.report import ReportBuilder, strip_margin, plt2MD, dict2MD, \
-    pandasDF2MD, keyValues2MD
-from brightics.function.utils import _model_dict
+from brightics.common.repr import BrtcReprBuilder
+from brightics.common.repr import strip_margin
+from brightics.common.repr import dict2MD
+from brightics.common.repr import pandasDF2MD
 from brightics.common.utils import check_required_parameters
 from brightics.common.groupby import _function_by_group
 import numpy as np
 import pandas as pd
 import math
 from math import sqrt
-import seaborn as sns
-import matplotlib.pyplot as plt
 from scipy.stats import t
 from scipy import mean, stats
 from statsmodels.stats.weightstats import ttest_ind
@@ -27,89 +26,146 @@ def _width(col, alpha, n):
     return stats.t.ppf(1.0 - alpha, n - 1) * col.std() / np.sqrt(n) 
 
 
-def _one_sample_ttest(table, input_cols, alternatives, hypothesized_mean=0, conf_level=0.95):
-
-    cols = ['data', 'alternative_hypothesis', 'statistics', 't_value', 'p_value', 'confidence_level', 'lower_confidence_interval', 'upper_confidence_interval']  
-    out_table = pd.DataFrame(columns=cols) 
-    n = len(table)   
-    alpha = 1.0 - conf_level
-    statistics = "t statistic, t distribution with %d degrees of freedom under the null hypothesis." % (n - 1)
+def _test_result(alter, hypothesized_mean, mean, t_value, p_value_two, width_one_sided, width_two_sided):
         
-    # ## Build model
-    rb = ReportBuilder()
+    if alter == 'Greater':
+        H1 = 'true mean > {}'.format(hypothesized_mean)    
+        if t_value >= 0:
+            p_value = p_value_two / 2
+        else:
+            p_value = 1 - p_value_two / 2
+        lower_conf_interval = mean - width_one_sided
+        upper_conf_interval = np.inf 
+           
+    if alter == 'Less':
+        H1 = 'true mean < {}'.format(hypothesized_mean)    
+        if t_value >= 0:
+            p_value = 1 - p_value_two / 2
+        else:
+            p_value = p_value_two / 2
+        lower_conf_interval = -np.inf
+        upper_conf_interval = mean + width_one_sided
+                   
+    if alter == 'Two Sided':
+        H1 = 'true mean != {}'.format(hypothesized_mean)      
+        p_value = p_value_two              
+        lower_conf_interval = mean - width_two_sided
+        upper_conf_interval = mean + width_two_sided
+
+    return (H1, p_value, lower_conf_interval, upper_conf_interval)
+
+
+def _result_table(input_cols, alternatives, result_dict):
+    out_cols = ['data', 'alternative_hypothesis', 'statistics', 't_value',
+                'p_value', 'confidence_level', 'lower_confidence_interval', 'upper_confidence_interval', 'confidence_interval']
+    
+    row_dict_list = []
+    for input_col in input_cols:
+        for alter in alternatives:
+            row_dict = result_dict[input_col][alter]
+            row_dict['data'] = input_col
+            row_dict_list.append(row_dict)
+            
+    return pd.DataFrame.from_dict(row_dict_list).reindex(columns=out_cols)
+
+
+def _one_sample_ttest_repr(statistics, result_dict, params):
+    input_cols = params['input_cols']
+    alternatives = params['alternatives']
+    hypothesized_mean = params['hypothesized_mean']
+    conf_level = params['conf_level']
+    
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
-    ## One Sample T Test Result
+    | One Sample T Test Result
     | - Statistics = {s}
     | - Hypothesized mean = {h} 
     | - Confidence level = {cl}
     """.format(s=statistics, h=hypothesized_mean, cl=conf_level)))
-       
+                             
     for input_col in input_cols:
-    
-        col = table[input_col]
-        
         H1_list = []
         p_list = []
         CI_list = []
+        for alter in alternatives:
+            test_info = result_dict[input_col][alter]
+            H1_list.append(test_info['alternative_hypothesis'])
+            p_list.append(test_info['p_value'])
+            CI_list.append(test_info['confidence_interval'])
+            
+        result_table = pd.DataFrame.from_items([ 
+            ['alternative hypothesis', H1_list],
+            ['p-value', p_list],
+            ['%g%% confidence Interval' % (conf_level * 100), CI_list]
+        ])  
         
-        # width of the confidence interval
+        rb.addMD(strip_margin("""
+        | ### Data = {input_col}
+        | - t-value = {t_value} 
+        |
+        | {result_table}
+        """.format(input_col=input_col, t_value=result_dict[input_col]['t_value'], result_table=pandasDF2MD(result_table))))    
+    
+    rb.addMD(strip_margin("""
+        | ### Parameters
+        | {params}
+        """.format(params=dict2MD(params))))
+    
+    return rb      
+
+    
+def _one_sample_ttest(table, input_cols, alternatives, hypothesized_mean=0, conf_level=0.95):
+
+    n = len(table)   
+    alpha = 1.0 - conf_level
+    statistics = "t statistic, t distribution with %d degrees of freedom under the null hypothesis." % (n - 1)
+    
+    result_dict = dict()
+    for input_col in input_cols:       
+        # sample mean, width of the confidence interval
+        col = table[input_col]
+        mean = np.mean(col)
         width_one_sided = _width(col, alpha, n)
         width_two_sided = _width(col, alpha / 2, n)
      
         # t-statistic, two-tailed p-value 
         t_value, p_value_two = stats.ttest_1samp(col, hypothesized_mean)
         
-        # one-tailed p-value for Greater
-        if t_value >= 0:
-            p_value_one = p_value_two / 2
-        else:
-            p_value_one = 1.0 - p_value_two / 2        
-
-        for alter in alternatives:            
-            if alter == 'Greater':
-                H1 = 'true mean > {hypothesized_mean}'.format(hypothesized_mean=hypothesized_mean)    
-                p_value = p_value_one
-                lower_conf_interval = np.mean(col) - width_one_sided
-                upper_conf_interval = np.inf 
-                   
-            if alter == 'Less':
-                H1 = 'true mean < {hypothesized_mean}'.format(hypothesized_mean=hypothesized_mean)
-                p_value = 1.0 - p_value_one
-                lower_conf_interval = -np.inf
-                upper_conf_interval = np.mean(col) + width_one_sided
-                           
-            if alter == 'Two Sided':
-                H1 = 'true mean != {hypothesized_mean}'.format(hypothesized_mean=hypothesized_mean)            
-                p_value = p_value_two              
-                lower_conf_interval = np.mean(col) - width_two_sided
-                upper_conf_interval = np.mean(col) + width_two_sided
-                                  
-            # ## Build out_table
-            out = pd.Series([input_col, H1, statistics, t_value, p_value, conf_level, lower_conf_interval, upper_conf_interval], index=cols)           
-            out_table = out_table.append(out, ignore_index=True)                 
+        result_dict[input_col] = dict()
+        
+        result_dict[input_col]['t_value'] = t_value
+        for alter in alternatives:
+            (H1, p_value, lower_conf_interval, upper_conf_interval) = _test_result(alter, hypothesized_mean, mean, t_value, p_value_two, width_one_sided, width_two_sided)
+            confidence_interval = '({lower_conf_interval}, {upper_conf_interval})'.format(lower_conf_interval=lower_conf_interval, upper_conf_interval=upper_conf_interval)
             
-            # ## Build model  
-            H1_list.append(H1)
-            p_list.append(p_value)
-            CI_list.append('({lower_conf_interval}, {upper_conf_interval})'.format(lower_conf_interval=lower_conf_interval, upper_conf_interval=upper_conf_interval))                 
+            result_dict[input_col][alter] = dict()
+            result_dict[input_col][alter]['alternative_hypothesis'] = H1
+            result_dict[input_col][alter]['confidence_level'] = conf_level
+            result_dict[input_col][alter]['statistics'] = statistics
+            result_dict[input_col][alter]['t_value'] = t_value
+            result_dict[input_col][alter]['p_value'] = p_value
+            result_dict[input_col][alter]['lower_confidence_interval'] = lower_conf_interval
+            result_dict[input_col][alter]['upper_confidence_interval'] = upper_conf_interval
+            result_dict[input_col][alter]['confidence_interval'] = confidence_interval
+    
+    params = {
+        'input_cols':input_cols,
+        'alternatives': alternatives,
+        'hypothesized_mean': hypothesized_mean,
+        'conf_level': conf_level
+    }
+    
+    result = _result_table(input_cols, alternatives, result_dict)
+    
+    rb = _one_sample_ttest_repr(statistics, result_dict, params)  
+    
+    model = dict()
+    
+    model['result'] = result       
+    model['_repr_brtc_'] = rb.get()
+    model['params'] = params
         
-        # ## Build model     
-        result_table = pd.DataFrame.from_items([ 
-            ['alternative hypothesis', H1_list],
-            ['p-value', p_list],
-            ['%g%% confidence Interval' % (conf_level * 100), CI_list]
-        ])       
-        rb.addMD(strip_margin("""
-        ### Data = {input_col}
-        | - t-value = {t_value} 
-        |
-        | {result_table}
-        """.format(input_col=input_col, t_value=t_value, result_table=pandasDF2MD(result_table))))
-        
-    model = dict()    
-    model['report'] = rb.get()
-        
-    return {'out_table':out_table, 'model':model}
+    return {'model':model}
 
 
 def two_sample_ttest_for_stacked_data(table, group_by=None, **params):
@@ -159,7 +215,7 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
     table_second = table[table[factor_col] == second]
     tmp_table = []
 
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     ## Two Sample T Test for Stacked Data Result
     | - Hypothesized mean = {hypo_diff}
@@ -251,7 +307,7 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
     result.columns = ['data', 'alternative_hypothesis', 'statistics', 'estimates', 'p_value', 'confidence_level', 'lower_confidence_interval', 'upper_confidence_interval']
 
     model = dict()
-    model['report'] = rb.get()    
+    model['_repr_brtc_'] = rb.get()    
     return {'out_table' : result, 'model' : model}
 
 
@@ -263,7 +319,7 @@ def paired_ttest(table, group_by=None, **params):
         return _paired_ttest(table, **params)
 
 
-def _paired_ttest(table, first_column, second_column, alternative = ['greater', 'less', 'twosided'], hypothesized_difference=0, confidence_level=0.95):
+def _paired_ttest(table, first_column, second_column, alternative, hypothesized_difference=0, confidence_level=0.95):
 
     df = len(table) - 1    
     first_col = table[first_column]
@@ -294,24 +350,31 @@ def _paired_ttest(table, first_column, second_column, alternative = ['greater', 
         other_term = std_dev * stats.t.isf((1 - confidence_level) / 2, df) / np.sqrt(df)
         confidence_interval.append((diff_mean - other_term, diff_mean + other_term))
     
-    result.append(['alternative hypothesis',alternative_hypothesis])
-    result.append(['t-value',t_value])
-    result.append(['p-value',p_value])
+    result.append(['alternative hypothesis', alternative_hypothesis])
+    result.append(['p-value', p_value])
     result.append(['%g%% confidence Interval' % (confidence_level * 100), confidence_interval])
     result_table = pd.DataFrame.from_items(result)
 
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     |## Paired T Test Result
     |##### df : {deg_f}
     |##### Mean of differences : {dm}
     |##### Standard deviation : {sd}
+    |##### t-value : {tv}
+    |
+    |#### Summary
     |
     |{result_table}
     |
-    """.format(deg_f=df, dm=diff_mean, sd=std_dev, result_table=pandasDF2MD(result_table))))
+    """.format(deg_f=df, dm=diff_mean, sd=std_dev, tv=t_value, result_table=pandasDF2MD(result_table))))
 
     model = dict()
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
+    model['degree_of_freedom'] = df
+    model['mean_of_differences'] = diff_mean
+    model['standard_deviation'] = std_dev
+    model['t_value'] = t_value    
+    model['summary'] = result_table
 
     return{'model':model}

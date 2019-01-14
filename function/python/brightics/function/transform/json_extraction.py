@@ -28,7 +28,7 @@ def _flatten(obj, key=None, flattened_dict=None, sep='__'):
     
     if isinstance(obj, dict):
         for obj_key in obj:
-            if not obj_key.startswith('_') and not obj_key == 'report':
+            if not obj_key.startswith('_'):
                 _flatten(obj[obj_key], _key(key, sep, obj_key), flattened_dict)    
     
     elif _flattenable(obj):

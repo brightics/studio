@@ -1,11 +1,13 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
-from brightics.common.report import ReportBuilder, strip_margin, plt2MD,\
-    pandasDF2MD
 from scipy import stats
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 import pandas as pd
+from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD, \
+    pandasDF2MD
+from brightics.common.validation import validate, greater_than, \
+    greater_than_or_equal_to
 
 
 def correlation(table, group_by=None, **params):
@@ -17,6 +19,10 @@ def correlation(table, group_by=None, **params):
 
 
 def _correlation(table, vars, method='pearson', height=2.5, corr_prec=2):
+    
+    validate(greater_than(height, 0, 'height'),
+             greater_than_or_equal_to(corr_prec, 1, 'corr_prec'))
+    
     size = len(vars)
     
     s_default = plt.rcParams['lines.markersize'] ** 2.
@@ -71,7 +77,7 @@ def _correlation(table, vars, method='pearson', height=2.5, corr_prec=2):
     fig_corr = plt2MD(plt)
     plt.clf()
     
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin(
         """ ## Correlation Results
         | ### Correlation Matrix
@@ -86,6 +92,6 @@ def _correlation(table, vars, method='pearson', height=2.5, corr_prec=2):
     res = dict()
     res['params'] = params
     res['corr_table'] = df_result
-    res['report'] = rb.get()
+    res['_repr_brtc_'] = rb.get()
     
     return {'result': res}

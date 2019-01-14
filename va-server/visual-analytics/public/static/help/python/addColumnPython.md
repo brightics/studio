@@ -21,7 +21,6 @@ This function adds new column with given expression.
 3. **Expression Type**<b style="color:red">*</b>: Expression type 
    - Available items
       - SQLite (default)
-      - Numexpr
       - Python
 2. **Expression**<b style="color:red">*</b>: Expression
 

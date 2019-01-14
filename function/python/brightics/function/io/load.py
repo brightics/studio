@@ -7,6 +7,7 @@ import brightics.common.data.table_data_reader as table_reader
 import brightics.common.data.utils as util
 import brightics.common.json as data_json
 from brightics.common.datasource import DbEngine
+from brightics.function.validation import raise_runtime_error
 
 
 def read_csv(path):
@@ -33,7 +34,7 @@ def read_from_s3(datasource, object_key):
 
 def read_from_db(datasource, sql):
     if sql is None:
-        raise Exception('sql is required parameter')
+        raise_runtime_error('sql is required parameter')
 
     with DbEngine(**datasource) as engine:
         df = pd.read_sql_query(sql, engine)

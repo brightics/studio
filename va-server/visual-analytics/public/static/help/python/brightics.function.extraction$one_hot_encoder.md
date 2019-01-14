@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.extraction import one_hot_encoder
-res = one_hot_encoder(input_cols = ,prefix = ,prefix_list = ,suffix = ,group_by = )
+res = one_hot_encoder(input_cols = ,prefix = ,prefix_list = ,suffix = ,drop_last = ,group_by = )
 res['out_table']
 res['model']
 ```
@@ -24,12 +24,13 @@ Encode categorical integer features using a one-hot aka one-of-K scheme.
    - Available items
       - Use existing column name(s) (default)
       - Enter new column name(s)
-3. **Prefix(es)**<b style="color:red">*</b>: List of prefix name(s). The length of this list should be equal to the length of input columns.
+3. **Prefix(es)**: List of prefix name(s). The length of this list should be equal to the length of input columns.
 4. **Suffix Type**: Choose suffix type.
    - Available items
       - Index (default)
       - Label
-5. **Group By**: Columns to group by.
+5. **Drop Last**: Drop the last column.
+6. **Group By**: Columns to group by.
 
 #### Outputs
 1. **out_table**: table
@@ -46,12 +47,13 @@ Encode categorical integer features using a one-hot aka one-of-K scheme.
    - Available items
       - col_name (default)
       - list
-3. **prefix_list**<b style="color:red">*</b>: List of prefix name(s). The length of this list should be equal to the length of input columns.
+3. **prefix_list**: List of prefix name(s). The length of this list should be equal to the length of input columns.
 4. **suffix**: Choose suffix type.
    - Available items
       - index (default)
       - label
-5. **group_by**: Columns to group by.
+5. **drop_last**: Drop the last column.
+6. **group_by**: Columns to group by.
 
 #### Outputs
 1. **out_table**: table
