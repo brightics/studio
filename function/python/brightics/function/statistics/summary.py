@@ -13,14 +13,13 @@ def statistic_summary(table, group_by=None, **params):
         return _statistic_summary(table, **params)
 
 
-def _statistic_summary(table, input_cols, statistics, percentile_amounts=[], trimmed_mean_amounts=[]):
+def _statistic_summary(table, input_cols, statistics, percentile_amounts=None, trimmed_mean_amounts=None):
     
     _table = table.copy()
-    
-    percentile_amounts = np.unique(percentile_amounts)
-    trimmed_mean_amounts = np.unique(trimmed_mean_amounts)
      
     def _amounts_colname(a): return str(a).replace('.', '_')
+    
+    def _unique_list(l): return np.unique(list(filter(lambda x: x is not None and not np.isnan(x), l)))
     
     data = {'column_name':input_cols}
     for st in statistics:
@@ -60,12 +59,12 @@ def _statistic_summary(table, input_cols, statistics, percentile_amounts=[], tri
             data['q3'] = [brtc_stats.q3(_table[x]) for x in input_cols]
         if 'iqr' == st:
             data['iqr'] = [brtc_stats.iqr(_table[x]) for x in input_cols]
-        if 'percentile' == st:
-            for pa in percentile_amounts:
+        if 'percentile' == st and percentile_amounts is not None:
+            for pa in _unique_list(percentile_amounts):
                 pa_colname = 'percentile_{}'.format(_amounts_colname(pa))
                 data[pa_colname] = [brtc_stats.percentile(_table[x], pa) for x in input_cols]
-        if 'trimmed_mean' == st:
-            for ta in trimmed_mean_amounts:
+        if 'trimmed_mean' == st and trimmed_mean_amounts is not None:
+            for ta in _unique_list(trimmed_mean_amounts):
                 ta_colname = 'trimmed_mean_{}'.format(_amounts_colname(ta))
                 data[ta_colname] = [brtc_stats.trimmed_mean(_table[x], ta) for x in input_cols]
             

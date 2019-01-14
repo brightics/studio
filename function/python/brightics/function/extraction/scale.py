@@ -8,7 +8,8 @@ from brightics.common.utils import check_required_parameters
 def scale(table, group_by=None, **params):
     check_required_parameters(_scale, params, ['table'])
     if group_by is not None:
-        return _function_by_group(_scale, table, group_by=group_by, **params)
+        grouped_model = _function_by_group(_scale, table, group_by=group_by, **params)
+        return grouped_model
     else:
         return _scale(table, **params)
     
@@ -48,10 +49,10 @@ def _scale(table, input_cols, scaler, suffix=None):
     return {'out_table' : out_table, 'model' : out_model}
 
 
-def scale_model(table, model, group_by=None, **params):
+def scale_model(table, model, **params):
     check_required_parameters(_scale_model, params, ['table', 'model'])
-    if group_by is not None:
-        return _function_by_group(_scale_model, table, model, group_by=group_by, **params)
+    if '_grouped_data' in model:
+        return _function_by_group(_scale_model, table, model, **params)
     else:
         return _scale_model(table, model, **params)
     

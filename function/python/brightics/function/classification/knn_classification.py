@@ -1,6 +1,5 @@
 from sklearn.neighbors import KNeighborsClassifier 
 import pandas as pd
-import numpy as np
 
 
 def knn_classification(train_table, test_table, feature_cols, label_col, k=5, algorithm='auto', leaf_size=30, p=2, pred_col_name='prediction', prob_col_prefix='probability', suffix='index'):
@@ -9,7 +8,7 @@ def knn_classification(train_table, test_table, feature_cols, label_col, k=5, al
     y_train = train_table[label_col]
     X_test = test_table[feature_cols]
 
-    knn = KNeighborsClassifier (n_neighbors=k, algorithm=algorithm, leaf_size=leaf_size, p=p)
+    knn = KNeighborsClassifier(n_neighbors=k, algorithm=algorithm, leaf_size=leaf_size, p=p)
     
     # Predict the class labels for the provided data
     knn.fit(X_train, y_train)
@@ -21,7 +20,7 @@ def knn_classification(train_table, test_table, feature_cols, label_col, k=5, al
         suffixes = [i for i, _ in enumerate(classes)]
     else:
         suffixes = classes
-		
+
     # Return probability estimates for the test data 
     prob = knn.predict_proba(X_test)
     prob_col_name = ['{prob_col_prefix}_{suffix}'.format(prob_col_prefix=prob_col_prefix, suffix=suffix) for suffix in suffixes]	

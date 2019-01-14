@@ -5,7 +5,11 @@ import pandas as pd
 from sklearn import preprocessing
 import itertools
 from sklearn.naive_bayes import MultinomialNB
-from brightics.common.report import ReportBuilder, strip_margin, plt2MD, pandasDF2MD, dict2MD
+from brightics.common.repr import BrtcReprBuilder
+from brightics.common.repr import strip_margin
+from brightics.common.repr import plt2MD
+from brightics.common.repr import pandasDF2MD
+from brightics.common.repr import dict2MD
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
@@ -18,6 +22,7 @@ def naive_bayes_train(table, group_by=None, **params):
     else:
         return _naive_bayes_train(table, **params)
 
+
 def _naive_bayes_train(table, feature_cols, label_col, alpha=1.0, fit_prior=True, class_prior=None):
 
     features = table[feature_cols]
@@ -27,7 +32,7 @@ def _naive_bayes_train(table, feature_cols, label_col, alpha=1.0, fit_prior=True
     label_correspond = label_encoder.transform(label)
     
     if class_prior is not None:
-        tmp_class_prior = [0 for x in range(len(class_prior))]
+        tmp_class_prior = [0] * len(class_prior)
         for elems in class_prior: 
             tmp = elems.split(":")
             tmp_class_prior[label_encoder.transform([tmp[0]])[0]] = float(tmp[1])
@@ -37,11 +42,11 @@ def _naive_bayes_train(table, feature_cols, label_col, alpha=1.0, fit_prior=True
     nb_model.fit(features, label_correspond)
     class_log_prior = nb_model.class_log_prior_
     feature_log_prob_ = nb_model.feature_log_prob_
-    tmp_result=np.hstack((list(map(list, zip(*[label_encoder.classes_]+[class_log_prior] ))),(feature_log_prob_)))
-    column_names=['labels','pi']
+    tmp_result = np.hstack((list(map(list, zip(*[label_encoder.classes_] + [class_log_prior]))), (feature_log_prob_)))
+    column_names = ['labels', 'pi']
     for feature_col in feature_cols:
-        column_names+=['theta_'+feature_col]
-    result_table=pd.DataFrame.from_records(tmp_result,columns=column_names)
+        column_names += ['theta_' + feature_col]
+    result_table = pd.DataFrame.from_records(tmp_result, columns=column_names)
     prediction_correspond = nb_model.predict(features)
         
     get_param = dict()
@@ -59,7 +64,7 @@ def _naive_bayes_train(table, feature_cols, label_col, alpha=1.0, fit_prior=True
     fig_confusion_matrix = plt2MD(plt)
     accuracy = nb_model.score(features, label_correspond) * 100
     
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## Naive Bayes Classification Result
     |
@@ -78,7 +83,7 @@ def _naive_bayes_train(table, feature_cols, label_col, alpha=1.0, fit_prior=True
     model['label_col'] = label_col
     model['label_encoder'] = label_encoder
     model['nb_model'] = nb_model
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
     
     return {'model' : model}
 
@@ -104,15 +109,15 @@ def _plot_confusion_matrix(cm, classes,
     plt.tight_layout()
 
 
-def naive_bayes_predict(table, model, group_by=None, **params):
+def naive_bayes_predict(table, model, **params):
     check_required_parameters(_naive_bayes_predict, params, ['table', 'model'])
-    if group_by is not None:
-        return _function_by_group(_naive_bayes_predict, table, model, group_by=group_by, **params)
+    if 'group_by' in model:
+        return _function_by_group(_naive_bayes_predict, table, model, **params)
     else:
         return _naive_bayes_predict(table, model, **params)
 
+
 def _naive_bayes_predict(table, model, suffix, display_log_prob=False, prediction_col='prediction', prob_prefix='probability', log_prob_prefix='log_probability'):
-    label_col = model['label_col']
     feature_cols = model['features']
     features = table[feature_cols]
     nb_model = model['nb_model']
@@ -124,21 +129,19 @@ def _naive_bayes_predict(table, model, suffix, display_log_prob=False, predictio
     if(suffix == 'label'):
         suffixes = label_encoder.classes_
     else:
-        suffixes = range(0,len(label_encoder.classes_)) 
+        suffixes = range(0, len(label_encoder.classes_)) 
 
     prob = nb_model.predict_proba(features)    
-    prob_cols = ['{prefix}_{suffix}'.format(prefix=prob_prefix,suffix=suffix) for suffix in suffixes]
+    prob_cols = ['{prefix}_{suffix}'.format(prefix=prob_prefix, suffix=suffix) for suffix in suffixes]
     prob_df = pd.DataFrame(data=prob, columns=prob_cols)
     
-    if display_log_prob == True:
-        log_prob = nb_model.predict_log_proba(features)
-        logprob_cols = ['{prefix}_{suffix}'.format(prefix=log_prob_prefix,suffix=suffix) for suffix in suffixes]
-        logprob_df = pd.DataFrame(data=log_prob, columns=logprob_cols)
-        
     result = table
     result[prediction_col] = prediction
     
     if display_log_prob == True:
+        log_prob = nb_model.predict_log_proba(features)
+        logprob_cols = ['{prefix}_{suffix}'.format(prefix=log_prob_prefix, suffix=suffix) for suffix in suffixes]
+        logprob_df = pd.DataFrame(data=log_prob, columns=logprob_cols)
         result = pd.concat([result, prob_df, logprob_df], axis=1)
     else:
         result = pd.concat([result, prob_df], axis=1)

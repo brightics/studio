@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from brightics.common.groupby import _function_by_group
+from brightics.function.validation import raise_runtime_error
 from brightics.common.utils import check_required_parameters
 
 
@@ -10,6 +11,7 @@ def unpivot(table, group_by=None, **params):
         return _function_by_group(_unpivot, table, group_by=group_by, **params)
     else:
         return _unpivot(table, **params)
+
 
 def _unpivot(table, value_vars, var_name=None, value_name='value', col_level=None):
     id_vars = [column for column in table.columns if column not in value_vars]
@@ -23,8 +25,13 @@ def pivot(table, group_by=None, **params):
         return _function_by_group(_pivot, table, group_by=group_by, **params)
     else:
         return _pivot(table, **params)
+
     
 def _pivot(table, values, aggfunc, index=None, columns=None):  # TODO
+
+    if index is None and columns is None:
+        # TODO: assign an error code.
+        raise_runtime_error('Group key value is required: Index or Columns.')
 
     def count(x): return len(x)
 
@@ -69,11 +76,11 @@ def _pivot(table, values, aggfunc, index=None, columns=None):  # TODO
             func_list.append(var)
         elif func_name == 'min':
             func_list.append(min)
-        elif func_name == '25th':
+        elif func_name == '_25th':
             func_list.append(_25th)
         elif func_name == 'median':
             func_list.append(median)
-        elif func_name == '75th':
+        elif func_name == '_75th':
             func_list.append(_75th)
         elif func_name == 'max':
             func_list.append(max)
@@ -94,25 +101,25 @@ def transpose(table, group_by=None, **params):
         return _transpose(table, **params)
 
 
-def _transpose(table, columns, label_col=None, label_col_name='label'):
+def _transpose(table, input_cols, label_col=None, label_col_name='label'):
 
     sort_table = pd.DataFrame()
     feature_col_name = []
     
-    for i in range(0, len(table.transpose())):
-        if table.columns[i] in columns:
+    for i in range(0, len(table.columns)):
+        if table.columns[i] in input_cols:
             sort_table[table.columns[i]] = table[table.columns[i]]
             feature_col_name.append(table.columns[i])
-
+    
     out_table = sort_table.transpose()
-
+    
     if label_col is None:
         for i in range(0, len(table)):
             out_table = out_table.rename(columns={len(table) - i - 1:'x' + str(len(table) - i)})
     else:
         for i in range(0, len(table)):
             out_table = out_table.rename(columns={i:str(table[label_col][i])})
-
+    
     out_table.insert(loc=0, column=label_col_name, value=feature_col_name)
 
     return{'out_table':out_table}

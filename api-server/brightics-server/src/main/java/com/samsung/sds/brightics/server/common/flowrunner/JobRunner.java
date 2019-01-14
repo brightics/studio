@@ -142,7 +142,7 @@ public class JobRunner implements IJobRunner {
 
         if (e instanceof AbsBrighticsException) {
             status.setErrorMessage(e.getMessage());
-            status.setErrorDetailMessage(((AbsBrighticsException) e).detailMessage);
+            status.setErrorDetailMessage(((AbsBrighticsException) e).detailedCause);
             logger.error("[JOB ERROR] {} {}", exceptionInfo.getMessage(), exceptionInfo.getDetailMessage());
         } else {
             status.setErrorMessage(ExceptionUtils.getMessage(e));
@@ -156,7 +156,7 @@ public class JobRunner implements IJobRunner {
     private ExceptionInfoVO buildExceptionInfo(Exception e) {
         if (e instanceof AbsBrighticsException) {
             AbsBrighticsException be = (AbsBrighticsException) e;
-            return new ExceptionInfoVO(be.getMessage(), be.detailMessage);
+            return new ExceptionInfoVO(be.getMessage(), be.detailedCause);
         }
         return new ExceptionInfoVO(new BrighticsCoreException("3001").getMessage(), ExceptionUtils.getStackTrace(e));
     }

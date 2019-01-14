@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.samsung.sds.brightics.common.core.exception.AbsBrighticsException;
 import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
-import com.samsung.sds.brightics.common.core.exception.provider.FunctionLabelProvider;
+import com.samsung.sds.brightics.common.core.legacy.provider.LegacyFunctionLabelProvider;
 import com.samsung.sds.brightics.common.variable.resolver.ExpressionPattern;
 import com.samsung.sds.brightics.common.workflow.context.WorkflowContext;
 import com.samsung.sds.brightics.common.workflow.context.parameter.ParametersBuilder;
@@ -143,10 +143,10 @@ public class ConditionalWorkflowBuilder {
 
     private void validateExpressionPresence(JsonObject condition, String name) {
         if (!condition.has(PARAM_EXPRESSION) || condition.get(PARAM_EXPRESSION).isJsonNull()) {
-            throw new BrighticsCoreException("3109", FunctionLabelProvider.getFunctionLabel("If", name));
+            throw new BrighticsCoreException("3109", LegacyFunctionLabelProvider.getFunctionLabel("If", name));
         }
         if (StringUtils.isBlank(ExpressionPattern.extractBody(condition.get(PARAM_EXPRESSION).getAsString()))) {
-            throw new BrighticsCoreException("3109", FunctionLabelProvider.getFunctionLabel("If", name));
+            throw new BrighticsCoreException("3109", LegacyFunctionLabelProvider.getFunctionLabel("If", name));
         }
     }
 }

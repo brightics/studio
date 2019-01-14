@@ -4,7 +4,7 @@ from .reshaping import pivot
 from .reshaping import unpivot
 from .reshaping import distinct
 from .reshaping import transpose
-from .merge import merge
+from .merge import join
 from .merge import bind_row_column
 from .sample import random_sampling
 from .split_data import split_data

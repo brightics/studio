@@ -2,7 +2,7 @@ import json
 import pickle
 import numpy
 import pandas as pd
-from brightics.common.report import ReportBuilder
+from brightics.common.repr import BrtcReprBuilder
 
 
 def _to_default_list(np_arr):
@@ -13,6 +13,7 @@ class DefaultEncoder(json.JSONEncoder):
     """
     DefaultEncoder is used for building viewable json string for in browser
     """
+
     def default(self, obj):
         # TODO add more support types
         if isinstance(obj, set):
@@ -20,16 +21,18 @@ class DefaultEncoder(json.JSONEncoder):
         elif isinstance(obj, numpy.ndarray):
             return _to_default_list(obj)
         else:
-            rb = ReportBuilder()
+            rb = BrtcReprBuilder()
             rb.addRawTextMD(str(obj))
-            return {'type': 'python object', 'report': rb.get()}
+            return {'type':'python object', '_repr_brtc_':rb.get()}
 
 
 class PickleEncoder(DefaultEncoder):
     """
     PickleEncoder is used for building json string saved in redis
     """
+
     def encode(self, obj):
+
         def hint_tuples(item):
             if isinstance(item, tuple):
                 return {'__tuple__': [hint_tuples(e) for e in item]}
@@ -52,17 +55,17 @@ class PickleEncoder(DefaultEncoder):
         elif isinstance(o, numpy.ndarray):
             return {'__numpy__': _to_default_list(o)}
         elif hasattr(o, '_repr_html_'):
-            rb = ReportBuilder()
+            rb = BrtcReprBuilder()
             rb.addHTML(o._repr_html_())
-            return {'report': rb.get(), '__pickled__': list(pickle.dumps(o))}
+            return {'_repr_brtc_':rb.get(), '__pickled__': list(pickle.dumps(o))}
         elif hasattr(o, 'savefig'):
-            rb = ReportBuilder()
+            rb = BrtcReprBuilder()
             rb.addPlt(o)
-            return {'report': rb.get(), '__pickled__': list(pickle.dumps(o))}
+            return {'_repr_brtc_':rb.get(), '__pickled__': list(pickle.dumps(o))}
         else:
-            rb = ReportBuilder()
+            rb = BrtcReprBuilder()
             rb.addRawTextMD(str(o))
-            return {'report': rb.get(), '__pickled__': list(pickle.dumps(o))}
+            return {'_repr_brtc_':rb.get(), '__pickled__': list(pickle.dumps(o))}
 
 
 def encode(obj, for_redis):

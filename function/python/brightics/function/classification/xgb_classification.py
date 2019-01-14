@@ -2,17 +2,19 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from xgboost import XGBClassifier
 from xgboost import plot_importance, plot_tree
-from brightics.common.report import ReportBuilder, strip_margin, pandasDF2MD, plt2MD, dict2MD
+from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, plt2MD, dict2MD
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 import numpy as np
+from brightics.function.validation import validate, greater_than_or_equal_to
 
 
 def xgb_classification_train(table, group_by=None, **params):
     check_required_parameters(_xgb_classification_train, params, ['table'])
     if group_by is not None:
-        return _function_by_group(_xgb_classification_train, table, group_by=group_by, **params)
+        grouped_model = _function_by_group(_xgb_classification_train, table, group_by=group_by, **params) 
+        return grouped_model
     else:
         return _xgb_classification_train(table, **params)
 
@@ -23,6 +25,10 @@ def _xgb_classification_train(table, feature_cols, label_col, max_depth=3, learn
             scale_pos_weight=1, base_score=0.5, random_state=0, seed=None, missing=None,
             sample_weight=None, eval_set=None, eval_metric=None, early_stopping_rounds=None, verbose=True,
             xgb_model=None, sample_weight_eval_set=None):
+    validate(greater_than_or_equal_to(max_depth, 1, 'max_depth'),
+             greater_than_or_equal_to(learning_rate, 0.0, 'learning_rate'),
+             greater_than_or_equal_to(n_estimators, 1, 'n_estimators'))
+    
     classifier = XGBClassifier(max_depth, learning_rate, n_estimators,
                                silent, objective, booster, n_jobs, nthread, gamma, min_child_weight,
                                max_delta_step, subsample, colsample_bytree, colsample_bylevel, reg_alpha, reg_lambda,
@@ -68,7 +74,7 @@ def _xgb_classification_train(table, feature_cols, label_col, max_depth=3, learn
 #     get_param_df = pd.DataFrame(data=get_param_list, columns=['parameter', 'value'])
     feature_importance_df = pd.DataFrame(data=feature_importance, index=feature_cols).T
     
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## XGB Classification Train Result
     |
@@ -85,15 +91,15 @@ def _xgb_classification_train(table, feature_cols, label_col, max_depth=3, learn
                table_feature_importance=pandasDF2MD(feature_importance_df, 20),
                list_parameters=params            
                )))     
-    model['report'] = rb.get()   
+    model['_repr_brtc_'] = rb.get()   
                
     return {'model' : model}
 
 
-def xgb_classification_predict(table, model, group_by=None, **params):
+def xgb_classification_predict(table, model, **params):
     check_required_parameters(_xgb_classification_predict, params, ['table', 'model'])
-    if group_by is not None:
-        return _function_by_group(_xgb_classification_predict, table, model, group_by=group_by, **params)
+    if '_grouped_data' in model:
+        return _function_by_group(_xgb_classification_predict, table, model, **params)
     else:
         return _xgb_classification_predict(table, model, **params)        
 
