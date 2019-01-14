@@ -83,7 +83,7 @@ def _outlier_detection_tukey_carling(table, input_cols, outlier_method='tukey', 
     model['q1'] = q1s
     model['q3'] = q3s
     model['iqr'] = iqrs
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
     
     return {'out_table': out_table, 'model' : model}
 
@@ -188,7 +188,7 @@ def _outlier_detection_lof(table, input_cols, n_neighbors=20, result_type='add_p
     model['input_cols'] = input_cols
     model['result_type'] = result_type
     model['num_neighbors'] = n_neighbors
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
     
     return {'out_table': out_table, 'model': model}
 
