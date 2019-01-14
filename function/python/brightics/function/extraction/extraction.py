@@ -88,13 +88,12 @@ def binarizer(table, column, threshold=0, threshold_type='greater', out_col_name
     out_table = table.copy()
     if out_col_name is None:
         out_col_name = 'binarized_' + str(column)
-        
+    
     if threshold_type == 'greater':
-        table[out_col_name] = table[column].apply(lambda x: 1 if x > threshold else 0)
-    else :
-        table[out_col_name] = table[column].apply(lambda x: 1 if x >= threshold else 0)
-
-    return{'table':table}
+        out_table[out_col_name] = np.where(table[column] > threshold, 1, 0)
+    else:
+        out_table[out_col_name] = np.where(table[column] >= threshold, 1, 0)
+    return{'out_table':out_table}
 
 
 def capitalize_variable(table, input_cols, replace, out_col_suffix=None):

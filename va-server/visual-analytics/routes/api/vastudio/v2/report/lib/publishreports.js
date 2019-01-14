@@ -28,6 +28,34 @@ router.get('/', function (req, res) {
     }
 });
 
+const attachAgentAsMapping = (userId) => {
+    const url = `/api/core/v2/agentUser`;
+    const options = __BRTC_CORE_SERVER.createRequestOptions('PUT', url);
+    options.body = JSON.stringify({
+        userId,
+        agentId: 'BRIGHTICS'
+    });
+    return new Promise((resolve, reject) => {
+        try {
+            return request(options, (...args) => resolve(args));
+        } catch (e) {
+            return reject(e);
+        }
+    });
+};
+
+const deleteAgentAsMapping = (userId) => {
+    const url = `/api/core/v2/agentUser/${userId}`;
+    const options = __BRTC_CORE_SERVER.createRequestOptions('DELETE', url);
+    return new Promise((resolve, reject) => {
+        try {
+            return request(options, (...args) => resolve(args));
+        } catch (e) {
+            return reject(e);
+        }
+    });
+};
+
 var createPublishReport = function (req, res) {
     var task = function (permissions) {
         var opt = {
@@ -42,7 +70,14 @@ var createPublishReport = function (req, res) {
         __BRTC_DAO.publishreport.create(opt, function (err) {
             __BRTC_ERROR_HANDLER.sendServerError(res, err);
         }, function (result) {
-            res.sendStatus(200);
+            attachAgentAsMapping(req.body.publishId)
+                .then(([error, response, body]) => {
+                    if (error) {
+                        __BRTC_ERROR_HANDLER.sendServerError(res, error);
+                    } else {
+                        res.sendStatus(200);
+                    }
+                });
         });
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_PUBLISH_CREATE, task);
@@ -56,7 +91,15 @@ var deletePublishReport = function (req, res) {
         __BRTC_DAO.publishreport.delete(opt, function (err) {
             __BRTC_ERROR_HANDLER.sendServerError(res, err);
         }, function (result) {
-            res.sendStatus(200);
+            // deleteAgentAsMapping
+            deleteAgentAsMapping(req.params.publishId)
+                .then(([error, response, body]) => {
+                    if (error) {
+                        __BRTC_ERROR_HANDLER.sendServerError(res, error);
+                    } else {
+                        res.sendStatus(200);
+                    }
+                });
         });
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_PUBLISH_DELETE, task);
@@ -85,7 +128,10 @@ var deletePublishReports = function (req, res) {
         __BRTC_DAO.publishreport.deleteByPublishIdList(opt, function (err) {
             __BRTC_ERROR_HANDLER.sendServerError(res, err);
         }, function (result) {
-            res.sendStatus(200);
+            req.body.publishReportList.map((pubId) => deleteAgentAsMapping(pubId))
+                .all(() => {
+                    res.sendStatus(200);
+                });
         });
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_PUBLISH_DELETE, task);

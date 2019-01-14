@@ -30,10 +30,11 @@ router.post('/execute', (req, res) => {
     send(req, res, __BRTC_CORE_SERVER, 'POST', '/api/core/v2/convert/execute', runnable);
 });
 
-router.post('/store', (req, res) => {
-    const contents = req.body;
+router.post('/store', function (req, res, next) {
+    var { contents, version } = req.body;
     send(req, res, __BRTC_CORE_SERVER, 'POST', '/api/core/v2/convert/store', {
-        contents: contents,
+        contents,
+        version
     });
 });
 

@@ -30,6 +30,7 @@ https://en.wikipedia.org/wiki/Logistic_regression
       - l2 (default)
 5. **Inverse of Regularization**: Regularization term
    - Value type : Double
+   - Default : 1.0 (value > 0)
 6. **Solver**: Solver to use
    - Available items
       - newton-cg
@@ -41,8 +42,10 @@ https://en.wikipedia.org/wiki/Logistic_regression
    - Value type : Integer
 8. **Max Iteration**: Maximum number of iteration
    - Value type : Integer
+   - Default : 100 (value > 0)
 9. **Tolerance**: Tolerance for stopping criterion
    - Value type : Double
+   - Default : 0.0001 (value > 0)
 10. **Group By**: Columns to group by
 
 #### Outputs
@@ -64,6 +67,7 @@ https://en.wikipedia.org/wiki/Logistic_regression
       - l2 (default)
 5. **C**: Regularization term
    - Value type : Double
+   - Default : 1.0 (value > 0)
 6. **solver**: Solver to use
    - Available items
       - newton-cg
@@ -75,8 +79,10 @@ https://en.wikipedia.org/wiki/Logistic_regression
    - Value type : Integer
 8. **max_iter**: Maximum number of iteration
    - Value type : Integer
+   - Default : 100 (value > 0)
 9. **tol**: Tolerance for stopping criterion
    - Value type : Double
+   - Default : 0.0001 (value > 0)
 10. **group_by**: Columns to group by
 
 #### Outputs

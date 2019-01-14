@@ -39,6 +39,9 @@ var Studio = (function ($parent, options) {
         },
         getClipboardManager: function () {
             return this.getInstance().getClipboardManager();
+        },
+        getActiveEditor: function () {
+            return this.getInstance().getActiveEditor();
         }
     };
 })($(".brtc-va-main"), {userId: user, permissions: JSON.parse(permissions), logLevel: logLevel, isPublish: window.isPublish});
