@@ -241,13 +241,14 @@ router.get('/jobs/:jid', function (req, res) {
     });
 });
 
-function isJsonString(str) {
+function IsJsonObject(str) {
+    var parsed;
     try {
-        JSON.parse(str);
+        parsed = JSON.parse(str);
     } catch (e) {
         return false;
     }
-    return true;
+    return (typeof parsed === 'object');
 }
 
 router.get('/jobs/:jid/tasks/:fid', function (req, res) {
@@ -270,17 +271,18 @@ router.get('/jobs/:jid/tasks/:fid', function (req, res) {
             // 예전 스펙에는 columns
             if (answer.message && answer.message.columns) {
                 for (let c in answer.message.columns) {
-                    const converted = __BRTC_CORE_SERVER
+                    const convertedType = __BRTC_CORE_SERVER
                         .convertColumnType(answer.message.columns[c].type);
-                    answer.message.columns[c].type = converted.type;
-                    answer.message.columns[c].internalType = converted.internalType;
+                    answer.message.columns[c].type = convertedType.type;
+                    answer.message.columns[c].internalType = convertedType.internalType;
                 }
             }
 
             // Core에서 spec이 바뀜
             if (answer.message && typeof answer.message === 'string') {
-                if (isJsonString(answer.message)) {
-                    let message = JSON.parse(answer.message).data;
+                if (isJsonObject(answer.message)) {
+                    let parsed = JSON.parse(answer.message);
+                    let message = parsed.data;
                     let schema = message.schema;
                     if (schema) {
                         schema.forEach((s) => {

@@ -137,3 +137,42 @@ exports.deleteFile = function (req, res) {
     };
     projectPermission.execute(req.params.project, req.apiUserId, PERMISSION.FILE.DELETE, res, task);
 };
+
+exports.saveFile = function (req, res) {
+    var task = function (permissions) {
+        var opt = {
+            id: req.params.file,
+            project_id: req.params.project,
+            event_key: req.body.event_key,
+            label: req.body.label,
+            modelDiff: req.body.modelDiff,
+            hash: req.body.hash,
+            contents: req.body.contents,
+            description: __BRTC_TOOLS_SANITIZE_HTML.sanitizeHtml(req.body.description),
+            updater: req.body.updater,
+            type: req.body.type,
+            tag: req.body.tag
+        };
+
+        __BRTC_DAO.project.updateTime({ id: req.params.project }, function (err) {
+            __BRTC_ERROR_HANDLER.sendError(res, 32032);
+        }, function (result) {
+            __BRTC_DAO.file.save(opt, function (err) {
+                if (err === 'differentHash') {
+                    return res.json([]);
+                }
+                __BRTC_ERROR_HANDLER.sendServerError(res, err);
+            }, function (rowCount) {
+                __BRTC_DAO.file.selectById(opt, function (err) {
+                    __BRTC_ERROR_HANDLER.sendServerError(res, err);
+                }, function (result) {
+                    for (var i in result) {
+                        delete result[i].contents;
+                    }
+                    res.json(result);
+                });
+            });
+        });
+    };
+    projectPermission.execute(req.params.project, req.apiUserId, PERMISSION.FILE.UPDATE, res, task, true);
+};

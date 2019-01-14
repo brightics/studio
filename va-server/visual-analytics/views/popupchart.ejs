@@ -86,6 +86,9 @@
     <!-- Functions -->
     <script src="js/va/brightics-va-functions.js"></script>
 
+    <!-- Dataflow - for migration -->
+    <script src="js/va/brightics-va-dataflow.js"></script>
+    
     <style>
         html, body {
             margin: 0;
@@ -204,12 +207,14 @@
         };
 
         return $.ajax(option).done(function (data) {
+            var migrator = new Brightics.VA.Core.Tools.ModelMigrator.Executor();
             hideProgress();
             var file = data[0];
             if (!file) {
                 alert('Could not found model.');
                 return;
             }
+            migrator.migrate(file.contents);
             retrieveChartOptions(params, file.contents);
         }).fail(function (err) {
             showNotification(MSG_ERROR);
