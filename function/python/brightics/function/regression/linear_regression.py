@@ -8,6 +8,8 @@ from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group, time_usage
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils.table_converters import simple_tables2df_list
+from statsmodels.iolib.summary2 import _df_to_simpletable
+from statsmodels.stats.outliers_influence import variance_inflation_factor
 
 
 def linear_regression_train(table, group_by=None, **params):
@@ -19,7 +21,7 @@ def linear_regression_train(table, group_by=None, **params):
         return _linear_regression_train(table, **params)
 
     
-def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True):
+def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True, is_vif=True):
     features = table[feature_cols]
     label = table[label_col]
     lr_model = LinearRegression(fit_intercept)
@@ -29,14 +31,19 @@ def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True)
     residual = label - predict
 
     if fit_intercept == True:
-        lr_model_fit = sm.OLS(label, sm.add_constant(features)).fit()
+        features = sm.add_constant(features)
+        lr_model_fit = sm.OLS(label, features).fit()
     else:
         lr_model_fit = sm.OLS(label, features).fit()
     
     summary = lr_model_fit.summary()
-    summary_tables = simple_tables2df_list(summary.tables)
+    summary_tables = simple_tables2df_list(summary.tables, drop_index=True)
     summary0 = summary_tables[0]
     summary1 = summary_tables[1]
+    if is_vif:
+        summary1['vif'] = [variance_inflation_factor(features.values, i) for i in range(features.shape[1])]
+        summary1['vif>10'] = summary1['vif'].apply(lambda _: 'true' if _ > 10 else 'false')
+    summary.tables[1] = _df_to_simpletable(summary1)
     summary2 = summary_tables[2]
     
     html_result = summary.as_html()
