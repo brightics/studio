@@ -96,7 +96,9 @@ var responseFunctionHelp = function (req, res, operation, palette, fileContents)
                     '<li>A significant digit is 10 digits for all analytic functions. We ignore the differences between each value of outputs from analytic function results and help pages in case more than 10 significant digits are the same.</li>' +
                     '<li>When you use train and predict functions, the order and the number of columns should be the same for both functions.</li>' +
                     '<li>We recommend you to preprocess abnormal values such as NaN or null beforehand. You can use Brightics preprocessing functions before analyzing data.</li>' +
-                    '</ul>' +
+                    '<li>The result of the function may vary depending on the system even if the same seed is used.</li>' +
+                    '<li>The results of Spark and Python functions may differ even if you use the same function because of the internal algorithms are different.</li>' +
+                    '</ul>';
                     '</div>' +
                     '</div>';
 

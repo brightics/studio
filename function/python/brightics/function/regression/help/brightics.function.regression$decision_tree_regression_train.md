@@ -34,18 +34,22 @@ A decision tree regressor.
    - Value type : Integer
 6. **Min Samples Splits**: The minimum number of samples required to split an internal node.
    - Value type : Integer
+   - Default : 2
 7. **Min Samples Leaf**: The minimum number of samples required to be at a leaf node.
    - Value type : Integer
+   - Default : 1
 8. **Min Weight Fraction Leaf**: The minimum weighted fraction of the sum total of weights (of all the input samples) required to be at a leaf node.
    - Value type : Double
+   - Default : 0.0
 9. **Max Features**: The number of features to consider when looking for the best split.
    - Value type : Integer
 10. **Seed**: The seed used by the random number generator.
-   - Value type : Integer
+    - Value type : Integer
 11. **Max Leaf Nodes**: Grow a tree with this value in best-first fashion.
-   - Value type : Integer
+    - Value type : Integer
 12. **Min Impurity Decrease**: A node will be split if this split induces a decrease of the impurity greater than or equal to this value.
-   - Value type : Double
+    - Value type : Double
+    - Default : 0.0
 13. **Group By**: Columns to group by
 
 #### Outputs
@@ -73,18 +77,22 @@ A decision tree regressor.
    - Value type : Integer
 6. **min_samples_split**: The minimum number of samples required to split an internal node.
    - Value type : Integer
+   - Default : 2
 7. **min_samples_leaf**: The minimum number of samples required to be at a leaf node.
    - Value type : Integer
+   - Default : 1
 8. **min_weight_fraction_leaf**: The minimum weighted fraction of the sum total of weights (of all the input samples) required to be at a leaf node.
    - Value type : Double
+   - Default : 0.0
 9. **max_features**: The number of features to consider when looking for the best split.
    - Value type : Integer
 10. **random_state**: The seed used by the random number generator.
-   - Value type : Integer
+    - Value type : Integer
 11. **max_leaf_nodes**: Grow a tree with this value in best-first fashion.
-   - Value type : Integer
+    - Value type : Integer
 12. **min_impurity_decrease**: A node will be split if this split induces a decrease of the impurity greater than or equal to this value.
-   - Value type : Double
+    - Value type : Double
+    - Default : 0.0
 13. **group_by**: Columns to group by
 
 #### Outputs

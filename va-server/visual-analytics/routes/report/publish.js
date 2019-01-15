@@ -69,9 +69,13 @@ var parseStagingData = function (body) {
     return resultSet;
 };
 
-router.post('/jobs', function (req, res) {
-    var options = __BRTC_CORE_SERVER.createRequestOptions('POST', '/api/v2/analytics/jobs/' + req.body.jid);
+router.post('/jobs/execute', function (req, res) {
+    var options = __BRTC_CORE_SERVER.createRequestOptions('POST', '/api/core/v2/analytics/jobs/execute');
     // __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
+    if (req.body.user) {
+        __BRTC_CORE_SERVER.setBasicAuth(options, req.body.user, req.body.user);
+        delete req.body.user;
+    }
     options.body = JSON.stringify(req.body);
     request(options, function (error, response, body) {
         if (error) {
@@ -87,7 +91,7 @@ router.post('/jobs', function (req, res) {
 });
 
 router.get('/jobs/:jid', function (req, res) {
-    var options = __BRTC_CORE_SERVER.createRequestOptions('GET', '/api/v2/analytics/jobs/' + req.params.jid);
+    var options = __BRTC_CORE_SERVER.createRequestOptions('GET', '/api/core/v2/analytics/jobs/' + req.params.jid);
     // __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
     request(options, function (error, response, body) {
         if (error) {

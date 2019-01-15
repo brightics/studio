@@ -3,6 +3,7 @@ import numpy as np
 from brightics.common.groupby import _function_by_group
 from brightics.function.validation import raise_runtime_error
 from brightics.common.utils import check_required_parameters
+import brightics.common.statistics as brtc_stat 
 
 
 def unpivot(table, group_by=None, **params):
@@ -35,23 +36,23 @@ def _pivot(table, values, aggfunc, index=None, columns=None):  # TODO
 
     def count(x): return len(x)
 
-    def mean(x): return np.mean(x)
+    def _sum(x): return brtc_stat.sum(x)
 
-    def std(x): return np.std(x)
+    def mean(x): return brtc_stat.mean(x)
 
-    def var(x): return np.var(x)
+    def std(x): return brtc_stat.std(x)
 
-    def min(x): return np.min(x)
+    def var(x): return brtc_stat.var_samp(x)
 
-    def _25th(x): return np.percentile(x, 0.25)
+    def _max(x): return brtc_stat.max(x)
 
-    def median(x): return np.median(x)
+    def _min(x): return brtc_stat.min(x)
 
-    def _75th(x): return np.percentile(x, 0.75)
+    def _25th(x): return brtc_stat.percentile(x, 0.25)
 
-    def max(x): return np.max(x)
+    def median(x): return brtc_stat.median(x)
 
-    def sum(x): return np.sum(x)
+    def _75th(x): return brtc_stat.percentile(x, 0.75)
     
     def _mi2index(mi):
         return pd.Index([_replace_col(col) for col in mi.get_values()])
@@ -75,7 +76,7 @@ def _pivot(table, values, aggfunc, index=None, columns=None):  # TODO
         elif func_name == 'var':
             func_list.append(var)
         elif func_name == 'min':
-            func_list.append(min)
+            func_list.append(_min)
         elif func_name == '_25th':
             func_list.append(_25th)
         elif func_name == 'median':
@@ -83,9 +84,9 @@ def _pivot(table, values, aggfunc, index=None, columns=None):  # TODO
         elif func_name == '_75th':
             func_list.append(_75th)
         elif func_name == 'max':
-            func_list.append(max)
+            func_list.append(_max)
         elif func_name == 'sum':
-            func_list.append(sum) 
+            func_list.append(_sum) 
     
     pivoted = pd.pivot_table(table, values=values, index=index, columns=columns, aggfunc=func_list, fill_value=None, margins=False, margins_name='All')
     pivoted.columns = _mi2index(pivoted.columns)

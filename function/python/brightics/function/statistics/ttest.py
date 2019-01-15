@@ -1,6 +1,7 @@
-from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD, dict2MD, \
-    pandasDF2MD, keyValues2MD
-from brightics.function.utils import _model_dict
+from brightics.common.repr import BrtcReprBuilder
+from brightics.common.repr import strip_margin
+from brightics.common.repr import dict2MD
+from brightics.common.repr import pandasDF2MD
 from brightics.common.utils import check_required_parameters
 from brightics.common.groupby import _function_by_group
 import numpy as np
@@ -54,32 +55,73 @@ def _test_result(alter, hypothesized_mean, mean, t_value, p_value_two, width_one
     return (H1, p_value, lower_conf_interval, upper_conf_interval)
 
 
-def _one_sample_ttest(table, input_cols, alternatives, hypothesized_mean=0, conf_level=0.95):
+def _result_table(input_cols, alternatives, result_dict):
+    out_cols = ['data', 'alternative_hypothesis', 'statistics', 't_value',
+                'p_value', 'confidence_level', 'lower_confidence_interval', 'upper_confidence_interval', 'confidence_interval']
+    
+    row_dict_list = []
+    for input_col in input_cols:
+        for alter in alternatives:
+            row_dict = result_dict[input_col][alter]
+            row_dict['data'] = input_col
+            row_dict_list.append(row_dict)
+            
+    return pd.DataFrame.from_dict(row_dict_list).reindex(columns=out_cols)
 
-    out_cols = ['data', 'alternative_hypothesis', 'statistics', 't_value', 'p_value', 'confidence_level', 'lower_confidence_interval', 'upper_confidence_interval']  
-    out_table = pd.DataFrame(columns=out_cols) 
-    n = len(table)   
-    alpha = 1.0 - conf_level
-    statistics = "t statistic, t distribution with %d degrees of freedom under the null hypothesis." % (n - 1)
-        
-    # Build model
+
+def _one_sample_ttest_repr(statistics, result_dict, params):
+    input_cols = params['input_cols']
+    alternatives = params['alternatives']
+    hypothesized_mean = params['hypothesized_mean']
+    conf_level = params['conf_level']
+    
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
-    ## One Sample T Test Result
+    | One Sample T Test Result
     | - Statistics = {s}
     | - Hypothesized mean = {h} 
     | - Confidence level = {cl}
     """.format(s=statistics, h=hypothesized_mean, cl=conf_level)))
-    
-    t_values = []   
-    model = _model_dict('one_sample_ttest_model')  
-    
-    for i, input_col in enumerate(input_cols):       
-        
+                             
+    for input_col in input_cols:
         H1_list = []
         p_list = []
         CI_list = []
+        for alter in alternatives:
+            test_info = result_dict[input_col][alter]
+            H1_list.append(test_info['alternative_hypothesis'])
+            p_list.append(test_info['p_value'])
+            CI_list.append(test_info['confidence_interval'])
+            
+        result_table = pd.DataFrame.from_items([ 
+            ['alternative hypothesis', H1_list],
+            ['p-value', p_list],
+            ['%g%% confidence Interval' % (conf_level * 100), CI_list]
+        ])  
         
+        rb.addMD(strip_margin("""
+        | ### Data = {input_col}
+        | - t-value = {t_value} 
+        |
+        | {result_table}
+        """.format(input_col=input_col, t_value=result_dict[input_col]['t_value'], result_table=pandasDF2MD(result_table))))    
+    
+    rb.addMD(strip_margin("""
+        | ### Parameters
+        | {params}
+        """.format(params=dict2MD(params))))
+    
+    return rb      
+
+    
+def _one_sample_ttest(table, input_cols, alternatives, hypothesized_mean=0, conf_level=0.95):
+
+    n = len(table)   
+    alpha = 1.0 - conf_level
+    statistics = "t statistic, t distribution with %d degrees of freedom under the null hypothesis." % (n - 1)
+    
+    result_dict = dict()
+    for input_col in input_cols:       
         # sample mean, width of the confidence interval
         col = table[input_col]
         mean = np.mean(col)
@@ -88,43 +130,42 @@ def _one_sample_ttest(table, input_cols, alternatives, hypothesized_mean=0, conf
      
         # t-statistic, two-tailed p-value 
         t_value, p_value_two = stats.ttest_1samp(col, hypothesized_mean)
-        t_values.append(t_value)
-
-        for alter in alternatives:            
+        
+        result_dict[input_col] = dict()
+        
+        result_dict[input_col]['t_value'] = t_value
+        for alter in alternatives:
             (H1, p_value, lower_conf_interval, upper_conf_interval) = _test_result(alter, hypothesized_mean, mean, t_value, p_value_two, width_one_sided, width_two_sided)
-                                  
-            # ## Build out_table
-            out = pd.Series([input_col, H1, statistics, t_value, p_value, conf_level, lower_conf_interval, upper_conf_interval], index=out_cols)           
-            out_table = out_table.append(out, ignore_index=True)                 
+            confidence_interval = '({lower_conf_interval}, {upper_conf_interval})'.format(lower_conf_interval=lower_conf_interval, upper_conf_interval=upper_conf_interval)
             
-            # ## Build model  
-            H1_list.append(H1)
-            p_list.append(p_value)
-            CI_list.append('({lower_conf_interval}, {upper_conf_interval})'.format(lower_conf_interval=lower_conf_interval, upper_conf_interval=upper_conf_interval))                 
+            result_dict[input_col][alter] = dict()
+            result_dict[input_col][alter]['alternative_hypothesis'] = H1
+            result_dict[input_col][alter]['confidence_level'] = conf_level
+            result_dict[input_col][alter]['statistics'] = statistics
+            result_dict[input_col][alter]['t_value'] = t_value
+            result_dict[input_col][alter]['p_value'] = p_value
+            result_dict[input_col][alter]['lower_confidence_interval'] = lower_conf_interval
+            result_dict[input_col][alter]['upper_confidence_interval'] = upper_conf_interval
+            result_dict[input_col][alter]['confidence_interval'] = confidence_interval
+    
+    params = {
+        'input_cols':input_cols,
+        'alternatives': alternatives,
+        'hypothesized_mean': hypothesized_mean,
+        'conf_level': conf_level
+    }
+    
+    result = _result_table(input_cols, alternatives, result_dict)
+    
+    rb = _one_sample_ttest_repr(statistics, result_dict, params)  
+    
+    model = dict()
+    
+    model['result'] = result       
+    model['_repr_brtc_'] = rb.get()
+    model['params'] = params
         
-        # Build model     
-        result_table = pd.DataFrame.from_items([ 
-            ['alternative hypothesis', H1_list],
-            ['p-value', p_list],
-            ['%g%% confidence Interval' % (conf_level * 100), CI_list]
-        ])  
-            
-        rb.addMD(strip_margin("""
-        ### Data = {input_col}
-        | - t-value = {t_value} 
-        |
-        | {result_table}
-        """.format(input_col=input_col, t_value=t_value, result_table=pandasDF2MD(result_table))))
-        model['result{}'.format(i)] = result_table
-             
-    model['report'] = rb.get()
-    model['input_columns'] = input_cols
-    model['statistics'] = statistics
-    model['hypothesized_mean'] = hypothesized_mean
-    model['t_values'] = t_values
-    model['confidence_level'] = conf_level 
-        
-    return {'model':model, 'out_table':out_table}
+    return {'model':model}
 
 
 def two_sample_ttest_for_stacked_data(table, group_by=None, **params):
@@ -278,7 +319,7 @@ def paired_ttest(table, group_by=None, **params):
         return _paired_ttest(table, **params)
 
 
-def _paired_ttest(table, first_column, second_column, alternative, hypothesized_difference=0, confidence_level=0.95):
+def _paired_ttest(table, first_column, second_column, alternative=['greater', 'less', 'twosided'], hypothesized_difference=0, confidence_level=0.95):
 
     df = len(table) - 1    
     first_col = table[first_column]
@@ -310,6 +351,7 @@ def _paired_ttest(table, first_column, second_column, alternative, hypothesized_
         confidence_interval.append((diff_mean - other_term, diff_mean + other_term))
     
     result.append(['alternative hypothesis', alternative_hypothesis])
+    result.append(['t-value', t_value])
     result.append(['p-value', p_value])
     result.append(['%g%% confidence Interval' % (confidence_level * 100), confidence_interval])
     result_table = pd.DataFrame.from_items(result)
@@ -320,20 +362,12 @@ def _paired_ttest(table, first_column, second_column, alternative, hypothesized_
     |##### df : {deg_f}
     |##### Mean of differences : {dm}
     |##### Standard deviation : {sd}
-    |##### t-value : {tv}
-    |
-    |#### Summary
     |
     |{result_table}
     |
-    """.format(deg_f=df, dm=diff_mean, sd=std_dev, tv=t_value, result_table=pandasDF2MD(result_table))))
+    """.format(deg_f=df, dm=diff_mean, sd=std_dev, result_table=pandasDF2MD(result_table))))
 
     model = dict()
     model['_repr_brtc_'] = rb.get()
-    model['degree_of_freedom'] = df
-    model['mean_of_differences'] = diff_mean
-    model['standard_deviation'] = std_dev
-    model['t_value'] = t_value    
-    model['summary'] = result_table
 
     return{'model':model}

@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import unittest
+import random
 from brightics.function.statistics.summary import statistic_summary, \
     statistic_derivation, string_summary
 
@@ -49,6 +50,17 @@ class SummaryTest(unittest.TestCase):
         out1 = statistic_summary(t1, input_cols, ['max', 'min'])
         print(out1['out_table'])
 
+    def test_summary3(self):
+        d1 = [random.random() * 100 for _ in range(20)]
+        d2 = d1.copy()
+        d2[0] = None
+        table1 = pd.DataFrame({'d1':d1, 'd2':d2})
+        
+        input_cols = ['d1', 'd2']
+        outtable1 = statistic_summary(table1, input_cols=input_cols, statistics=['avg', 'percentile', 'trimmed_mean'], 
+                                      percentile_amounts=[0.5, None], trimmed_mean_amounts=[0.1, None, 0.2])['out_table']
+        print(outtable1)
+        
     def test_string(self):
         t = pd.DataFrame({'s1': ['a', 'a', 'b', 'b', 'b', None, None, None, None, 'e']})
         print(t)
@@ -106,7 +118,7 @@ class SummaryTest(unittest.TestCase):
         }
         df = pd.DataFrame(d)
         
-        #out = statistic_derivation(df, ['d1','d2','d3'], ['min', 'max', 'mode', 'percentile'], [0.1, 0.75], [0.1, 0.3])['out_table']
-        out = statistic_derivation(df, ['d1','d2','d3'], ['min', 'mode'], [0.1, 0.75], [0.1, 0.3])['out_table']
+        # out = statistic_derivation(df, ['d1','d2','d3'], ['min', 'max', 'mode', 'percentile'], [0.1, 0.75], [0.1, 0.3])['out_table']
+        out = statistic_derivation(df, ['d1', 'd2', 'd3'], ['min', 'mode'], [0.1, 0.75], [0.1, 0.3])['out_table']
         print(out)
         

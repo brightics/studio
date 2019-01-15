@@ -1,8 +1,8 @@
 ## Format
 ### Python
 ```python
-from brightics.function.transform import merge
-res = merge(left_on = ,right_on = ,how = ,lsuffix = ,rsuffix = ,sort = )
+from brightics.function.transform import join
+res = join(left_on = ,right_on = ,how = ,lsuffix = ,rsuffix = ,sort = )
 res['table']
 ```
 
