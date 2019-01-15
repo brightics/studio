@@ -46,8 +46,13 @@ def _chi_square_test_of_independence(table, feature_cols, label_col, correction=
         elif math.isnan(p_chi):
             dependence = 'Independence of two categorical variables cannot be decided.'
             
-        result_table = pd.DataFrame([stat_chi, dof, p_chi], columns=['estimate', 'df', 'p_value'])
-        
+        data = {
+            'estimate': stat_chi,
+            'df': dof,
+            'p_value': p_chi
+        }
+            
+        result_table = pd.DataFrame([data], columns=['estimate', 'df', 'p_value'])
         
         model['result{}'.format(idx)] = result_table
         
@@ -62,7 +67,7 @@ def _chi_square_test_of_independence(table, feature_cols, label_col, correction=
         |
         """.format(label=label_col, feature=feature_col, idx=idx, result_table=pandasDF2MD(result_table), dependence=dependence)))
     
-    model['report'] = rb.get()
+    model['_repr_brtc_'] = rb.get()
     
     return {'model':model}
 
