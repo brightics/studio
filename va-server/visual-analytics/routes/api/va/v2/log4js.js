@@ -1,8 +1,8 @@
 var router = __REQ_express.Router();
 var log4js = require('log4js');
 
-var chartLogger = log4js.getLogger('Chart');
-var clientLogger = log4js.getLogger('Client');
+var chartLogger = log4js.getLogger('chart');
+var clientLogger = log4js.getLogger('client');
 
 var traceLog = function (req, res) {
     var ip = req.header('x-forwarded-for') || req.connection.remoteAddress;

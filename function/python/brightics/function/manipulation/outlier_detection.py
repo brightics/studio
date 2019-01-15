@@ -39,7 +39,7 @@ def _outlier_detection_tukey_carling(table, input_cols, outlier_method='tukey', 
             output_col_names.append(output_col_name)
             out_table[output_col_name] = out_table[col].apply(lambda _: _carling(_, mean[col], iqrs[col], multiplier))
     else:
-        raise_runtime_error("Please check 'outliner_method'.")
+        raise_runtime_error("Please check 'outlier_method'.")
     
     # result_type is one of 'add_prediction', 'remove_outliers', 'both'
     if result_type == 'add_prediction':
@@ -114,7 +114,7 @@ def _outlier_detection_tukey_carling_model(table, model, new_column_prefix='is_o
             output_col_names.append(output_col_name)
             out_table[output_col_name] = out_table[col].apply(lambda _: _carling(_, model['mean'][col], model['iqr'][col], model['multiplier']))
     else:
-        raise_runtime_error("Please check 'outliner_method'.")
+        raise_runtime_error("Please check 'outlier_method'.")
         
     # result_type is one of 'add_prediction', 'remove_outliers', 'both'
     if result_type == 'add_prediction':
@@ -203,9 +203,22 @@ def outlier_detection_lof_model(table, model, group_by=None, **params):
     
 def _outlier_detection_lof_model(table, model, new_column_name='is_outlier'):
     out_table = table.copy()
+    result_type = model['result_type']
 
     isinlier = lambda _: 'in' if _ == 1 else 'out'
     out_table[new_column_name] = [isinlier(lof_predict) for lof_predict in model['lof_model'].predict(out_table[model['input_cols']])]
     
+    # result_type is one of 'add_prediction', 'remove_outliers', 'both'
+    
+    if result_type == 'add_prediction':
+        pass
+    elif result_type == 'remove_outliers':
+        out_table = out_table[out_table[new_column_name] == 'in']
+        out_table = out_table.drop(new_column_name, axis=1)
+    elif result_type == 'both':
+        out_table = out_table[out_table[new_column_name] == 'in']
+    else:
+        raise_runtime_error("Please check 'result_type'.")      
+        
     return {'out_table' : out_table}
     

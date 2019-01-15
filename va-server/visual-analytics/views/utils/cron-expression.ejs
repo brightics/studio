@@ -25,19 +25,17 @@
 
             $('.brtc-utils-cron-generator-copy-button').click(function() {
                 var cronExpressionValue = $('.brtc-utils-cron-generator-value').text();
-                var isChrome = !!window.chrome && !!window.chrome.webstore;
-                if (isChrome) {
+
+                var isIE = /*@cc_on!@*/false || !!document.documentMode;
+                if (isIE) {
+                    window.clipboardData.setData("Text", cronExpressionValue);
+                } else {
                     var textField = document.createElement('textarea');
                     textField.innerText = cronExpressionValue;
                     document.body.appendChild(textField);
                     textField.select();
                     document.execCommand('copy');
                     textField.remove();
-                }
-
-                var isIE = /*@cc_on!@*/false || !!document.documentMode;
-                if (isIE) {
-                    window.clipboardData.setData("Text", cronExpressionValue);
                 }
 
                 alert('Cron Expression is copied to clipboard.')

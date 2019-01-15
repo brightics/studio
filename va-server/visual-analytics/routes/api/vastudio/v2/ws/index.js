@@ -31,6 +31,7 @@ router.post('/projects/:project/files', files.createFile);
 router.get('/projects/:project/files/:file', files.getFile);
 router.post('/projects/:project/files/:file/update', files.updateFile);
 router.post('/projects/:project/files/:file/delete', files.deleteFile);
+router.post('/projects/:project/files/:file/save', files.saveFile);
 
 router.get('/projects/:project/members', members.listMembers);
 router.post('/projects/:project/members/invite', members.inviteMember);

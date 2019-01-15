@@ -19,9 +19,9 @@ The gradient boosted trees has been around for a while, and there are a lot of m
 
 #### Parameters
 1. **Feature Columns**<b style="color:red">*</b>: Feature columns.
-   - Allowed column type : Integer, Long, Double, Boolean
+   - Allowed column type : Integer, Long, Double, Float, Boolean
 2. **Label Column**<b style="color:red">*</b>: Label column.
-   - Allowed column type : Integer, Long, Double
+   - Allowed column type : Integer, Long, Double, Float
 3. **Max Depth**: Maximum tree depth for base learners.
    - Value type : Integer
    - Default : 3 (1 <= value)
@@ -44,9 +44,9 @@ The gradient boosted trees has been around for a while, and there are a lot of m
 
 #### Parameters
 1. **feature_cols**<b style="color:red">*</b>: Feature columns.
-   - Allowed column type : Integer, Long, Double, Boolean
+   - Allowed column type : Integer, Long, Double, Float, Boolean
 2. **label_col**<b style="color:red">*</b>: Label column.
-   - Allowed column type : Integer, Long, Double
+   - Allowed column type : Integer, Long, Double, Float
 3. **max_depth**: Maximum tree depth for base learners.
    - Value type : Integer
    - Default : 3 (1 <= value)

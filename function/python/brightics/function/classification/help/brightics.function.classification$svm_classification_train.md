@@ -25,6 +25,7 @@ https://en.wikipedia.org/wiki/Support_vector_machine
    - Allowed column type : Integer, Long, Double, Decimal, String, Float
 3. **Penalty Term (C)**: Penalty parameter C of the error term.
    - Value type : Double
+   - Default : 1.0
 4. **Kernel**: The kernel type to be used in the SVM algorithm.
    - Available items
       - RBF (default)
@@ -33,11 +34,14 @@ https://en.wikipedia.org/wiki/Support_vector_machine
       - Sigmoid
 5. **Degree**: Degree of the polynomial kernel function.
    - Value type : Integer
+   - Default : 3
 6. **Shrinking**: Whether to use the shrinking heuristic.
 7. **Tolerance**: Tolerance for stopping criterion.
    - Value type : Double
+   - Default : 0.001
 8. **Max Iterations**: Hard limit on iterations within solver, or -1 for no limit.
    - Value type : Integer
+   - Default : -1
 9. **Seed**: The seed of the pseudo random number generator used when shuffling the data for probability estimates.
    - Value type : Integer
 10. **Group By**: Columns to group by
@@ -56,6 +60,7 @@ https://en.wikipedia.org/wiki/Support_vector_machine
    - Allowed column type : Integer, Long, Double, Decimal, String, Float
 3. **c**: Penalty parameter C of the error term.
    - Value type : Double
+   - Default : 1.0
 4. **kernel**: The kernel type to be used in the SVM algorithm.
    - Available items
       - rbf (default)
@@ -64,11 +69,14 @@ https://en.wikipedia.org/wiki/Support_vector_machine
       - sigmoid
 5. **degree**: Degree of the polynomial kernel function.
    - Value type : Integer
+   - Default : 3
 6. **shrinking**: Whether to use the shrinking heuristic.
 7. **tol**: Tolerance for stopping criterion.
    - Value type : Double
+   - Default : 0.001
 8. **max_iter**: Hard limit on iterations within solver, or -1 for no limit.
    - Value type : Integer
+   - Default : -1
 9. **random_state**: The seed of the pseudo random number generator used when shuffling the data for probability estimates.
    - Value type : Integer
 10. **group_by**: Columns to group by
