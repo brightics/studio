@@ -24,7 +24,7 @@ This function returns value for executed SQL Query.
 
 ### Python
 #### Inputs
-1. **table**: table
+1. **tables**: tables
 
 #### Parameters
 1. **query**<b style="color:red">*</b>: SQL Query
