@@ -151,7 +151,7 @@ def outlier_detection_lof(table, group_by=None, **params):
 def _outlier_detection_lof(table, input_cols, n_neighbors=20, result_type='add_prediction', new_column_name='is_outlier'): 
     out_table = table.copy()
     features = out_table[input_cols]
-    lof_model = LocalOutlierFactor(n_neighbors=n_neighbors)
+    lof_model = LocalOutlierFactor(n_neighbors, algorithm='auto', leaf_size=30, metric='minkowski', p=2, novelty=True, contamination=0.1)
     lof_model.fit(features)
     
     isinlier = lambda _: 'in' if _ == 1 else 'out'
