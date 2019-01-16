@@ -49,9 +49,9 @@ def _function_by_group(function, table=None, model=None, group_by=None, **params
     print('Number of groups: {}'.format(len(group_key_dict)))
     print('group_by: {}'.format(group_by))
     print('group_key_dict: {}'.format(group_key_dict))
-    
+
     sample_result = _sample_result(function, table, model, params, group_key_dict)
-    res_keys, df_keys, model_keys_containing_repr, res_dict = _info_from_sample_result(sample_result, group_by, group_key_dict)  
+    res_keys, df_keys, model_keys_containing_repr, res_dict = _info_from_sample_result(sample_result, group_by, group_key_dict)
     res_dict = _function_by_group_key(function, table, model, params, res_dict, group_key_dict, res_keys)
 
     for repr_key in model_keys_containing_repr:
@@ -74,18 +74,18 @@ def _group(table, group_by):
     print(group_keys)
     # group_keys = np.apply_along_axis(_group_key_from_list, axis=1, arr=groups)
     group_key_dict = {k:v.tolist() for k, v in zip(group_keys, groups)}
-    
+
     res_dict = {
         '_grouped_data': _grouped_data(group_by=group_by, group_key_dict=group_key_dict)
     }  # todo dict?
-    
+
     for group_key in group_key_dict:
         print('GROUP_KEY', group_key)
         group_key_row = group_key_dict[group_key]
         temp_table = table
         for group_by_col, group in zip(group_by, group_key_row):
             temp_table = temp_table[temp_table[group_by_col]==group]
-            
+
         data = temp_table.reset_index(drop=True)
         res_dict['_grouped_data']['data'][group_key] = data
     return res_dict, group_key_dict
@@ -109,7 +109,7 @@ def _sample_result(function, table, model, params, group_key_dict):
             break
         except Exception:
             traceback.print_exc()
-    
+
     print( '_sample_result finished.' )
     return sample_result  # if all the cases failed
 
