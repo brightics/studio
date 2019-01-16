@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
-from brightics.common.repr import BrtcReprBuilder
-from brightics.common.utils import time_usage
+import traceback
 
 import pandas as pd
 import numpy as np
+
+from brightics.common.repr import BrtcReprBuilder
+from brightics.common.utils import time_usage
 
 GROUP_KEY_SEP = '\u0002'
 
@@ -22,7 +24,7 @@ def _group_key_dict(group_keys, groups):  # todo
     for key, group in zip(group_keys, groups):
         if key not in group_key_dict:
             group_key_dict[key] = group
-    
+
     return group_key_dict
 
 
@@ -30,36 +32,40 @@ def _group_key_dict(group_keys, groups):  # todo
 def _function_by_group(function, table=None, model=None, group_by=None, **params):
     if table is None and model is None:
         raise Exception('This function requires at least one of a table or a model')
-     
+
     if isinstance(table, pd.DataFrame) and model is None and group_by is None:
         raise Exception('This function requires group_by.')
-     
+
     if isinstance(model, dict) and '_grouped_data' not in model:
         raise Exception('Unsupported model. model requires _grouped_data.')
-    
+
     if isinstance(model, dict):
         group_key_dict = model['_grouped_data']['group_key_dict']
         group_by = model['_grouped_data']['group_by']
-    
+
     if isinstance(table, pd.DataFrame):
         table, group_key_dict = _group(table, group_by)  # use group keys from table even there is a model.
-    
+
     print('Number of groups: {}'.format(len(group_key_dict)))
-    
+    print('group_by: {}'.format(group_by))
+    print('group_key_dict: {}'.format(group_key_dict))
+
     sample_result = _sample_result(function, table, model, params, group_key_dict)
-    res_keys, df_keys, model_keys_containing_repr, res_dict = _info_from_sample_result(sample_result, group_by, group_key_dict)  
-    res_dict = _function_by_group_key(function, table, model, params, res_dict, group_key_dict, res_keys)
-    
+    res_keys, df_keys, model_keys_containing_repr = _info_from_sample_result(sample_result, group_by, group_key_dict)
+    res_dict, success_keys = _function_by_group_key(function, table, model, params, group_key_dict, res_keys, group_by)
+
+    print(res_dict)
+    print(success_keys)
     for repr_key in model_keys_containing_repr:
         rb = BrtcReprBuilder()
-        for group in group_key_dict:
+        for group in success_keys:
             rb.addMD('{group}'.format(group=group))
             rb.merge(res_dict[repr_key]['_grouped_data']['data'][group]['_repr_brtc_'])
         res_dict[repr_key]['_repr_brtc_'] = rb.get()
-            
+
     for df_key in df_keys:
         res_dict[df_key] = _flatten(res_dict[df_key])
-    
+
     return res_dict
 
 
@@ -67,14 +73,19 @@ def _function_by_group(function, table=None, model=None, group_by=None, **params
 def _group(table, group_by):
     groups = table[group_by].drop_duplicates().values
     group_keys = np.array([_group_key_from_list(row) for row in groups])
-    # group_keys = np.apply_along_axis(_group_key_from_list, axis=1, arr=groups)
     group_key_dict = {k:v.tolist() for k, v in zip(group_keys, groups)}
-    
-    res_dict = {'_grouped_data': _grouped_data(group_by=group_by, group_key_dict=group_key_dict)}  # todo dict?
+
+    res_dict = {
+        '_grouped_data': _grouped_data(group_by=group_by, group_key_dict=group_key_dict)
+    }  # todo dict?
+
     for group_key in group_key_dict:
-        mask = np.where(table[group_by].values == group_key_dict[group_key], True, False)
-        data = table[mask]
-        data.reset_index(drop=True)
+        group_key_row = group_key_dict[group_key]
+        temp_table = table
+        for group_by_col, group in zip(group_by, group_key_row):
+            temp_table = temp_table[temp_table[group_by_col]==group]
+
+        data = temp_table.reset_index(drop=True)
         res_dict['_grouped_data']['data'][group_key] = data
     return res_dict, group_key_dict
 
@@ -82,31 +93,53 @@ def _group(table, group_by):
 def _flatten(grouped_table):
     group_cols = grouped_table['_grouped_data']['group_by']
     group_key_dict = grouped_table['_grouped_data']['group_key_dict']
-    return pd.concat([_add_group_cols_front_if_required(v, k, group_cols, group_key_dict) 
+    return pd.concat([_add_group_cols_front_if_required(v, k, group_cols, group_key_dict)
                       for k, v in grouped_table['_grouped_data']['data'].items() if v is not None],
                       ignore_index=True, sort=False)
 
 
 @time_usage
 def _sample_result(function, table, model, params, group_key_dict):
+    print( '_sample_result is running' )
+    sample_result = None
     for sample_group in group_key_dict:
+        print( '_sample_result for group {} is running.'.format(sample_group) )
         try:
             sample_result = _run_function(function, table, model, params, sample_group)
-            break;
-        except:
-            pass
-    
+            break
+        except Exception:
+            print( '_sample_result got an exception while running for group {}.'.format(sample_group) )
+            traceback.print_exc()
+
+    if sample_result is None:
+        raise Exception('Please check the dataset. All the sample run fails.')
+    print( '_sample_result finished.' )
     return sample_result  # if all the cases failed
 
 
-def _function_by_group_key(function, table, model, params, res_dict, group_key_dict, res_keys):
+def _function_by_group_key(function, table, model, params, group_key_dict, res_keys, group_by):
+    print( '_function_by_group_key is running' )
+    res_dict = dict()
+    for res_key in res_keys:
+        res_dict[res_key] = {'_grouped_data': _grouped_data(group_by, dict())}
+    
+    success_keys = []
     for group_key in group_key_dict:  # todo try except
-        res_group = _run_function(function, table, model, params, group_key)
-        
-        for res_key in res_keys:
-            res_dict[res_key]['_grouped_data']['data'][group_key] = res_group[res_key]
-        
-    return res_dict
+        print( '_function_by_group_key for group {} is running.'.format(group_key) )
+        try:
+            res_group = _run_function(function, table, model, params, group_key)
+
+            for res_key in res_keys:
+                res_dict[res_key]['_grouped_data']['data'][group_key] = res_group[res_key]
+                res_dict[res_key]['_grouped_data']['group_key_dict'][group_key] = group_key_dict[group_key]
+
+            success_keys.append(group_key)
+        except Exception:
+            print( '_function_by_group_key got an exception while running for group {}.'.format(group_key) )
+            traceback.print_exc()
+
+    print( '_function_by_group_key finished.' )
+    return res_dict, success_keys
 
 
 def _run_function(function, table, model, params, group):
@@ -117,18 +150,17 @@ def _run_function(function, table, model, params, group):
                                     model=model['_grouped_data']['data'][group], **params)
     else:
         res_group = function(model=model['_grouped_data']['data'][group], **params)
-    
+
     return res_group
 
 
 def _info_from_sample_result(sample_result, group_by, group_key_dict):
     res_keys = [*sample_result]
     df_keys = [k for k, v in sample_result.items() if isinstance(v, pd.DataFrame)]
-    model_keys_containing_repr = [k for k, v in sample_result.items() if isinstance(v, dict) and '_repr_brtc_' in v]
-    res_dict = dict()
-    for res_key in res_keys:
-        res_dict[res_key] = {'_grouped_data': _grouped_data(group_by, group_key_dict)}
-    return res_keys, df_keys, model_keys_containing_repr, res_dict        
+    model_keys_containing_repr = [k for k, v in sample_result.items()
+                                  if isinstance(v, dict) and '_repr_brtc_' in v]
+    
+    return res_keys, df_keys, model_keys_containing_repr
 
 
 def _group_key_from_list(list_):
@@ -141,10 +173,9 @@ def _add_group_cols_front_if_required(table, keys, group_cols, group_key_dict):
     columns = table.columns
     reverse_group_cols = group_cols.copy()
     reverse_group_cols.reverse()
-    
+
     for group_col, key in zip(reverse_group_cols, reverse_keys):
         if group_col not in columns:
             table.insert(0, group_col, key)
 
     return table
-
