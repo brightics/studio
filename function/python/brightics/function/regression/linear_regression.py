@@ -21,7 +21,7 @@ def linear_regression_train(table, group_by=None, **params):
         return _linear_regression_train(table, **params)
 
     
-def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True, is_vif=True):
+def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True, is_vif=True, vif_threshold=10):
     features = table[feature_cols]
     label = table[label_col]
     lr_model = LinearRegression(fit_intercept)
@@ -41,8 +41,8 @@ def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True,
     summary0 = summary_tables[0]
     summary1 = summary_tables[1]
     if is_vif:
-        summary1['vif'] = [variance_inflation_factor(features.values, i) for i in range(features.shape[1])]
-        summary1['vif>10'] = summary1['vif'].apply(lambda _: 'true' if _ > 10 else 'false')
+        summary1['VIF'] = [variance_inflation_factor(features.values, i) for i in range(features.shape[1])]
+        summary1['VIF>{}'.format(vif_threshold)] = summary1['VIF'].apply(lambda _: 'true' if _ > vif_threshold else 'false')
     summary.tables[1] = _df_to_simpletable(summary1)
     summary2 = summary_tables[2]
     

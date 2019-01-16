@@ -94,7 +94,7 @@ def _replace_missing_number(table, input_cols, fill_method=None, fill_value='val
 def replace_missing_string(table, group_by=None, **params):
     check_required_parameters(_replace_missing_string, params, ['table'])
     if group_by is not None:
-        return _function_by_group(_replace_missing_number, table, group_by=group_by, **params)
+        return _function_by_group(_replace_missing_string, table, group_by=group_by, **params)
     else:
         return _replace_missing_string(table, **params)
 
