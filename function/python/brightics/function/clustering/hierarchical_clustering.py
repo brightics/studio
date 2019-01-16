@@ -147,9 +147,10 @@ def _hierarchical_clustering(table, input_cols, input_mode, key_col=None, link='
     model = _model_dict('hierarchical_clustering')
     model['model'] = Z
     model['input_mode'] = input_mode
+    if input_mode=='matrix':
+        model['dist_matrix'] = dist_matrix
     model['parameters'] = params
     model['linkage_matrix'] = linkage_matrix
-    model['dist_matrix'] = dist_matrix
     model['_repr_brtc_'] = rb.get()
         
     return {'model':model}
@@ -166,8 +167,10 @@ def hierarchical_clustering_post(table, model, group_by=None, **params):
 def _hierarchical_clustering_post(table, model, num_clusters, cluster_col='prediction'):
     Z = model['model']
     mode = model['input_mode']
+    if mode=='matrix':
+        distance_matrix = model['dist_matrix']
     out_table = model['linkage_matrix']
-    distance_matrix = model['dist_matrix']
+    
     predict = fcluster(Z, t=num_clusters, criterion='maxclust')
     if mode == 'original':
         prediction_table = table.copy()
