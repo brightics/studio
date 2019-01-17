@@ -49,7 +49,6 @@ def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True,
         summary1['VIF'] = [variance_inflation_factor(features.values, i) for i in range(features.shape[1])]
         summary1['VIF>{}'.format(vif_threshold)] = summary1['VIF'].apply(lambda _: 'true' if _ > vif_threshold else 'false')
     summary.tables[1] = _df_to_simpletable(summary1)
-    print(summary1.index)
     summary1.insert(0, 'feature', summary1.index)
 
     html_result = summary.as_html()
