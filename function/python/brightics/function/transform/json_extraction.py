@@ -75,6 +75,6 @@ def _get_table(model, key_list, index_column=False, index_column_name='index'):
     if not isinstance(table, pd.DataFrame):
         raise Exception('item is not a DataFrame.')
     if index_column:
-        table[index_column_name] = table.index
+        table.insert(0, index_column_name, table.index)
     return {'table': table}
 
