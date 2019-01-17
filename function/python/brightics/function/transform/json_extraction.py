@@ -70,10 +70,11 @@ def get_table(model, **params):
         return _get_table(model=model, **params)    
 
 
-def _get_table(model, key_list):
+def _get_table(model, key_list, index_column=False, index_column_name='index'):
     table = get_element_from_dict(model, key_list)
     if not isinstance(table, pd.DataFrame):
         raise Exception('item is not a DataFrame.')
-    
+    if index_column:
+        table.insert(0, index_column_name, table.index)
     return {'table': table}
 
