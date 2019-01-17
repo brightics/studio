@@ -1,16 +1,19 @@
 import numpy as np
 import seaborn as sns
-import statsmodels.api as sm
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
-from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD
-from brightics.function.utils import _model_dict
-from brightics.common.groupby import _function_by_group, time_usage
-from brightics.common.utils import check_required_parameters
-from brightics.common.utils.table_converters import simple_tables2df_list
+
+import statsmodels.api as sm
 from statsmodels.iolib.summary2 import _df_to_simpletable
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 
+from brightics.common.repr import BrtcReprBuilder
+from brightics.common.repr import strip_margin
+from brightics.common.repr import plt2MD
+from brightics.common.groupby import _function_by_group
+from brightics.common.utils import check_required_parameters
+from brightics.common.utils.table_converters import simple_tables2df_list
+from brightics.function.utils import _model_dict
 
 def linear_regression_train(table, group_by=None, **params):
     check_required_parameters(_linear_regression_train, params, ['table'])
@@ -20,7 +23,7 @@ def linear_regression_train(table, group_by=None, **params):
     else:
         return _linear_regression_train(table, **params)
 
-    
+
 def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True, is_vif=True, vif_threshold=10):
     features = table[feature_cols]
     label = table[label_col]
@@ -35,17 +38,20 @@ def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True,
         lr_model_fit = sm.OLS(label, features).fit()
     else:
         lr_model_fit = sm.OLS(label, features).fit()
-    
+
     summary = lr_model_fit.summary()
     summary_tables = simple_tables2df_list(summary.tables, drop_index=True)
     summary0 = summary_tables[0]
     summary1 = summary_tables[1]
+    summary2 = summary_tables[2]
+
     if is_vif:
         summary1['VIF'] = [variance_inflation_factor(features.values, i) for i in range(features.shape[1])]
         summary1['VIF>{}'.format(vif_threshold)] = summary1['VIF'].apply(lambda _: 'true' if _ > vif_threshold else 'false')
     summary.tables[1] = _df_to_simpletable(summary1)
-    summary2 = summary_tables[2]
-    
+    print(summary1.index)
+    summary1.insert(0, 'feature', summary1.index)
+
     html_result = summary.as_html()
 
     plt.figure()
@@ -124,11 +130,11 @@ def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True,
     model['pvalues'] = lr_model_fit.pvalues
     model['lr_model'] = lr_model
     model['_repr_brtc_'] = rb.get()
-    
+
     model['summary0'] = summary0
     model['summary1'] = summary1
     model['summary2'] = summary2
-    
+
     return {'model' : model}
 
 
@@ -149,5 +155,5 @@ def _linear_regression_predict(table, model, prediction_col='prediction'):
 
     result = table.copy()
     result[prediction_col] = prediction
-    
+
     return {'out_table' : result}
