@@ -259,6 +259,7 @@ public class TaskService {
         if (StringUtils.isNoneBlank(e.detailedCause)) {
             failResult.setDetailMessage(e.detailedCause);
         }
+        failResult.setErrors(e.getErrorsJson());
         return failResult.build();
     }
 }
