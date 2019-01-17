@@ -1,24 +1,19 @@
 package com.samsung.sds.brightics.server.controller;
 
-import java.util.List;
-import java.util.Map;
-
-import javax.validation.Valid;
-
-import org.apache.commons.lang3.RandomStringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
+import com.samsung.sds.brightics.common.core.util.JsonUtil;
 import com.samsung.sds.brightics.server.common.util.AuthenticationUtil;
 import com.samsung.sds.brightics.server.model.param.JobParam;
 import com.samsung.sds.brightics.server.model.vo.JobStatusVO;
 import com.samsung.sds.brightics.server.service.JobService;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/core/v2")
@@ -60,5 +55,22 @@ public class JobController {
     public Map<String, Object> killJob(
         @PathVariable String jobId) {
         return jobService.terminateJob(jobId);
+    }
+
+    /**
+     * These two methods are temporarily called by VA for the compatibility with older versions.
+     *
+     * POST		/api/v2/convert/store    							: store spec Json convert
+     * POST		/api/v2/convert/execute  							: execute spec Json conve
+     */
+    @RequestMapping(value = "/convert/store", method = RequestMethod.POST)
+    public String storeJsonConvert(@RequestBody String body) {
+        return body;
+    }
+
+
+    @RequestMapping(value = "/convert/execute", method = RequestMethod.POST)
+    public String excuteJsonConvert(@RequestBody String body) {
+        return body;
     }
 }
