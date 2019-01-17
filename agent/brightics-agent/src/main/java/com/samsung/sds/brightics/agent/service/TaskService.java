@@ -23,6 +23,7 @@ import com.samsung.sds.brightics.agent.util.StopWatch;
 import com.samsung.sds.brightics.agent.util.ThreadUtil;
 import com.samsung.sds.brightics.common.core.exception.AbsBrighticsException;
 import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
+import com.samsung.sds.brightics.common.core.exception.BrighticsFunctionException;
 import com.samsung.sds.brightics.common.core.thread.ThreadLocalContext;
 import com.samsung.sds.brightics.common.data.DataStatus;
 import com.samsung.sds.brightics.common.data.util.SafeParser;
@@ -182,7 +183,14 @@ public class TaskService {
     private static String executeFunction(TaskMessageWrapper request) throws Exception {
         ContextType contextType = getContextType(request.attrs.getOrDefault("context", "SCALA"));
         writeExternalData(contextType, request);
-        return ContextManager.getRunnerAsContext(contextType, request.taskMessage.getUser()).runFunction(request);
+        try {
+        	return ContextManager.getRunnerAsContext(contextType, request.taskMessage.getUser()).runFunction(request);
+        } catch (BrighticsFunctionException bfe) {
+        	//Get label parsed function exception. as 3.6 function
+        	throw bfe.setTagFunction(request.taskMessage.getName()); 
+        } catch (Exception e) {
+        	throw e;
+        }
     }
 
     private static ContextType getContextType(StopTaskMessage stopTaskMessage) {
