@@ -45,7 +45,7 @@ def _hierarchical_clustering(table, input_cols, input_mode, key_col=None, link='
     if input_mode == 'original':
         len_features = len(features)
         if key_col != None:
-            data_names = out_table[key_col]
+            data_names = list(out_table[key_col])
         elif key_col == None:
             data_names = ['pt_' + str(i) for i in range(len_features)]
         Z = linkage(features, method=link, metric=met)
