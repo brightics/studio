@@ -2,10 +2,7 @@
 import unittest
 import pandas as pd
 from brightics.function.extraction import add_expression_column, add_expression_column_if
-from sklearn import datasets
 from brightics.common.datasets import load_iris
-from brightics.function.extraction.shift import add_shift
-from brightics.common.repr import pandasDF2MD
 
 df_example1 = pd.DataFrame({'num1':[1, 2, 3, 4, 5],
                             'num2':[10, 20, 30, 40, 50],
