@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from brightics.common.groupby import _function_by_group
-from brightics.function.validation import raise_runtime_error
+from brightics.common.validation import raise_runtime_error
 from brightics.common.utils import check_required_parameters
 import brightics.common.statistics as brtc_stat 
 

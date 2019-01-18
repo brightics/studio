@@ -2,7 +2,7 @@ from brightics.common.repr import BrtcReprBuilder
 import pandas_profiling as pd_profiling
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
-from brightics.function.validation import validate, greater_than_or_equal_to, \
+from brightics.common.validation import validate, greater_than_or_equal_to, \
     greater_than
 
 
