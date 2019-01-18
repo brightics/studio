@@ -1,7 +1,7 @@
 from brightics.brightics_data_api import _generate_matplotlib_data, _png2uri
 import re
 import numpy as np
-from brightics.function.test_data import get_iris
+from brightics.common.datasets import load_iris
 
 
 class BrtcReprBuilder:

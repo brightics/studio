@@ -1,12 +1,12 @@
 import unittest
 from brightics.function.extraction.encoder import label_encoder, \
     label_encoder_model
-from brightics.function.test_data import get_iris
+from brightics.common.datasets import load_iris
 import random
 
 
 def get_iris_randomgroup():
-    df = get_iris()
+    df = load_iris()
     random_group1 = []
     random_group2 = []
     random_group2_map = {1:'A', 2:'B'}
