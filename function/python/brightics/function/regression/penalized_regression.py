@@ -141,7 +141,7 @@ def _penalized_regression_train(table, feature_cols, label_col, regression_type=
     rb.addMD(strip_margin("""
     | ## Penalized Regression Result
     | #### Selected Parameters: 
-    | {params}tabl
+    | {params}
     | ### Results
     | #### Model Parameters
     | {out_table1}

@@ -1,8 +1,7 @@
 from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, plt2MD
 from brightics.function.utils import _model_dict
-# from brightics.common.groupby import _function_by_group
+from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
-from brightics.function.validation import raise_runtime_error
 
 from statsmodels.graphics.tsaplots import plot_acf
 from statsmodels.graphics.tsaplots import plot_pacf
@@ -11,18 +10,19 @@ from statsmodels.tsa.stattools import pacf
 import pandas as pd
 from matplotlib import pyplot as plt
 
-# def autocorrelation(table, group_by=None, **params):
-#    check_required_parameters(_autocorrelation, params, ['table'])
-#    if group_by is not None:
-#        grouped_model = _function_by_group(_autocorrelation, table, group_by=group_by, **params)
-#        return grouped_model
-#    else:
-#        return _autocorrelation(table, **params)
+
+def autocorrelation(table, group_by=None, **params):
+    check_required_parameters(_autocorrelation, params, ['table'])
+    if group_by is not None:
+        grouped_model = _function_by_group(_autocorrelation, table, group_by=group_by, **params)
+        return grouped_model
+    else:
+        return _autocorrelation(table, **params)
+
 
     
-def autocorrelation(table, input_col, nlags=20, alpha=0.05):
-    out_table = table.copy()
-    data = out_table[input_col]
+def _autocorrelation(table, input_col, nlags=20, alpha=0.05):
+    data = table[input_col]
     
     plt.figure()
     plot_acf(data, lags=nlags, alpha=alpha)
@@ -38,7 +38,7 @@ def autocorrelation(table, input_col, nlags=20, alpha=0.05):
     pacf_ret = pacf(data, nlags=nlags, alpha=alpha)
     
     result_table1 = pd.DataFrame([])
-    result_table1['lag'] = [i for i in range(nlags + 1)]
+    result_table1['lag'] = list(range(nlags+1))
     result_table1['ACF'] = acf_ret[0]
     
     if alpha is not None:
