@@ -38,7 +38,7 @@ def kurtosis(a): return scipy.stats.kurtosis(a)
 def median(a): return np.median(a)
 
 
-def percentile(a, q): return np.percentile(a, q * 100.0)
+def percentile(a, q): return np.percentile(a, q)
 
 
 def trimmed_mean(a, proportiontocut): return scipy.stats.trim_mean(a, proportiontocut)
