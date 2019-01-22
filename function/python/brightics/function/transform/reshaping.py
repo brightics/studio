@@ -48,11 +48,11 @@ def _pivot(table, values, aggfunc, index=None, columns=None):  # TODO
 
     def _min(x): return brtc_stat.min(x)
 
-    def _25th(x): return brtc_stat.percentile(x, 0.25)
+    def _25th(x): return brtc_stat.percentile(x, 25)
 
     def median(x): return brtc_stat.median(x)
 
-    def _75th(x): return brtc_stat.percentile(x, 0.75)
+    def _75th(x): return brtc_stat.percentile(x, 75)
     
     def _mi2index(mi):
         return pd.Index([_replace_col(col) for col in mi.get_values()])
