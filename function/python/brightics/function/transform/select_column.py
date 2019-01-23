@@ -5,7 +5,7 @@ def select_column(table, input_cols, output_cols=None, output_types=None):
         'long':'int64',
         'double':'float64',
         'boolean':'bool',
-        'string':'object'
+        'string':'str'
         }
     
     _table = table.copy()
