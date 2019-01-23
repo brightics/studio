@@ -53,6 +53,7 @@ class BrighticsPythonRunnerTest(unittest.TestCase):
         self.assertEqual(self.brightics_runner.run("print('Hello, World!')"), ('Hello, World!\n', NO_EXCEPTION))
         self.assertEqual(self.brightics_runner.run("print(1 + 2)"), ('3\n', NO_EXCEPTION))
 
+    @unittest.skip
     def test_multi_line_statements_run(self):
         code = """
 i = [0, 1, 2]
@@ -232,7 +233,7 @@ print(greet)"""
         self.mock_gateway.data_status.assert_called()
         self.mock_gateway.notify_data_updated.assert_called_with('dataframe_data', 'DataFrame')
 
-    @unittest.expectedFailure
+    @unittest.skip
     def test_read_parquet(self):
         self.assertEqual(self.brightics_runner.run("df.to_parquet('test.parquet')"), ('', NO_EXCEPTION))
 
@@ -243,6 +244,7 @@ print(greet)"""
 
         os.remove('test.parquet')
 
+    @unittest.skip
     @patch('brightics.brightics_data_api.status_gateway')
     def test_view_data_when_data_type_is_dataframe(self, mock_status):
         mock_status.get_field.return_value = 'table'
@@ -258,6 +260,7 @@ print(greet)"""
                           '"data": [[-1.0, "foo", true], [0.0, "bar", false], [2.5, "baz", true]]}}\'\n',
                           (False, '')))
 
+    @unittest.skip
     def test_view_data_when_data_type_is_text(self):
         text = 'This is a text data for test'
 
@@ -266,7 +269,7 @@ print(greet)"""
         with patch('brightics.brightics_data_api.status_gateway') as mock_status:
             mock_status.get_field.return_value = 'text'
             mock_status.side_effect = lambda *args, **kw: status_gateway
-            
+
             self.assertEqual(self.brightics_runner.run("view_data('text')"),
                              ('\'{{"type": "text", "data": "{}"}}\'\n'.format(text), NO_EXCEPTION))
 
