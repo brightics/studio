@@ -6,7 +6,7 @@ import pandas as pd
 import io
 import boto3
 from brightics.common.datasource import DbEngine
-from brightics.function.validation import raise_runtime_error
+from brightics.common.validation import raise_runtime_error
 import brightics.common.data.utils as util
 
 
