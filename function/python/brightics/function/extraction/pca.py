@@ -9,7 +9,7 @@ import seaborn as sns
 import numpy as np
 import matplotlib.cm as cm
 from matplotlib.patches import Patch
-from brightics.function.validation import validate, greater_than_or_equal_to
+from brightics.common.validation import validate, greater_than_or_equal_to
 
 
 def pca(table, group_by=None, **params):
