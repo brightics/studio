@@ -27,10 +27,10 @@ class SVMTest(unittest.TestCase):
         predict_out = svm_classification_predict(table=test_df, model=train_out['model'])
         print(predict_out['out_table'][['species', 'prediction']])
         
-    def predict_thresholds(self):
+    def test_predict_thresholds(self):
         iris = get_iris()
         
-        df_splitted = split_data(iris, 0.7, 0.3)
+        df_splitted = split_data(table=iris, train_ratio=0.7, test_ratio=0.3)
         train_df = df_splitted['train_table']
         test_df = df_splitted['test_table']
         
@@ -40,7 +40,7 @@ class SVMTest(unittest.TestCase):
         predict_out = svm_classification_predict(table=test_df, model=train_out['model'], thresholds=[0.1, 0.2, 0.3])
         print(predict_out['out_table'][['species', 'prediction']])
         
-    def groupby1(self):
+    def test_groupby1(self):
         df = get_iris()
         random_group = []
         for i in range(len(df)):
@@ -54,7 +54,7 @@ class SVMTest(unittest.TestCase):
 
 class DecisionTreeClassificationTest(unittest.TestCase):
     
-    def groupby1(self):
+    def test_groupby1(self):
         df = get_iris()
         random_group = []
         for i in range(len(df)):
@@ -68,7 +68,7 @@ class DecisionTreeClassificationTest(unittest.TestCase):
         
 class LogisticRegressionTest(unittest.TestCase):
     
-    def groupby1(self):
+    def test_groupby1(self):
         df = get_iris()
         random_group = []
         for i in range(len(df)):
@@ -82,7 +82,7 @@ class LogisticRegressionTest(unittest.TestCase):
         
 class XGBClassificationTest(unittest.TestCase):
     
-    def groupby1(self):
+    def test_groupby1(self):
         df = get_iris()
         random_group = []
         for i in range(len(df)):

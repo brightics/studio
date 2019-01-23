@@ -18,23 +18,23 @@ df_example2 = pd.DataFrame({'num1':[1, 2, 3, 4, 5, 6],
 
 class ManipulationTest(unittest.TestCase):
 
-    def filter_test1(self):
+    def test_filter(self):
         df = df_example1.copy()
         out_df = filter(df, 'num1 > 1 & num2 != 40')['out_table']
         print(df)
         print(out_df)
 
-    def simple_filter_test1(self):
+    def test_simple_filter_1(self):
         df = df_example1.copy()
         out_df = simple_filter(df, ['num1', 'num2', 'str1'], ['>', 'not in', 'in'], ['1', '''[40]''', '''['b','e']'''], 'and')['out_table']
         print(df)
         print(out_df)
 
-    def simple_filter_test2(self):
+    def test_simple_filter_2(self):
         df = df_example1.copy()
-        out_df = simple_filter(df, [], [], [], 'and')['out_table']
-        print(df)
-        print(out_df)
+        with self.assertRaises(BrighticsFunctionException) as bfe:
+            out_df = simple_filter(table=df, input_cols=[], operators=[], operands=[], main_operator='and')['out_table']
+        self.assertTrue({'0033': ['input_cols']} in bfe.exception.errors)
 
 
 class SortTest(unittest.TestCase):
