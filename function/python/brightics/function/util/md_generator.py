@@ -184,9 +184,6 @@ if __name__ == "__main__":
         description='Brightics Help Document Generator')
     arg_parser.add_argument('--output-path', '-o',
                             help='Path for output help documents.')
-    arg_parser.add_argument('--rename-file', action='store_true',
-                            help='''If set, output file names '''
-                            '''are renamed as 'package$function_name'.''')
     args = arg_parser.parse_args()
 
     for in_file_name in python_visual_files:
@@ -203,15 +200,14 @@ if __name__ == "__main__":
             error_occur = True
 
         if not error_occur and mdstr:
-            out_file_dir = (args.output_path
+            out_file_dir = (os.path.abspath(args.output_path)
                             or (os.path.dirname(
                                 os.path.dirname(in_file_path)
                                 ) + os.sep + 'help'))
             in_json_str = json.loads(
                 open(in_file_name, 'r', encoding='UTF-8').read()
                 )
-            out_file_header = (in_json_str['specJson']['name']
-                               if args.rename_file else in_file_name)
+            out_file_header = in_json_str['specJson']['name']
             out_file_path = out_file_dir + os.sep + out_file_header + '.md'
 
             if not os.path.exists(out_file_dir):
