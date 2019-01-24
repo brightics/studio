@@ -2,7 +2,7 @@ import unittest
 import pandas as pd
 import numpy as np
 from brightics.function.transform import delete_missing_data, select_column, pivot
-from brightics.function.test_data import iris
+from brightics.function.test_data import load_iris 
 
 df_example1 = pd.DataFrame({'num1':[1, 2, 3, 4, 5],
                             'num2':[10, 20, 30, 40, 50],
@@ -39,13 +39,8 @@ class DeleteMissingDataTest(unittest.TestCase):
         print(self.input_df)
         out = delete_missing_data(self.input_df, input_cols=['born', 'name'], how='all')
         print(out['out_table'])
-
-    def test4(self):
-        print(self.input_df)
-        out = delete_missing_data(self.input_df, input_cols=None, thresh=2)
-        print(out['out_table'])
         
-    def test5(self):
+    def test4(self):
         print(self.input_df)
         out = delete_missing_data(self.input_df, input_cols=[], thresh=2)
         print(out['out_table'])
@@ -81,14 +76,18 @@ class SelectColumnTest(unittest.TestCase):
         
 class Pivot(unittest.TestCase):
     
+    def setUp(self):
+        unittest.TestCase.setUp(self)
+        self.iris = load_iris()
+    
     def test1(self):
-        out = pivot(iris, values=['petal_length'], aggfunc=['25th', '75th'], index=['species'])
+        out = pivot(self.iris, values=['petal_length'], aggfunc=['25th', '75th'], index=['species'])
         print(out['out_table'])
     
     def test2(self):
-        out = pivot(iris, values=['petal_length'], aggfunc=['mean'], index=['species'])
+        out = pivot(self.iris, values=['petal_length'], aggfunc=['mean'], index=['species'])
         print(out['out_table'])  
     
     def test3(self):
-        print(iris)
+        print(self.iris)
           

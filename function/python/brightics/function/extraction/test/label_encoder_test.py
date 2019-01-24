@@ -20,7 +20,7 @@ def get_iris_randomgroup():
 
 class LabelEncoderTest(unittest.TestCase):
     
-    def groupby1(self):
+    def test_groupby1(self):
         df = get_iris_randomgroup()
         enc_out = label_encoder(df, input_col='species', group_by=['random_group1', 'random_group2'])
         print(enc_out['out_table'])

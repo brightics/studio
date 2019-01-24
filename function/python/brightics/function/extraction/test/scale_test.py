@@ -19,7 +19,7 @@ def get_iris_randomgroup():
 
 class ScaleTest(unittest.TestCase):
     
-    def groupby1(self):
+    def test_groupby1(self):
         df = get_iris_randomgroup()
         enc_out = scale(df, input_cols=['sepal_length', 'sepal_width', 'petal_length', 'petal_width'],
                         scaler='RobustScaler',
