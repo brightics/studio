@@ -1,16 +1,17 @@
-from sklearn import preprocessing
 import itertools
 import math
 import pandas as pd
 import matplotlib.pyplot as plt
-#import networkx as nx
+import networkx as nx
+import numpy as np
+from sklearn import preprocessing
 from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD, pandasDF2MD, dict2MD
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
-import numpy as np
 
-            
+
+
 #-----------------------------------------------------------------------------------------------------
 """
 License:
@@ -129,8 +130,7 @@ class _FPTree(object):
 
         for transaction in transactions:
             sorted_items = [x for x in transaction if x in frequent]
-            sorted_items.sort()
-            sorted_items.sort(key=lambda x: frequent[x], reverse=True)
+            sorted_items.sort(key=lambda x: (frequent[x],x), reverse=True)
             if len(sorted_items) > 0:
                 self._insert_tree(sorted_items, root, headers)
 
@@ -336,6 +336,7 @@ def _dict_to_table(rules,len_trans):
     return result
 
 def _table_to_transactions(table,items,user_name):
+    items = np.array(table[items])
     label_encoder = preprocessing.LabelEncoder()
     label_encoder.fit(table[user_name])
     labels=label_encoder.transform(table[user_name])
@@ -343,11 +344,11 @@ def _table_to_transactions(table,items,user_name):
     for i in range(len(label_encoder.classes_)):
         result+=[[]]
     for j in range(len(table[user_name])):
-        result[labels[j]]+=[table[items][j]]
+        result[labels[j]]+=[items[j]]
     return result
 
 
-        
+
 
 def association_rule(table, group_by=None, **params):
     check_required_parameters(_association_rule, params, ['table'])
@@ -356,10 +357,27 @@ def association_rule(table, group_by=None, **params):
     else:
         return _association_rule(table, **params)
 
-def _association_rule(table,items,user_name,min_support=0.01,min_confidence=0.8,min_lift=-math.inf,max_lift=math.inf,min_conviction=-math.inf,max_conviction=math.inf):
-    table_erase_duplicates = table.drop_duplicates([items]+[user_name])
-    table_erase_duplicates = table_erase_duplicates.reset_index()
-    transactions = _table_to_transactions(table_erase_duplicates,items,user_name)
+def _association_rule(table, input_mode=None, mul_items=None, items=None,user_name=None,min_support=0.01,min_confidence=0.8,min_lift=-math.inf,max_lift=math.inf,min_conviction=-math.inf,max_conviction=math.inf):
+    if input_mode == 'user_multiple':
+        transactions = []
+        for column in mul_items:
+            tmp = []
+            for item in table[column]:
+                tmp += ['%s : %s' %(column,item)]            
+            transactions += [tmp]
+        transactions = np.transpose(transactions)
+    elif input_mode == 'transaction':
+        transactions = []
+        for transaction in np.array(table):
+            transactions += [list(set(transaction[0]))]
+    else:
+        if items is None:
+            raise Exception('Select Item Column')
+        if user_name is None:
+            raise Exception('Select User Column')
+        table_erase_duplicates = table.drop_duplicates([items]+[user_name])
+        table_erase_duplicates = table_erase_duplicates.reset_index()
+        transactions = _table_to_transactions(table_erase_duplicates,items,user_name)
     len_trans=len(transactions)
     patterns = _find_frequent_patterns(transactions, min_support)
     rules = _generate_association_rules(patterns, min_confidence)
@@ -371,6 +389,240 @@ def _association_rule(table,items,user_name,min_support=0.01,min_confidence=0.8,
     return {'out_table' : result}
     
     
+    
+def _scaling(number_list):
+    maximum = np.max(number_list)
+    minimum = np.min(number_list)
+    result=[]
+    for number in number_list:
+        result += [(number - minimum)/(maximum-minimum)+0.2]
+    return result
+    
+
+def _n_blank_strings(number):
+    result=''
+    for i in range(number):
+        result+=' '
+    return result
+
+def association_rule_visualization(table, group_by=None, **params):
+    check_required_parameters(_association_rule_visualization, params, ['table'])
+    if group_by is not None:
+        return _function_by_group(_association_rule_visualization, table, group_by=group_by, **params)
+    else:
+        return _association_rule_visualization(table, **params)    
+    
+def _association_rule_visualization(table, option='multiple_to_single', edge_length_scaling = 1,font_size = 10, node_size_scaling = 1, figure_size_muliplier=1, display_rule_num = False):
+
+    if(option == 'single_to_single'):
+        result_network = table.copy()
+
+        length_ante = []
+        string_ante = []
+        length_conse = []
+        string_conse = []
+        for row in result_network['antecedent']:
+            length_ante+=[len(row)]
+            string_ante+=[row[0]]
+        for row in result_network['consequent']:
+            length_conse+=[len(row)]
+            string_conse+=[row[0]]
+        result_network['length_ante'] = length_ante
+        result_network['string_ante'] = string_ante
+        result_network['length_conse'] = length_conse
+        result_network['string_conse'] = string_conse
+        result_network = result_network[result_network.length_ante == 1]
+        result_network = result_network[result_network.length_conse == 1]
+        result_network['support_ante'] = result_network['support']/result_network['confidence']
+        result_network['support_conse'] = result_network['confidence']/result_network['lift']
+        #edges_colors = preprocessing.LabelEncoder()
+        #edges_colors.fit(result_network['lift'])
 
 
+        #edges_colors = edges_colors.transform(result_network['lift'])
+        #result_network['edge_colors'] = edges_colors
+
+        result_network = result_network.reset_index()
+        edges = []
+        for i in range(len(result_network.string_ante)):
+            edges += [(result_network.string_ante[i],result_network.string_conse[i])]
+
+        G = nx.DiGraph()
+        G.add_edges_from(edges)
+        nodes = G.nodes()
+        plt.figure(figsize=(4*len(nodes)**0.5*figure_size_muliplier,4*len(nodes)**0.5*figure_size_muliplier))
+        pos = nx.spring_layout(G,k=0.4*edge_length_scaling)
+
+        node_tmp = list(result_network.string_ante)+list(result_network.string_conse)
+        support_tmp = list(result_network.support_ante)+list(result_network.support_conse)
+        tmp_node_support=[]
+        for i in range(len(node_tmp)):
+            tmp_node_support+=[[node_tmp[i],support_tmp[i]]]
+        nodes_table = pd.DataFrame.from_records(tmp_node_support, columns=['name','support'])
+        nodes_table = nodes_table.drop_duplicates(['name'])
+        node_color = []
+        nodes_table = nodes_table.reset_index()
+        scaled_support = _scaling(nodes_table.support)
+        for node in nodes:
+            for i in range(len(nodes_table.name)):
+                if nodes_table.name[i] == node:
+                    node_color += [scaled_support[i]*2500*node_size_scaling]
+                    break
+        #if(scaling==True):
+       #     edge_color = [result_network['edge_colors'][n] for n in range(len(result_network['length_conse']))]
+        #else:
+        scaled_support = _scaling(result_network['confidence'])
+        edge_size = [scaled_support[n]*8 for n in range(len(result_network['length_conse']))]
+        edge_color = [result_network['lift'][n] for n in range(len(result_network['length_conse']))]
+        nx.draw(G, pos, node_color=node_color, edge_color=edge_color, node_size=node_color, arrowsize=20*(0.2+0.8*node_size_scaling), font_family='Malgun Gothic', 
+                with_labels=True, cmap=plt.cm.Blues, edge_cmap=plt.cm.Reds, arrows=True, edge_size=edge_color, width=edge_size, font_size=font_size)
+
+        fig_digraph=plt2MD(plt)
+        
+        graph_min_support = np.min(nodes_table.support)
+        graph_max_support = np.max(nodes_table.support)
+        graph_min_confidence = np.min(result_network['confidence'])
+        graph_max_confidence = np.max(result_network['confidence'])
+        graph_min_lift = np.min(result_network['lift'])
+        graph_max_lift = np.max(result_network['lift'])
+        
+        rb = BrtcReprBuilder()
+        rb.addMD(strip_margin("""
+        | ### Network Digraph
+        | ##### Node color, size : support ({graph_min_support}~{graph_max_support})
+        | ##### Edge color : lift ({graph_min_lift}~{graph_max_lift})
+        | ##### Edge size : confidence ({graph_min_confidence}~{graph_max_confidence})
+        | {image1}
+        |
+        """.format(image1=fig_digraph, graph_min_support=graph_min_support,graph_max_support=graph_max_support,graph_min_lift=graph_min_lift,graph_max_lift=graph_max_lift,graph_min_confidence=graph_min_confidence,graph_max_confidence=graph_max_confidence)))
+    
+    elif(option == 'multiple_to_single'):
+
+        result_network = table.copy()
+        length_ante = []
+        string_ante = []
+        length_conse = []
+        string_conse = []
+        for row in result_network['consequent']:
+            length_conse += [len(row)]
+            string_conse += [row[0]]
+        result_network['length_conse'] = length_conse
+        result_network['consequent'] = string_conse
+        result_network = result_network[result_network.length_conse == 1]
+        index_list = result_network.index.tolist()
+        rownum=[]
+        for i in range(len(result_network['consequent'])):
+            if display_rule_num:
+                rownum += ['R%d' %i]
+            else:
+                rownum += [_n_blank_strings(i+1)]
+        result_network['row_number'] = rownum
+        edges = []
+        nodes = []
+        for i in index_list:
+            for j in range(len(result_network.antecedent[i])):
+                edges += [(result_network.antecedent[i][j],result_network['row_number'][i])]
+            edges += [(result_network['row_number'][i], result_network.consequent[i])]
+            nodes += [result_network['row_number'][i]]
+
+        G = nx.DiGraph()
+        G.add_nodes_from(nodes)
+        G.add_edges_from(edges)
+        plt.figure(figsize=(2*len(nodes)**0.5*figure_size_muliplier,2*len(nodes)**0.5*figure_size_muliplier))
+        pos = nx.spring_layout(G,k=0.2*edge_length_scaling)
+        nodes_color = []
+        nodes_size = []
+        scaled_lift = _scaling(result_network.lift)
+        for node in range(len(G.nodes())):
+            if node<len(nodes):
+                nodes_color += [result_network.support[index_list[node]]]
+                nodes_size += [scaled_lift[node]*2000*node_size_scaling]
+            else:
+                nodes_color += [0]
+                nodes_size += [0]
+
+        nx.draw(G, pos, node_color=nodes_color,  node_size=nodes_size, font_family='Malgun Gothic', 
+                with_labels=True, cmap=plt.cm.Reds, arrows=True, edge_color='Grey', font_weight='bold',arrowsize=20*(0.2+0.8*node_size_scaling), font_size=font_size)
+        fig_digraph=plt2MD(plt)
+        
+        graph_min_support = np.min(result_network.support)
+        graph_max_support = np.max(result_network.support)
+        graph_min_lift = np.min(result_network.lift)
+        graph_max_lift = np.max(result_network.lift)
+        
+        rb = BrtcReprBuilder()
+        rb.addMD(strip_margin("""
+        | ### Network Digraph
+        | ##### Size of circle : support ({graph_min_support}~{graph_max_support})
+        | ##### Color of circle : lift ({graph_min_lift}~{graph_max_lift})
+        | {image1}
+        |
+        """.format(image1=fig_digraph,graph_min_support=graph_min_support,graph_max_support=graph_max_support,graph_min_lift=graph_min_lift,graph_max_lift=graph_max_lift)))
+        
+    else:
+        
+        result_network = table.copy()
+        length_ante = []
+        string_ante = []
+        length_conse = []
+        string_conse = []
+        for row in result_network['consequent']:
+            length_conse+=[len(row)]
+        result_network['length_conse'] = length_conse
+        result_network = result_network.reset_index()
+        rownum=[]
+        for i in range(len(result_network['consequent'])):
+            if display_rule_num:
+                rownum += ['R%d' %i]
+            else:
+                rownum += [_n_blank_strings(i+1)]
+        result_network['row_number'] = rownum
+        edges = []
+        nodes = []
+        for i in range(len(result_network.consequent)):
+            for j in range(len(result_network.antecedent[i])):
+                edges += [(result_network.antecedent[i][j],result_network['row_number'][i])]
+            for j in range(len(result_network.consequent[i])):
+                edges += [(result_network['row_number'][i], result_network.consequent[i][j])]
+            nodes += [result_network['row_number'][i]]    
+
+        G = nx.DiGraph()
+        G.add_nodes_from(nodes)
+        G.add_edges_from(edges)
+        plt.figure(figsize=(2*len(nodes)**0.5*figure_size_muliplier,2*len(nodes)**0.5*figure_size_muliplier))
+        pos = nx.spring_layout(G,k=0.2*edge_length_scaling)
+        nodes_color = []
+        nodes_size = []
+        scaled_lift = _scaling(result_network.lift)
+        for node in range(len(G.nodes())):
+            if node<len(nodes):
+                nodes_color += [result_network.support[node]]
+                nodes_size += [scaled_lift[node]*2000*node_size_scaling]
+            else:
+                nodes_color += [0]
+                nodes_size += [0]
+
+        nx.draw(G, pos, node_color=nodes_color,  node_size=nodes_size, font_family='Malgun Gothic', 
+                with_labels=True, cmap=plt.cm.Reds, arrows=True, edge_color='Grey', font_weight='bold',arrowsize=20*(0.2+0.8*node_size_scaling), font_size=font_size)
+        fig_digraph=plt2MD(plt)
+        
+        graph_min_support = np.min(result_network.support)
+        graph_max_support = np.max(result_network.support)
+        graph_min_lift = np.min(result_network.lift)    
+        graph_max_lift = np.max(result_network.lift)
+        
+        rb = BrtcReprBuilder()
+        rb.addMD(strip_margin("""
+        | ### Network Digraph
+        | ##### Size of circle : support ({graph_min_support}~{graph_max_support})
+        | ##### Color of circle : lift ({graph_min_lift}~{graph_max_lift})
+        | {image1}
+        |
+        """.format(image1=fig_digraph,graph_min_support=graph_min_support,graph_max_support=graph_max_support,graph_min_lift=graph_min_lift,graph_max_lift=graph_max_lift)))
+
+    model = _model_dict('Association rule')
+    model['_repr_brtc_'] = rb.get()
+    
+    return{'model' : model}
+    
     

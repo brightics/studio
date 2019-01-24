@@ -177,37 +177,52 @@ def two_sample_ttest_for_stacked_data(table, group_by=None, **params):
 
 
 def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alternatives, first=None , second=None , hypo_diff=0, equal_vari='pooled', confi_level=0.95):
-
-    if(type(table[factor_col][0]) != str):
-        if(type(table[factor_col][0]) == bool):
-            if(first != None):
-                first = bool(first)
-            if(second != None):
-                second = bool(second)
-        else:
-            if(first != None):
-                first = float(first)
-            if(second != None):
-                second = float(second)
-    if(first == None or second == None):
+    if first is not None or second is not None:
+        check_table = np.array(table[factor_col])
+        for element in check_table:
+            if element is not None:
+                if type(element) != str:
+                    if type(element) == bool:
+                        if first is not None and second is not None:
+                            first = bool(first)
+                            second = bool(second)
+                            break
+                        if first is not None:
+                            first = bool(first)
+                            break
+                        second = bool(second)
+                        break
+                    else:
+                        if first is not None and second is not None:
+                            first = float(first)
+                            second = float(second)
+                            break
+                        if first is not None:
+                            first = float(first)
+                            break
+                        second = float(second)
+                        break
+                else:
+                    break
+    if first is None or second is None:
         tmp_factors = []
-        if(first != None):
+        if first is not None:
             tmp_factors += [first]
-        if(second != None):
+        if second is not None:
             tmp_factors += [second]
         for i in range(len(table[factor_col])):
-            if(table[factor_col][i] != None and table[factor_col][i] not in tmp_factors):
-                if(len(tmp_factors) == 2):
+            if table[factor_col][i] is not None and table[factor_col][i] not in tmp_factors:
+                if len(tmp_factors) == 2:
                     raise Exception("There are more that 2 factors.")
                 else:
                     tmp_factors += [table[factor_col][i]]
-    if(first == None):    
-        if(tmp_factors[0] != second):
+    if first is None:
+        if tmp_factors[0] != second:
             first = tmp_factors[0]
         else:
             first = tmp_factors[1]
-    if(second == None):
-        if(tmp_factors[0] != first):
+    if second is None:
+        if tmp_factors[0] != first:
             second = tmp_factors[0]
         else:
             second = tmp_factors[1]
@@ -221,7 +236,7 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
     | - Hypothesized mean = {hypo_diff}
     | - Confidence level = {confi_level}
     """.format(hypo_diff=hypo_diff, confi_level=confi_level)))
-    
+
     for response_col in response_cols:
         tmp_model = []
         number1 = len(table_first[response_col])
@@ -231,27 +246,27 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
         std1 = (table_first[response_col]).std()
         std2 = (table_second[response_col]).std()
         start_auto = 0
-        if(equal_vari == 'auto'):
+        if equal_vari == 'auto':
             start_auto = 1
             f_value = (std1 ** 2) / (std2 ** 2)
             f_test_p_value_tmp = stats.f.cdf(1 / f_value, number1 - 1, number2 - 1)
-            if(f_test_p_value_tmp > 0.5):
+            if f_test_p_value_tmp > 0.5:
                 f_test_p_value = (1 - f_test_p_value_tmp) * 2
             else:
                 f_test_p_value = f_test_p_value_tmp * 2
-            if(f_test_p_value < 0.05):
+            if f_test_p_value < 0.05:
                 equal_vari = 'unequal'
             else:
                 equal_vari = 'pooled'
         ttestresult = ttest_ind(table_first[response_col], table_second[response_col], 'larger', usevar=equal_vari, value=hypo_diff)
-        
+
         if 'larger' in alternatives:
             ttestresult = ttest_ind(table_first[response_col], table_second[response_col], 'larger', usevar=equal_vari, value=hypo_diff)
             df = ttestresult[2]
-            if(equal_vari == 'pooled'):    
+            if equal_vari == 'pooled':
                 std_number1number2 = sqrt(((number1 - 1) * (std1) ** 2 + (number2 - 1) * (std2) ** 2) / (number1 + number2 - 2))
                 margin = t.ppf((confi_level) , df) * std_number1number2 * sqrt(1 / number1 + 1 / number2)
-            if(equal_vari == 'unequal'):
+            if equal_vari == 'unequal':
                 margin = t.ppf((confi_level) , df) * sqrt(std1 ** 2 / (number1) + std2 ** 2 / (number2))
             tmp_model += [['true difference in means > 0.0'] + 
             [ttestresult[1]] + [(mean1 - mean2 - margin, math.inf)]]
@@ -259,14 +274,14 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
             ['true difference in means > 0.0'] + 
             ['t statistic, t distribution with %f degrees of freedom under the null hypothesis' % ttestresult[2]] + 
             [ttestresult[0]] + [ttestresult[1]] + [confi_level] + [mean1 - mean2 - margin] + [math.inf]]
-            
+
         if 'smaller' in alternatives:
             ttestresult = ttest_ind(table_first[response_col], table_second[response_col], 'smaller', usevar=equal_vari, value=hypo_diff)
             df = ttestresult[2]
-            if(equal_vari == 'pooled'):    
+            if equal_vari == 'pooled':    
                 std_number1number2 = sqrt(((number1 - 1) * (std1) ** 2 + (number2 - 1) * (std2) ** 2) / (number1 + number2 - 2))
                 margin = t.ppf((confi_level) , df) * std_number1number2 * sqrt(1 / number1 + 1 / number2)
-            if(equal_vari == 'unequal'):
+            if equal_vari == 'unequal':
                 margin = t.ppf((confi_level) , df) * sqrt(std1 ** 2 / (number1) + std2 ** 2 / (number2))
             tmp_model += [['true difference in means < 0.0'] + 
             [ttestresult[1]] + [(-math.inf, mean1 - mean2 + margin)]] 
@@ -274,14 +289,14 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
             ['true difference in means < 0.0'] + 
             ['t statistic, t distribution with %f degrees of freedom under the null hypothesis' % ttestresult[2]] + 
             [ttestresult[0]] + [ttestresult[1]] + [confi_level] + [-math.inf] + [mean1 - mean2 + margin]] 
-            
+
         if 'two-sided' in alternatives:
             ttestresult = ttest_ind(table_first[response_col], table_second[response_col], 'two-sided', usevar=equal_vari, value=hypo_diff)
             df = ttestresult[2]
-            if(equal_vari == 'pooled'):    
+            if equal_vari == 'pooled':    
                 std_number1number2 = sqrt(((number1 - 1) * (std1) ** 2 + (number2 - 1) * (std2) ** 2) / (number1 + number2 - 2))
                 margin = t.ppf((confi_level + 1) / 2 , df) * std_number1number2 * sqrt(1 / number1 + 1 / number2)
-            if(equal_vari == 'unequal'):
+            if equal_vari == 'unequal':
                 margin = t.ppf((confi_level + 1) / 2 , df) * sqrt(std1 ** 2 / (number1) + std2 ** 2 / (number2))
             tmp_model += [['true difference in means != 0.0'] + 
             [ttestresult[1]] + [(mean1 - mean2 - margin, mean1 - mean2 + margin)]]
@@ -289,7 +304,7 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
             ['true difference in means != 0.0'] + 
             ['t statistic, t distribution with %f degrees of freedom under the null hypothesis' % ttestresult[2]] + 
             [ttestresult[0]] + [ttestresult[1]] + [confi_level] + [mean1 - mean2 - margin] + [mean1 - mean2 + margin]]
-            
+
         result_model = pd.DataFrame.from_records(tmp_model)
         result_model.columns = ['alternative hypothesis', 'p-value', '%g%% confidence interval' % (confi_level * 100)]
         rb.addMD(strip_margin("""
@@ -301,7 +316,7 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
         | {result_model}
         |
         """.format(ttestresult2=ttestresult[2], response_col=response_col, factor_col=factor_col, first=first, second=second, ttestresult0=ttestresult[0], result_model=pandasDF2MD(result_model))))
-        if(start_auto == 1):
+        if start_auto == 1:
             equal_vari = 'auto'
     result = pd.DataFrame.from_records(tmp_table)
     result.columns = ['data', 'alternative_hypothesis', 'statistics', 'estimates', 'p_value', 'confidence_level', 'lower_confidence_interval', 'upper_confidence_interval']
