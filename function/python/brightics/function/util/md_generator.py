@@ -176,6 +176,11 @@ from {function_package} import {function_name}
         example=func_example)
 
 
+'''
+With adding run argument
+'-o "../../../../../va-server/visual-analytics/public/static/help/python/"',
+md_generator makes help file to visual-analytics help directory.
+'''
 if __name__ == "__main__":
 
     python_visual_files = glob.glob('''../**/meta/*.json''')
@@ -216,34 +221,3 @@ if __name__ == "__main__":
             wf.write(mdstr)
             wf.close()
             print("MD is generated in {0}".format(out_file_path))
-
-#         # save helpdocs to function
-#         if not error_occur and mdstr:
-#
-#             out_file_dir = os.path.dirname(os.path.dirname(in_file_path)) + os.sep + 'help'
-#             in_json_str = json.loads(open(in_file_name, 'r', encoding='UTF-8').read())
-#             out_file_header = in_json_str['specJson']['name']
-#             # out_file_path = out_file_dir + os.sep + re.sub(r'\.json$', '.md', os.path.basename(in_file_path))
-#             out_file_path = out_file_dir + os.sep + out_file_header + '.md'
-#
-#             if not os.path.exists(out_file_dir):
-#                 os.makedirs(out_file_dir)
-#             wf = open(out_file_path, 'w', encoding='UTF-8')
-#             wf.write(mdstr)
-#             wf.close()
-#             print("MD is generated in {0}".format(out_file_path))
-#
-#         # save helpdocs to va
-#         if not error_occur and mdstr:
-#             out_file_dir = os.path.abspath('../../../../../va-server/visual-analytics/public/static/help/python/')
-#             in_json_str = json.loads(open(in_file_name, 'r', encoding='UTF-8').read())
-#             out_file_header = in_json_str['specJson']['name']
-#             # out_file_path = out_file_dir + os.sep + re.sub(r'\.json$', '.md', os.path.basename(in_file_path))
-#             out_file_path = out_file_dir + os.sep + out_file_header + '.md'
-#
-#             if not os.path.exists(out_file_dir):
-#                 os.makedirs(out_file_dir)
-#             wf = open(out_file_path, 'w', encoding='UTF-8')
-#             wf.write(mdstr)
-#             wf.close()
-#             print("MD is generated in {0}".format(out_file_path))
