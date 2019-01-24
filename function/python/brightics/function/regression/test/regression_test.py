@@ -11,7 +11,7 @@ from brightics.function.regression.xgb_regression import xgb_regression_train, \
 
 class LinearRegressionTest(unittest.TestCase):
     
-    def groupby1(self):
+    def test_groupby1(self):
         df = load_iris()
         train_out = linear_regression_train(df, feature_cols=['sepal_length', 'sepal_width', 'petal_length'], label_col='petal_width', group_by=['species'])
         predict_out = linear_regression_predict(df, train_out['model'])
@@ -20,7 +20,7 @@ class LinearRegressionTest(unittest.TestCase):
         
 class DecisionTreeRegressionTest(unittest.TestCase):
     
-    def groupby1(self):
+    def test_groupby1(self):
         df = load_iris()
         train_out = decision_tree_regression_train(df, feature_cols=['sepal_length', 'sepal_width', 'petal_length'], label_col='petal_width', group_by=['species'])
         predict_out = decision_tree_regression_predict(df, train_out['model'])
@@ -29,7 +29,7 @@ class DecisionTreeRegressionTest(unittest.TestCase):
         
 class GLMTest(unittest.TestCase):
     
-    def groupby1(self):
+    def test_groupby1(self):
         df = load_iris()
         train_out = glm_train(df, feature_cols=['sepal_length', 'sepal_width', 'petal_length'], label_col='petal_width', group_by=['species'])
         predict_out = glm_predict(df, train_out['model'])
@@ -38,7 +38,7 @@ class GLMTest(unittest.TestCase):
         
 class XGBRegressionTest(unittest.TestCase):
     
-    def groupby1(self):
+    def test_groupby1(self):
         df = load_iris()
         train_out = xgb_regression_train(df, feature_cols=['sepal_length', 'sepal_width', 'petal_length'], label_col='petal_width', group_by=['species'])
         predict_out = xgb_regression_predict(df, train_out['model'])

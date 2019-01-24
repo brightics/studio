@@ -4,7 +4,7 @@ import numpy as np
 from sklearn.neighbors import LocalOutlierFactor
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
-from brightics.function.validation import raise_runtime_error
+from brightics.common.validation import raise_runtime_error
 
 
 def outlier_detection_tukey_carling(table, group_by=None, **params):
@@ -88,10 +88,10 @@ def _outlier_detection_tukey_carling(table, input_cols, outlier_method='tukey', 
     return {'out_table': out_table, 'model' : model}
 
 
-def outlier_detection_tukey_carling_model(table, model, group_by=None, **params):
+def outlier_detection_tukey_carling_model(table, model, **params):
     check_required_parameters(_outlier_detection_tukey_carling_model, params, ['table', 'model'])
-    if group_by is not None:
-        return _function_by_group(_outlier_detection_tukey_carling_model, table, model, group_by=group_by, **params)
+    if '_grouped_data' in model:
+        return _function_by_group(_outlier_detection_tukey_carling_model, table, model, **params)
     else:
         return _outlier_detection_tukey_carling_model(table, model, **params)
     
@@ -193,10 +193,10 @@ def _outlier_detection_lof(table, input_cols, n_neighbors=20, result_type='add_p
     return {'out_table': out_table, 'model': model}
 
 
-def outlier_detection_lof_model(table, model, group_by=None, **params):
+def outlier_detection_lof_model(table, model, **params):
     check_required_parameters(_outlier_detection_lof_model, params, ['table', 'model'])
-    if group_by is not None:
-        return _function_by_group(_outlier_detection_lof_model, table, model, group_by=group_by, **params)
+    if '_grouped_data' in model:
+        return _function_by_group(_outlier_detection_lof_model, table, model, **params)
     else:
         return _outlier_detection_lof_model(table, model, **params)
 

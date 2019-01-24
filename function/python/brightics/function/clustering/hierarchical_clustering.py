@@ -2,7 +2,7 @@ from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, di
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
-from brightics.function.validation import raise_runtime_error
+from brightics.common.validation import raise_runtime_error
 
 import matplotlib.pyplot as plt
 from scipy.cluster.hierarchy import dendrogram, linkage, fcluster, leaders
@@ -45,7 +45,7 @@ def _hierarchical_clustering(table, input_cols, input_mode, key_col=None, link='
     if input_mode == 'original':
         len_features = len(features)
         if key_col != None:
-            data_names = out_table[key_col]
+            data_names = list(out_table[key_col])
         elif key_col == None:
             data_names = ['pt_' + str(i) for i in range(len_features)]
         Z = linkage(features, method=link, metric=met)
@@ -156,10 +156,10 @@ def _hierarchical_clustering(table, input_cols, input_mode, key_col=None, link='
     return {'model':model}
 
 
-def hierarchical_clustering_post(table, model, group_by=None, **params):
+def hierarchical_clustering_post(table, model, **params):
     check_required_parameters(_hierarchical_clustering_post, params, ['table', 'model'])
-    if group_by is not None:
-        return _function_by_group(_hierarchical_clustering_post, table, model, group_by=group_by, **params)
+    if '_grouped_data' in model:
+        return _function_by_group(_hierarchical_clustering_post, table, model, **params)
     else:
         return _hierarchical_clustering_post(table, model, **params)
 

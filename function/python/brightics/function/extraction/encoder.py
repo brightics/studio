@@ -5,7 +5,7 @@ import pandas as pd
 from brightics.common.groupby import _function_by_group
 from brightics.function.utils import _model_dict
 from brightics.common.utils import check_required_parameters
-from brightics.function.validation import raise_runtime_error
+from brightics.common.validation import raise_runtime_error
 
 
 def label_encoder(table, group_by=None, **params):

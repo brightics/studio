@@ -20,7 +20,7 @@ def get_iris_randomgroup():
 
 class OneHotEncoderTest(unittest.TestCase):
     
-    def groupby1(self):
+    def test_groupby1(self):
         df = get_iris_randomgroup()
         enc_out = one_hot_encoder(df, input_cols=['sepal_length', 'sepal_width'], prefix_list=['a', 'b'], group_by=['random_group1', 'random_group2'])
         print(enc_out['out_table'])

@@ -78,7 +78,7 @@ def statistic_derivation(table, group_by=None, **params):
     if group_by is not None:
         return _function_by_group(_statistic_derivation, table, group_by=group_by, **params)
     else:
-        return _statistic_summary(table, **params)
+        return _statistic_derivation(table, **params)
 
 
 def _statistic_derivation(table, input_cols, statistics, percentile_amounts=[], trimmed_mean_amounts=[]):

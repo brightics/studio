@@ -111,7 +111,7 @@ def _plot_confusion_matrix(cm, classes,
 
 def naive_bayes_predict(table, model, **params):
     check_required_parameters(_naive_bayes_predict, params, ['table', 'model'])
-    if 'group_by' in model:
+    if '_grouped_data' in model:
         return _function_by_group(_naive_bayes_predict, table, model, **params)
     else:
         return _naive_bayes_predict(table, model, **params)

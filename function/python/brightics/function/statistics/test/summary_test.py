@@ -21,19 +21,19 @@ class SummaryTest(unittest.TestCase):
                   'mode', 'median', 'q1', 'q3', 'iqr', 'percentile', 'trimmed_mean']
         pa_list = [0.25, 0.25]
         ta_list = [0.20, 0.20]
-        out1 = statistic_summary(t1, ['d1', 'd2'], stats1)
+        out1 = statistic_summary(t1, input_cols=['d1', 'd2'], statistics=stats1)
         print(out1['out_table'])
-        out2 = statistic_summary(t1, ['d1', 'd2'], stats2, pa_list, ta_list)
+        out2 = statistic_summary(t1, input_cols=['d1', 'd2'], statistics=stats2, percentile_amounts=pa_list, trimmed_mean_amounts=ta_list)
         print(out2['out_table'])
-        out3 = statistic_summary(t1, ['d1', 'd2'], stats3, percentile_amounts=[0.25, 0.75], trimmed_mean_amounts=[0.15, 0.45])
+        out3 = statistic_summary(t1, input_cols=['d1', 'd2'], statistics=stats3, percentile_amounts=[0.25, 0.75], trimmed_mean_amounts=[0.15, 0.45])
         print(out3['out_table'])
         print(out3['out_table'].columns.values)
         
-        d_out1 = statistic_derivation(t1, ['d1', 'd2'], stats1)
+        d_out1 = statistic_derivation(t1, input_cols=['d1', 'd2'], statistics=stats1)
         print(d_out1['out_table'])
         print(d_out1['out_table'].columns.values)
         
-        d_out2 = statistic_derivation(t1, ['d1', 'd2'], stats2, pa_list, ta_list)
+        d_out2 = statistic_derivation(t1, input_cols=['d1', 'd2'], statistics=stats2, percentile_amounts=pa_list, trimmed_mean_amounts=ta_list)
         print(d_out2['out_table'])
         print(d_out2['out_table'].columns.values)
     
@@ -47,7 +47,7 @@ class SummaryTest(unittest.TestCase):
         input_cols = ['d2', 'd3']
         pa_list = [0.25, 0.25]
         ta_list = [0.20, 0.20]
-        out1 = statistic_summary(t1, input_cols, ['max', 'min'])
+        out1 = statistic_summary(t1, input_cols=input_cols, statistics=['max', 'min'])
         print(out1['out_table'])
 
     def test_summary3(self):
@@ -65,45 +65,15 @@ class SummaryTest(unittest.TestCase):
         t = pd.DataFrame({'s1': ['a', 'a', 'b', 'b', 'b', None, None, None, None, 'e']})
         print(t)
         
-        out1 = string_summary(t, ['s1'])['summary_table']
+        out1 = string_summary(t, input_cols=['s1'])['summary_table']
         print(out1)
         print(out1['mode'])
-        
-    def test_string2(self):
-        t = pd.DataFrame({'s1': ['a', 'a', 'b', 'b', 'b', None, None, None, None, 'e', 'Z'],
-                          's2': ['A', 'B', 'A', 'A', 'A', 'a', 'B', None, None, 'a', 'Z']})
-        print(t)
-        input_cols = ['s1', 's2']
-        
-        t_list = []
-        for c in input_cols:
-            
-            # value & counts
-            out1 = t.groupby([c]).size().reset_index(name='counts').rename(columns={c:'value'})
-            out_nullcount = pd.DataFrame([[None, np.count_nonzero([x is None for x in t[c]])]], columns=['value', 'counts'])
-            out1 = out1.append(out_nullcount, ignore_index=True)
-            
-            # column_name
-            out1['column_name'] = c
-            
-            # rate
-            _sum = np.sum(out1['counts'])
-            out1['rate'] = [x / _sum for x in out1['counts']]
-            out1 = out1.sort_values(by='value')
-            
-            # cumulative rate
-            out1['cumulative_rate'] = out1['rate'].cumsum()
-            
-            t_list.append(out1)
-        
-        out = pd.concat(t_list, ignore_index=True)[['column_name', 'value', 'counts', 'rate', 'cumulative_rate']]
-        print(out)
         
     def test_string3(self):
         t = pd.DataFrame({'s1': ['a', 'a', 'b', 'b', 'b', None, None, None, None, '', 'e', 'Z'],
                           's2': ['A', 'B', 'A', 'A', 'A', 'a', 'B', None, None, '    ', 'a', 'Z']})
         
-        out = string_summary(t, ['s1', 's2'])
+        out = string_summary(t, input_cols=['s1', 's2'])
         
         print(out['summary_table'])
         print(out['summary_table']['num_of_white_space'])
@@ -119,6 +89,6 @@ class SummaryTest(unittest.TestCase):
         df = pd.DataFrame(d)
         
         # out = statistic_derivation(df, ['d1','d2','d3'], ['min', 'max', 'mode', 'percentile'], [0.1, 0.75], [0.1, 0.3])['out_table']
-        out = statistic_derivation(df, ['d1', 'd2', 'd3'], ['min', 'mode'], [0.1, 0.75], [0.1, 0.3])['out_table']
+        out = statistic_derivation(df, input_cols=['d1', 'd2', 'd3'], statistics=['min', 'mode'], percentile_amounts=[0.1, 0.75], trimmed_mean_amounts=[0.1, 0.3])['out_table']
         print(out)
         
