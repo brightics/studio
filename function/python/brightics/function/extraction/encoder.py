@@ -58,6 +58,8 @@ def _one_hot_encoder(table, input_cols, prefix='list', prefix_list=None, suffix=
     sparse = False
     enc_list = []
     le_list = []
+    if drop_last:
+        new_col_names_list_with_true_drop_last = []
     new_col_names_list = []
     prefix_list_index = 0
     if prefix == 'list':
@@ -85,14 +87,15 @@ def _one_hot_encoder(table, input_cols, prefix='list', prefix_list=None, suffix=
                     new_col_names.append(col_name + '_' + str(i))
          
         transformed_table = pd.DataFrame(enc.fit_transform(le.fit_transform(out_table[col_name]).reshape(-1, 1)), columns=new_col_names)
+        new_col_names_list.append(new_col_names)
         if drop_last:
-            del new_col_names[-1]
+            new_col_names = new_col_names[:-1]
+            new_col_names_list_with_true_drop_last.append(new_col_names)
         for new_col_name in new_col_names:
             out_table[new_col_name] = transformed_table[new_col_name]
             
         enc_list.append(enc)
         le_list.append(le)
-        new_col_names_list.append(new_col_names)
         prefix_list_index = prefix_list_index + 1
     
     out_model = _model_dict('one_hot_encoder')
@@ -107,6 +110,8 @@ def _one_hot_encoder(table, input_cols, prefix='list', prefix_list=None, suffix=
     out_model['prefix_list'] = prefix_list
     out_model['suffix'] = suffix
     out_model['drop_last'] = drop_last
+    if drop_last:
+        out_model['new_col_names_list_with_true_drop_last'] = new_col_names_list_with_true_drop_last
     out_model['new_col_names_list'] = new_col_names_list
     
     return {'out_table' : out_table, 'model' : out_model}
@@ -123,12 +128,13 @@ def one_hot_encoder_model(table, model, **params):
 def _one_hot_encoder_model(table, model):
     out_table = table.copy()
     for i in range(0, len(model['input_cols'])):
-        new_col_names = model['new_col_names_list'][i]
         col_name = model['input_cols'][i]
-        transformed_table = pd.DataFrame(model['one_hot_encoder_list'][i].transform(model['label_encoder_list'][i].transform(out_table[col_name]).reshape(-1, 1)), columns=new_col_names)
+        transformed_table = pd.DataFrame(model['one_hot_encoder_list'][i].transform(model['label_encoder_list'][i].transform(out_table[col_name]).reshape(-1, 1)), columns=model['new_col_names_list'][i])
         if model['drop_last']:
-            del new_col_names[-1]
-        for new_col_name in new_col_names:
-            out_table[new_col_name] = transformed_table[new_col_name]
+            for new_col_name in model['new_col_names_list_with_true_drop_last'][i]:
+                out_table[new_col_name] = transformed_table[new_col_name]
+        else:
+            for new_col_name in model['new_col_names_list'][i]:
+                out_table[new_col_name] = transformed_table[new_col_name]
             
     return {'out_table' : out_table}
