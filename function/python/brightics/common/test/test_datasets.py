@@ -13,7 +13,7 @@ class DatasetTest(unittest.TestCase):
     def setUp(self):
         unittest.TestCase.setUp(self)
         self.logger = logging.getLogger(self.__class__.__name__)
-        self.logger.setLevel(logging.INFO)
+        # self.logger.setLevel(logging.DEBUG)
         self.logger.addHandler(logging.StreamHandler())
 
     def test_iris(self):
@@ -26,7 +26,7 @@ class DatasetTest(unittest.TestCase):
         _data_size = random.randint(10, 50)
         data1 = load_basic_test_data(seed=_seed, data_size=_data_size)
         data2 = load_basic_test_data(seed=_seed, data_size=_data_size)
-        self.logger.info(data1)
+        self.logger.debug(data1)
         pandas.testing.assert_frame_equal(data1, data2)
 
     def test_load_random_classification(self):
@@ -40,7 +40,7 @@ class DatasetTest(unittest.TestCase):
         data2 = load_random_classification(seed=_seed, data_size=_data_size,
                                            n_xcol=_n_xcol,
                                            n_class=_n_class)
-        self.logger.info(data1)
+        self.logger.debug(data1)
         pandas.testing.assert_frame_equal(data1, data2)
 
     def test_load_random_regression(self):
@@ -51,7 +51,7 @@ class DatasetTest(unittest.TestCase):
                                        n_xcol=_n_xcol)
         data2 = load_random_regression(seed=_seed, data_size=_data_size,
                                        n_xcol=_n_xcol)
-        self.logger.info(data1)
+        self.logger.debug(data1)
         pandas.testing.assert_frame_equal(data1, data2)
 
     def test_randomfloat(self):
@@ -65,7 +65,7 @@ class DatasetTest(unittest.TestCase):
         rf2 = add_category_column(rf2, 'group1', ['A', 'B'], _seed)
         rf2 = add_category_column(rf2, 'group2', [1, 2], _seed)
 
-        self.logger.info(rf1)
+        self.logger.debug(rf1)
         pandas.testing.assert_frame_equal(rf1, rf2)
 
     def test_randomdata(self):
@@ -96,5 +96,5 @@ class DatasetTest(unittest.TestCase):
                                               columns=RANDOM_COLUMN,
                                               seed=_seed,
                                               data_size=_data_size))
-        print(_seed)
-        print(table)
+        self.logger.debug('seed={}'.format(_seed))
+        self.logger.debug(table)
