@@ -5,7 +5,7 @@ import numpy as np
 import math
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
-from brightics.common.validation import validate, greater_than_or_equal_to, raise_error, require_param
+from brightics.function.validation import validate, greater_than_or_equal_to, raise_error, require_param
 
 
 def filter(table, query):
@@ -73,7 +73,8 @@ def _replace_missing_number(table, input_cols, fill_method=None, fill_value='val
         _raw_input_cols = input_cols
     
     if fill_method == 'ffill' or fill_method == 'bfill':
-        _out_table = _table.fillna(method=fill_method, limit=limit, downcast=downcast)
+        _out_table = _table
+        _out_table[input_cols] = _table[input_cols].fillna(method=fill_method, limit=limit, downcast=downcast)
     else:
         _input_cols = [x for x in _raw_input_cols if np.issubdtype(table[x].dtype, np.number)]
         if fill_value == 'mean':
@@ -112,12 +113,11 @@ def _replace_missing_string(table, input_cols, fill_method=None, fill_string='',
         _raw_input_cols = input_cols
     
     if fill_method == 'ffill' or fill_method == 'bfill':
-        _out_table = _table.fillna(method=fill_method, limit=limit, downcast=downcast)
+        _out_table = _table
+        _out_table[input_cols] = _table[input_cols].fillna(method=fill_method, limit=limit, downcast=downcast)
     else:
         _input_cols = [x for x in _raw_input_cols if table[x].dtype == object]
         _values = {x:fill_string for x in _input_cols}
         _out_table = _table.fillna(value=_values, limit=limit, downcast=downcast)
         
     return {'out_table':_out_table}
-
-    
