@@ -112,7 +112,7 @@ def load_random_table(columns, seed=None, data_size=20, add_index=True):
 
         if c['type'] == 'int':
             new_col_data = npr.randint(
-                low=c['min_value'], high=c['max_value'], size=data_size)
+                low=c['min_value'], high=c['max_value'] + 1, size=data_size)
         elif c['type'] == 'float':
             new_col_data = (npr.random_sample(size=data_size) *
                             (c['max_value'] - c['min_value']) +
