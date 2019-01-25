@@ -1,7 +1,7 @@
 import unittest
 from brightics.function.classification import svm_classification_train, svm_classification_predict
 from brightics.function.transform import split_data
-from brightics.function.test_data import get_iris
+from brightics.common.datasets import load_iris
 import pandas as pd
 import random
 from brightics.function.classification.decision_tree_classification import decision_tree_classification_train, \
@@ -15,7 +15,7 @@ from brightics.function.classification.xgb_classification import xgb_classificat
 class SVMTest(unittest.TestCase):
     
     def test1(self):
-        iris = get_iris()
+        iris = load_iris()
         
         df_splitted = split_data(table=iris, train_ratio=0.7, test_ratio=0.3)
         train_df = df_splitted['train_table']
@@ -28,7 +28,7 @@ class SVMTest(unittest.TestCase):
         print(predict_out['out_table'][['species', 'prediction']])
         
     def test_predict_thresholds(self):
-        iris = get_iris()
+        iris = load_iris()
         
         df_splitted = split_data(table=iris, train_ratio=0.7, test_ratio=0.3)
         train_df = df_splitted['train_table']
@@ -41,7 +41,7 @@ class SVMTest(unittest.TestCase):
         print(predict_out['out_table'][['species', 'prediction']])
         
     def test_groupby1(self):
-        df = get_iris()
+        df = load_iris()
         random_group = []
         for i in range(len(df)):
             random_group.append(random.randint(1, 2))
@@ -55,7 +55,7 @@ class SVMTest(unittest.TestCase):
 class DecisionTreeClassificationTest(unittest.TestCase):
     
     def test_groupby1(self):
-        df = get_iris()
+        df = load_iris()
         random_group = []
         for i in range(len(df)):
             random_group.append(random.randint(1, 2))
@@ -69,7 +69,7 @@ class DecisionTreeClassificationTest(unittest.TestCase):
 class LogisticRegressionTest(unittest.TestCase):
     
     def test_groupby1(self):
-        df = get_iris()
+        df = load_iris()
         random_group = []
         for i in range(len(df)):
             random_group.append(random.randint(1, 2))
@@ -83,7 +83,7 @@ class LogisticRegressionTest(unittest.TestCase):
 class XGBClassificationTest(unittest.TestCase):
     
     def test_groupby1(self):
-        df = get_iris()
+        df = load_iris()
         random_group = []
         for i in range(len(df)):
             random_group.append(random.randint(1, 2))

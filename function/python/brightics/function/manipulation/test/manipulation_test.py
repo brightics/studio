@@ -2,7 +2,7 @@ import unittest
 import pandas as pd
 import numpy as np
 from brightics.function.manipulation import filter, sort, replace_missing_number, replace_missing_string, simple_filter
-from brightics.function.test_data import get_iris
+from brightics.common.datasets import load_iris
 from brightics.common.exception import BrighticsFunctionException
 
 df_example1 = pd.DataFrame({'num1':[1, 2, 3, 4, 5],
@@ -40,13 +40,13 @@ class ManipulationTest(unittest.TestCase):
 class SortTest(unittest.TestCase):
 
     def test_default(self):
-        df = get_iris()
+        df = load_iris()
         out_df = sort(df, input_cols=['species', 'petal_length'], is_asc=['desc', 'asc'])['out_table']
         print(df)
         print(out_df)
 
     def test_validation(self):
-        df = get_iris()
+        df = load_iris()
         with self.assertRaises(BrighticsFunctionException) as bfe:
             out_df = sort(df, input_cols=[], is_asc=['desc'])['out_table']
             

@@ -1,11 +1,11 @@
 import unittest
-from brightics.function.test_data import get_iris
+from brightics.common.datasets import load_iris
 import random
 from brightics.function.extraction.scale import scale, scale_model
 
 
 def get_iris_randomgroup():
-    df = get_iris()
+    df = load_iris()
     random_group1 = []
     random_group2 = []
     random_group2_map = {1:'A', 2:'B'}
