@@ -17,7 +17,7 @@ def read_parquet_or_csv(path):
 
 
 def read_csv(path):
-    return pd.read_csv(path)
+    return pd.read_csv(path, engine='python')
 
 
 def read_parquet(path):
