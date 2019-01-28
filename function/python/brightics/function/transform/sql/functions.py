@@ -120,4 +120,8 @@ def split(str_, *sep):
         return _serialize(str_.split())
     else:  # todo elif nargs == 1:
         return _serialize(str_.split(sep[0]))
+
     
+def size(serialized_list):
+    arr = _deserialize(serialized_list)
+    return len(arr)
