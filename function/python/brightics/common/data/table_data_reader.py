@@ -7,7 +7,8 @@ import brightics.common.data.utils as data_util
 def read_parquet_or_csv(path):
     try:
         # try parquet data storage first using path as key
-        df = pd.read_parquet(path=data_util.make_data_path_from_key(path), engine='pyarrow')
+        df = pd.read_parquet(path=data_util.make_data_path_from_key(path),
+                             engine='pyarrow')
     except pyarrow.lib.ArrowIOError:
         df = read_csv(path)
 
