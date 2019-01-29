@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+import brightics.common.statistics as brtc_stats
+from .serializer import _serialize
 
 
 class Variance(object):
@@ -75,3 +77,43 @@ class CovarSamp(Covariance):
     
     def finalize(self):
         return self.c / (self.n - 1)
+    
+    
+class Percentile(object): 
+    name = 'percentile'
+
+    def __init__(self):
+        self.data = []
+        
+    def step(self, x, p):
+        self.data.append(x)
+        self.p = p
+
+    def finalize(self):
+        return brtc_stats.percentile(self.data, self.p)
+    
+    
+class CollectList(object):
+    name = 'collect_list'
+    
+    def __init__(self):
+        self.data = []
+        
+    def step(self, x):
+        self.data.append(x)
+
+    def finalize(self):
+        return _serialize(np.array(self.data))
+
+
+class CollectSet(object):
+    name = 'collect_set'
+    
+    def __init__(self):
+        self.data = []
+        
+    def step(self, x):
+        self.data.append(x)
+
+    def finalize(self):
+        return _serialize(np.unique(np.array(self.data)))
