@@ -43,7 +43,7 @@ class SQLTest(unittest.TestCase):
         | , datediff('2013-03-02','2013-02-27') as date_diff2
         |''')
     
-        result_df = sql_execute(df_iris, query)['out_table']
+        result_df = sql_execute([], query)['out_table']
         
         with pd.option_context('display.max_rows', 100, 'display.max_columns', 100):
             print(result_df)
