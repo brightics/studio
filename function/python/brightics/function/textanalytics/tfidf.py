@@ -18,7 +18,7 @@ def tfidf(table, group_by=None, **params):
         return _tfidf(table, **params)
 
 
-def _tfidf(table, input_col, max_df=0.95, min_df=2, num_voca=1000, idf_weighting_scheme='inverseDocumentFrequency', norm='l2', smooth_idf=True, sublinear_tf=False, output_type=False):
+def _tfidf(table, input_col, max_df=1.0, min_df=1, num_voca=1000, idf_weighting_scheme='inverseDocumentFrequency', norm='l2', smooth_idf=True, sublinear_tf=False, output_type=False):
     corpus=table[input_col]
     tf_vectorizer=CountVectorizer(stop_words='english', max_df=max_df, min_df=min_df, max_features=num_voca)
     tf_vectorizer.fit(corpus)

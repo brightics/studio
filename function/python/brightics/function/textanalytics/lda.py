@@ -54,7 +54,7 @@ def _lda(table, input_col, num_voca=1000, num_topic=3, num_topic_word=3, max_ite
     doc_classification['top topic'] = ["Topic {}".format(doc_topic[i].argmax()) for i in range(len(corpus))]
     
     params = {
-        'input Column': input_col,
+        'Input Column': input_col,
         'Number of Vocabularies': num_voca,
         'Number of Topics': num_topic,
         'Number of Terminologies': num_topic_word,
