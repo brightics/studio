@@ -156,15 +156,15 @@ def _hierarchical_clustering(table, input_cols, input_mode, key_col=None, link='
     return {'model':model}
 
 
-def hierarchical_clustering_post_process(table, model, **params):
-    check_required_parameters(_hierarchical_clustering_post_process, params, ['table', 'model'])
+def hierarchical_clustering_post(table, model, **params):
+    check_required_parameters(_hierarchical_clustering_post, params, ['table', 'model'])
     if '_grouped_data' in model:
-        return _function_by_group(_hierarchical_clustering_post_process, table, model, **params)
+        return _function_by_group(_hierarchical_clustering_post, table, model, **params)
     else:
-        return _hierarchical_clustering_post_process(table, model, **params)
+        return _hierarchical_clustering_post(table, model, **params)
 
 
-def _hierarchical_clustering_post_process(table, model, num_clusters, cluster_col='prediction'):
+def _hierarchical_clustering_post(table, model, num_clusters, cluster_col='prediction'):
     Z = model['model']
     mode = model['input_mode']
     if mode == 'matrix':
