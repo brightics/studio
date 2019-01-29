@@ -7,7 +7,7 @@ import brightics.common.data.table_data_reader as table_reader
 import brightics.common.data.utils as util
 import brightics.common.json as data_json
 from brightics.common.datasource import DbEngine
-from brightics.function.validation import raise_runtime_error
+from brightics.common.validation import raise_runtime_error
 
 
 def read_csv(path):

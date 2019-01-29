@@ -1,5 +1,5 @@
 import pandas as pd
-from brightics.function.validation import raise_runtime_error
+from brightics.common.validation import raise_runtime_error
 
 
 def bind_row_column(first_table, second_table, row_or_col):

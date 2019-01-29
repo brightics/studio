@@ -11,3 +11,4 @@ from .split_data import split_data
 from .json_extraction import flatten_json
 from .json_extraction import get_table
 from .sql import execute as sql_execute
+from .svd import svd
