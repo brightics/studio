@@ -34,4 +34,21 @@ class SQLTest(unittest.TestCase):
         
         self.assertEqual(4.9, result_df.values[0][0][1], 'The second element of the list is not correct.')
         self.assertEqual(4.4, result_df.values[0][1][1], 'The second element of the list is not correct.')
-        self.assertEqual(2, result_df.values[0][2], 'The size of first element is not correct.')      
+        self.assertEqual(2, result_df.values[0][2], 'The size of first element is not correct.')  
+    
+    def test_isotime(self):
+        query = strip_margin('''
+        | SELECT 
+        | datediff('2013-09-28T01:21:16+00:00','2013-09-27T23:21:16+00:00') as date_diff
+        | , datediff('2013-03-02','2013-02-27') as date_diff2
+        |''')
+    
+        result_df = sql_execute([], query)['out_table']
+        
+        with pd.option_context('display.max_rows', 100, 'display.max_columns', 100):
+            print(result_df)
+            
+        
+        self.assertEqual(0, result_df.values[0][0], 'datediff gives a wrong result.')
+        self.assertEqual(3, result_df.values[0][1], 'datediff gives a wrong result.')
+              
