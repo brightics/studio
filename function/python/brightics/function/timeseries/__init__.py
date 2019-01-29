@@ -1,4 +1,5 @@
 from .timeseries_decomposition import timeseries_decomposition
+from .unit_root_test import unit_root_test
 from .autocorrelation import autocorrelation
 from .holt_winters import holt_winters_train
 from .holt_winters import holt_winters_predict

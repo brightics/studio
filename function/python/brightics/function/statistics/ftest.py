@@ -1,8 +1,9 @@
-from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD, \
-    pandasDF2MD, keyValues2MD
+import math
 import pandas as pd
 import scipy.stats
-import math
+import numpy as np
+from brightics.common.repr import BrtcReprBuilder, strip_margin, \
+    pandasDF2MD
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 
@@ -15,36 +16,52 @@ def ftest_for_stacked_data(table, group_by=None, **params):
         return _ftest_for_stacked_data(table, **params)
 
 def _ftest_for_stacked_data(table, response_cols, factor_col, alternatives, first = None, second = None, confi_level=0.95):
-    if(type(table[factor_col][0]) != str):
-        if(type(table[factor_col][0]) == bool):
-            if(first != None):
-                first = bool(first)
-            if(second != None):
-                second = bool(second)
-        else:
-            if(first != None):
-                first = float(first)
-            if(second != None):
-                second = float(second)
-    if(first == None or second == None):
+    if first is not None or second is not None:
+        check_table = np.array(table[factor_col])
+        for element in check_table:
+            if element is not None:
+                if type(element) != str:
+                    if type(element) == bool:
+                        if first is not None and second is not None:
+                            first = bool(first)
+                            second = bool(second)
+                            break
+                        if first is not None:
+                            first = bool(first)
+                            break
+                        second = bool(second)
+                        break
+                    else:
+                        if first is not None and second is not None:
+                            first = float(first)
+                            second = float(second)
+                            break
+                        if first is not None:
+                            first = float(first)
+                            break
+                        second = float(second)
+                        break
+                else:
+                    break
+    if first is None or second is None:
         tmp_factors = []
-        if(first != None):
+        if first is not None:
             tmp_factors += [first]
-        if(second != None):
+        if second is not None:
             tmp_factors += [second]
         for i in range(len(table[factor_col])):
-            if(table[factor_col][i] != None and table[factor_col][i] not in tmp_factors):
-                if(len(tmp_factors) == 2):
+            if table[factor_col][i] is not None and table[factor_col][i] not in tmp_factors:
+                if len(tmp_factors) == 2:
                     raise Exception("There are more that 2 factors.")
                 else:
                     tmp_factors += [table[factor_col][i]]
-    if(first == None):
-        if(tmp_factors[0] != second):
+    if first is None:
+        if tmp_factors[0] != second:
             first = tmp_factors[0]
         else:
             first = tmp_factors[1]
-    if(second == None):
-        if(tmp_factors[0] != first):
+    if second is None:
+        if tmp_factors[0] != first:
             second = tmp_factors[0]
         else:
             second = tmp_factors[1]
@@ -61,13 +78,13 @@ def _ftest_for_stacked_data(table, response_cols, factor_col, alternatives, firs
     | - Confidence level = {confi_level}
     | - Statistics = F statistic, F distribution with {d_num} numerator degrees of freedom and {d_denum} degrees of freedom under the null hypothesis
     """.format(confi_level=confi_level, d_num=d_num, d_denum=d_denum)))
-        
+
     for response_col in response_cols:
         tmp_model = []
         std1 = (table_first[response_col]).std()
         std2 = (table_second[response_col]).std()
         f_value = (std1 ** 2) / (std2 ** 2)
-        
+
         if 'larger' in alternatives:
             p_value = scipy.stats.f.cdf(1 / f_value, d_num, d_denum)
             tmp_model += [['true ratio > 1'] + 
@@ -76,7 +93,7 @@ def _ftest_for_stacked_data(table, response_cols, factor_col, alternatives, firs
             ['true ratio of variances > 1'] + 
             ['F statistic, F distribution with %d numerator degrees of freedom and %d degrees of freedom under the null hypothesis.' % (d_num, d_denum)] + 
             [f_value] + [p_value] + [confi_level] + [f_value / (scipy.stats.f.ppf(confi_level, d_num, d_denum))] + [math.inf]]
-    
+
         if 'smaller' in alternatives:
             p_value = scipy.stats.f.cdf(f_value, d_num, d_denum)
             tmp_model += [['true ratio < 1'] + 
@@ -85,20 +102,20 @@ def _ftest_for_stacked_data(table, response_cols, factor_col, alternatives, firs
             ['true ratio of variances < 1'] + 
             ['F statistic, F distribution with %d numerator degrees of freedom and %d degrees of freedom under the null hypothesis.' % (d_num, d_denum)] + 
             [f_value] + [p_value] + [confi_level] + [0.0] + [f_value * (scipy.stats.f.ppf(confi_level, d_denum, d_num))]]
-    
+
         if 'two-sided' in alternatives:
             p_value_tmp = scipy.stats.f.cdf(1 / f_value, d_num, d_denum)
-            if(p_value_tmp > 0.5):
+            if p_value_tmp > 0.5:
                 p_value = (1 - p_value_tmp) * 2
             else:
                 p_value = p_value_tmp * 2
             tmp_model += [['true ratio != 1'] + 
             [p_value] + [(f_value / (scipy.stats.f.ppf((1 + confi_level) / 2, d_num, d_denum)), f_value * (scipy.stats.f.ppf((1 + confi_level) / 2, d_denum, d_num)))]]
-            tmp_table += [['%s by %s(%s,%s)' % (response_col, factor_col, first, second)] + 
+            tmp_table += [['%s by %s(%s,%s)' % (response_col, factor_col, first, second)] +
             ['true ratio of variances != 1'] + 
             ['F statistic, F distribution with %d numerator degrees of freedom and %d degrees of freedom under the null hypothesis.' % (d_num, d_denum)] + 
             [f_value] + [p_value] + [confi_level] + [f_value / (scipy.stats.f.ppf((1 + confi_level) / 2, d_num, d_denum))] + [f_value * (scipy.stats.f.ppf((1 + confi_level) / 2, d_denum, d_num))]]
-            
+
         result_model = pd.DataFrame.from_records(tmp_model)
         result_model.columns = ['alternative_hypothesis', 'p-value', '%g%% confidence interval' % (confi_level * 100)]
         rb.addMD(strip_margin("""
@@ -108,10 +125,10 @@ def _ftest_for_stacked_data(table, response_cols, factor_col, alternatives, firs
         | {result_model}
         |
         """.format(response_col=response_col, factor_col=factor_col, first=first, second=second, f_value=f_value, result_model=pandasDF2MD(result_model))))
-       
+
     result = pd.DataFrame.from_records(tmp_table)
     result.columns = ['data', 'alternative_hypothesis', 'statistics', 'estimates', 'p_value', 'confidence_level', 'lower_confidence_interval', 'upper_confidence_interval']
 
     model = dict()
-    model['_repr_brtc_'] = rb.get()    
+    model['_repr_brtc_'] = rb.get()
     return {'out_table' : result, 'model' : model}
