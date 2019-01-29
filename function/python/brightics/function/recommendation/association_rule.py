@@ -357,19 +357,15 @@ def association_rule(table, group_by=None, **params):
     else:
         return _association_rule(table, **params)
 
-def _association_rule(table, input_mode=None, mul_items=None, items=None,user_name=None,min_support=0.01,min_confidence=0.8,min_lift=-math.inf,max_lift=math.inf,min_conviction=-math.inf,max_conviction=math.inf):
+def _association_rule(table, input_mode=None, array_input=None, mul_items=None, items=None,user_name=None,min_support=0.01,min_confidence=0.8,min_lift=-math.inf,max_lift=math.inf,min_conviction=-math.inf,max_conviction=math.inf):
     if input_mode == 'user_multiple':
         transactions = []
         for column in mul_items:
-            tmp = []
-            for item in table[column]:
-                tmp += ['%s : %s' %(column,item)]            
+            tmp = ['{} : {}'.format(column,item) for item in table[column]]               
             transactions += [tmp]
         transactions = np.transpose(transactions)
     elif input_mode == 'transaction':
-        transactions = []
-        for transaction in np.array(table):
-            transactions += [list(set(transaction[0]))]
+        transactions = [list(set(transaction)) for transaction in np.array(table[array_input])]
     else:
         if items is None:
             raise Exception('Select Item Column')
