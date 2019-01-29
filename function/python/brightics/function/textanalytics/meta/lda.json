@@ -1,0 +1,170 @@
+{
+    "script": {
+        "type": "",
+        "content": ""
+    },
+    "specJson": {
+        "category": "textanalytics",
+        "func": "brightics.function.textanalytics$lda50163",
+        "name": "brightics.function.textanalytics$lda",
+        "context": "python",
+        "label": "Latent Dirichlet Allocation",
+        "description": "This function builds a topic model for text documents. The generated model is then used for classifying the documents based on topics automatically chosen by the model. To choose topics, this function adapts Gibbs sampling.\n\nWhen we have a dataset(text documents) to analyze, we need to do pre-process for the dataset. In general, we split texts into terms(words), build a vocabulary that only consider the top max_features ordered by term frequency across the corpus, and then remove (1)  terms that have a document frequency strictly higher than 0.95 (2) terms that have a document frequency strictly lower than counts 2 (3) a built-in stop word list for English is used.  \n\nThis pre-process should be performed carefully to get better results. This function performs this pre-process with default setting we mentioned above.\n\nAlso, choosing the number of topics based on the dataset is very important. It could be possible for you to choose either randomly till you can get your desired results or thoroughly based on knowledge of the given text. Increasing number of iterations for running LDA model would give you stable results.\n\nReference:\n\nhttps://en.wikipedia.org/wiki/Latent_Dirichlet_allocation",
+        "tags": [],
+        "version": "3.6",
+        "inputs": {
+            "table": ""
+        },
+        "outputs": {
+            "model": ""
+        },
+        "meta": {
+            "table": {
+                "type": "table"
+            },
+            "model": {
+                "type": "model"
+            }
+        },
+        "params": [
+            {
+                "id": "input_col",
+                "label": "Input Column",
+                "description": "column name to deal with. From input table, only one column can be selected. The selected column type should be String type.",
+                "mandatory": true,
+                "items": [],
+                "visibleOption": [],
+                "control": "ColumnSelector",
+                "columnType": [
+                    "String"
+                ],
+                "validation": [],
+                "multiple": false
+            },
+            {
+                "id": "num_voca",
+                "label": "Number of Vocabularies",
+                "description": "number of vocabularies that will be utilized to count their frequencies in the entire documents. It should be greater than or equal to two (default: 1000).",
+                "mandatory": false,
+                "items": [],
+                "visibleOption": [],
+                "control": "InputBox",
+                "columnType": [],
+                "validation": [],
+                "placeHolder": "1000",
+                "type": "Integer",
+                "min": 2
+            },
+            {
+                "id": "num_topic",
+                "label": "Number of Topics",
+                "description": "number of topics that will be contained in the entire documents. It should be greater than or equal to two (default: 3).",
+                "mandatory": false,
+                "items": [],
+                "visibleOption": [],
+                "control": "InputBox",
+                "columnType": [],
+                "validation": [],
+                "type": "Integer",
+                "min": 2,
+                "placeHolder": "3"
+            },
+            {
+                "id": "num_topic_word",
+                "label": "Number of Terminologies",
+                "description": "maximum number of terminologies you want to show for particular topics. It should be greater than or equal to two. Terminology number should be less than or equal to vocabulary size also (default: 3).",
+                "mandatory": false,
+                "items": [],
+                "visibleOption": [],
+                "control": "InputBox",
+                "columnType": [],
+                "validation": [],
+                "placeHolder": "3",
+                "type": "Integer",
+                "min": 2
+            },
+            {
+                "id": "max_iter",
+                "label": "Iteration",
+                "description": "maximum number of iterations you want to run your model. It should be at least one (default: 20).",
+                "mandatory": false,
+                "items": [],
+                "visibleOption": [],
+                "control": "InputBox",
+                "columnType": [],
+                "validation": [],
+                "type": "Integer",
+                "min": 1,
+                "placeHolder": "20"
+            },
+            {
+                "id": "learning_method",
+                "label": "Learning Method",
+                "description": "Method used to update variational parameters for topic word distribution. Choose ‘batch’ or ‘online’, default=’online’.\n\n'batch': Batch variational Bayes method. Use all training data in each EM update. Old variational parameters for topic word distribution will be overwritten in each iteration.\n'online': Online variational Bayes method. In each EM update, use mini-batch of training data to update the variational parameters for topic word distribution variable incrementally. The learning rate is controlled the ``learning_offset`` parameters.",
+                "mandatory": false,
+                "items": [
+                    {
+                        "label": "Online",
+                        "value": "online",
+                        "default": true
+                    },
+                    {
+                        "label": "Batch",
+                        "value": "batch",
+                        "default": false
+                    }
+                ],
+                "visibleOption": [],
+                "control": "RadioButton",
+                "columnType": [],
+                "validation": []
+            },
+            {
+                "id": "learning_offset",
+                "label": "Learning Offset",
+                "description": "A (positive) parameter that downweights early iterations in online learning. It should be greater than 1.0 (default=10.).",
+                "mandatory": false,
+                "items": [],
+                "visibleOption": [
+                    {
+                        "id": "learning_method",
+                        "value": "online"
+                    }
+                ],
+                "control": "InputBox",
+                "columnType": [],
+                "validation": [],
+                "placeHolder": "10.0",
+                "type": "Double",
+                "min": 1
+            },
+            {
+                "id": "random_state",
+                "label": "Seed",
+                "description": "the seed used by the random number generator.",
+                "mandatory": false,
+                "items": [],
+                "visibleOption": [],
+                "control": "InputBox",
+                "columnType": [],
+                "validation": [],
+                "type": "Integer",
+                "placeHolder": ""
+            },
+			{
+				"id": "group_by",
+				"label": "Group By",
+				"description": "Columns to group by",
+				"mandatory": false,
+				"items": [],
+				"visibleOption": [],
+				"control": "ColumnSelector",
+				"columnType": [],
+				"validation": [],
+				"multiple": true,
+				"rowCount": 5
+			}
+        ]
+    },
+    "md": ""
+}
