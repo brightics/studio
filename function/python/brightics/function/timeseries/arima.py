@@ -60,7 +60,7 @@ def _arima_train(table, input_cols, p, d, q, intercept=True):
 def arima_predict(model, **params):
     check_required_parameters(_arima_predict, params, ['model'])
     if '_grouped_data' in model:
-        return _function_by_group(_arima_predict, model, **params)
+        return _function_by_group(_arima_predict, model=model, **params)
     else:
         return _arima_predict(model, **params)
 
@@ -123,7 +123,7 @@ def _auto_arima_train(table, input_cols, max_p=5, d=None, max_q=5):
 def auto_arima_predict(model, **params):
     check_required_parameters(_auto_arima_predict, params, ['model'])
     if '_grouped_data' in model:
-        return _function_by_group(_auto_arima_predict, model, **params)
+        return _function_by_group(_auto_arima_predict, model=model, **params)
     else:
         return _auto_arima_predict(model, **params)
 

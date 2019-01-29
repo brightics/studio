@@ -65,7 +65,7 @@ def _holt_winters_train(table, input_cols, period, model_type='additive'):
 def holt_winters_predict(model, **params):
     check_required_parameters(_holt_winters_predict, params, ['model'])
     if '_grouped_data' in model:
-        return _function_by_group(_holt_winters_predict, model, **params)
+        return _function_by_group(_holt_winters_predict, model=model, **params)
     else:
         return _holt_winters_predict(model, **params)
 
