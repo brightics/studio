@@ -48,7 +48,7 @@ def _unit_root_test(table, input_col, maxlag=None, regression='c', autolag='AIC'
     model['usedlag'] = result[2]
     model['nobs'] = result[3]
     model['critical_values'] = result[4]
-    if autolag is None:
+    if autolag is not None:
         model['icbest'] = result[5]
     model['_repr_brtc_'] = rb.get()
     
