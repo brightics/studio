@@ -1,17 +1,19 @@
-import brightics.common.json as data_json
-import json
-import codecs
-import os
-import pandas as pd
 import io
+import json
+import os
+import codecs
+
+import pandas as pd
 import boto3
+
+import brightics.common.json as data_json
 from brightics.common.datasource import DbEngine
 from brightics.common.validation import raise_runtime_error
-import brightics.common.data.utils as util
+from brightics.brightics_data_api import _write_dataframe
 
 
 def unload(table, partial_path):
-    table.to_parquet(util.make_data_path_from_key(partial_path[0]))
+    _write_dataframe(table, partial_path[0])
 
 
 def write_csv(table, path):
@@ -21,7 +23,7 @@ def write_csv(table, path):
 def unload_model(model, path):
     dir_ = os.path.dirname(path)
     if not os.path.exists(dir_):
-        os.makedirs(dir_) 
+        os.makedirs(dir_)
     with open(path, 'wb') as fp:
         json.dump(data_json.to_json(model, for_redis=True), codecs.getwriter('utf-8')(fp), ensure_ascii=False)
 
