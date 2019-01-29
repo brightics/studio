@@ -1,0 +1,100 @@
+from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, dict2MD, plt2MD, keyValues2MD
+from brightics.function.utils import _model_dict
+from brightics.common.groupby import _function_by_group
+from brightics.common.utils import check_required_parameters
+
+import numpy as np
+import pandas as pd
+from sklearn.mixture import GaussianMixture
+
+
+def gaussian_mixture_train(table, group_by=None, **params):
+    check_required_parameters(_gaussian_mixture_train, params, ['table'])
+    if group_by is not None:
+        return _function_by_group(_gaussian_mixture_train, table, group_by=group_by, **params)
+    else:
+        return _gaussian_mixture_train(table, **params)
+
+
+def _gaussian_mixture_train(table, input_cols, number_of_components=1, covariance_type='full', tolerance=0.001, \
+                            regularize_covariance=1e-06, max_iteration=100, initial_params='kmeans', seed=None):
+
+    gmm = GaussianMixture(n_components=number_of_components, covariance_type=covariance_type, tol=tolerance, \
+                          reg_covar=regularize_covariance, max_iter=max_iteration, init_params=initial_params, random_state=seed)
+    X_train = table[input_cols]
+    gmm.fit(X_train)
+    
+    out_table = pd.DataFrame()
+    
+    comp_num_arr = []
+    for i in range(0, number_of_components):
+        comp_num_arr.append(i)
+    
+    mean_arr = []
+    for i in range(0, number_of_components):
+        mean_arr.append(gmm.means_[i].tolist())
+        
+    covar_arr = []
+    for i in range(0, number_of_components):
+        covar_arr.append(gmm.covariances_[i].tolist())
+        
+    out_table['component_number'] = comp_num_arr
+    out_table['weight'] = gmm.weights_
+    out_table['mean_coordinate'] = mean_arr
+    out_table['covariance_matrix'] = covar_arr
+    
+    rb = BrtcReprBuilder()
+    params = { 
+        'Input Columns': input_cols,
+        'Number of Components': number_of_components,
+        'Covariance Type': covariance_type,
+        'Tolerance': tolerance,
+        'Regularization of Covariance': regularize_covariance,
+        'Number of Iteration': max_iteration,
+        'Method to Initialize': initial_params
+    }
+
+    rb.addMD(strip_margin("""
+    |## Gaussian Mixture Train Result 
+    |
+    |### Parameters
+    |
+    | {params}
+    |
+    |### Summary
+    |
+    |{result_table}
+    |
+    """.format(params=dict2MD(params), result_table=pandasDF2MD(out_table))))
+
+    model = _model_dict('gaussian_mixture_train')
+    model['input_cols'] = input_cols
+    model['number_of_components'] = number_of_components
+    model['covariance_type'] = covariance_type
+    model['tolerance'] = tolerance
+    model['regularize_covariance'] = regularize_covariance
+    model['max_iteration'] = max_iteration
+    model['initial_params'] = initial_params
+    model['seed'] = seed
+    model['summary'] = out_table
+    model['gmm'] = gmm
+    model['_repr_brtc_'] = rb.get()
+    return {'model':model}
+
+
+def gaussian_mixture_predict(table, model, **params):
+    check_required_parameters(_gaussian_mixture_predict, params, ['table', 'model'])
+    if '_grouped_data' in model:
+        return _function_by_group(_gaussian_mixture_predict, table, model, **params)
+    else:
+        return _gaussian_mixture_predict(table, model, **params)
+
+
+def _gaussian_mixture_predict(table, model, display_probability, prediction_col_name='prediction'):
+    
+    out_table = table.copy()
+    out_table[prediction_col_name] = model['gmm'].predict(table[model['input_cols']])
+    if display_probability == True:
+        for i in range (0, model['number_of_components']):
+            out_table['probability_' + str(i)] = pd.DataFrame(model['gmm'].predict_proba(table[model['input_cols']]))[i]        
+    return {'out_table':out_table}
