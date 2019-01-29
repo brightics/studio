@@ -45,9 +45,9 @@ def _outlier_detection_tukey_carling(table, input_cols, outlier_method='tukey', 
     if result_type == 'add_prediction':
         pass
     elif result_type == 'remove_outliers':
-        out_table = out_table.drop(output_col_names, axis=1)
         prediction = out_table[output_col_names].apply(lambda row: np.sum(row == 'out') < number_of_removal, axis=1)
         out_table = out_table[prediction.values]
+        out_table = out_table.drop(output_col_names, axis=1)
     elif result_type == 'both':
         prediction = out_table[output_col_names].apply(lambda row: np.sum(row == 'out') < number_of_removal, axis=1)
         out_table = out_table[prediction.values]
@@ -120,9 +120,9 @@ def _outlier_detection_tukey_carling_model(table, model, new_column_prefix='is_o
     if result_type == 'add_prediction':
         pass
     elif result_type == 'remove_outliers':
-        out_table = out_table.drop(output_col_names, axis=1)
         prediction = out_table[output_col_names].apply(lambda row: np.sum(row == 'out') < model['number_of_removal'], axis=1)
         out_table = out_table[prediction.values]
+        out_table = out_table.drop(output_col_names, axis=1)
     elif result_type == 'both':
         prediction = out_table[output_col_names].apply(lambda row: np.sum(row == 'out') < model['number_of_removal'], axis=1)
         out_table = out_table[prediction.values]
