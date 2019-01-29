@@ -2,7 +2,7 @@ from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, di
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
-from brightics.function.validation import raise_runtime_error
+from brightics.common.validation import raise_runtime_error
 
 import matplotlib.pyplot as plt
 from scipy.cluster.hierarchy import dendrogram, linkage, fcluster, leaders
@@ -71,25 +71,25 @@ def _hierarchical_clustering(table, input_cols, input_mode, key_col=None, link='
 
     range_len_Z = range(len(Z))
     linkage_matrix = pd.DataFrame([])
-    linkage_matrix['linkage step'] = [x + 1 for x in reversed(range_len_Z)]
-    linkage_matrix['name of clusters'] = ['CL_' + str(i + 1) for i in reversed(range_len_Z)]
+    linkage_matrix['linkage_step'] = [x + 1 for x in reversed(range_len_Z)]
+    linkage_matrix['name_of_clusters'] = ['CL_' + str(i + 1) for i in reversed(range_len_Z)]
     joined_column1 = []
     for i in range_len_Z:
         if Z[:, 0][i] < len_features:
             joined_column1.append(data_names[int(Z[:, 0][i])])
         elif Z[:, 0][i] >= len_features:
-            joined_column1.append(linkage_matrix['name of clusters'][Z[:, 0][i] - len_features])
-    linkage_matrix['joined column1'] = joined_column1
+            joined_column1.append(linkage_matrix['name_of_clusters'][Z[:, 0][i] - len_features])
+    linkage_matrix['joined_column1'] = joined_column1
     joined_column2 = []
     for i in range_len_Z:
         if Z[:, 1][i] < len_features:
             joined_column2.append(data_names[int(Z[:, 1][i])])
         elif Z[:, 1][i] >= len_features:
-            joined_column2.append(linkage_matrix['name of clusters'][Z[:, 1][i] - len_features])
-    linkage_matrix['joined column2'] = joined_column2
+            joined_column2.append(linkage_matrix['name_of_clusters'][Z[:, 1][i] - len_features])
+    linkage_matrix['joined_column2'] = joined_column2
     
     linkage_matrix['distance'] = [distance for distance in Z[:, 2]]
-    linkage_matrix['number of original'] = [int(entities) for entities in Z[:, 3]]
+    linkage_matrix['number_of_original'] = [int(entities) for entities in Z[:, 3]]
     linkage_matrix = linkage_matrix.reindex(index=linkage_matrix.index[::-1])[0:]
     
     # calculate full dendrogram
@@ -128,17 +128,17 @@ def _hierarchical_clustering(table, input_cols, input_mode, key_col=None, link='
     }
     
     rb = BrtcReprBuilder()
-    rb.addMD(strip_margin("""# Hierarchical Clustering Result"""))
+    rb.addMD(strip_margin("""### Hierarchical Clustering Result"""))
     rb.addMD(strip_margin("""
-    |### Dendrogram
+    |## Dendrogram
     |
     |{image}
     |
     |### Parameters
     |
-    |{display_params}
+    | {display_params}
     |
-    |### Linkage Matrix
+    |## Linkage Matrix
     |
     |{out_table1}
     |
@@ -147,7 +147,7 @@ def _hierarchical_clustering(table, input_cols, input_mode, key_col=None, link='
     model = _model_dict('hierarchical_clustering')
     model['model'] = Z
     model['input_mode'] = input_mode
-    if input_mode == 'matrix':
+    if input_mode=='matrix':
         model['dist_matrix'] = dist_matrix
     model['parameters'] = params
     model['linkage_matrix'] = linkage_matrix
@@ -156,18 +156,18 @@ def _hierarchical_clustering(table, input_cols, input_mode, key_col=None, link='
     return {'model':model}
 
 
-def hierarchical_clustering_post_process(table, model, **params):
-    check_required_parameters(_hierarchical_clustering_post_process, params, ['table', 'model'])
+def hierarchical_clustering_post(table, model, **params):
+    check_required_parameters(_hierarchical_clustering_post, params, ['table', 'model'])
     if '_grouped_data' in model:
-        return _function_by_group(_hierarchical_clustering_post_process, table, model, **params)
+        return _function_by_group(_hierarchical_clustering_post, table, model, **params)
     else:
-        return _hierarchical_clustering_post_process(table, model, **params)
+        return _hierarchical_clustering_post(table, model, **params)
 
 
-def _hierarchical_clustering_post_process(table, model, num_clusters, cluster_col='prediction'):
+def _hierarchical_clustering_post(table, model, num_clusters, cluster_col='prediction'):
     Z = model['model']
     mode = model['input_mode']
-    if mode == 'matrix':
+    if mode=='matrix':
         distance_matrix = model['dist_matrix']
     out_table = model['linkage_matrix']
     
@@ -183,33 +183,33 @@ def _hierarchical_clustering_post_process(table, model, num_clusters, cluster_co
     for leader in L:
         if leader in Z[:, 0]:
             select_indices = np.where(Z[:, 0] == leader)[0][0]
-            which_cluster.append(out_table['joined column1'][select_indices])
+            which_cluster.append(out_table['joined_column1'][select_indices])
         elif leader in Z[:, 1]:
             select_indices = np.where(Z[:, 1] == leader)[0][0]
-            which_cluster.append(out_table['joined column2'][select_indices])
+            which_cluster.append(out_table['joined_column2'][select_indices])
     
     clusters_info_table = pd.DataFrame([])
     clusters_info_table[cluster_col] = M
-    clusters_info_table['name of clusters'] = which_cluster
+    clusters_info_table['name_of_clusters'] = which_cluster
     clusters_info_table = clusters_info_table.sort_values(cluster_col)
     cluster_count = np.bincount(prediction_table[cluster_col])
     cluster_count = cluster_count[cluster_count != 0]
-    clusters_info_table['number of entities'] = list(cluster_count)
+    clusters_info_table['num_of_entities'] = list(cluster_count)
     
     rb = BrtcReprBuilder()
-    rb.addMD(strip_margin("""# Hierarchical Clustering Post Process Result"""))
+    rb.addMD(strip_margin("""### Hierarchical Clustering Post Process Result"""))
     rb.addMD(strip_margin("""
     |### Parameters
     |
     |{display_params}
     |
-    |### Clusters Information
+    |## Clusters Information
     |
     |{clusters_info_table}
     |
     """.format(display_params=dict2MD(model['parameters']), clusters_info_table=pandasDF2MD(clusters_info_table))))
 
-    model = _model_dict('hierarchical_clustering_post_process')
+    model = _model_dict('hierarchical_clustering_post')
     model['clusters_info'] = clusters_info_table
     model['_repr_brtc_'] = rb.get()
     
