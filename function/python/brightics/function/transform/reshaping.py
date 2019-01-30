@@ -1,34 +1,19 @@
 import pandas as pd
-import numpy as np
+
 from brightics.common.groupby import _function_by_group
 from brightics.common.validation import raise_runtime_error
 from brightics.common.utils import check_required_parameters
-import brightics.common.statistics as brtc_stat 
+import brightics.common.statistics as brtc_stat
 
 
-def unpivot(table, group_by=None, **params):
-    check_required_parameters(_unpivot, params, ['table'])
-    if group_by is not None:
-        return _function_by_group(_unpivot, table, group_by=group_by, **params)
-    else:
-        return _unpivot(table, **params)
-
-
-def _unpivot(table, value_vars, var_name=None, value_name='value', col_level=None):
-    id_vars = [column for column in table.columns if column not in value_vars]
+def unpivot(table, value_vars, var_name=None, value_name='value', col_level=None, id_vars=None):
+    #if delete this, it is not consistent with the previous version.
+    #id_vars = [column for column in table.columns if column not in value_vars] 
     out_table = pd.melt(table, id_vars=id_vars, value_vars=value_vars, var_name=var_name, value_name=value_name, col_level=col_level)
     return {'out_table': out_table}
 
 
-def pivot(table, group_by=None, **params):
-    check_required_parameters(_pivot, params, ['table'])
-    if group_by is not None:
-        return _function_by_group(_pivot, table, group_by=group_by, **params)
-    else:
-        return _pivot(table, **params)
-
-    
-def _pivot(table, values, aggfunc, index=None, columns=None):  # TODO
+def pivot(table, values, aggfunc, index=None, columns=None):  # TODO
 
     if index is None and columns is None:
         # TODO: assign an error code.
