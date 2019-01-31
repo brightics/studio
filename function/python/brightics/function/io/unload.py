@@ -2,6 +2,7 @@ import io
 import json
 import os
 import codecs
+import shutil
 
 import pandas as pd
 import boto3
@@ -10,10 +11,13 @@ import brightics.common.json as data_json
 from brightics.common.datasource import DbEngine
 from brightics.common.validation import raise_runtime_error
 from brightics.brightics_data_api import _write_dataframe
-
+import brightics.common.data.utils as data_utils
 
 def unload(table, partial_path):
-    _write_dataframe(table, partial_path[0])
+    path = data_utils.make_data_path_from_key(partial_path[0])
+    if os.path.isdir(path):
+        shutil.rmtree(path)
+    _write_dataframe(table, path)
 
 
 def write_csv(table, path):
