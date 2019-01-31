@@ -21,6 +21,10 @@ def bind_row_column(first_table, second_table, row_or_col):
 
 
 def join(left_table, right_table, left_on, right_on, how='inner', lsuffix='_left', rsuffix='_right', sort=False):
+    if sort == True or sort == 'True' or sort == 'true':
+        sort = True
+    else:
+        sort = False
     both_on = list(set(left_on) & set(right_on))
     if len(both_on) > 0 and how in ['outer', 'left', 'right']:
         left_table = left_table.rename(columns={key:key + lsuffix for key in both_on})
