@@ -4,22 +4,17 @@ import random
 import os
 from sklearn.datasets import load_iris as sklearn_load_iris
 import string
+import shutil
+
 
 TESTDATA_RELATIVEPATH = '''/../sample_data'''
 
 _PATH_PARQUET = os.path.abspath(os.path.dirname(os.path.abspath(__file__)) +
                                 TESTDATA_RELATIVEPATH)
-_PATH_FORMAT_PARQUET = _PATH_PARQUET + '''/{}'''
 
 
 def load_dataset(fname):
-    return pd.read_parquet(_PATH_FORMAT_PARQUET.format(fname), engine='auto')
-
-
-def save_dataset(table, fname):
-    _make_dir(_PATH_PARQUET)
-    pd.DataFrame(table).to_parquet(_PATH_FORMAT_PARQUET.format(fname),
-                                   engine='auto', compression='snappy')
+    return pd.read_parquet(_get_dataset_path(fname), engine='auto')
 
 
 def load_iris():
@@ -29,9 +24,9 @@ def load_iris():
 def load_basic_test_data(data_size=20, seed=1):
     _columns = [
         {'name': 'grp', 'type': 'category', 'population': ['G', 'B']},
-        {'name': 'd1', 'type': 'float', 'min_value':-1000.0,
+        {'name': 'd1', 'type': 'float', 'min_value': -1000.0,
          'max_value': 1000.0},
-        {'name': 'd2', 'type': 'float', 'min_value':-1000.0,
+        {'name': 'd2', 'type': 'float', 'min_value': -1000.0,
          'max_value': 1000.0, 'n_null': 2},
         {'name': 'str1', 'type': 'string', 'min_length': 1, 'max_length': 3,
          'population': ['a', 'b']},
@@ -40,7 +35,7 @@ def load_basic_test_data(data_size=20, seed=1):
                         string.punctuation),
          'n_null': 3},
         {'name': 'int1', 'type': 'int', 'min_value': 1, 'max_value': 1000},
-        {'name': 'int2', 'type': 'int', 'min_value':-1000, 'max_value': 1000}
+        {'name': 'int2', 'type': 'int', 'min_value': -1000, 'max_value': 1000}
         ]
 
     return load_random_table(columns=_columns, seed=seed,
@@ -154,6 +149,23 @@ def load_random_float_table(data_size=20, seed=None, n_col=4,
 def _make_dir(path):
     if not os.path.exists(path):
         os.mkdir(path)
+
+
+def _get_dataset_path(fname):
+    return _PATH_PARQUET + '''/{}'''.format(fname)
+
+
+def _save_dataset(table, fname):
+    DATASET_DIR_PATH = _get_dataset_path(fname)
+    DATASET_FILE_PATH = DATASET_DIR_PATH + '''/{}'''.format(fname)
+    _make_dir(_PATH_PARQUET)
+    _make_dir(DATASET_DIR_PATH)
+    pd.DataFrame(table).to_parquet(DATASET_FILE_PATH,
+                                   engine='auto', compression='snappy')
+
+
+def _remove_dataset(fname):
+    shutil.rmtree(os.path.abspath(_get_dataset_path(fname)))
 
 
 def _load_iris_sklearn():
