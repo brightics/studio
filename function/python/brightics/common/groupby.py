@@ -59,7 +59,7 @@ def _function_by_group(function, table=None, model=None, group_by=None, **params
     for repr_key in model_keys_containing_repr:
         rb = BrtcReprBuilder()
         for group in success_keys:
-            rb.addMD('{group}'.format(group=group))
+            rb.addMD('--- \n\n ### Group by {group_by} : {tmp_group}\n\n---'.format(group_by=group_by, tmp_group=group_key_dict[group]))
             rb.merge(res_dict[repr_key]['_grouped_data']['data'][group]['_repr_brtc_'])
         res_dict[repr_key]['_repr_brtc_'] = rb.get()
 

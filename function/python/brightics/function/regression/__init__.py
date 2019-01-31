@@ -7,3 +7,7 @@ from .xgb_regression import xgb_regression_predict
 from .decision_tree_regression import decision_tree_regression_train
 from .decision_tree_regression import decision_tree_regression_predict
 from .knn_regression import knn_regression
+from .penalized_linear_regression import penalized_linear_regression_train
+from .penalized_linear_regression import penalized_linear_regression_predict
+from .random_forest_regression import random_forest_regression_train
+from .random_forest_regression import random_forest_regression_predict

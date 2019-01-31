@@ -42,7 +42,7 @@ def _statistic_summary(table, input_cols, statistics, percentile_amounts=None, t
         if 'kurtosis' == st:
             data['kurtosis'] = [brtc_stats.kurtosis(_table[x]) for x in input_cols]
         if 'nrow' == st:
-            data['nrow'] = [brtc_stats.num_row(_table[x]) for x in input_cols]
+            data['num_of_row'] = [brtc_stats.num_row(_table[x]) for x in input_cols]
         if 'num_of_value' == st:
             data['num_of_value'] = [brtc_stats.num_value(_table[x]) for x in input_cols]
     #     if 'nan_count' == st:

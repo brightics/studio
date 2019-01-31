@@ -64,6 +64,12 @@ datetime related functions
 """
 # todo weekofmonth, datediff, timediff
 
+def datediff(end_isotime, start_isotime):
+    end_datetime = dateutil.parser.parse(end_isotime)
+    start_datetime = dateutil.parser.parse(start_isotime)
+    diff_datetime = end_datetime - start_datetime
+    return diff_datetime.days
+
 
 def strftime_a(isotime):  # ?
     return dateutil.parser.parse(isotime).strftime('%a')
@@ -120,4 +126,8 @@ def split(str_, *sep):
         return _serialize(str_.split())
     else:  # todo elif nargs == 1:
         return _serialize(str_.split(sep[0]))
+
     
+def size(serialized_list):
+    arr = _deserialize(serialized_list)
+    return len(arr)
