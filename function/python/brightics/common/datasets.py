@@ -5,6 +5,7 @@ import os
 from sklearn.datasets import load_iris as sklearn_load_iris
 import string
 import shutil
+from brightics.brightics_data_api import _write_dataframe
 
 
 TESTDATA_RELATIVEPATH = '''/../sample_data'''
@@ -160,8 +161,7 @@ def _save_dataset(table, fname):
     DATASET_FILE_PATH = DATASET_DIR_PATH + '''/{}'''.format(fname)
     _make_dir(_PATH_PARQUET)
     _make_dir(DATASET_DIR_PATH)
-    pd.DataFrame(table).to_parquet(DATASET_FILE_PATH,
-                                   engine='auto', compression='snappy')
+    _write_dataframe(table, DATASET_FILE_PATH)
 
 
 def _remove_dataset(fname):
