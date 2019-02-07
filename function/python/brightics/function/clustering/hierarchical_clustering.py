@@ -29,6 +29,7 @@ def _hierarchical_clustering(table, input_cols, input_mode='original', key_col=N
             data_names = list(out_table[key_col])
         elif key_col == None:
             data_names = ['pt_' + str(i) for i in range(len_features)]
+        out_table['name']=data_names
         Z = linkage(ssd.pdist(features, metric=met), method=link, metric=met)
     elif input_mode == 'matrix':
         len_features = len(input_cols)
@@ -46,7 +47,7 @@ def _hierarchical_clustering(table, input_cols, input_mode='original', key_col=N
         dist_matrix = features.iloc[col_index]
         
         Z = linkage(ssd.squareform(dist_matrix), method=link, metric=met)
-        dist_matrix['label'] = data_names
+        dist_matrix['name'] = data_names
     else:
         raise_runtime_error("Please check 'input_mode'.")
 
@@ -125,6 +126,7 @@ def _hierarchical_clustering(table, input_cols, input_mode='original', key_col=N
     model = _model_dict('hierarchical_clustering')
     model['model'] = Z
     model['input_mode'] = input_mode
+    model['table']=out_table
     if input_mode == 'matrix':
         model['dist_matrix'] = dist_matrix
     model['parameters'] = params
@@ -134,24 +136,24 @@ def _hierarchical_clustering(table, input_cols, input_mode='original', key_col=N
     return {'model':model}
 
 
-def hierarchical_clustering_post(table, model, **params):
-    check_required_parameters(_hierarchical_clustering_post, params, ['table', 'model'])
+def hierarchical_clustering_post(model, **params):
+    check_required_parameters(_hierarchical_clustering_post, params, ['model'])
     if '_grouped_data' in model:
-        return _function_by_group(_hierarchical_clustering_post, table, model, **params)
+        return _function_by_group(_hierarchical_clustering_post, model=model, **params)
     else:
-        return _hierarchical_clustering_post(table, model, **params)
+        return _hierarchical_clustering_post(model, **params)
 
 
-def _hierarchical_clustering_post(table, model, num_clusters, cluster_col='prediction'):
+def _hierarchical_clustering_post(model, num_clusters, cluster_col='cluster'):
     Z = model['model']
     mode = model['input_mode']
     out_table = model['linkage_matrix']
     
     predict = fcluster(Z, t=num_clusters, criterion='maxclust')
     if mode == 'original':
-        prediction_table = table.copy()
+        prediction_table = model['table']
     elif mode == 'matrix':
-        prediction_table = model['dist_matrix']
+        prediction_table = model['dist_matrix'][['name']]
     prediction_table[cluster_col] = predict
     
     L, M = leaders(Z, predict)
