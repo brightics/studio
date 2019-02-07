@@ -361,9 +361,19 @@ def _association_rule(table, input_mode=None, array_input=None, mul_items=None, 
     if input_mode == 'user_multiple':
         transactions = []
         for column in mul_items:
-            tmp = ['{} : {}'.format(column,item) for item in table[column]]               
+            tmp = []
+            for item in table[column]:
+                if item is None:
+                    tmp += [None]
+                else:
+                    tmp += ['{} : {}'.format(column,item)]            
             transactions += [tmp]
-        transactions = np.transpose(transactions)
+        transactions = list(np.transpose(transactions))
+        for i in range(len(transactions)):
+            if None in transactions[i]:
+                tmp = set(transactions[i])
+                tmp.remove(None)
+                transactions[i] = np.array(list(tmp))
     elif input_mode == 'transaction':
         transactions = [list(set(transaction)) for transaction in np.array(table[array_input])]
     else:
