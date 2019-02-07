@@ -139,7 +139,7 @@ def _hierarchical_clustering(table, input_cols, input_mode='original', key_col=N
 def hierarchical_clustering_post(model, **params):
     check_required_parameters(_hierarchical_clustering_post, params, ['model'])
     if '_grouped_data' in model:
-        return _function_by_group(_hierarchical_clustering_post, model, **params)
+        return _function_by_group(_hierarchical_clustering_post, model=model, **params)
     else:
         return _hierarchical_clustering_post(model, **params)
 
