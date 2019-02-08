@@ -35,6 +35,7 @@ public class JobRunner implements IJobRunner {
 	private String main;
 	private JobParam jobParam;
 	private JobStatusVO status;
+	private JobRunnerConfig config;
 	private final Map<String, IModelRunner> runners = new HashMap<>();
 
 	@Getter
@@ -47,6 +48,7 @@ public class JobRunner implements IJobRunner {
 
 	public JobRunner(JobParam jobParam, JobRunnerConfig config) {
 		this.jobParam = jobParam;
+		this.config = config;
 		this.main = jobParam.getMain();
 		if (jobParam.getModels() == null) {
 			jobParam.setModels(new HashMap<>());
@@ -85,7 +87,7 @@ public class JobRunner implements IJobRunner {
 		try {
 			getOrCreateModelRunner(main, main);
 			// Set User Scope Variables from JobParam
-			VariableContextHolder variableContextHolder = new VariableContextHolder("/test");
+			VariableContextHolder variableContextHolder = new VariableContextHolder(config.getVariableRepositoryPath());
 			variableContextHolder.clearVariableContext(jobParam.getUser());
 			VariableContext variableContext = variableContextHolder.getUserVariableContext(jobParam.getUser());
 			variableContext.execute("sys.jid = '" + jobParam.getJid() + "'");
@@ -153,6 +155,10 @@ public class JobRunner implements IJobRunner {
 			return new ExceptionInfoVO(be.getMessage(), be.detailedCause);
 		}
 		return new ExceptionInfoVO(new BrighticsCoreException("3001").getMessage(), ExceptionUtils.getStackTrace(e));
+	}
+	
+	public void clear(){
+		JobContextHolder.clear();
 	}
 
 }

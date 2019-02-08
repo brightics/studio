@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.samsung.sds.brightics.server.model.vo.JobStatusVO;
+import com.samsung.sds.brightics.common.workflow.runner.vo.JobStatusVO;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
@@ -80,8 +80,8 @@ public class JobRepository {
 	    }
 	}
 
-	public void saveJobStatus(String jobId, JobStatusVO jobStatusDTO) {
-	    jobStatusMap.put(jobId, jobStatusDTO);
+	public void saveJobStatus(String jobId, com.samsung.sds.brightics.common.workflow.runner.vo.JobStatusVO jobStatusVO) {
+	    jobStatusMap.put(jobId, jobStatusVO);
 	}
 
 	//change job status to cache memory, remove thread.
@@ -102,21 +102,21 @@ public class JobRepository {
 		return jobStatusList;
 	}
 
-	public void insertJobStatusLog(JobStatusVO jobStatusDTO, String agentId) {
+	public void insertJobStatusLog(com.samsung.sds.brightics.common.workflow.runner.vo.JobStatusVO jobStatusVO, String agentId) {
 
 		long currentTimeMillis = System.currentTimeMillis();
-		Date beginData = new Date(jobStatusDTO.getBegin());
+		Date beginData = new Date(jobStatusVO.getBegin());
 		Date endData = new Date(currentTimeMillis);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-		String result = jobStatusDTO.getStatus();
-		if (jobStatusDTO.getStatus().equals(STATE_SUCCESS)) {
+		String result = jobStatusVO.getStatus();
+		if (jobStatusVO.getStatus().equals(STATE_SUCCESS)) {
 			result = "SUCC";
 		}
 		String beginFormData = sdf.format(beginData);
 		String endFormData = sdf.format(endData);
-		long elapseMillis = currentTimeMillis - jobStatusDTO.getBegin();
+		long elapseMillis = currentTimeMillis - jobStatusVO.getBegin();
 		int elapseSec = (int) (elapseMillis / 1000);
-		String logInfo = "{\"jid\":\"" + jobStatusDTO.getJobId() + "\" ,\"user\":\"" + jobStatusDTO.getUser() + "\" ,\"agent\":\"" + agentId
+		String logInfo = "{\"jid\":\"" + jobStatusVO.getJobId() + "\" ,\"user\":\"" + jobStatusVO.getUser() + "\" ,\"agent\":\"" + agentId
 				+ "\" ,\"start\":\"" + beginFormData + "\" ,\"end\":\"" + endFormData + "\" ,\"elapse\":\"" + elapseSec
 				+ "\" ,\"result\":\"" + result + "\"}";
 

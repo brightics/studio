@@ -18,13 +18,13 @@ import org.springframework.stereotype.Component;
 
 import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
 import com.samsung.sds.brightics.common.core.exception.provider.ExceptionProvider;
+import com.samsung.sds.brightics.common.workflow.runner.vo.ExceptionInfoVO;
+import com.samsung.sds.brightics.common.workflow.runner.vo.JobParam;
 import com.samsung.sds.brightics.server.common.thread.JobModelRunnable;
 import com.samsung.sds.brightics.server.common.util.ValidationUtil;
 import com.samsung.sds.brightics.server.model.entity.BrighticsAgent;
 import com.samsung.sds.brightics.server.model.entity.BrtcJobStatus;
 import com.samsung.sds.brightics.server.model.entity.repository.BrighticsAgentRepository;
-import com.samsung.sds.brightics.server.model.param.JobParam;
-import com.samsung.sds.brightics.server.model.vo.ExceptionInfoVO;
 import com.samsung.sds.brightics.server.service.AgentService;
 import com.samsung.sds.brightics.server.service.JobStatusService;
 import com.samsung.sds.brightics.server.service.repository.JobRepository;
@@ -179,7 +179,7 @@ public class JobModelExecuteService implements ApplicationContextAware {
     }
 
     private static void updateJobStatusToFail(String jobId) {
-        String message = ExceptionProvider.getExceptionMessage("CR-3101");
+        String message = ExceptionProvider.getExceptionMessage("CR-3101");	
         Optional.ofNullable(jobRepository.getJobStatus(jobId)).ifPresent(status -> {
             status.setErrorInfo(getSingleExceptionInfo(message));
             status.setStatus(JobRepository.STATE_FAIL);
@@ -189,7 +189,7 @@ public class JobModelExecuteService implements ApplicationContextAware {
         jobStatusService.updateJobStatusWithExceptionCode(jobId, "3101");
     }
 
-    private static List<ExceptionInfoVO> getSingleExceptionInfo(String message) {
+    private static List<Object> getSingleExceptionInfo(String message) {
         return Collections.singletonList(new ExceptionInfoVO(message));
     }
 }

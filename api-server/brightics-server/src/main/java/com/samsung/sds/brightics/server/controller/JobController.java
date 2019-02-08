@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.samsung.sds.brightics.common.workflow.runner.vo.JobParam;
+import com.samsung.sds.brightics.common.workflow.runner.vo.JobStatusVO;
 import com.samsung.sds.brightics.server.common.util.AuthenticationUtil;
-import com.samsung.sds.brightics.server.model.param.JobParam;
-import com.samsung.sds.brightics.server.model.vo.JobStatusVO;
 import com.samsung.sds.brightics.server.service.JobService;
 
 @RestController
