@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.samsung.sds.brightics.common.core.exception.AbsBrighticsException;
 import com.samsung.sds.brightics.common.core.exception.BrighticsUncodedException;
-import com.samsung.sds.brightics.common.workflow.runner.vo.ExceptionInfoVO;
+import com.samsung.sds.brightics.server.model.vo.ExceptionInfoVO;
 
 @RestController
 @ControllerAdvice

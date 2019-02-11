@@ -3,18 +3,19 @@ package com.samsung.sds.brightics.server.common.flowrunner;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.samsung.sds.brightics.common.workflow.context.parameter.Parameters;
-import com.samsung.sds.brightics.common.workflow.runner.IJobRunnerApi;
+import com.samsung.sds.brightics.common.workflow.runner.AbsJobRunnerApi;
 import com.samsung.sds.brightics.common.workflow.runner.vo.JobParam;
 import com.samsung.sds.brightics.common.workflow.runner.vo.JobStatusVO;
 import com.samsung.sds.brightics.server.common.holder.BeanHolder;
 import com.samsung.sds.brightics.server.common.message.task.TaskMessageBuilder;
 import com.samsung.sds.brightics.server.common.message.task.TaskMessageRepository;
 
-public class JobRunnerApi implements IJobRunnerApi {
-	
+public class JobRunnerApi extends AbsJobRunnerApi {
+
 	@Override
 	public String executeTask(String taskId, String name, String parameters, String attributes) {
-		BeanHolder.getBeanHolder().taskService.executeSyncTask(TaskMessageBuilder.newBuilder(taskId, name).setAttributes(attributes).setParameters(parameters).build());
+		BeanHolder.getBeanHolder().taskService.executeSyncTask(TaskMessageBuilder.newBuilder(taskId, name)
+				.setAttributes(attributes).setParameters(parameters).build());
 		return taskId;
 	}
 
@@ -35,43 +36,38 @@ public class JobRunnerApi implements IJobRunnerApi {
 
 	@Override
 	public Object getDatasourceInfo(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		return BeanHolder.getBeanHolder().dataSourceService.getDatasourceInfo(name);
 	}
 
 	@Override
 	public String getScriptWithParam(Parameters params) {
-		// TODO Auto-generated method stub
-		return null;
+		return BeanHolder.getBeanHolder().pyFunctionService.getScriptWithParam(params);
 	}
 
 	@Override
 	public boolean isMetadataRequest(JsonObject json) {
-		// TODO Auto-generated method stub
-		return false;
+		return BeanHolder.getBeanHolder().metadataConverterService.isMetadataRequest(json);
 	}
 
 	@Override
 	public JsonElement convert(JsonObject json) {
-		// TODO Auto-generated method stub
-		return null;
+		return BeanHolder.getBeanHolder().metadataConverterService.convert(json);
 	}
 
 	@Override
 	public void updateJobStatus(JobParam jobParam, JobStatusVO jobStatusVO) {
-		// TODO Auto-generated method stub
+		BeanHolder.getBeanHolder().jobStatusService.updateJobStatus(jobParam, jobStatusVO);
 
 	}
 
 	@Override
 	public Object getData(String mid, String tid, long min, long max) {
-		// TODO Auto-generated method stub
-		return null;
+		return BeanHolder.getBeanHolder().dataService.getData(mid, tid, min, max);
 	}
 
 	@Override
 	public void addDataAlias(String source, String alias) {
-		// TODO Auto-generated method stub
+		BeanHolder.getBeanHolder().dataService.addDataAlias(source, alias);
 	}
 
 }

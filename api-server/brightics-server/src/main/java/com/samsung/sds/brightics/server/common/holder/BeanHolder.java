@@ -9,7 +9,7 @@ import org.springframework.util.Assert;
 
 import com.samsung.sds.brightics.server.common.message.MessageManagerProvider;
 import com.samsung.sds.brightics.server.service.DataService;
-import com.samsung.sds.brightics.server.service.DatabaseService;
+import com.samsung.sds.brightics.server.service.DataSourceService;
 import com.samsung.sds.brightics.server.service.JobStatusService;
 import com.samsung.sds.brightics.server.service.MetadataConverterService;
 import com.samsung.sds.brightics.server.service.PyFunctionService;
@@ -22,7 +22,7 @@ public final class BeanHolder implements ApplicationContextAware {
 	public JobStatusService jobStatusService;
 
 	@Autowired
-	public DatabaseService databaseService;
+	public DataSourceService dataSourceService;
 
 	@Autowired
 	public TaskService taskService;

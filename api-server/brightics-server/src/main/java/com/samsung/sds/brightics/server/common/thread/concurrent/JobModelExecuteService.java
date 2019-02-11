@@ -18,13 +18,13 @@ import org.springframework.stereotype.Component;
 
 import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
 import com.samsung.sds.brightics.common.core.exception.provider.ExceptionProvider;
-import com.samsung.sds.brightics.common.workflow.runner.vo.ExceptionInfoVO;
 import com.samsung.sds.brightics.common.workflow.runner.vo.JobParam;
 import com.samsung.sds.brightics.server.common.thread.JobModelRunnable;
 import com.samsung.sds.brightics.server.common.util.ValidationUtil;
 import com.samsung.sds.brightics.server.model.entity.BrighticsAgent;
 import com.samsung.sds.brightics.server.model.entity.BrtcJobStatus;
 import com.samsung.sds.brightics.server.model.entity.repository.BrighticsAgentRepository;
+import com.samsung.sds.brightics.server.model.vo.ExceptionInfoVO;
 import com.samsung.sds.brightics.server.service.AgentService;
 import com.samsung.sds.brightics.server.service.JobStatusService;
 import com.samsung.sds.brightics.server.service.repository.JobRepository;

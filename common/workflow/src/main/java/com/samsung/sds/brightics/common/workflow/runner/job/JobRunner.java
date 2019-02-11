@@ -22,7 +22,6 @@ import com.samsung.sds.brightics.common.workflow.runner.JobRunnerConfig;
 import com.samsung.sds.brightics.common.workflow.runner.holder.JobContextHolder;
 import com.samsung.sds.brightics.common.workflow.runner.holder.VariableContextHolder;
 import com.samsung.sds.brightics.common.workflow.runner.status.Status;
-import com.samsung.sds.brightics.common.workflow.runner.vo.ExceptionInfoVO;
 import com.samsung.sds.brightics.common.workflow.runner.vo.JobParam;
 import com.samsung.sds.brightics.common.workflow.runner.vo.JobStatusVO;
 
@@ -130,16 +129,14 @@ public class JobRunner implements IJobRunner {
     }
 
 	private void updateStatusBy(Exception e) {
-		ExceptionInfoVO exceptionInfo = buildExceptionInfo(e);
-
-		status.setErrorInfo(Arrays.asList(exceptionInfo));
+		status.setErrorInfo(Arrays.asList(buildExceptionInfo(e)));
 		status.setStatus(Status.FAIL.toString());
 		status.setEnd(System.currentTimeMillis());
 
 		if (e instanceof AbsBrighticsException) {
 			status.setErrorMessage(e.getMessage());
 			status.setErrorDetailMessage(((AbsBrighticsException) e).detailedCause);
-			logger.error("[JOB ERROR] {} {}", exceptionInfo.getMessage(), exceptionInfo.getDetailMessage());
+			logger.error("[JOB ERROR] {} {}", e.getMessage(), ((AbsBrighticsException)e).detailedCause);
 		} else {
 			status.setErrorMessage(ExceptionUtils.getMessage(e));
 			status.setErrorDetailMessage(ExceptionUtils.getStackTrace(e));
@@ -149,12 +146,17 @@ public class JobRunner implements IJobRunner {
 		JobContextHolder.getJobRunnerAPI().updateJobStatus(jobParam, status);
 	}
 
-	private ExceptionInfoVO buildExceptionInfo(Exception e) {
+	private Map<String, String> buildExceptionInfo(Exception e) {
+		Map<String, String> exceptionMap = new HashMap<>();
 		if (e instanceof AbsBrighticsException) {
 			AbsBrighticsException be = (AbsBrighticsException) e;
-			return new ExceptionInfoVO(be.getMessage(), be.detailedCause);
+			exceptionMap.put("message", be.getMessage());
+			exceptionMap.put("detailMessage", be.detailedCause);
+		} else {
+			exceptionMap.put("message", new BrighticsCoreException("3001").getMessage());
+			exceptionMap.put("detailMessage", ExceptionUtils.getStackTrace(e));
 		}
-		return new ExceptionInfoVO(new BrighticsCoreException("3001").getMessage(), ExceptionUtils.getStackTrace(e));
+		return exceptionMap;
 	}
 	
 	public void clear(){

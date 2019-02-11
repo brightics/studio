@@ -16,7 +16,7 @@ public class FlowRunnerContextTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(FlowRunnerContextTest.class);
 
-	public class JobRunnerApiTest implements IJobRunnerApi {
+	public class JobRunnerApiTest extends AbsJobRunnerApi {
 		@Override
 		public String executeTask(String taskId, String name, String parameters, String attributes) {
 			logger.info("executeTask : " + taskId);

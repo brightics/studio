@@ -135,13 +135,10 @@ public class WorkflowJsAPI extends ScriptableObject {
         }
 
         try {
-            LOGGER.info("[WORKFLOW.JS TASK START]");
-            JobContextHolder.getJobRunnerAPI().executeTask(taskId, name, parameters, attributes);
-            while (!JobContextHolder.getJobRunnerAPI().isFinishTask(taskId)) { // Wait until the task is finished.
-                Thread.sleep(50L);
-            }
-            Object result = JobContextHolder.getJobRunnerAPI().getTaskResult(taskId);
-            LOGGER.info("[WORKFLOW.JS TASK SUCCESS] result: {}", result);
+			LOGGER.info("[WORKFLOW.JS TASK START]");
+			Object result = JobContextHolder.getJobRunnerAPI().executeTaskAndGetResult(taskId, name, parameters,
+					attributes);
+			LOGGER.info("[WORKFLOW.JS TASK SUCCESS] result: {}", result);
         } catch (InterruptedException e) {
             LOGGER.error("[WORKFLOW.JS TASK INTERRUPTED]", e);
             Map<String, Object> attributesMap = JsonUtil.jsonToMap(attributes);

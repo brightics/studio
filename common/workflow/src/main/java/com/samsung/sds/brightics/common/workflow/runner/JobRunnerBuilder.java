@@ -6,14 +6,14 @@ import com.samsung.sds.brightics.common.workflow.runner.vo.JobParam;
 
 public class JobRunnerBuilder {
 
-	private IJobRunnerApi jobRunnerApi;
+	private AbsJobRunnerApi jobRunnerApi;
 	private JobRunnerConfig config;
 
 	public static JobRunnerBuilder builder() {
 		return new JobRunnerBuilder();
 	}
 
-	public JobRunnerBuilder setApiInterface(IJobRunnerApi jobRunnerApi) {
+	public JobRunnerBuilder setApiInterface(AbsJobRunnerApi jobRunnerApi) {
 		this.jobRunnerApi = jobRunnerApi;
 		return this;
 	}
@@ -32,8 +32,7 @@ public class JobRunnerBuilder {
 			throw new RuntimeException("job runner api interface is required.");
 		}
 		JobRunner jobRunner = new JobRunner(jobParam, config);
-		JobContextHolder.initialize(jobRunner);
-		JobContextHolder.setJobRunnerAPI(jobRunnerApi);
+		JobContextHolder.initialize(jobRunner, jobRunnerApi);
 		return jobRunner;
 	}
 

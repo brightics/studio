@@ -17,13 +17,13 @@ import com.samsung.sds.brightics.common.core.util.IdGenerator;
 import com.samsung.sds.brightics.common.network.proto.task.ExecuteTaskMessage;
 import com.samsung.sds.brightics.common.network.proto.task.StopTaskMessage;
 import com.samsung.sds.brightics.common.network.util.ParameterBuilder;
-import com.samsung.sds.brightics.common.workflow.runner.vo.ExceptionInfoVO;
 import com.samsung.sds.brightics.common.workflow.runner.vo.JobFunctionStatusVO;
 import com.samsung.sds.brightics.common.workflow.runner.vo.JobModelStatusVO;
 import com.samsung.sds.brightics.server.common.message.MessageManagerProvider;
 import com.samsung.sds.brightics.server.common.message.task.TaskMessageRepository;
 import com.samsung.sds.brightics.server.common.util.AuthenticationUtil;
 import com.samsung.sds.brightics.server.common.util.ResultMapUtil;
+import com.samsung.sds.brightics.server.model.vo.ExceptionInfoVO;
 import com.samsung.sds.brightics.server.service.repository.JobRepository;
 
 @Service

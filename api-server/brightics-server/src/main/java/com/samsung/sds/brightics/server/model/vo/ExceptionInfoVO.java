@@ -1,4 +1,4 @@
-package com.samsung.sds.brightics.common.workflow.runner.vo;
+package com.samsung.sds.brightics.server.model.vo;
 
 import org.apache.commons.lang3.StringUtils;
 

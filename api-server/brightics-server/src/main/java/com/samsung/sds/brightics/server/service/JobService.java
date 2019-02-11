@@ -18,7 +18,6 @@ import com.samsung.sds.brightics.common.core.thread.ThreadLocalContext;
 import com.samsung.sds.brightics.common.core.util.JsonUtil;
 import com.samsung.sds.brightics.common.workflow.runner.JobRunnerBuilder;
 import com.samsung.sds.brightics.common.workflow.runner.job.JobRunner;
-import com.samsung.sds.brightics.common.workflow.runner.vo.ExceptionInfoVO;
 import com.samsung.sds.brightics.common.workflow.runner.vo.JobParam;
 import com.samsung.sds.brightics.common.workflow.runner.vo.JobStatusVO;
 import com.samsung.sds.brightics.server.common.flowrunner.JobRunnerApi;
@@ -28,6 +27,7 @@ import com.samsung.sds.brightics.server.common.thread.concurrent.JobModelExecute
 import com.samsung.sds.brightics.server.common.util.LoggerUtil;
 import com.samsung.sds.brightics.server.common.util.ResultMapUtil;
 import com.samsung.sds.brightics.server.common.util.ValidationUtil;
+import com.samsung.sds.brightics.server.model.vo.ExceptionInfoVO;
 import com.samsung.sds.brightics.server.service.repository.JobRepository;
 
 @Service
@@ -79,7 +79,6 @@ public class JobService {
         	
         	JobRunner runner = JobRunnerBuilder.builder().setApiInterface(jobRunnerApi).create(jobParam);
             jobRepository.saveJobStatus(jobParam.getJid(), runner.getStatus());
-
             JobModelExecuteService.startJobModel(jobParam.getUser(), agentId, new JobModelRunnable(jobParam, runner.getStatus()) {
                 @Override
                 public void main() {

@@ -82,13 +82,9 @@ public class FunctionWork extends Work {
             Parameters params = complementParameters();
             LOGGER.info("[FUNCTION PROCESSING] [{}] parameters : {}", label, params);
 
-            JobContextHolder.getJobRunnerAPI().executeTask(taskId, functionName, params.toJsonString(), buildAttributes().toString());
-            // Wait until the task is finished.
-            while (!JobContextHolder.getJobRunnerAPI().isFinishTask(taskId)) {
-                Thread.sleep(50L);
-            }
-            Object result = JobContextHolder.getJobRunnerAPI().getTaskResult(taskId);
-            LOGGER.info("[TASK SUCCESS] {}", result);
+			Object result = JobContextHolder.getJobRunnerAPI().executeTaskAndGetResult(taskId, functionName,
+					params.toJsonString(), buildAttributes().toString());
+			LOGGER.info("[TASK SUCCESS] {}", result);
         } catch (InterruptedException e) {
             LOGGER.error("[TASK INTERRUPTED]", e);
             String context = functionInfo.has("context") ? functionInfo.get("context").getAsString() : "";

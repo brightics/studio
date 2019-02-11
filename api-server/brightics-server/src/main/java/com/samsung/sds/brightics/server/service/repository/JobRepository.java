@@ -80,7 +80,7 @@ public class JobRepository {
 	    }
 	}
 
-	public void saveJobStatus(String jobId, com.samsung.sds.brightics.common.workflow.runner.vo.JobStatusVO jobStatusVO) {
+	public void saveJobStatus(String jobId, JobStatusVO jobStatusVO) {
 	    jobStatusMap.put(jobId, jobStatusVO);
 	}
 
@@ -102,7 +102,7 @@ public class JobRepository {
 		return jobStatusList;
 	}
 
-	public void insertJobStatusLog(com.samsung.sds.brightics.common.workflow.runner.vo.JobStatusVO jobStatusVO, String agentId) {
+	public void insertJobStatusLog(JobStatusVO jobStatusVO, String agentId) {
 
 		long currentTimeMillis = System.currentTimeMillis();
 		Date beginData = new Date(jobStatusVO.getBegin());

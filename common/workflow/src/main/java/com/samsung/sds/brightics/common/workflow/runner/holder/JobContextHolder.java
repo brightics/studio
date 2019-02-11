@@ -1,6 +1,6 @@
 package com.samsung.sds.brightics.common.workflow.runner.holder;
 
-import com.samsung.sds.brightics.common.workflow.runner.IJobRunnerApi;
+import com.samsung.sds.brightics.common.workflow.runner.AbsJobRunnerApi;
 import com.samsung.sds.brightics.common.workflow.runner.job.JobRunner;
 import com.samsung.sds.brightics.common.workflow.runner.status.JobStatusTracker;
 
@@ -8,7 +8,7 @@ public class JobContextHolder {
 
 	private static final ThreadLocal<JobStatusTracker> trackerHolder = new InheritableThreadLocal<>();
 	private static final ThreadLocal<JobRunner> jobRunnerHolder = new InheritableThreadLocal<>();
-	private static final ThreadLocal<IJobRunnerApi> jobRunnerApiHolder = new InheritableThreadLocal<>();
+	private static final ThreadLocal<AbsJobRunnerApi> jobRunnerApiHolder = new InheritableThreadLocal<>();
 
 	private JobContextHolder() {
 	}
@@ -28,7 +28,7 @@ public class JobContextHolder {
 		return jobRunnerHolder.get();
 	}
 
-	public static IJobRunnerApi getJobRunnerAPI() {
+	public static AbsJobRunnerApi getJobRunnerAPI() {
 		if (jobRunnerApiHolder.get() == null) {
 			throw new IllegalStateException("Flow runner API has not been initialized");
 		}
@@ -42,7 +42,7 @@ public class JobContextHolder {
 		jobRunnerHolder.set(runner);
 	}
 
-	public static void setJobRunnerAPI(IJobRunnerApi iJobRunnerApi) {
+	private static void setJobRunnerAPI(AbsJobRunnerApi iJobRunnerApi) {
 		jobRunnerApiHolder.set(iJobRunnerApi);
 	}
 
@@ -51,9 +51,10 @@ public class JobContextHolder {
 		jobRunnerHolder.remove();
 	}
 
-	public static void initialize(JobRunner runner) {
+	public static void initialize(JobRunner runner, AbsJobRunnerApi iJobRunnerApi) {
 		setJobRunner(runner);
 		setJobStatusTracker(new JobStatusTracker(runner.getStatus()));
+		setJobRunnerAPI(iJobRunnerApi);
 	}
 
 }

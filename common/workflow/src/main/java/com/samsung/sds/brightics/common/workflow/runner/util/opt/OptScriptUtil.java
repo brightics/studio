@@ -12,13 +12,13 @@ public class OptScriptUtil {
 	private static final String LINE_SEPARATOR = System
 			.getProperty("line.separator");
 
-	public static String tryToGetString(JsonObject jsonObj, String key) {
+	private static String tryToGetString(JsonObject jsonObj, String key) {
 		if (jsonObj.has(key))
 			return ", " + key + " = " + jsonObj.get(key).getAsString();
 		return "";
 	}
 
-	public static String tryToGetArray(JsonObject jsonObj, String key) {
+	private static String tryToGetArray(JsonObject jsonObj, String key) {
 		if (jsonObj.has(key))
 			return ", set_values = "
 					+ jsonObj.get(key).getAsJsonArray().toString();
