@@ -4,7 +4,6 @@ import numpy
 import pandas as pd
 from brightics.common.repr import BrtcReprBuilder
 
-
 def _to_default_list(np_arr):
     return numpy.where(pd.isnull(np_arr), None, np_arr).tolist()
 
@@ -32,26 +31,35 @@ class PickleEncoder(DefaultEncoder):
     """
 
     def encode(self, obj):
-
+        
         def hint_tuples(item):
             if isinstance(item, tuple):
                 return {'__tuple__': [hint_tuples(e) for e in item]}
             if isinstance(item, list):
-                return [hint_tuples(e) for e in item]
+                new_list = []
+                for i in range(len(item)):
+                    if (type(item[i]) == float or type(item[i]) == numpy.float64) and pd.isnull(item[i]):
+                        new_list.append(None)
+                    else:
+                        new_list.append(hint_tuples(item[i]))
+                return new_list
             if isinstance(item, dict):
                 new_dict = {}
                 for key in item:
-                    new_dict[key] = hint_tuples(item[key])
+                    if (type(item[key]) == float or type(item[key]) == numpy.float64) and pd.isnull(item[key]):
+                        new_dict[key] = None
+                    else:
+                        new_dict[key] = hint_tuples(item[key])
                 return new_dict
             else:
                 return item
-
+        
         return super(DefaultEncoder, self).encode(hint_tuples(obj))
 
     def default(self, o):
         # TODO add more support types
         if isinstance(o, set):
-            return {'__set__': list(o)}
+            return {'__set__': _to_default_list(list(o))}
         elif isinstance(o, numpy.ndarray):
             return {'__numpy__': _to_default_list(o)}
         elif hasattr(o, '_repr_html_'):
