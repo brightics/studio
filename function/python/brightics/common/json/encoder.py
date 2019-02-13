@@ -34,7 +34,13 @@ class PickleEncoder(DefaultEncoder):
         
         def hint_tuples(item):
             if isinstance(item, tuple):
-                return {'__tuple__': [hint_tuples(e) for e in item]}
+                new_tuple = []
+                for i in range(len(item)):
+                    if (type(item[i]) == float or type(item[i]) == numpy.float64) and pd.isnull(item[i]):
+                        new_tuple.append(None)
+                    else:
+                        new_tuple.append(hint_tuples(item[i]))
+                return {'__tuple__': new_tuple}
             if isinstance(item, list):
                 new_list = []
                 for i in range(len(item)):
