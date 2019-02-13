@@ -71,14 +71,17 @@ def datediff(end_isotime, start_isotime):
     return diff_datetime.days
 
 
+# deprecated
 def strftime_a(isotime):  # ?
     return dateutil.parser.parse(isotime).strftime('%a')
 
 
+# deprecated
 def strftime_aa(isotime):  # ?
     return dateutil.parser.parse(isotime).strftime('%A')
 
 
+# deprecated
 def strftime_aak(isotime):  # ?
     w_dict = {'Monday':'월요일',
               'Tuesday':'화요일',
@@ -91,6 +94,7 @@ def strftime_aak(isotime):  # ?
     return w_dict[dateutil.parser.parse(isotime).strftime('%A')]
 
 
+# deprecated
 def strftime_ak(isotime):  # ?
     w_dict = {'Monday':'월',
               'Tuesday':'화',
@@ -101,6 +105,19 @@ def strftime_ak(isotime):  # ?
               'Sunday':'일',
         }
     return w_dict[dateutil.parser.parse(isotime).strftime('%A')]
+
+
+def strftime(s, isotime):
+
+    if s in ['%ak', '%간단요일']:
+      w_dict = {'Monday':'월', 'Tuesday':'화', 'Wednesday':'수', 'Thursday':'목', 'Friday':'금', 'Saturday':'토', 'Sunday':'일'}
+    elif s in ['%Ak', '%요일']:
+      w_dict = {'Monday':'월요일', 'Tuesday':'화요일', 'Wednesday':'수요일', 'Thursday':'목요일', 'Friday':'금요일', 'Saturday':'토요일', 'Sunday':'일요일'}
+
+    if s in ['%ak', '%Ak', '%간단요일', '%요일'] :
+      return w_dict[dateutil.parser.parse(isotime).strftime('%A')]
+    else:
+      return dateutil.parser.parse(isotime).strftime(s)
 
 """ 
 array related functions  
