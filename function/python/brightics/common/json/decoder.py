@@ -5,6 +5,8 @@ import numpy
 
 def decode(obj):
     def redis_read_hook(o):
+        if '__inf__' in o:
+            return numpy.inf
         if '__set__' in o:
             return set(o['__set__'])
         if '__tuple__' in o:

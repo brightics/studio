@@ -39,7 +39,7 @@ class PickleEncoder(DefaultEncoder):
                     if isinstance(i,float) and pd.isnull(i):
                         new_tuple.append(None)
                     else:
-                        new_tuple.append(hint_tuples(item[i]))
+                        new_tuple.append(hint_tuples(i))
                 return {'__tuple__': new_tuple}
             if isinstance(item, list):
                 new_list = []
@@ -47,7 +47,7 @@ class PickleEncoder(DefaultEncoder):
                     if isinstance(i,float) and pd.isnull(i):
                         new_list.append(None)
                     else:
-                        new_list.append(hint_tuples(item[i]))
+                        new_list.append(hint_tuples(i))
                 return new_list
             if isinstance(item, dict):
                 new_dict = {}
