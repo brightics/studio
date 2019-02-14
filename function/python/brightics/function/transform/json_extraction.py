@@ -32,7 +32,7 @@ def _flatten(obj, key=None, flattened_dict=None, sep='__'):
     elif isinstance(obj, set) or isinstance(obj, numpy.ndarray) or isinstance(obj, tuple):
         flattened_dict[key] = list(obj)
     elif _flattenable(obj):
-        flattened_dict[key] = list(obj)
+        flattened_dict[key] = obj
     return flattened_dict
 
 
