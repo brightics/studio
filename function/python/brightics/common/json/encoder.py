@@ -4,6 +4,9 @@ import numpy
 import pandas as pd
 from brightics.common.repr import BrtcReprBuilder
 
+def _to_default_list(np_arr):
+    return numpy.where(pd.isnull(np_arr), None, np_arr).tolist()
+
 class DefaultEncoder(json.JSONEncoder):
     """
     DefaultEncoder is used for building viewable json string for in browser
@@ -29,38 +32,14 @@ class PickleEncoder(DefaultEncoder):
     def encode(self, obj):
         
         def hint_tuples(item):
-            if isinstance(item, set):
-                new_set = []
-                for i in item:
-                    if isinstance(i,float) and i == numpy.inf:
-                        new_set.append({'__inf__':'inf'})
-                    elif isinstance(i,float) and i == -numpy.inf:
-                        new_set.append({'__inf__':'-inf'})
-                    elif isinstance(i,float) and pd.isnull(i):
-                        new_set.append(None)
-                    else:
-                        new_set.append(hint_tuples(i))
-                return {'__set__': new_set}
-            if isinstance(item, numpy.ndarray):
-                new_array = []
-                for i in item:
-                    if isinstance(i,float) and i == numpy.inf:
-                        new_array.append({'__inf__':'inf'})
-                    elif isinstance(i,float) and i == -numpy.inf:
-                        new_array.append({'__inf__':'-inf'})
-                    elif isinstance(i,float) and pd.isnull(i):
-                        new_array.append(None)
-                    else:
-                        new_array.append(hint_tuples(i))
-                return {'__numpy__': new_array}
             if isinstance(item, tuple):
                 new_tuple = []
                 for i in item:
-                    if isinstance(i,float) and i == numpy.inf:
+                    if isinstance(i,numpy.floating) and i == numpy.inf:
                         new_tuple.append({'__inf__':'inf'})
-                    elif isinstance(i,float) and i == -numpy.inf:
+                    elif isinstance(i,numpy.floating) and i == -numpy.inf:
                         new_tuple.append({'__inf__':'-inf'})
-                    elif isinstance(i,float) and pd.isnull(i):
+                    elif isinstance(i,numpy.floating) and pd.isnull(i):
                         new_tuple.append(None)
                     else:
                         new_tuple.append(hint_tuples(i))
@@ -68,11 +47,11 @@ class PickleEncoder(DefaultEncoder):
             if isinstance(item, list):
                 new_list = []
                 for i in item:
-                    if isinstance(i,float) and i == numpy.inf:
+                    if isinstance(i,numpy.floating) and i == numpy.inf:
                         new_list.append({'__inf__':'inf'})
-                    elif isinstance(i,float) and i == -numpy.inf:
+                    elif isinstance(i,numpy.floating) and i == -numpy.inf:
                         new_list.append({'__inf__':'-inf'})
-                    elif isinstance(i,float) and pd.isnull(i):
+                    elif isinstance(i,numpy.floating) and pd.isnull(i):
                         new_list.append(None)
                     else:
                         new_list.append(hint_tuples(i))
@@ -80,11 +59,11 @@ class PickleEncoder(DefaultEncoder):
             if isinstance(item, dict):
                 new_dict = {}
                 for key in item:
-                    if isinstance(item[key],float) and item[key] == numpy.inf:
+                    if isinstance(item[key],numpy.floating) and item[key] == numpy.inf:
                         new_dict[key] = {'__inf__':'inf'}
-                    elif isinstance(item[key],float) and item[key] == -numpy.inf:
+                    elif isinstance(item[key],numpy.floating) and item[key] == -numpy.inf:
                         new_dict[key].append({'__inf__':'-inf'})
-                    elif isinstance(item[key],float) and pd.isnull(item[key]):
+                    elif isinstance(item[key],numpy.floating) and pd.isnull(item[key]):
                         new_dict[key] = None
                     else:
                         new_dict[key] = hint_tuples(item[key])
@@ -96,7 +75,11 @@ class PickleEncoder(DefaultEncoder):
 
     def default(self, o):
         # TODO add more support types
-        if hasattr(o, '_repr_html_'):
+        if isinstance(o, set):
+            return {'__set__': _to_default_list(list(o))}
+        elif isinstance(o, numpy.ndarray):
+            return {'__numpy__': _to_default_list(o)}
+        elif hasattr(o, '_repr_html_'):
             rb = BrtcReprBuilder()
             rb.addHTML(o._repr_html_())
             return {'_repr_brtc_':rb.get(), '__pickled__': list(pickle.dumps(o))}
@@ -108,6 +91,7 @@ class PickleEncoder(DefaultEncoder):
             rb = BrtcReprBuilder()
             rb.addRawTextMD(str(o))
             return {'_repr_brtc_':rb.get(), '__pickled__': list(pickle.dumps(o))}
+
 
 
 def encode(obj, for_redis):
