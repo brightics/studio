@@ -12,7 +12,7 @@ def _deserialize(serialized_obj):
 
 def _get_serialized_cols(table):
     cols = table.columns
-    if len(table):    
+    if len(table.index) != 0:    
         return [_ for _ in cols if _is_serialized(table[_][0])]
     else:
         return []
