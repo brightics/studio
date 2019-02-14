@@ -52,7 +52,7 @@ class PickleEncoder(DefaultEncoder):
             if isinstance(item, dict):
                 new_dict = {}
                 for key in item:
-                    if (type(item[key]) == float or type(item[key]) == numpy.float64) and pd.isnull(item[key]):
+                    if isinstance(item[key],float) and pd.isnull(item[key]):
                         new_dict[key] = None
                     else:
                         new_dict[key] = hint_tuples(item[key])
