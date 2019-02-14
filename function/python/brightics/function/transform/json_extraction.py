@@ -29,13 +29,7 @@ def _flatten(obj, key=None, flattened_dict=None, sep='__'):
         for obj_key in obj:
             if not obj_key.startswith('_'):
                 _flatten(obj[obj_key], _key(key, sep, obj_key), flattened_dict)
-    elif isinstance(obj, set):
-        flattened_dict[key] = list(obj)
-    elif isinstance(obj, numpy.ndarray):
-        flattened_dict[key] = list(obj)
-    elif isinstance(obj, tuple):
-        flattened_dict[key] = list(obj)
-    elif _flattenable(obj):
+    elif isinstance(obj, set) or isinstance(obj, numpy.ndarray) or isinstance(obj, tuple):
         flattened_dict[key] = list(obj)
     
     return flattened_dict
