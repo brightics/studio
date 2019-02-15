@@ -62,7 +62,7 @@ class PickleEncoder(DefaultEncoder):
                     if isinstance(item[key],numpy.floating) and item[key] == numpy.inf:
                         new_dict[key] = {'__inf__':'inf'}
                     elif isinstance(item[key],numpy.floating) and item[key] == -numpy.inf:
-                        new_dict[key].append({'__inf__':'-inf'})
+                        new_dict[key] = ({'__inf__':'-inf'})
                     elif isinstance(item[key],numpy.floating) and pd.isnull(item[key]):
                         new_dict[key] = None
                     else:
