@@ -35,11 +35,11 @@ class PickleEncoder(DefaultEncoder):
             if isinstance(item, tuple):
                 new_tuple = []
                 for i in item:
-                    if isinstance(i,numpy.floating) or isinstance(i,float) and i == numpy.inf:
+                    if (isinstance(i,numpy.floating) or isinstance(i,float)) and i == numpy.inf:
                         new_tuple.append({'__inf__':'inf'})
-                    elif isinstance(i,numpy.floating) or isinstance(i,float) and i == -numpy.inf:
+                    elif (isinstance(i,numpy.floating) or isinstance(i,float)) and i == -numpy.inf:
                         new_tuple.append({'__inf__':'-inf'})
-                    elif isinstance(i,numpy.floating) or isinstance(i,float) and pd.isnull(i):
+                    elif (isinstance(i,numpy.floating) or isinstance(i,float)) and pd.isnull(i):
                         new_tuple.append(None)
                     else:
                         new_tuple.append(hint_tuples(i))
@@ -47,11 +47,11 @@ class PickleEncoder(DefaultEncoder):
             if isinstance(item, list):
                 new_list = []
                 for i in item:
-                    if isinstance(i,numpy.floating) or isinstance(i,float) and i == numpy.inf:
+                    if (isinstance(i,numpy.floating) or isinstance(i,float)) and i == numpy.inf:
                         new_list.append({'__inf__':'inf'})
-                    elif isinstance(i,numpy.floating) or isinstance(i,float) and i == -numpy.inf:
+                    elif (isinstance(i,numpy.floating) or isinstance(i,float)) and i == -numpy.inf:
                         new_list.append({'__inf__':'-inf'})
-                    elif isinstance(i,numpy.floating) or isinstance(i,float) and pd.isnull(i):
+                    elif (isinstance(i,numpy.floating) or isinstance(i,float)) and pd.isnull(i):
                         new_list.append(None)
                     else:
                         new_list.append(hint_tuples(i))
@@ -59,11 +59,11 @@ class PickleEncoder(DefaultEncoder):
             if isinstance(item, dict):
                 new_dict = {}
                 for key in item:
-                    if isinstance(item[key],numpy.floating) or isinstance(item[key],float) and item[key] == numpy.inf:
+                    if (isinstance(item[key],numpy.floating) or isinstance(item[key],float)) and item[key] == numpy.inf:
                         new_dict[key] = {'__inf__':'inf'}
-                    elif isinstance(item[key],numpy.floating) or isinstance(item[key],float) and item[key] == -numpy.inf:
+                    elif (isinstance(item[key],numpy.floating) or isinstance(item[key],float)) and item[key] == -numpy.inf:
                         new_dict[key] = ({'__inf__':'-inf'})
-                    elif isinstance(item[key],numpy.floating) or isinstance(item[key],float) and pd.isnull(item[key]):
+                    elif (isinstance(item[key],numpy.floating) or isinstance(item[key],float)) and pd.isnull(item[key]):
                         new_dict[key] = None
                     else:
                         new_dict[key] = hint_tuples(item[key])
