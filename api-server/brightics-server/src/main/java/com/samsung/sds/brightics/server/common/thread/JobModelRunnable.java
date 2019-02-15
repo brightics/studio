@@ -4,8 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.samsung.sds.brightics.common.workflow.runner.vo.JobParam;
-import com.samsung.sds.brightics.common.workflow.runner.vo.JobStatusVO;
+import com.samsung.sds.brightics.common.workflow.flowrunner.vo.JobParam;
+import com.samsung.sds.brightics.common.workflow.flowrunner.vo.JobStatusVO;
 
 public abstract class JobModelRunnable implements Runnable {
 
@@ -15,7 +15,7 @@ public abstract class JobModelRunnable implements Runnable {
     private boolean active = true;
     private JobStatusVO status;
 
-    public JobModelRunnable(com.samsung.sds.brightics.common.workflow.runner.vo.JobParam jobParam2, com.samsung.sds.brightics.common.workflow.runner.vo.JobStatusVO jobStatusVO) {
+    public JobModelRunnable(JobParam jobParam2, JobStatusVO jobStatusVO) {
         if (jobParam2 == null || StringUtils.isEmpty(jobParam2.getJid())) {
             throw new IllegalArgumentException("Invalid jobParam - " + jobParam2);
         }

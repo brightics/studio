@@ -16,10 +16,11 @@ import org.springframework.stereotype.Service;
 import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
 import com.samsung.sds.brightics.common.core.thread.ThreadLocalContext;
 import com.samsung.sds.brightics.common.core.util.JsonUtil;
-import com.samsung.sds.brightics.common.workflow.runner.JobRunnerBuilder;
-import com.samsung.sds.brightics.common.workflow.runner.job.JobRunner;
-import com.samsung.sds.brightics.common.workflow.runner.vo.JobParam;
-import com.samsung.sds.brightics.common.workflow.runner.vo.JobStatusVO;
+import com.samsung.sds.brightics.common.workflow.flowrunner.JobRunnerBuilder;
+import com.samsung.sds.brightics.common.workflow.flowrunner.job.JobRunner;
+import com.samsung.sds.brightics.common.workflow.flowrunner.vo.JobErrorVO;
+import com.samsung.sds.brightics.common.workflow.flowrunner.vo.JobParam;
+import com.samsung.sds.brightics.common.workflow.flowrunner.vo.JobStatusVO;
 import com.samsung.sds.brightics.server.common.flowrunner.JobRunnerApi;
 import com.samsung.sds.brightics.server.common.holder.BeanHolder;
 import com.samsung.sds.brightics.server.common.thread.JobModelRunnable;
@@ -48,7 +49,7 @@ public class JobService {
     @Autowired
     private BeanHolder beanHolder;
     
-    private JobRunnerApi jobRunnerApi;
+    private JobRunnerBuilder jobRunnerBuilder;
     
 
     private static final Logger logger = LoggerFactory.getLogger(JobService.class);
@@ -62,7 +63,7 @@ public class JobService {
         return executeJob(jobParam, agentId, jobBy);
     }
 
-    public Map<String, Object> executeJob(com.samsung.sds.brightics.common.workflow.runner.vo.JobParam jobParam, String agentId, String jobBy) {
+    public Map<String, Object> executeJob(JobParam jobParam, String agentId, String jobBy) {
         logger.info("Executing job ({})", jobParam.getJid());
 
         agentService.initAgent(agentId);
@@ -73,11 +74,11 @@ public class JobService {
         jobStatusService.createJobStatus(jobParam.getJid(), jobParam.getUser(), jobBy, agentId);
         
         try {
-        	if(jobRunnerApi ==null) {
-        		jobRunnerApi = new JobRunnerApi();
-        	}
+			if (jobRunnerBuilder == null) {
+				jobRunnerBuilder = JobRunnerBuilder.builder().jobRunnerApi(new JobRunnerApi());
+			}
         	
-        	JobRunner runner = JobRunnerBuilder.builder().setApiInterface(jobRunnerApi).create(jobParam);
+        	JobRunner runner = jobRunnerBuilder.create(jobParam);
             jobRepository.saveJobStatus(jobParam.getJid(), runner.getStatus());
             JobModelExecuteService.startJobModel(jobParam.getUser(), agentId, new JobModelRunnable(jobParam, runner.getStatus()) {
                 @Override
@@ -89,7 +90,7 @@ public class JobService {
                         runner.run();
                     } catch (Exception e) {
                         jobStatusService.updateJobStatus(jobParam,
-                                generateFailedJobStatusVO(jobParam, new ExceptionInfoVO(ExceptionUtils.getMessage(e), ExceptionUtils.getStackTrace(e))));
+                                generateFailedJobStatusVO(jobParam, new JobErrorVO(ExceptionUtils.getMessage(e), ExceptionUtils.getStackTrace(e))));
                         throw e;
                     } finally {
                         jobRepository.insertJobStatusLog(runner.getStatus(), agentId);
@@ -102,14 +103,14 @@ public class JobService {
         } catch (Exception e) {
             logger.error("[JOB] Errors while executing flow", e);
             jobStatusService.updateJobStatus(jobParam,
-                    generateFailedJobStatusVO(jobParam, new ExceptionInfoVO(ExceptionUtils.getMessage(e), ExceptionUtils.getStackTrace(e))));
+                    generateFailedJobStatusVO(jobParam, new JobErrorVO(ExceptionUtils.getMessage(e), ExceptionUtils.getStackTrace(e))));
             throw new BrighticsCoreException("3651", e.getMessage());
         } finally {
             LoggerUtil.popMDC("jid");
         }
     }
 
-    private JobStatusVO generateFailedJobStatusVO(JobParam jobParam, ExceptionInfoVO... errorInfo) {
+    private JobStatusVO generateFailedJobStatusVO(JobParam jobParam, JobErrorVO... errorInfo) {
         JobStatusVO result = new JobStatusVO();
         result.setJobId(jobParam.getJid());
         result.setUser(jobParam.getUser());

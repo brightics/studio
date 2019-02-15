@@ -21,7 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.samsung.sds.brightics.common.workflow.runner.vo.JobParam;
+import com.samsung.sds.brightics.common.workflow.flowrunner.vo.JobParam;
 import com.samsung.sds.brightics.server.common.thread.JobModelRunnable;
 
 public class JobModelThreadPoolExecutor extends ThreadPoolExecutor {

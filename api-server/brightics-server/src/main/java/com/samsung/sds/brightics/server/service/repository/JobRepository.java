@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.samsung.sds.brightics.common.workflow.runner.vo.JobStatusVO;
+import com.samsung.sds.brightics.common.workflow.flowrunner.vo.JobStatusVO;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
