@@ -29,9 +29,6 @@ public class PreparedDataSet {
 	}
 
 	public boolean hasPreparedData(String mid, String fid) {
-		
-		System.out.println("HHOOONNNKKIII " + mid + fid);
-		
 		return preparedDataSet.containsKey(mid) && preparedDataSet.get(mid).containsKey(fid);
 	}
 
@@ -41,7 +38,6 @@ public class PreparedDataSet {
 
 	public JsonObject getFunctionPreparedDataObject(String mid, String fid) {
 		JsonObject jsonObject = getModelPreparedDataSet(mid).get(fid);
-		System.out.println("HHOOONNNKKIII " + jsonObject);
 		return jsonObject;
 	}
 
