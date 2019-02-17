@@ -54,6 +54,9 @@ If a new version is released, you should move these files to newer version of br
     
 Or download "BrighticsStudio-\<version\>-\<os name\>-patch" and run this from the location of Brightics Studio installation.
 
+### Run
+Brightics Studio pops up on Chrome browser after launching start-brightics.cmd (or start-brightics.sh). Please go to http://127.0.0.1:3000 manually to use Brightics Studio if it does not pop up automatically.
+
 ## Development
 ### Prerequisite
  * JDK 1.8, 1.9 (64bit)
