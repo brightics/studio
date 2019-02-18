@@ -100,9 +100,6 @@ def _create_functions(con, *modules):
             params = sig.parameters.values()
             n_params = len(params)
             
-            if _do_not_create_functions(udf_name, n_params):
-                continue
-
             if _contains_var_positional(params):
                 con.create_function(udf_name, -1, udf)
                 
@@ -112,11 +109,3 @@ def _create_functions(con, *modules):
 
 def _contains_var_positional(params):
     return any(param.kind == param.VAR_POSITIONAL for param in params)
-
-
-# can be added more
-def _do_not_create_functions(udf_name, n_params):
-    if udf_name is 'strftime' and n_params > 2:
-        return True
-    else:
-        return False
