@@ -140,8 +140,7 @@ public class FunctionWork extends Work {
     }
 
 	private void complementPreparedDataParam(ParametersBuilder pb) {
-		// HOON change is data complement option.
-		if (functionInfo.has("extradata") && functionInfo.get("extradata").getAsBoolean()) {
+		if (functionInfo.has("external") && functionInfo.get("external").getAsBoolean()) {
 			String mid = JobContextHolder.getJobStatusTracker().getCurrentModelMid();
 			String fid = JsonObjectUtil.getAsString(functionInfo, "fid");
 			if (JobContextHolder.getPreparedDataSet().hasPreparedData(mid, fid)) {
