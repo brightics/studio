@@ -1,6 +1,7 @@
 from .select_column import select_column
 from .missing_data import delete_missing_data
 from .reshaping import pivot
+from .reshaping import pivot2
 from .reshaping import unpivot
 from .reshaping import distinct
 from .reshaping import transpose
