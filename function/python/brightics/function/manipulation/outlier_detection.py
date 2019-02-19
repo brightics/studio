@@ -18,7 +18,7 @@ def outlier_detection_tukey_carling(table, group_by=None, **params):
 def _outlier_detection_tukey_carling(table, input_cols, outlier_method='tukey', multiplier=None, number_of_removal=1,
                                     result_type='add_prediction', new_column_prefix='is_outlier_'):
     out_table = table.copy()    
-    mean = out_table.mean()
+    median = out_table.median()
     q1s = out_table.quantile(0.25)
     q3s = out_table.quantile(0.75)
     iqrs = q3s - q1s    
@@ -37,7 +37,7 @@ def _outlier_detection_tukey_carling(table, input_cols, outlier_method='tukey', 
         for col in input_cols:
             output_col_name = '{prefix}{col}'.format(prefix=new_column_prefix, col=col)
             output_col_names.append(output_col_name)
-            out_table[output_col_name] = out_table[col].apply(lambda _: _carling(_, mean[col], iqrs[col], multiplier))
+            out_table[output_col_name] = out_table[col].apply(lambda _: _carling(_, median[col], iqrs[col], multiplier))
     else:
         raise_runtime_error("Please check 'outlier_method'.")
     
@@ -79,7 +79,7 @@ def _outlier_detection_tukey_carling(table, input_cols, outlier_method='tukey', 
     model['multiplier'] = multiplier
     model['number_of_removal'] = number_of_removal
     model['result_type'] = result_type
-    model['mean'] = mean
+    model['median'] = median
     model['q1'] = q1s
     model['q3'] = q3s
     model['iqr'] = iqrs
@@ -112,7 +112,7 @@ def _outlier_detection_tukey_carling_model(table, model, new_column_prefix='is_o
         for col in input_cols:
             output_col_name = '{prefix}{col}'.format(prefix=new_column_prefix, col=col)
             output_col_names.append(output_col_name)
-            out_table[output_col_name] = out_table[col].apply(lambda _: _carling(_, model['mean'][col], model['iqr'][col], model['multiplier']))
+            out_table[output_col_name] = out_table[col].apply(lambda _: _carling(_, model['median'][col], model['iqr'][col], model['multiplier']))
     else:
         raise_runtime_error("Please check 'outlier_method'.")
         
@@ -136,8 +136,8 @@ def _tukey(x, q1, q3, iqr, multiplier):
     return 'out' if x < q1 - multiplier * iqr or x > q3 + multiplier * iqr else 'in' 
 
 
-def _carling(x, mean, iqr, multiplier):
-    return 'out' if x < mean - multiplier * iqr or x > mean + multiplier * iqr else 'in'
+def _carling(x, median, iqr, multiplier):
+    return 'out' if x < median - multiplier * iqr or x > median + multiplier * iqr else 'in'
 
     
 def outlier_detection_lof(table, group_by=None, **params):
