@@ -7,7 +7,7 @@ public class JobRunnerConfig {
 	private ConcurrentHashMap<String, String> setting = new ConcurrentHashMap<>();
 
 	// default values
-	private String variableRepo = "./variable";
+	private String variableRepo = "./variables";
 	private String isPersistForcedFalse = "false";
 
 	public JobRunnerConfig set(String key, String value) {
