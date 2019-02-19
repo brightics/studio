@@ -1,16 +1,17 @@
-import pandas as pd
-import numpy as np
-import math
 from pandasql import sqldf
+from brightics.function.transform import sql_execute
+from brightics.common.repr import strip_margin
 
 
 def add_expression_column(table, new_cols, formulas, expr_type='sqlite'):
     _table = table.copy()
-
-    print(locals())    
-    for nc, f in zip(new_cols, formulas):
+    
+    for nc, f in zip(new_cols, formulas):      
         if expr_type == 'sqlite':
-            _table[nc] = sqldf('select {f} as new_val from _table'.format(f=f))
+            query = strip_margin('''
+            | SELECT {f} AS new_val FROM #{{DF(0)}}
+            |'''.format(f=f))
+            _table[nc] = sql_execute(table, query)['out_table']
         else:
             _table[nc] = _table.eval(f, engine=expr_type)
         
@@ -19,11 +20,11 @@ def add_expression_column(table, new_cols, formulas, expr_type='sqlite'):
 
 def add_expression_column_if(table, new_col, conditions, values, else_value, expr_type='sqlite'):
     _table = table.copy()
-    
+
     _condition_size = min(len(conditions), len(values))
     _conditions = conditions[:_condition_size]
     _values = values[:_condition_size]
-    
+
     if expr_type == 'sqlite':
         casted_else_value = '\'' + str(else_value) + '\'' if isinstance(else_value, str) else str(else_value)
         casted_values = ['\'' + str(v) + '\'' if isinstance(v, str) else str(v) for v in values]

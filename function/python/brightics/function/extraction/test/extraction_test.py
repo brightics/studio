@@ -1,4 +1,3 @@
-
 import unittest
 import pandas as pd
 from brightics.function.extraction import add_expression_column, add_expression_column_if
@@ -26,8 +25,8 @@ class AddFunctionColumnTest(unittest.TestCase):
         out = add_expression_column(self.example_df, ['str2', 'num3', 'str3', 'num4'],
                                     [''' str1 || '_a' ''',
                                      ''' case when num1 > 2 then 100 else 0 end''',
-                                     ''' cast(num1 as str)''',
-                                     ''' cast(str3 as float)'''], expr_type='sqlite')['out_table']
+                                     ''' cast(num1 as char)''',
+                                     ''' cast(num1 as float)'''], expr_type='sqlite')['out_table']
         print(out)
         print(out.dtypes)
     
