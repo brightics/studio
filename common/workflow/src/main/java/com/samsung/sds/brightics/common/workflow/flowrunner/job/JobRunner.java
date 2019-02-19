@@ -113,8 +113,8 @@ public class JobRunner implements IJobRunner {
 
 	private void initializePreparedDataset() {
 		PreparedDataSet preparedDataSet = new PreparedDataSet();
-		if (jobParam.getDatas() != null && !jobParam.getDatas().isEmpty()) {
-			for (PreparedData data : jobParam.getDatas()) {
+		if(jobParam.getDatas() != null && !jobParam.getDatas().isEmpty()){
+			for(PreparedData data : jobParam.getDatas()){
 				preparedDataSet.addPreparedData(data);
 			}
 		}

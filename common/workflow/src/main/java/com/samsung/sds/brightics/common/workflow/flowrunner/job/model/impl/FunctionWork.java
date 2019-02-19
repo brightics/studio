@@ -139,7 +139,7 @@ public class FunctionWork extends Work {
         return pb.build();
     }
 
-	private void complementPreparedDataParam(ParametersBuilder pb) {
+    private void complementPreparedDataParam(ParametersBuilder pb) {
 		if (functionInfo.has("external") && functionInfo.get("external").getAsBoolean()) {
 			String mid = JobContextHolder.getJobStatusTracker().getCurrentModelMid();
 			String fid = JsonObjectUtil.getAsString(functionInfo, "fid");

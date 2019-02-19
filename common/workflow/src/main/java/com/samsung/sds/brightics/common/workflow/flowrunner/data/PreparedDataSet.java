@@ -37,8 +37,7 @@ public class PreparedDataSet {
 	}
 
 	public JsonObject getFunctionPreparedDataObject(String mid, String fid) {
-		JsonObject jsonObject = getModelPreparedDataSet(mid).get(fid);
-		return jsonObject;
+		return getModelPreparedDataSet(mid).get(fid);
 	}
 
 }

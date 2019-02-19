@@ -9,7 +9,7 @@ public class PreparedData {
 
 	private String mid;
 	private String fid;
-	private String tid; 
+	private String tid; //optional
 	private Map<String, Object> data;
 
 }

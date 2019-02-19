@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,7 +112,7 @@ public class JobStatusService {
         BrtcJobModel errorModelInfo = brtcJobModelRepository.findOne(modelId);
         String jobJson = errorModelInfo.getContents();
         try {
-            JobParam jobParam = JsonUtil.fromJson(jobJson, JobParam.class);
+            JobParam jobParam = new ObjectMapper().readValue(jobJson, JobParam.class);
             jobParam.setJid(JobRepository.getRandomId("e"));
             jobParam.setUser(agentUserService.getAgentIdByCurrentUser());
             logger.info("Job error model execute. model info : {}", jobParam);
