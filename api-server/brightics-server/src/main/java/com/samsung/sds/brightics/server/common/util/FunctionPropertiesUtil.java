@@ -64,8 +64,17 @@ public class FunctionPropertiesUtil {
 				FunctionMetaParam functionMetaParam = JsonUtil.fromJson(new FileInputStream(functionHelpFile),
 						FunctionMetaParam.class);
 				Map<String, Object> specJson = functionMetaParam.getSpecJson();
-				setFunctionLabelInfo(specJson);
-				functionMetaMap.put(String.valueOf(specJson.get(FUNC)), functionMetaParam);
+				
+				if(specJson.containsKey(NAME) && specJson.containsKey(PARAMS)){
+					setFunctionLabelInfo(specJson);
+				} else {
+					logger.error("Cannot set function label information. file name : " + filename);
+				}
+				if(specJson.containsKey(FUNC)){
+					functionMetaMap.put(String.valueOf(specJson.get(FUNC)), functionMetaParam);
+				} else {
+					logger.error("Cannot set function meta information. file name : " + filename);
+				}
 			} catch (Exception e) {
 				logger.error("Cannot initialize function meta json. file name : " + filename, e);
 			}
