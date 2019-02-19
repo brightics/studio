@@ -159,6 +159,28 @@ var renderFunctionHelp = function (req, res) {
             } else {
                 getPalette(req, res)
                     .then(({ palette, fileContents }) => {
+                    for (var f in fileContents) {
+                    var func = fileContents[f].specJson.func;
+                    var category = fileContents[f].specJson.category;
+
+                    var exist = false;
+                    var obj = {func: func, visible: true};
+
+                    for (var c in palette) {
+                        if (palette[c].key === category) {
+                            for (var k in palette[c].functions) {
+                                var fnUnit = palette[c].functions[k];
+                                if (fnUnit.func === func) {
+                                    exist = true;
+                                    break;
+                                }
+                            }
+                            if (!exist && category !== 'udf') {
+                                palette[c].functions.push(obj);
+                            }
+                        }
+                    }
+                }
                         responseFunctionHelp(req, res, operation, palette, fileContents);
                     });
             }
