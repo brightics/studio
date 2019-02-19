@@ -1,8 +1,10 @@
 import pickle
 import numpy as np
 
+
 def _serialize(obj):
     return pickle.dumps(obj)
+
 
 def _deserialize(serialized_obj):
     return pickle.loads(serialized_obj)
@@ -10,7 +12,10 @@ def _deserialize(serialized_obj):
 
 def _get_serialized_cols(table):
     cols = table.columns
-    return [_ for _ in cols if _is_serialized(table[_][0])]
+    if len(table.index) != 0:    
+        return [_ for _ in cols if _is_serialized(table[_][0])]
+    else:
+        return []
 
 
 def _is_serialized(obj):
