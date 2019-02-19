@@ -41,14 +41,14 @@ def _autocorrelation(table, input_col, nlags=20, conf_level=0.95):
     result_table1['ACF'] = acf_ret[0]
     
     if conf_level is not None:
-        result_table1['%g%% confidence Interval' % (conf_level * 100)] = [str((acf_ret[1][i][0], acf_ret[1][i][1]))  for i in range(nlags + 1)]
+        result_table1['%g%% Confidence Interval' % (conf_level * 100)] = [str((acf_ret[1][i][0], acf_ret[1][i][1]))  for i in range(nlags + 1)]
     
     result_table2 = pd.DataFrame([])
     result_table2['lag'] = list(range(nlags + 1))
     result_table2['PACF'] = pacf_ret[0]
     
     if conf_level is not None:
-        result_table2['%g%% confidence Interval' % (conf_level * 100)] = [str((pacf_ret[1][i][0], pacf_ret[1][i][1])) for i in range(nlags + 1)]
+        result_table2['%g%% Confidence Interval' % (conf_level * 100)] = [str((pacf_ret[1][i][0], pacf_ret[1][i][1])) for i in range(nlags + 1)]
     
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""# Autocorrelation / Partial Autocorrelation Result"""))
