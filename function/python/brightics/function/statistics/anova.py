@@ -137,10 +137,7 @@ def _tukeys_range_test(table, response_cols, factor_col, alpha=0.05):
     
     for response_col in response_cols:
         data = table[response_col]
-        factor = np.array(table[factor_col])
-        for i in factor:
-            if np.isnan(i):
-                raise Exception("There are null values in Factor Column")
+        posthoc = pairwise_tukeyhsd(data, table[factor_col], alpha=alpha)
         posthoc = pairwise_tukeyhsd(data, factor, alpha=alpha)
         posthoc_html = posthoc._results_table.as_html()
         posthoc.plot_simultaneous()
