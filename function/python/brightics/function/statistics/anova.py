@@ -138,7 +138,6 @@ def _tukeys_range_test(table, response_cols, factor_col, alpha=0.05):
     for response_col in response_cols:
         data = table[response_col]
         posthoc = pairwise_tukeyhsd(data, table[factor_col], alpha=alpha)
-        posthoc = pairwise_tukeyhsd(data, factor, alpha=alpha)
         posthoc_html = posthoc._results_table.as_html()
         posthoc.plot_simultaneous()
         
