@@ -53,7 +53,7 @@ def _hierarchical_clustering(table, input_cols, input_mode='original', key_col=N
 
     range_len_Z = range(len(Z))
     linkage_matrix = pd.DataFrame([])
-    linkage_matrix['number of clusters'] = ['%g' % (x+1) for x in range_len_Z]
+    linkage_matrix['linkage step'] = ['%g' % (x+1) for x in reversed(range_len_Z)]
     linkage_matrix['name of clusters'] = ['CL_%g' % (i+1) for i in reversed(range_len_Z)]
     joined_column1 = []
     for i in range_len_Z:
@@ -61,14 +61,14 @@ def _hierarchical_clustering(table, input_cols, input_mode='original', key_col=N
             joined_column1.append(data_names[int(Z[:, 0][i])])
         elif Z[:, 0][i] >= len_features:
             joined_column1.append(linkage_matrix['name of clusters'][Z[:, 0][i] - len_features])
-    linkage_matrix['clusters joined 1'] = joined_column1
+    linkage_matrix['joined column1'] = joined_column1
     joined_column2 = []
     for i in range_len_Z:
         if Z[:, 1][i] < len_features:
             joined_column2.append(data_names[int(Z[:, 1][i])])
         elif Z[:, 1][i] >= len_features:
             joined_column2.append(linkage_matrix['name of clusters'][Z[:, 1][i] - len_features])
-    linkage_matrix['clusters joined 2'] = joined_column2
+    linkage_matrix['joined column2'] = joined_column2
     
     linkage_matrix['distance'] = [distance for distance in Z[:, 2]]
     linkage_matrix['number of original'] = [int(entities) for entities in Z[:, 3]]
@@ -161,10 +161,10 @@ def _hierarchical_clustering_post(model, num_clusters, cluster_col='cluster'):
     for leader in L:
         if leader in Z[:, 0]:
             select_indices = np.where(Z[:, 0] == leader)[0][0]
-            which_cluster.append(out_table['clusters joined 1'][select_indices])
+            which_cluster.append(out_table['joined column1'][select_indices])
         elif leader in Z[:, 1]:
             select_indices = np.where(Z[:, 1] == leader)[0][0]
-            which_cluster.append(out_table['clusters joined 2'][select_indices])
+            which_cluster.append(out_table['joined column2'][select_indices])
     
     clusters_info_table = pd.DataFrame([])
     clusters_info_table[cluster_col] = M
