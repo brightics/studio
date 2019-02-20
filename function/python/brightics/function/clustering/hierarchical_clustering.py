@@ -53,7 +53,7 @@ def _hierarchical_clustering(table, input_cols, input_mode='original', key_col=N
 
     range_len_Z = range(len(Z))
     linkage_matrix = pd.DataFrame([])
-    linkage_matrix['number of clusters'] = ['%g' % (x+1) for x in range_len_Z]
+    linkage_matrix['number of clusters'] = ['%g' % (x+1) for x in reversed(range_len_Z)]
     linkage_matrix['name of clusters'] = ['CL_%g' % (i+1) for i in reversed(range_len_Z)]
     joined_column1 = []
     for i in range_len_Z:
