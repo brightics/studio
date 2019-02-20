@@ -1,14 +1,13 @@
-from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD, dict2MD, \
-    pandasDF2MD, keyValues2MD
-from brightics.function.utils import _model_dict
+from brightics.common.repr import BrtcReprBuilder
+from brightics.common.repr import strip_margin
+from brightics.common.repr import dict2MD
+from brightics.common.repr import pandasDF2MD
 from brightics.common.utils import check_required_parameters
 from brightics.common.groupby import _function_by_group
 import numpy as np
 import pandas as pd
 import math
 from math import sqrt
-import seaborn as sns
-import matplotlib.pyplot as plt
 from scipy.stats import t
 from scipy import mean, stats
 from statsmodels.stats.weightstats import ttest_ind
@@ -27,89 +26,146 @@ def _width(col, alpha, n):
     return stats.t.ppf(1.0 - alpha, n - 1) * col.std() / np.sqrt(n) 
 
 
-def _one_sample_ttest(table, input_cols, alternatives, hypothesized_mean=0, conf_level=0.95):
-
-    cols = ['data', 'alternative_hypothesis', 'statistics', 't_value', 'p_value', 'confidence_level', 'lower_confidence_interval', 'upper_confidence_interval']  
-    out_table = pd.DataFrame(columns=cols) 
-    n = len(table)   
-    alpha = 1.0 - conf_level
-    statistics = "t statistic, t distribution with %d degrees of freedom under the null hypothesis." % (n - 1)
+def _test_result(alter, hypothesized_mean, mean, t_value, p_value_two, width_one_sided, width_two_sided):
         
-    # ## Build model
+    if alter == 'Greater':
+        H1 = 'true mean > {}'.format(hypothesized_mean)    
+        if t_value >= 0:
+            p_value = p_value_two / 2
+        else:
+            p_value = 1 - p_value_two / 2
+        lower_conf_interval = mean - width_one_sided
+        upper_conf_interval = np.inf 
+           
+    if alter == 'Less':
+        H1 = 'true mean < {}'.format(hypothesized_mean)    
+        if t_value >= 0:
+            p_value = 1 - p_value_two / 2
+        else:
+            p_value = p_value_two / 2
+        lower_conf_interval = -np.inf
+        upper_conf_interval = mean + width_one_sided
+                   
+    if alter == 'Two Sided':
+        H1 = 'true mean != {}'.format(hypothesized_mean)      
+        p_value = p_value_two              
+        lower_conf_interval = mean - width_two_sided
+        upper_conf_interval = mean + width_two_sided
+
+    return (H1, p_value, lower_conf_interval, upper_conf_interval)
+
+
+def _result_table(input_cols, alternatives, result_dict):
+    out_cols = ['data', 'alternative_hypothesis', 'statistics', 't_value',
+                'p_value', 'confidence_level', 'lower_confidence_interval', 'upper_confidence_interval', 'confidence_interval']
+    
+    row_dict_list = []
+    for input_col in input_cols:
+        for alter in alternatives:
+            row_dict = result_dict[input_col][alter]
+            row_dict['data'] = input_col
+            row_dict_list.append(row_dict)
+            
+    return pd.DataFrame.from_dict(row_dict_list).reindex(columns=out_cols)
+
+
+def _one_sample_ttest_repr(statistics, result_dict, params):
+    input_cols = params['input_cols']
+    alternatives = params['alternatives']
+    hypothesized_mean = params['hypothesized_mean']
+    conf_level = params['conf_level']
+    
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
-    ## One Sample T Test Result
+    | ## One Sample T Test Result
     | - Statistics = {s}
     | - Hypothesized mean = {h} 
     | - Confidence level = {cl}
     """.format(s=statistics, h=hypothesized_mean, cl=conf_level)))
-       
+                             
     for input_col in input_cols:
-    
-        col = table[input_col]
-        
         H1_list = []
         p_list = []
         CI_list = []
+        for alter in alternatives:
+            test_info = result_dict[input_col][alter]
+            H1_list.append(test_info['alternative_hypothesis'])
+            p_list.append(test_info['p_value'])
+            CI_list.append(test_info['confidence_interval'])
+            
+        result_table = pd.DataFrame.from_items([ 
+            ['alternative hypothesis', H1_list],
+            ['p-value', p_list],
+            ['%g%% confidence Interval' % (conf_level * 100), CI_list]
+        ])  
         
-        # width of the confidence interval
+        rb.addMD(strip_margin("""
+        | ### Data = {input_col}
+        | - t-value = {t_value} 
+        |
+        | {result_table}
+        """.format(input_col=input_col, t_value=result_dict[input_col]['t_value'], result_table=pandasDF2MD(result_table))))    
+    
+    rb.addMD(strip_margin("""
+        | ### Parameters
+        | {params}
+        """.format(params=dict2MD(params))))
+    
+    return rb      
+
+    
+def _one_sample_ttest(table, input_cols, alternatives, hypothesized_mean=0, conf_level=0.95):
+
+    n = len(table)   
+    alpha = 1.0 - conf_level
+    statistics = "t statistic, t distribution with %d degrees of freedom under the null hypothesis." % (n - 1)
+    
+    result_dict = dict()
+    for input_col in input_cols:       
+        # sample mean, width of the confidence interval
+        col = table[input_col]
+        mean = np.mean(col)
         width_one_sided = _width(col, alpha, n)
         width_two_sided = _width(col, alpha / 2, n)
      
         # t-statistic, two-tailed p-value 
         t_value, p_value_two = stats.ttest_1samp(col, hypothesized_mean)
         
-        # one-tailed p-value for Greater
-        if t_value >= 0:
-            p_value_one = p_value_two / 2
-        else:
-            p_value_one = 1.0 - p_value_two / 2        
-
-        for alter in alternatives:            
-            if alter == 'Greater':
-                H1 = 'true mean > {hypothesized_mean}'.format(hypothesized_mean=hypothesized_mean)    
-                p_value = p_value_one
-                lower_conf_interval = np.mean(col) - width_one_sided
-                upper_conf_interval = np.inf 
-                   
-            if alter == 'Less':
-                H1 = 'true mean < {hypothesized_mean}'.format(hypothesized_mean=hypothesized_mean)
-                p_value = 1.0 - p_value_one
-                lower_conf_interval = -np.inf
-                upper_conf_interval = np.mean(col) + width_one_sided
-                           
-            if alter == 'Two Sided':
-                H1 = 'true mean != {hypothesized_mean}'.format(hypothesized_mean=hypothesized_mean)            
-                p_value = p_value_two              
-                lower_conf_interval = np.mean(col) - width_two_sided
-                upper_conf_interval = np.mean(col) + width_two_sided
-                                  
-            # ## Build out_table
-            out = pd.Series([input_col, H1, statistics, t_value, p_value, conf_level, lower_conf_interval, upper_conf_interval], index=cols)           
-            out_table = out_table.append(out, ignore_index=True)                 
+        result_dict[input_col] = dict()
+        
+        result_dict[input_col]['t_value'] = t_value
+        for alter in alternatives:
+            (H1, p_value, lower_conf_interval, upper_conf_interval) = _test_result(alter, hypothesized_mean, mean, t_value, p_value_two, width_one_sided, width_two_sided)
+            confidence_interval = '({lower_conf_interval}, {upper_conf_interval})'.format(lower_conf_interval=lower_conf_interval, upper_conf_interval=upper_conf_interval)
             
-            # ## Build model  
-            H1_list.append(H1)
-            p_list.append(p_value)
-            CI_list.append('({lower_conf_interval}, {upper_conf_interval})'.format(lower_conf_interval=lower_conf_interval, upper_conf_interval=upper_conf_interval))                 
-        
-        # ## Build model     
-        result_table = pd.DataFrame.from_items([ 
-            ['alternative hypothesis', H1_list],
-            ['p-value', p_list],
-            ['%g%% confidence Interval' % (conf_level * 100), CI_list]
-        ])       
-        rb.addMD(strip_margin("""
-        ### Data = {input_col}
-        | - t-value = {t_value} 
-        |
-        | {result_table}
-        """.format(input_col=input_col, t_value=t_value, result_table=pandasDF2MD(result_table))))
-        
-    model = dict()    
+            result_dict[input_col][alter] = dict()
+            result_dict[input_col][alter]['alternative_hypothesis'] = H1
+            result_dict[input_col][alter]['confidence_level'] = conf_level
+            result_dict[input_col][alter]['statistics'] = statistics
+            result_dict[input_col][alter]['t_value'] = t_value
+            result_dict[input_col][alter]['p_value'] = p_value
+            result_dict[input_col][alter]['lower_confidence_interval'] = lower_conf_interval
+            result_dict[input_col][alter]['upper_confidence_interval'] = upper_conf_interval
+            result_dict[input_col][alter]['confidence_interval'] = confidence_interval
+    
+    params = {
+        'input_cols':input_cols,
+        'alternatives': alternatives,
+        'hypothesized_mean': hypothesized_mean,
+        'conf_level': conf_level
+    }
+    
+    result = _result_table(input_cols, alternatives, result_dict)
+    
+    rb = _one_sample_ttest_repr(statistics, result_dict, params)  
+    
+    model = dict()
+    
+    model['result'] = result       
     model['_repr_brtc_'] = rb.get()
+    model['params'] = params
         
-    return {'out_table':out_table, 'model':model}
+    return {'model':model}
 
 
 def two_sample_ttest_for_stacked_data(table, group_by=None, **params):
@@ -121,37 +177,52 @@ def two_sample_ttest_for_stacked_data(table, group_by=None, **params):
 
 
 def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alternatives, first=None , second=None , hypo_diff=0, equal_vari='pooled', confi_level=0.95):
-
-    if(type(table[factor_col][0]) != str):
-        if(type(table[factor_col][0]) == bool):
-            if(first != None):
-                first = bool(first)
-            if(second != None):
-                second = bool(second)
-        else:
-            if(first != None):
-                first = float(first)
-            if(second != None):
-                second = float(second)
-    if(first == None or second == None):
+    if first is not None or second is not None:
+        check_table = np.array(table[factor_col])
+        for element in check_table:
+            if element is not None:
+                if type(element) != str:
+                    if type(element) == bool:
+                        if first is not None and second is not None:
+                            first = bool(first)
+                            second = bool(second)
+                            break
+                        if first is not None:
+                            first = bool(first)
+                            break
+                        second = bool(second)
+                        break
+                    else:
+                        if first is not None and second is not None:
+                            first = float(first)
+                            second = float(second)
+                            break
+                        if first is not None:
+                            first = float(first)
+                            break
+                        second = float(second)
+                        break
+                else:
+                    break
+    if first is None or second is None:
         tmp_factors = []
-        if(first != None):
+        if first is not None:
             tmp_factors += [first]
-        if(second != None):
+        if second is not None:
             tmp_factors += [second]
         for i in range(len(table[factor_col])):
-            if(table[factor_col][i] != None and table[factor_col][i] not in tmp_factors):
-                if(len(tmp_factors) == 2):
+            if table[factor_col][i] is not None and table[factor_col][i] not in tmp_factors:
+                if len(tmp_factors) == 2:
                     raise Exception("There are more that 2 factors.")
                 else:
                     tmp_factors += [table[factor_col][i]]
-    if(first == None):    
-        if(tmp_factors[0] != second):
+    if first is None:
+        if tmp_factors[0] != second:
             first = tmp_factors[0]
         else:
             first = tmp_factors[1]
-    if(second == None):
-        if(tmp_factors[0] != first):
+    if second is None:
+        if tmp_factors[0] != first:
             second = tmp_factors[0]
         else:
             second = tmp_factors[1]
@@ -165,7 +236,7 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
     | - Hypothesized mean = {hypo_diff}
     | - Confidence level = {confi_level}
     """.format(hypo_diff=hypo_diff, confi_level=confi_level)))
-    
+
     for response_col in response_cols:
         tmp_model = []
         number1 = len(table_first[response_col])
@@ -175,27 +246,27 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
         std1 = (table_first[response_col]).std()
         std2 = (table_second[response_col]).std()
         start_auto = 0
-        if(equal_vari == 'auto'):
+        if equal_vari == 'auto':
             start_auto = 1
             f_value = (std1 ** 2) / (std2 ** 2)
             f_test_p_value_tmp = stats.f.cdf(1 / f_value, number1 - 1, number2 - 1)
-            if(f_test_p_value_tmp > 0.5):
+            if f_test_p_value_tmp > 0.5:
                 f_test_p_value = (1 - f_test_p_value_tmp) * 2
             else:
                 f_test_p_value = f_test_p_value_tmp * 2
-            if(f_test_p_value < 0.05):
+            if f_test_p_value < 0.05:
                 equal_vari = 'unequal'
             else:
                 equal_vari = 'pooled'
         ttestresult = ttest_ind(table_first[response_col], table_second[response_col], 'larger', usevar=equal_vari, value=hypo_diff)
-        
+
         if 'larger' in alternatives:
             ttestresult = ttest_ind(table_first[response_col], table_second[response_col], 'larger', usevar=equal_vari, value=hypo_diff)
             df = ttestresult[2]
-            if(equal_vari == 'pooled'):    
+            if equal_vari == 'pooled':
                 std_number1number2 = sqrt(((number1 - 1) * (std1) ** 2 + (number2 - 1) * (std2) ** 2) / (number1 + number2 - 2))
                 margin = t.ppf((confi_level) , df) * std_number1number2 * sqrt(1 / number1 + 1 / number2)
-            if(equal_vari == 'unequal'):
+            if equal_vari == 'unequal':
                 margin = t.ppf((confi_level) , df) * sqrt(std1 ** 2 / (number1) + std2 ** 2 / (number2))
             tmp_model += [['true difference in means > 0.0'] + 
             [ttestresult[1]] + [(mean1 - mean2 - margin, math.inf)]]
@@ -203,14 +274,14 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
             ['true difference in means > 0.0'] + 
             ['t statistic, t distribution with %f degrees of freedom under the null hypothesis' % ttestresult[2]] + 
             [ttestresult[0]] + [ttestresult[1]] + [confi_level] + [mean1 - mean2 - margin] + [math.inf]]
-            
+
         if 'smaller' in alternatives:
             ttestresult = ttest_ind(table_first[response_col], table_second[response_col], 'smaller', usevar=equal_vari, value=hypo_diff)
             df = ttestresult[2]
-            if(equal_vari == 'pooled'):    
+            if equal_vari == 'pooled':    
                 std_number1number2 = sqrt(((number1 - 1) * (std1) ** 2 + (number2 - 1) * (std2) ** 2) / (number1 + number2 - 2))
                 margin = t.ppf((confi_level) , df) * std_number1number2 * sqrt(1 / number1 + 1 / number2)
-            if(equal_vari == 'unequal'):
+            if equal_vari == 'unequal':
                 margin = t.ppf((confi_level) , df) * sqrt(std1 ** 2 / (number1) + std2 ** 2 / (number2))
             tmp_model += [['true difference in means < 0.0'] + 
             [ttestresult[1]] + [(-math.inf, mean1 - mean2 + margin)]] 
@@ -218,14 +289,14 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
             ['true difference in means < 0.0'] + 
             ['t statistic, t distribution with %f degrees of freedom under the null hypothesis' % ttestresult[2]] + 
             [ttestresult[0]] + [ttestresult[1]] + [confi_level] + [-math.inf] + [mean1 - mean2 + margin]] 
-            
+
         if 'two-sided' in alternatives:
             ttestresult = ttest_ind(table_first[response_col], table_second[response_col], 'two-sided', usevar=equal_vari, value=hypo_diff)
             df = ttestresult[2]
-            if(equal_vari == 'pooled'):    
+            if equal_vari == 'pooled':    
                 std_number1number2 = sqrt(((number1 - 1) * (std1) ** 2 + (number2 - 1) * (std2) ** 2) / (number1 + number2 - 2))
                 margin = t.ppf((confi_level + 1) / 2 , df) * std_number1number2 * sqrt(1 / number1 + 1 / number2)
-            if(equal_vari == 'unequal'):
+            if equal_vari == 'unequal':
                 margin = t.ppf((confi_level + 1) / 2 , df) * sqrt(std1 ** 2 / (number1) + std2 ** 2 / (number2))
             tmp_model += [['true difference in means != 0.0'] + 
             [ttestresult[1]] + [(mean1 - mean2 - margin, mean1 - mean2 + margin)]]
@@ -233,7 +304,7 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
             ['true difference in means != 0.0'] + 
             ['t statistic, t distribution with %f degrees of freedom under the null hypothesis' % ttestresult[2]] + 
             [ttestresult[0]] + [ttestresult[1]] + [confi_level] + [mean1 - mean2 - margin] + [mean1 - mean2 + margin]]
-            
+
         result_model = pd.DataFrame.from_records(tmp_model)
         result_model.columns = ['alternative hypothesis', 'p-value', '%g%% confidence interval' % (confi_level * 100)]
         rb.addMD(strip_margin("""
@@ -245,7 +316,7 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
         | {result_model}
         |
         """.format(ttestresult2=ttestresult[2], response_col=response_col, factor_col=factor_col, first=first, second=second, ttestresult0=ttestresult[0], result_model=pandasDF2MD(result_model))))
-        if(start_auto == 1):
+        if start_auto == 1:
             equal_vari = 'auto'
     result = pd.DataFrame.from_records(tmp_table)
     result.columns = ['data', 'alternative_hypothesis', 'statistics', 'estimates', 'p_value', 'confidence_level', 'lower_confidence_interval', 'upper_confidence_interval']
@@ -263,7 +334,7 @@ def paired_ttest(table, group_by=None, **params):
         return _paired_ttest(table, **params)
 
 
-def _paired_ttest(table, first_column, second_column, alternative = ['greater', 'less', 'twosided'], hypothesized_difference=0, confidence_level=0.95):
+def _paired_ttest(table, first_column, second_column, alternative, hypothesized_difference=0, confidence_level=0.95):
 
     df = len(table) - 1    
     first_col = table[first_column]
@@ -294,24 +365,31 @@ def _paired_ttest(table, first_column, second_column, alternative = ['greater', 
         other_term = std_dev * stats.t.isf((1 - confidence_level) / 2, df) / np.sqrt(df)
         confidence_interval.append((diff_mean - other_term, diff_mean + other_term))
     
-    result.append(['alternative hypothesis',alternative_hypothesis])
-    result.append(['t-value',t_value])
-    result.append(['p-value',p_value])
+    result.append(['alternative hypothesis', alternative_hypothesis])
+    result.append(['p-value', p_value])
     result.append(['%g%% confidence Interval' % (confidence_level * 100), confidence_interval])
     result_table = pd.DataFrame.from_items(result)
 
-    rb = ReportBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     |## Paired T Test Result
     |##### df : {deg_f}
     |##### Mean of differences : {dm}
     |##### Standard deviation : {sd}
+    |##### t-value : {tv}
+    |
+    |#### Summary
     |
     |{result_table}
     |
-    """.format(deg_f=df, dm=diff_mean, sd=std_dev, result_table=pandasDF2MD(result_table))))
+    """.format(deg_f=df, dm=diff_mean, sd=std_dev, tv=t_value, result_table=pandasDF2MD(result_table))))
 
     model = dict()
     model['_repr_brtc_'] = rb.get()
+    model['degree_of_freedom'] = df
+    model['mean_of_differences'] = diff_mean
+    model['standard_deviation'] = std_dev
+    model['t_value'] = t_value    
+    model['summary'] = result_table
 
     return{'model':model}

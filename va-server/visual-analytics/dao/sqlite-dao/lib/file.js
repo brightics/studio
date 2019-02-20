@@ -3,6 +3,8 @@ const getQuery = require('./query-utils').getQuery;
 const DDL_CHECK_TABLE_DEFAULT = common.DDL_CHECK_TABLE;
 var query = common.query;
 var conf = require('../../../va-conf');
+var transformModel = require('../../../lib/transform-model');
+var hash = require('object-hash');
 
 /**
  * 모델 버젼 관리 추가로 인해 from_version 추가
@@ -43,6 +45,12 @@ const FILE_SELECT_BY_PROJECT_DEFAULT = 'SELECT * FROM brtc_file WHERE project_id
 const FILE_SELECT_BY_ID_DEFAULT = 'SELECT * FROM brtc_file WHERE id=$1 AND project_id=$2';
 const FILE_SELECT_BY_FILE_DEFAULT = 'SELECT * FROM brtc_file WHERE project_id = (SELECT project_id FROM brtc_file WHERE id=$1 )';
 
+const FILE_SELECT_FOR_UPDATE = `
+    SELECT * FROM brtc_file
+    WHERE id=$1 AND project_id=$2 AND (event_key=$3 OR event_key IS NULL)
+`;
+
+
 const FILE_CREATE_DEFAULT = `
     INSERT INTO brtc_file
     (id, project_id, label, contents, description, creator, create_time, updater, update_time, event_key, type, tag)
@@ -82,6 +90,16 @@ const FILE_UPDATE_SQLITE = `
 const FILE_DELETE_DEFAULT = 'DELETE FROM brtc_file WHERE id=$1 AND project_id=$2';
 const FILE_DELETE_BY_PROJECTID_DEFAULT = 'DELETE FROM brtc_file WHERE project_id=$1';
 
+const FILE_SELECT_FOR_SAVE_DEFAUT = `
+    SELECT * FROM brtc_file
+    WHERE id=$1 AND project_id=$2 AND (event_key=$3 OR event_key IS NULL)
+`;
+
+const FILE_SELECT_FOR_SAVE_SQLITE = `
+    SELECT * FROM brtc_file
+    WHERE id=$1 AND project_id=$2 AND (event_key=$3 OR event_key IS NULL)
+`;
+
 const stmt ={
     DDL_CHECK_TABLE: {
         default: DDL_CHECK_TABLE_DEFAULT
@@ -112,6 +130,10 @@ const stmt ={
     },
     FILE_DELETE_BY_PROJECTID: {
         default: FILE_DELETE_BY_PROJECTID_DEFAULT
+    },
+    FILE_SAVE: {
+        default: FILE_SELECT_FOR_SAVE_DEFAUT,
+        sqlite: FILE_SELECT_FOR_SAVE_SQLITE
     }
 };
 
@@ -124,6 +146,41 @@ const FILE_CREATE = getQuery(stmt, 'FILE_CREATE');
 const FILE_UPDATE = getQuery(stmt, 'FILE_UPDATE');
 const FILE_DELETE = getQuery(stmt, 'FILE_DELETE');
 const FILE_DELETE_BY_PROJECTID = getQuery(stmt, 'FILE_DELETE_BY_PROJECTID');
+
+const FILE_SELECT_FOR_SAVE = getQuery(stmt, 'FILE_SAVE');
+
+
+const saveFileByCommand = function (opt, errCallback, doneCallback) {
+    query(FILE_SELECT_FOR_SAVE, [opt.id, opt.project_id, opt.event_key], errCallback,
+        function (result) {
+            if (result.length > 0) {
+                try {
+                    result[0].contents =
+                        transformModel(JSON.parse(result[0].contents), opt.modelDiff);
+                    if (hash(result[0].contents, {
+                        respectFunctionProperties: false,
+                        respectFunctionNames: false,
+                        respectType: false
+                    }) !== opt.hash) {
+                        return errCallback('differentHash');
+                    }
+                } catch (e) {
+                    return errCallback('differentHash');
+                }
+
+
+                if (conf['meta-db'].type === 'sqlite') {
+                    query(FILE_UPDATE, [opt.label, result[0].contents,
+                        opt.description, opt.updater, opt.type, opt.tag, opt.id,
+                        opt.project_id, opt.event_key], errCallback, () => doneCallback(1));
+                } else {
+                    query(FILE_UPDATE, [opt.label, result[0].contents,
+                        opt.description, opt.updater, opt.type, opt.tag, opt.id,
+                        opt.project_id, opt.event_key], errCallback, doneCallback);
+                }
+            }
+        });
+};
 
 module.exports = {
     file: {
@@ -173,6 +230,9 @@ module.exports = {
         },
         deleteByProjectID: function (opt, errCallback, doneCallback) {
             query(FILE_DELETE_BY_PROJECTID, [opt.project_id], errCallback, doneCallback);
+        },
+        save: function (opt, errCallback, doneCallback) {
+            saveFileByCommand(opt, errCallback, doneCallback);
         }
     }
 };

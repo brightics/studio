@@ -1,11 +1,13 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
-from brightics.common.repr import BrtcReprBuilder
 from scipy import stats
-import numpy as np
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
-from brightics.function.validation import validate, greater_than, greater_than_or_equal_to
+import pandas as pd
+from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD, \
+    pandasDF2MD
+from brightics.common.validation import validate, greater_than, \
+    greater_than_or_equal_to
 
 
 def correlation(table, group_by=None, **params):
@@ -26,8 +28,7 @@ def _correlation(table, vars, method='pearson', height=2.5, corr_prec=2):
     s_default = plt.rcParams['lines.markersize'] ** 2.
     scatter_kws = {"s": s_default * height / 6.4}
     
-    corr_arr = np.ones((size, size))  # TODO variable name dict
-    p_arr = np.zeros((size, size))
+    result_arr = []
     
     for i in range(size): 
         for j in range(i):
@@ -35,23 +36,19 @@ def _correlation(table, vars, method='pearson', height=2.5, corr_prec=2):
                 r, p = stats.pearsonr(table[vars[i]], table[vars[j]])
             elif method == 'spearman':
                 r, p = stats.spearmanr(table[vars[i]], table[vars[j]])
-            elif method == 'kendal':
+            elif method == 'kendall':
                 r, p = stats.kendalltau(table[vars[i]], table[vars[j]])
-                
-            corr_arr[i][j] = r
-            p_arr[i][j] = p
+            
+            result_arr.append([vars[i], vars[j], r, p])    
+            
+    df_result = pd.DataFrame(result_arr, columns=['x', 'y', 'corr', 'p_value'])
     
-    for i in range(size):
-        for j in range(i, size):
-            corr_arr[i][j] = corr_arr[j][i]
-            p_arr[i][j] = p_arr[j][i]
-        
     def corr(x, y, **kwargs):
         if kwargs['method'] == 'pearson':
             r, p = stats.pearsonr(x, y)
         elif kwargs['method'] == 'spearman':
             r, p = stats.spearmanr(x, y)
-        elif kwargs['method'] == 'kendal':
+        elif kwargs['method'] == 'kendall':
             r, p = stats.kendalltau(x, y)
         
         p_stars = ''
@@ -63,7 +60,6 @@ def _correlation(table, vars, method='pearson', height=2.5, corr_prec=2):
             p_stars = '***'
             
         corr_text = '{:.{prec}f}'.format(r, prec=corr_prec)
-        print(type(corr_prec))
         font_size = abs(r) * 15 * 2 / corr_prec + 5
         ax = plt.gca()
         ax.annotate(corr_text, [.5, .5, ], xycoords="axes fraction",
@@ -78,16 +74,24 @@ def _correlation(table, vars, method='pearson', height=2.5, corr_prec=2):
         g.map_lower(sns.regplot, lowess=True, scatter_kws=scatter_kws) 
     g.map_upper(corr, method=method)
     
-    rb = BrtcReprBuilder()
-    rb.addPlt(plt)
+    fig_corr = plt2MD(plt)
     plt.clf()
+    
+    rb = BrtcReprBuilder()
+    rb.addMD(strip_margin(
+        """ ## Correlation Results
+        | ### Correlation Matrix
+        | {fig_corr}
+        |
+        | ### Correlation Table
+        | {table}
+        """.format(fig_corr=fig_corr, table=pandasDF2MD(df_result))))
     
     params = {'vars':vars, 'method':method, 'height':height}
     
     res = dict()
     res['params'] = params
-    res['corr'] = corr_arr
-    res['pvalue'] = p_arr
+    res['corr_table'] = df_result
     res['_repr_brtc_'] = rb.get()
     
     return {'result': res}

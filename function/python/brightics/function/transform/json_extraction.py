@@ -4,7 +4,7 @@ from brightics.common.utils import check_required_parameters
 
 import json
 import pandas as pd
-
+import numpy
 
 def _key(prev_key, sep, new_key):
     if prev_key is None:
@@ -25,15 +25,14 @@ def _flattenable(obj):
 def _flatten(obj, key=None, flattened_dict=None, sep='__'):
     if flattened_dict is None:
         flattened_dict = dict()
-    
     if isinstance(obj, dict):
         for obj_key in obj:
             if not obj_key.startswith('_'):
-                _flatten(obj[obj_key], _key(key, sep, obj_key), flattened_dict)    
-    
+                _flatten(obj[obj_key], _key(key, sep, obj_key), flattened_dict)
+    elif isinstance(obj, set) or isinstance(obj, numpy.ndarray) or isinstance(obj, tuple):
+        flattened_dict[key] = list(obj)
     elif _flattenable(obj):
         flattened_dict[key] = obj
-    
     return flattened_dict
 
 
@@ -46,8 +45,10 @@ def flatten_json(model, **params):
     
     
 def _flatten_json(model, sep='__'):
-    return {'table': pd.DataFrame.from_dict([_flatten(model, sep=sep)])}
-
+    result = pd.DataFrame.from_dict([_flatten(model, sep=sep)])
+    if result.empty:
+        raise Exception('There is nothing to flatten.')
+    return {'table': result}
 
 def get_element_from_dict(d, key_list):
     if not isinstance(d, dict):
@@ -70,10 +71,11 @@ def get_table(model, **params):
         return _get_table(model=model, **params)    
 
 
-def _get_table(model, key_list):
+def _get_table(model, key_list, index_column=False, index_column_name='index'):
     table = get_element_from_dict(model, key_list)
     if not isinstance(table, pd.DataFrame):
         raise Exception('item is not a DataFrame.')
-    
+    if index_column:
+        table.insert(0, index_column_name, table.index)
     return {'table': table}
 

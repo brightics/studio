@@ -1,8 +1,12 @@
-from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD, dict2MD, \
-    pandasDF2MD, keyValues2MD
+from brightics.common.repr import BrtcReprBuilder
+from brightics.common.repr import strip_margin
+from brightics.common.repr import dict2MD
+from brightics.common.repr import pandasDF2MD
+from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 
+from collections import Counter
 import pandas as pd
 import numpy as np
 
@@ -16,14 +20,11 @@ def add_row_number(table, group_by=None, **params):
 
         
 def _add_row_number(table, new_col='add_row_number'):
-
-    df = pd.DataFrame()
     n = len(table)
-
-    for i in range(1, n + 1):
-        df2 = pd.DataFrame([{new_col:i}])
-        df = df.append(df2, ignore_index=True)
-    out_table = pd.concat([df, table], axis=1)
+    out_table = table.copy()
+    out_table[new_col] = range(n)
+    columns = table.columns.insert(0, new_col)
+    out_table = out_table.reindex(columns=columns)
     return {'out_table': out_table}
 
 
@@ -38,75 +39,74 @@ def discretize_quantile(table, group_by=None, **params):
 def _discretize_quantile(table, input_col, num_of_buckets=2, out_col_name='bucket_number'):
     out_table = table.copy()
     out_table[out_col_name], buckets = pd.qcut(table[input_col], num_of_buckets, labels=False, retbins=True, precision=10, duplicates='drop')    
-            
-    # Build model
-    rb = BrtcReprBuilder()
-    rb.addMD(strip_margin("""
-    ## Quantile-based Discretization Result
-    """))
+                
+    params = { 
+        'input_col': input_col,
+        'num_of_buckets': num_of_buckets,
+        'out_col_name': out_col_name
+    }
+
+    cnt = Counter(out_table[out_col_name].values)
     
     # index_list, bucket_list
     index_list = []
-    bucket_list = []     
-    for i, bucket in enumerate(buckets):
-        if i == 1:
-            index_list.append(i - 1)
-            bucket_list.append("[{left}, {bucket}]".format(left=left, bucket=bucket))
-        elif i > 1:
-            index_list.append(i - 1)
-            bucket_list.append("({left}, {bucket}]".format(left=left, bucket=bucket))
-        left = bucket
-        
-    # cnt_array
-    cnt = np.zeros(len(index_list), int)
-    for i in range(len(table)):
-            cnt[out_table[out_col_name][i]] += 1
+    bucket_list = []
+    cnt_list = []     
+    for i in range(len(buckets) - 1):
+        left = '[' if i == 0 else '('
+        index_list.append(i)
+        cnt_list.append(cnt[i])
+        bucket_list.append("{left}{lower}, {upper}]".format(left=left, lower=buckets[i], upper=buckets[i + 1]))  # 'buckets' is tuple type data.  
    
     # Build model
-    result = dict()
-    result_table = pd.DataFrame.from_items([ 
+    result = pd.DataFrame.from_items([ 
         ['bucket number', index_list],
         ['buckets', bucket_list],
-        ['count', cnt]
+        ['count', cnt_list]
     ])
-    result['result_table'] = result_table
-    rb.addMD(strip_margin("""
-    ### Data = {input_col}
-    |
-    | {result_table}
-    """.format(input_col=input_col, n=num_of_buckets, result_table=pandasDF2MD(result_table))))
-    result['_repr_brtc_'] = rb.get()
     
-    return {'out_table': out_table, 'model': result}
+    # Build model
+    rb = BrtcReprBuilder()
+    rb.addMD(strip_margin("""
+    | ## Quantile-based Discretization Result
+    | ### Result
+    | {result}
+    |
+    | ### Parameters
+    | {params} 
+    """.format(result=pandasDF2MD(result), params=dict2MD(params))))
+    
+    model = _model_dict('discretize_quantile')
+    model['result'] = result
+    model['params'] = params
+    model['_repr_brtc_'] = rb.get()
+    
+    return {'out_table': out_table, 'model': model}
 
 
 def binarizer(table, column, threshold=0, threshold_type='greater', out_col_name=None):
+    out_table = table.copy()
     if out_col_name is None:
         out_col_name = 'binarized_' + str(column)
-    table[out_col_name] = 0
-    for t in range(0, len(table[column])):
-        if threshold_type == 'greater':
-            if table[column][t] > threshold:
-                table[out_col_name][t] = 1
-        else:
-            if table[column][t] >= threshold:
-                table[out_col_name][t] = 1
-    return{'table':table}
+    
+    if threshold_type == 'greater':
+        out_table[out_col_name] = np.where(table[column] > threshold, 1, 0)
+    else:
+        out_table[out_col_name] = np.where(table[column] >= threshold, 1, 0)
+    return{'out_table':out_table}
 
 
 def capitalize_variable(table, input_cols, replace, out_col_suffix=None):
     if out_col_suffix is None:
         out_col_suffix = '_' + replace
      
-    out_table = table
+    out_table = table.copy()
     for input_col in input_cols: 
         out_col_name = input_col + out_col_suffix
-        out_col = pd.DataFrame(columns=[out_col_name])
-    
+        
         if replace == 'upper':
-            out_col[out_col_name] = table[input_col].str.upper()
+            out_table[out_col_name] = table[input_col].str.upper() 
         else:
-            out_col[out_col_name] = table[input_col].str.lower()
+            out_table[out_col_name] = table[input_col].str.lower()
     
-        out_table = pd.concat([out_table, out_col], axis=1)
     return {'out_table': out_table}

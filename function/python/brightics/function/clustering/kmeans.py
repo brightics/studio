@@ -9,7 +9,7 @@ from sklearn.metrics.cluster.unsupervised import silhouette_score, \
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
-from brightics.function.validation import validate, greater_than_or_equal_to, \
+from brightics.common.validation import validate, greater_than_or_equal_to, \
     greater_than, all_elements_greater_than, raise_runtime_error
 
 
@@ -134,7 +134,7 @@ def _kmeans_train_predict(table, input_cols, n_clusters=3, prediction_col='predi
 
 def kmeans_predict(table, model, **params):
     check_required_parameters(_kmeans_predict, params, ['table', 'model'])
-    if '_group_by' in model:
+    if '_grouped_data' in model:
         return _function_by_group(_kmeans_predict, table, model, **params)
     else:
         return _kmeans_predict(table, model, **params)

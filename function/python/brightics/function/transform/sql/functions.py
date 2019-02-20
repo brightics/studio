@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import dateutil.parser
-import datetime
 import numpy as np
-import math
 from .serializer import _serialize
 from .serializer import _deserialize
 import re
@@ -23,12 +21,12 @@ def pi():
 """
 lambda functions
 """
-log = lambda _: np.math.log(_) if _ is not None else np.math.nan #?
+log = lambda _: np.math.log(_) if _ is not None else np.math.nan  # ?
 ln = lambda _: np.math.log(_)
 log10 = lambda _: np.math.log10(_)
 log2 = lambda _: np.math.log2(_)
 exp = lambda _: np.math.exp(_)
-exp2 = lambda _: np.math.pow(2,_)
+exp2 = lambda _: np.math.pow(2, _)
 sqrt = lambda _: np.math.sqrt(_)
 ceil = lambda _: np.math.ceil(_)
 floor = lambda _: np.math.floor(_)
@@ -36,11 +34,10 @@ sign = lambda _: int(np.sign(_))
     
 factorial = lambda _: np.math.factorial(_)
 
-pow = lambda a, b: np.math.pow(a,b)
+pow = lambda a, b: np.math.pow(a, b)
 
-ljust = lambda item, length, lpad_str: str(item).ljust(length, lpad_str) #?
-rjust = lambda item, length, rpad_str: str(item).rjust(length, rpad_str) #?
-
+ljust = lambda item, length, lpad_str: str(item).ljust(length, lpad_str)  # ?
+rjust = lambda item, length, rpad_str: str(item).rjust(length, rpad_str)  # ?
 
 is_null = lambda _: 1 if _ is None else 0
 
@@ -67,16 +64,22 @@ datetime related functions
 """
 # todo weekofmonth, datediff, timediff
 
+def datediff(end_isotime, start_isotime):
+    end_datetime = dateutil.parser.parse(end_isotime)
+    start_datetime = dateutil.parser.parse(start_isotime)
+    diff_datetime = end_datetime - start_datetime
+    return diff_datetime.days
 
-def strftime_a(isotime): #?
+
+def strftime_a(isotime):  # ?
     return dateutil.parser.parse(isotime).strftime('%a')
 
 
-def strftime_aa(isotime): #?
+def strftime_aa(isotime):  # ?
     return dateutil.parser.parse(isotime).strftime('%A')
 
 
-def strftime_aak(isotime): #?
+def strftime_aak(isotime):  # ?
     w_dict = {'Monday':'월요일',
               'Tuesday':'화요일',
               'Wednesday':'수요일',
@@ -88,7 +91,7 @@ def strftime_aak(isotime): #?
     return w_dict[dateutil.parser.parse(isotime).strftime('%A')]
 
 
-def strftime_ak(isotime): #?
+def strftime_ak(isotime):  # ?
     w_dict = {'Monday':'월',
               'Tuesday':'화',
               'Wednesday':'수',
@@ -117,10 +120,14 @@ def concat_ws(sep, serialized_list):
     return sep.join([str(item) for item in arr])
 
 
-def split(str, *sep):
+def split(str_, *sep):
     nargs = len(sep)
     if nargs == 0:
-        return _serialize(str.split())
+        return _serialize(str_.split())
     else:  # todo elif nargs == 1:
-        return _serialize(str.split(sep[0]))
+        return _serialize(str_.split(sep[0]))
+
     
+def size(serialized_list):
+    arr = _deserialize(serialized_list)
+    return len(arr)

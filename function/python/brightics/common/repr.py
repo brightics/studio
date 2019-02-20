@@ -1,6 +1,7 @@
 from brightics.brightics_data_api import _generate_matplotlib_data, _png2uri
 import re
-import pandas as pd
+import numpy as np
+from brightics.common.datasets import load_iris
 
 
 class BrtcReprBuilder:
@@ -45,15 +46,45 @@ def png2MD(png):
             
 def strip_margin(text):
     return re.sub('\n[ \t]*\|', '\n', text)
+
+
+def pandasDF2MD(table, num_rows=20, precision=None, col_max_width=None):
     
-
-def pandasDF2MD(df, num_rows=20):
-    # # pandas df
-    fmt = ['---' for _ in range(len(df.columns))]
-    df_fmt = pd.DataFrame([fmt], columns=df.columns)
-    df_formatted = pd.concat([df_fmt, df[0:num_rows]])
-
-    return df_formatted.to_csv(sep="|", index=False)
+    if precision is None:
+        _table = table[:num_rows].copy()
+    else:
+        _table = table[:num_rows].copy().round(precision)
+    
+    COL_DIVIDER = '|'
+    md_line = []
+    
+    cols = list(_table.columns)
+    types = _table.dtypes.values
+    
+    def get_align(dtype): 
+        return '--:' if np.issubdtype(dtype, np.number) else ':--' 
+    
+    def to_string(v, col_max_width=None):
+        if not isinstance(v, str):
+            return str(v)
+        else:
+            s = str(v)
+            l = len(s)
+            if col_max_width is None or col_max_width < 10 or l < col_max_width:
+                return str(v)
+            else:
+                return s[0:col_max_width - 3] + '...'
+    
+    data = _table.values
+    
+    md_line.append(COL_DIVIDER + COL_DIVIDER.join([str(c) for c in cols]) + COL_DIVIDER)
+    md_line.append(COL_DIVIDER + COL_DIVIDER.join([get_align(dt) for dt in types]) + COL_DIVIDER)
+    
+    for row in data:
+        md_line.append(COL_DIVIDER + COL_DIVIDER.join([to_string(c, col_max_width) for c in row]) + COL_DIVIDER)
+        # for c in row:
+            
+    return '\n'.join(md_line)
 
 
 def keyValues2MD(keys, values, precision=6):
@@ -69,4 +100,3 @@ def _display_value(value, precision=6):
         return '{:.{prec}f}'.format(value, prec=precision)
     else:
         return value
-            

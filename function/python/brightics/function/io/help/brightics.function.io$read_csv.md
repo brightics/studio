@@ -19,7 +19,6 @@ This function has no input data.
 #### Parameters
 1. **Path**<b style="color:red">*</b>: csv file path.
    - Value type : String
-   - Default : 
 
 #### Outputs
 1. **table**: table
@@ -31,7 +30,6 @@ This function has no input data.
 #### Parameters
 1. **path**<b style="color:red">*</b>: csv file path.
    - Value type : String
-   - Default : 
 
 #### Outputs
 1. **table**: table

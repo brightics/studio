@@ -31,6 +31,7 @@ Principal component analysis. Linear dimensionality reduction using Singular Val
    - Value type : Integer
 7. **New Column Name**: Name of new column(s)
    - Value type : String
+   - Default : projected_
 8. **Group By**: Columns to group by
 
 #### Outputs
@@ -55,6 +56,7 @@ Principal component analysis. Linear dimensionality reduction using Singular Val
    - Value type : Integer
 7. **new_column_name**: Name of new column(s)
    - Value type : String
+   - Default : projected_
 8. **group_by**: Columns to group by
 
 #### Outputs

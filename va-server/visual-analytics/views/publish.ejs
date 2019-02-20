@@ -70,7 +70,7 @@
     <script src="js/plugins/bcharts/bcharts-adonis-all.js"></script>
     <script src="js/plugins/bcharts/bcharts-module-all.js"></script>
 
-    <script src="js/va/brightics-va-publish.js"></script>
+    <script src="js/va/brightics-va-publish.min.js"></script>
 
     <!-- perfect-scrollbar JS -->
     <script src="js/plugins/perfect-scrollbar/perfect-scrollbar.js"></script>
@@ -476,17 +476,29 @@
             };
 
             ChartContentUnit.prototype.adjustArrange = function () {
-                if (this.options.options.style && this.options.options.style['z-index']) {
-                    this.setContentArrange(this.options.options.style['z-index'] || 1);
+                if (this.options.style && this.options.style['z-index']) {
+                    this.setContentArrange(this.options.style['z-index'] || 1);
                 }
             };
 
             ChartContentUnit.prototype.adjustBackground = function () {
-                if (this.options.options.style && this.options.options.style.background) {
-                    this.setContentBackground(this.options.options.style.background);
+                if (this.options.style && this.options.style.background) {
+                    this.setContentBackground(this.options.style.background);
                 }
             };
 
+            ChartContentUnit.prototype.setContentArrange = function (index) {
+                if (index) {
+                    this.$parent.css('z-index', index);
+                }
+            };
+
+            ChartContentUnit.prototype.setContentBackground = function (background) {
+                if (this.$unitControl && background) {
+                    this.$unitControl.find('.panel').css('background', background);
+                    this.$unitControl.find('.note-editable').css('background', background);
+                }
+            };
 
             return ChartContentUnit;
         }()) :
@@ -832,14 +844,27 @@
             };
 
             ChartContentUnit.prototype.adjustArrange = function () {
-                if (this.options.options.style && this.options.options.style['z-index']) {
-                    this.setContentArrange(this.options.options.style['z-index'] || 1);
+                if (this.options.style && this.options.style['z-index']) {
+                    this.setContentArrange(this.options.style['z-index'] || 1);
                 }
             };
 
             ChartContentUnit.prototype.adjustBackground = function () {
-                if (this.options.options.style && this.options.options.style.background) {
-                    this.setContentBackground(this.options.options.style.background);
+                if (this.options.style && this.options.style.background) {
+                    this.setContentBackground(this.options.style.background);
+                }
+            };
+
+            ChartContentUnit.prototype.setContentArrange = function (index) {
+                if (index) {
+                    this.$parent.css('z-index', index);
+                }
+            };
+
+            ChartContentUnit.prototype.setContentBackground = function (background) {
+                if (this.$unitControl && background) {
+                    this.$unitControl.find('.panel').css('background', background);
+                    this.$unitControl.find('.note-editable').css('background', background);
                 }
             };
 
@@ -856,6 +881,7 @@
         }
 
         html, body {
+            background-color: #e5e9ef;
             margin: 0;
             padding: 0;
             overflow: hidden;
@@ -870,7 +896,6 @@
 
         .brtc-va-main-publishreport {
             width: 100%;
-            background-color: #e5e9ef;
             display: inline-flex;
             justify-content: center;
             align-items: center;
@@ -1162,6 +1187,15 @@
                             var $text = $('<div class="brtc-va-main-publishreport-page-unit-text"></div>');
                             $innerContent.append($text);
                             $text.html(content.options.html);
+
+                            if (content.style && content.style['z-index']) {
+                                var zIndex = content.style['z-index'];
+                                $text.css('z-index', zIndex || 1);
+                            }
+
+                            if (content.style && content.style.background) {
+                                $text.css('background', content.style.background);
+                            }
                         }
 
                     }

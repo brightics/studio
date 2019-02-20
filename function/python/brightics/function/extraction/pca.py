@@ -9,7 +9,7 @@ import seaborn as sns
 import numpy as np
 import matplotlib.cm as cm
 from matplotlib.patches import Patch
-from brightics.function.validation import validate, greater_than_or_equal_to
+from brightics.common.validation import validate, greater_than_or_equal_to
 
 
 def pca(table, group_by=None, **params):
@@ -193,7 +193,7 @@ def _biplot(xidx, yidx, data, pc_columns, columns, singular_values, components,
 
 def pca_model(table, model, **params):
     check_required_parameters(_pca_model, params, ['table', 'model'])
-    if '_group_by' in model:
+    if '_grouped_data' in model:
         return _function_by_group(_pca_model, table, model, **params)
     else:
         return _pca_model(table, model, **params)

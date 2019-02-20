@@ -3,7 +3,7 @@ from brightics.common.repr import BrtcReprBuilder, strip_margin
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
-from brightics.function.validation import raise_runtime_error
+from brightics.common.validation import raise_runtime_error
 
 
 def glm_train(table, group_by=None, **params):
@@ -85,7 +85,7 @@ def _glm_train(table, feature_cols, label_col, family="Gaussian", link="ident", 
 
 def glm_predict(table, model, **params):
     check_required_parameters(_glm_predict, params, ['table', 'model'])
-    if '_group_by' in model:
+    if '_grouped_data' in model:
         return _function_by_group(_glm_predict, table, model, **params)
     else:
         return _glm_predict(table, model, **params)       

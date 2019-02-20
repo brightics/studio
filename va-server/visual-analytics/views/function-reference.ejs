@@ -82,6 +82,10 @@
                         <li>When you use train and predict functions, the order and the number of columns should be the same for both functions.</li>
                         <% } %>
                         <li>We recommend you to preprocess abnormal values such as NaN or null beforehand. You can use Brightics preprocessing functions before analyzing data.</li>
+                        <li>The result of the function may vary depending on the system even if the same seed is used.</li>
+                        <% if ( version ) { %>
+                        <li>The results of Spark and Python functions may differ even if you use the same function because of the internal algorithms are different.</li>
+                        <% } %>
                     </ul>
                 </div>
             </div>
@@ -116,7 +120,7 @@
 <script src="/js/plugins/handsontable/handsontable.full.min.js"></script>
 
 <!-- Brightics Core -->
-<script src="js/va/brightics-va-core.js"></script>
+<script src="js/va/brightics-va-core.min.js"></script>
 
 <!-- Bcharts -->
 <script src="js/plugins/bcharts/bcharts-all.js"></script>
@@ -124,14 +128,14 @@
 <script src="js/plugins/bcharts/bcharts-module-all.js"></script>
 
 <!-- Brightics Modules -->
-<script src="js/va/brightics-va-functions.js"></script>
-<script src="js/va/brightics-va-dataflow.js"></script>
-<!-- <script src="js/va/brightics-va-controlflow.js"></script> -->
-<!--<script src="js/va/brightics-va-realtime.min.js"></script>-->
-<!--<script src="js/va/brightics-va-etlflow.min.js"></script>-->
-<script src="js/va/brightics-va-visual.js"></script>
-<script src="js/va/brightics-va-script.js"></script>
-<script src="js/va/brightics-va-deeplearning.js"></script>
+<script src="js/va/brightics-va-functions.min.js"></script>
+<script src="js/va/brightics-va-dataflow.min.js"></script>
+<!-- <script src="js/va/brightics-va-controlflow.min.js"></script> -->
+<!-- <script src="js/va/brightics-va-realtime.min.js"></script> -->
+<!-- <script src="js/va/brightics-va-etlflow.min.js"></script> -->
+<script src="js/va/brightics-va-visual.min.js"></script>
+<script src="js/va/brightics-va-script.min.js"></script>
+<script src="js/va/brightics-va-deeplearning.min.js"></script>
 
 <script>
 
@@ -432,6 +436,9 @@
                             var funcSpec = Brightics.VA.Implementation[modelType].Functions[func];
                             if (funcSpec) {
                                 context = funcSpec.context || funcSpec.defaultFnUnit.context || context;
+                                if (funcSpec.category === 'control' || funcSpec.category === 'process') {
+                                    context = 'common';
+                                }
                                 try {
                                     operator = funcSpec.propertiesPanel.prototype.getPrimaryOperation();
                                 } catch (err) {
@@ -459,7 +466,7 @@
 
                         $(element).attr('id', operator);
                         $(element).addClass(context);
-                        $(element).append('<a func-anchor="true" href="api/va/v2/help/function/' + operator + '?' + qs + '">' + label + '</a>');
+                        $(element).append('<a func-anchor="true" href="/api/va/v2/help/function/' + operator + '?' + qs + '">' + label + '</a>');
 
                         var helperNm = $(element).attr('helper');
                         if (helperNm) {
@@ -474,7 +481,7 @@
                             var helperOperator = helperSpec.operation || helperNm;
                             var helperContext = helperSpec.context || 'scala';
                             $helperPage.find('li').attr('id', helperOperator);
-                            $helperPage.find('li').append('<a func-anchor="true" href="api/va/v2/help/function/' +
+                            $helperPage.find('li').append('<a func-anchor="true" href="/api/va/v2/help/function/' +
                                 helperOperator + '?type=' + type + '&context=' + helperContext + '">' + helperLabel + '</a>');
                         }
                     });
@@ -518,7 +525,7 @@
 
                             $(element).attr('id', 'udf_'+operator);
                             $(element).addClass(context);
-                            $(element).append('<div class="docs-icon"></div><a func-anchor="true" href="api/va/v2/help/function/udf_' + operator + '?' + qs + '">' + label + '</a>');
+                            $(element).append('<div class="docs-icon"></div><a func-anchor="true" href="/api/va/v2/help/function/udf_' + operator + '?' + qs + '">' + label + '</a>');
 
                             var helperNm = $(element).attr('helper');
                             if (helperNm) {
@@ -533,7 +540,7 @@
                                 var helperOperator = helperSpec.operation || helperNm;
                                 var helperContext = helperSpec.context || 'scala';
                                 $helperPage.find('li').attr('id', helperOperator);
-                                $helperPage.find('li').append('<a func-anchor="true" href="api/va/v2/help/function/' +
+                                $helperPage.find('li').append('<a func-anchor="true" href="/api/va/v2/help/function/' +
                                     helperOperator + '?type=' + type + '&context=' + helperContext + '">' + helperLabel + '</a>');
                             }
                         });

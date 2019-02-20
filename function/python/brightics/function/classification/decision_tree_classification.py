@@ -1,13 +1,15 @@
-import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.tree import DecisionTreeClassifier
-from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, plt2MD, dict2MD
+from brightics.common.repr import BrtcReprBuilder
+from brightics.common.repr import strip_margin
+from brightics.common.repr import plt2MD
+from brightics.common.repr import dict2MD
 from brightics.function.utils import _model_dict
-from sklearn.tree.export import export_graphviz
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
-from brightics.function.validation import validate, greater_than_or_equal_to
+from brightics.common.validation import validate
+from brightics.common.validation import greater_than_or_equal_to
 
 
 def decision_tree_classification_train(table, group_by=None, **params):
@@ -70,8 +72,7 @@ def _decision_tree_classification_train(table, feature_cols, label_col,  # fig_s
     model['parameters'] = get_param
     model['classifier'] = classifier
     
-    # report    
-    
+    # report        
     indices = np.argsort(feature_importance)
     sorted_feature_cols = np.array(feature_cols)[indices]
     
@@ -87,10 +88,8 @@ def _decision_tree_classification_train(table, feature_cols, label_col,  # fig_s
     plt.clf()
     
     params = dict2MD(get_param)
-    feature_importance_df = pd.DataFrame(data=feature_importance, index=feature_cols).T
     
-    # Add tree plot
-        
+    # Add tree plot        
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## Decision Tree Classification Train Result
@@ -114,7 +113,7 @@ def _decision_tree_classification_train(table, feature_cols, label_col,  # fig_s
 
 def decision_tree_classification_predict(table, model, **params):
     check_required_parameters(_decision_tree_classification_predict, params, ['table', 'model'])
-    if '_group_by' in model:
+    if '_grouped_data' in model:
         return _function_by_group(_decision_tree_classification_predict, table, model, **params)
     else:
         return _decision_tree_classification_predict(table, model, **params)
@@ -122,9 +121,5 @@ def decision_tree_classification_predict(table, model, **params):
 
 def _decision_tree_classification_predict(table, model, prediction_col='prediction', check_input=True):
     out_table = table.copy()
-    feature_cols = model['feature_cols']
-    classifier = model['classifier']
-    prediction = classifier.predict(table[feature_cols], check_input)
-    out_table[prediction_col] = prediction
-    
+    out_table[prediction_col] = model['classifier'].predict(table[model['feature_cols']], check_input)    
     return {'out_table': out_table}

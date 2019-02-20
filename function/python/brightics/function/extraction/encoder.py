@@ -5,7 +5,7 @@ import pandas as pd
 from brightics.common.groupby import _function_by_group
 from brightics.function.utils import _model_dict
 from brightics.common.utils import check_required_parameters
-from brightics.function.validation import raise_runtime_error
+from brightics.common.validation import raise_runtime_error
 
 
 def label_encoder(table, group_by=None, **params):
@@ -31,7 +31,7 @@ def _label_encoder(table, input_col, new_column_name='encoded_column'):
 
 def label_encoder_model(table, model, **params):
     check_required_parameters(_label_encoder_model, params, ['table', 'model'])
-    if '_group_by' in model:
+    if '_grouped_data' in model:
         return _function_by_group(_label_encoder_model, table, model, **params)
     else:
         return _label_encoder_model(table, model, **params)
@@ -58,6 +58,9 @@ def _one_hot_encoder(table, input_cols, prefix='list', prefix_list=None, suffix=
     sparse = False
     enc_list = []
     le_list = []
+    if drop_last:
+        new_col_names_list_with_true_drop_last = []
+    new_col_names_list = []
     prefix_list_index = 0
     if prefix == 'list':
         len_prefix_list = 0 if prefix_list is None else len(prefix_list)
@@ -77,15 +80,17 @@ def _one_hot_encoder(table, input_cols, prefix='list', prefix_list=None, suffix=
                     new_col_names.append(col_name + '_' + str(i))
         else:
             if prefix == 'list':  
-                for stri in np.unique(out_table[col_name].values):
-                    new_col_names.append(prefix_list[prefix_list_index] + '_' + stri)
+                for i in np.unique(out_table[col_name].values):
+                    new_col_names.append(prefix_list[prefix_list_index] + '_' + str(i))
             else:  
-                for stri in np.unique(out_table[col_name].values):
-                    new_col_names.append(col_name + '_' + stri)
+                for i in np.unique(out_table[col_name].values):
+                    new_col_names.append(col_name + '_' + str(i))
          
         transformed_table = pd.DataFrame(enc.fit_transform(le.fit_transform(out_table[col_name]).reshape(-1, 1)), columns=new_col_names)
+        new_col_names_list.append(new_col_names)
         if drop_last:
-            del new_col_names[-1]
+            new_col_names = new_col_names[:-1]
+            new_col_names_list_with_true_drop_last.append(new_col_names)
         for new_col_name in new_col_names:
             out_table[new_col_name] = transformed_table[new_col_name]
             
@@ -105,13 +110,16 @@ def _one_hot_encoder(table, input_cols, prefix='list', prefix_list=None, suffix=
     out_model['prefix_list'] = prefix_list
     out_model['suffix'] = suffix
     out_model['drop_last'] = drop_last
+    if drop_last:
+        out_model['new_col_names_list_with_true_drop_last'] = new_col_names_list_with_true_drop_last
+    out_model['new_col_names_list'] = new_col_names_list
     
     return {'out_table' : out_table, 'model' : out_model}
 
 
 def one_hot_encoder_model(table, model, **params):
     check_required_parameters(_one_hot_encoder_model, params, ['table', 'model'])
-    if '_group_by' in model:
+    if '_grouped_data' in model:
         return _function_by_group(_one_hot_encoder_model, table, model, **params)
     else:
         return _one_hot_encoder_model(table, model, **params)
@@ -120,26 +128,13 @@ def one_hot_encoder_model(table, model, **params):
 def _one_hot_encoder_model(table, model):
     out_table = table.copy()
     for i in range(0, len(model['input_cols'])):
-        new_col_names = []
         col_name = model['input_cols'][i]
-        if model['suffix'] == 'index':
-            if model['prefix'] == 'list':                
-                for j in range(0, len(np.unique(out_table[col_name].values))):
-                    new_col_names.append(model['prefix_list'][i] + '_' + str(j))
-            else:               
-                for j in range(0, len(np.unique(out_table[col_name].values))):
-                    new_col_names.append(col_name + '_' + str(j))
-        else:
-            if model['prefix'] == 'list':  
-                for stri in np.unique(out_table[col_name].values):
-                    new_col_names.append(model['prefix_list'][i] + '_' + stri)
-            else:  
-                for stri in np.unique(out_table[col_name].values):
-                    new_col_names.append(col_name + '_' + stri)
-        transformed_table = pd.DataFrame(model['one_hot_encoder_list'][i].transform(model['label_encoder_list'][i].transform(out_table[col_name]).reshape(-1, 1)), columns=new_col_names)
+        transformed_table = pd.DataFrame(model['one_hot_encoder_list'][i].transform(model['label_encoder_list'][i].transform(out_table[col_name]).reshape(-1, 1)), columns=model['new_col_names_list'][i])
         if model['drop_last']:
-            del new_col_names[-1]
-        for new_col_name in new_col_names:
-            out_table[new_col_name] = transformed_table[new_col_name]
+            for new_col_name in model['new_col_names_list_with_true_drop_last'][i]:
+                out_table[new_col_name] = transformed_table[new_col_name]
+        else:
+            for new_col_name in model['new_col_names_list'][i]:
+                out_table[new_col_name] = transformed_table[new_col_name]
             
     return {'out_table' : out_table}

@@ -1,13 +1,18 @@
 import numpy as np
 import seaborn as sns
-import statsmodels.api as sm
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LinearRegression
-from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD
-from brightics.function.utils import _model_dict
+
+import statsmodels.api as sm
+from statsmodels.iolib.summary2 import _df_to_simpletable
+from statsmodels.stats.outliers_influence import variance_inflation_factor
+
+from brightics.common.repr import BrtcReprBuilder 
+from brightics.common.repr import strip_margin
+from brightics.common.repr import plt2MD
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils.table_converters import simple_tables2df_list
+from brightics.function.utils import _model_dict
 
 
 def linear_regression_train(table, group_by=None, **params):
@@ -19,26 +24,29 @@ def linear_regression_train(table, group_by=None, **params):
         return _linear_regression_train(table, **params)
 
     
-def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True):
+def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True, is_vif=True, vif_threshold=10):
     features = table[feature_cols]
     label = table[label_col]
-    lr_model = LinearRegression(fit_intercept)
-    lr_model.fit(features, label)
-
-    predict = lr_model.predict(features)
-    residual = label - predict
 
     if fit_intercept == True:
-        lr_model_fit = sm.OLS(label, sm.add_constant(features)).fit()
+        features = sm.add_constant(features)
+        lr_model_fit = sm.OLS(label, features).fit()
     else:
         lr_model_fit = sm.OLS(label, features).fit()
     
+    predict = lr_model_fit.predict(features)
+    residual = label - predict
+
     summary = lr_model_fit.summary()
-    summary_tables = simple_tables2df_list(summary.tables)
+    summary_tables = simple_tables2df_list(summary.tables, drop_index=True)
     summary0 = summary_tables[0]
     summary1 = summary_tables[1]
+    if is_vif:
+        summary1['VIF'] = [variance_inflation_factor(features.values, i) for i in range(features.shape[1])]
+        summary1['VIF>{}'.format(vif_threshold)] = summary1['VIF'].apply(lambda _: 'true' if _ > vif_threshold else 'false')
+    summary.tables[1] = _df_to_simpletable(summary1)
     summary2 = summary_tables[2]
-    
+
     html_result = summary.as_html()
 
     plt.figure()
@@ -46,23 +54,9 @@ def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True)
     plt.xlabel('Predicted values for ' + label_col)
     plt.ylabel('Actual values for ' + label_col)
     x = predict
-    y = np.array(label)
-    a = x.size
-    b = np.sum(x)
-    c = b
-    d = 0
-    for i in x: d += +i * i
-    e = np.sum(y)
-    f = 0
-    for i in range(0, x.size - 1): f += x[i] * y[i]
-    det = a * d - b * c
-    aa = (d * e - b * f) / det
-    bb = (a * f - c * e) / det
     p1x = np.min(x)
-    p1y = aa + bb * p1x
     p2x = np.max(x)
-    p2y = aa + bb * p2x
-    plt.plot([p1x, p2x], [p1y, p2y], 'r--')
+    plt.plot([p1x, p2x], [p1x, p2x], 'r--')
     fig_actual_predict = plt2MD(plt)
 
     plt.figure()
@@ -108,6 +102,7 @@ def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True)
     model['features'] = feature_cols
     model['label'] = label_col
     model['coefficients'] = lr_model_fit.params
+    model['fit_intercept'] = fit_intercept
     model['r2'] = lr_model_fit.rsquared
     model['adjusted_r2'] = lr_model_fit.rsquared_adj
     model['aic'] = lr_model_fit.aic
@@ -115,19 +110,19 @@ def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True)
     model['f_static'] = lr_model_fit.fvalue
     model['tvalues'] = lr_model_fit.tvalues
     model['pvalues'] = lr_model_fit.pvalues
-    model['lr_model'] = lr_model
+    model['lr_model'] = lr_model_fit
     model['_repr_brtc_'] = rb.get()
-    
+
     model['summary0'] = summary0
     model['summary1'] = summary1
     model['summary2'] = summary2
-    
+
     return {'model' : model}
 
 
 def linear_regression_predict(table, model, **params):
     check_required_parameters(_linear_regression_predict, params, ['table', 'model'])
-    if '_group_by' in model:
+    if '_grouped_data' in model:
         return _function_by_group(_linear_regression_predict, table, model, **params)
     else:
         return _linear_regression_predict(table, model, **params)
@@ -137,10 +132,17 @@ def _linear_regression_predict(table, model, prediction_col='prediction'):
 
     feature_cols = model['features']
     features = table[feature_cols]
-    lr_model = model['lr_model']
-    prediction = lr_model.predict(features)
+    fit_intercept = model['fit_intercept']
+
+    lr_model_fit = model['lr_model']
+
+    if fit_intercept == True:
+        features = sm.add_constant(features)
+        prediction = lr_model_fit.predict(features)
+    else:
+        prediction = lr_model_fit.predict(features)
 
     result = table.copy()
     result[prediction_col] = prediction
-    
+
     return {'out_table' : result}

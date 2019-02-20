@@ -1,12 +1,11 @@
-from .outlier_detection import outlier_detection_lof, outlier_detection_tukey_carling
+from .outlier_detection import outlier_detection_lof, outlier_detection_tukey_carling, outlier_detection_tukey_carling_model, outlier_detection_lof_model
 
 import pandas as pd
 import numpy as np
 import math
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
-from brightics.function.validation import validate, greater_than_or_equal_to, \
-    raise_error, require_param
+from brightics.common.validation import validate, greater_than_or_equal_to, raise_error, require_param
 
 
 def filter(table, query):
@@ -25,9 +24,50 @@ def simple_filter(table, input_cols, operators, operands, main_operator='and'):
     if len(input_cols) == 0 or not (len(input_cols) == len(operators) == len(operands)):
         validate(require_param('input_cols'))
     
-    _main_operator = 'and' if main_operator == 'and' else 'or'
-    _query = _main_operator.join(['''({input_cols} {operators} {operands})'''.format(input_cols=c, operators=op, operands=od) for c, op, od in zip(_column, _operator, operands)])
-    _out_table = _table.query(_query, engine='python')
+    _query = ""
+    first_filter_list = []
+    second_filter_list = []
+    for c, op, od in zip(_column, _operator, operands):
+        if op in ['starts with', 'ends with', 'contain', 'not contain']:
+            second_filter_list.append([c, op, od])
+        else:
+            first_filter_list.append([c, op, od])
+    _query = main_operator.join(['''({input_cols} {operators} {operands})'''.format(input_cols=c, operators=op, operands=od) for c, op, od in first_filter_list])
+    
+    if len(_query) == 0:
+        _out_table = _table
+    else:
+        _out_table = _table.query(_query, engine='python')
+    first_filtered_set = set(_out_table.index)
+    
+    if len(second_filter_list) == 0:
+        _out_table = _out_table
+    else:
+        if main_operator == 'and':
+            cond = np.full(len(_table), True).tolist()
+            for _filter in second_filter_list:
+                if _filter[1] == 'starts with':
+                    cond = (cond) and (_table[_filter[0]].str.startswith(_filter[2]))
+                if _filter[1] == 'ends with':
+                    cond = (cond) and (_table[_filter[0]].str.endswith(_filter[2]))
+                if _filter[1] == 'contain':
+                    cond = (cond) and (_table[_filter[0]].str.contains(_filter[2]))
+                if _filter[1] == 'not contain':
+                    cond = (cond) and (~(_table[_filter[0]].str.contains(_filter[2])))
+            _out_table = _table.loc[list(first_filtered_set.intersection(set(_table[cond].index)))]
+        
+        elif main_operator == 'or':
+            cond = np.full(len(_table), False).tolist()
+            for _filter in second_filter_list:
+                if _filter[1] == 'starts with':
+                    cond = (cond)or(_table[_filter[0]].str.startswith(_filter[2]))
+                if _filter[1] == 'ends with':
+                    cond = (cond)or(_table[_filter[0]].str.endswith(_filter[2]))
+                if _filter[1] == 'contain':
+                    cond = (cond) or (_table[_filter[0]].str.contains(_filter[2]))
+                if _filter[1] == 'not contain':
+                    cond = (cond) or (~(_table[_filter[0]].str.contains(_filter[2])))
+            _out_table = _table.loc[list(first_filtered_set.union(set(_table[cond].index)))]
     return {'out_table':_out_table}
 
 
@@ -43,7 +83,7 @@ def _sort(table, input_cols, is_asc=None):
     if is_asc is None or is_asc == True:
         is_asc = [True for _ in input_cols]
     elif is_asc == False:
-        is_asc = [False for _ in input_cols]
+        is_asc = [False for _ in input_cols]    
         
     if len(input_cols) == 0:
         validate(require_param('input_cols'))
@@ -65,7 +105,7 @@ def _replace_missing_number(table, input_cols, fill_method=None, fill_value='val
     # Validation : limit >= 1
     if limit is not None:
         validate(greater_than_or_equal_to(limit, 1, 'limit'))
-    
+
     _table = table.copy()
     
     if input_cols is None or len(input_cols) == 0:
@@ -74,7 +114,8 @@ def _replace_missing_number(table, input_cols, fill_method=None, fill_value='val
         _raw_input_cols = input_cols
     
     if fill_method == 'ffill' or fill_method == 'bfill':
-        _out_table = _table.fillna(method=fill_method, limit=limit, downcast=downcast)
+        _out_table = _table
+        _out_table[input_cols] = _table[input_cols].fillna(method=fill_method, limit=limit, downcast=downcast)
     else:
         _input_cols = [x for x in _raw_input_cols if np.issubdtype(table[x].dtype, np.number)]
         if fill_value == 'mean':
@@ -95,7 +136,7 @@ def _replace_missing_number(table, input_cols, fill_method=None, fill_value='val
 def replace_missing_string(table, group_by=None, **params):
     check_required_parameters(_replace_missing_string, params, ['table'])
     if group_by is not None:
-        return _function_by_group(_replace_missing_number, table, group_by=group_by, **params)
+        return _function_by_group(_replace_missing_string, table, group_by=group_by, **params)
     else:
         return _replace_missing_string(table, **params)
 
@@ -104,7 +145,7 @@ def _replace_missing_string(table, input_cols, fill_method=None, fill_string='',
     # Validation : limit >= 1
     if limit is not None:
         validate(greater_than_or_equal_to(limit, 1, 'limit'))
-    
+
     _table = table.copy()
     
     if input_cols is None or len(input_cols) == 0:
@@ -113,7 +154,8 @@ def _replace_missing_string(table, input_cols, fill_method=None, fill_string='',
         _raw_input_cols = input_cols
     
     if fill_method == 'ffill' or fill_method == 'bfill':
-        _out_table = _table.fillna(method=fill_method, limit=limit, downcast=downcast)
+        _out_table = _table
+        _out_table[input_cols] = _table[input_cols].fillna(method=fill_method, limit=limit, downcast=downcast)
     else:
         _input_cols = [x for x in _raw_input_cols if table[x].dtype == object]
         _values = {x:fill_string for x in _input_cols}

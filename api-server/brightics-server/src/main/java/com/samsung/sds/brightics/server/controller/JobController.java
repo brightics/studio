@@ -61,4 +61,21 @@ public class JobController {
         @PathVariable String jobId) {
         return jobService.terminateJob(jobId);
     }
+
+    /**
+     * These two methods are temporarily called by VA for the compatibility with older versions.
+     *
+     * POST		/api/v2/convert/store    							: store spec Json convert
+     * POST		/api/v2/convert/execute  							: execute spec Json conve
+     */
+    @RequestMapping(value = "/convert/store", method = RequestMethod.POST)
+    public String storeJsonConvert(@RequestBody String body) {
+        return body;
+    }
+
+
+    @RequestMapping(value = "/convert/execute", method = RequestMethod.POST)
+    public String excuteJsonConvert(@RequestBody String body) {
+        return body;
+    }
 }

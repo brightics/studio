@@ -1,4 +1,4 @@
-from brightics.function.validation import validate, greater_than_or_equal_to
+from brightics.common.validation import validate, greater_than_or_equal_to
 
 
 def delete_missing_data(table, input_cols, how='any', thresh=None):

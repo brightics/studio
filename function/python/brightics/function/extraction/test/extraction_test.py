@@ -1,14 +1,11 @@
 import unittest
 import pandas as pd
 from brightics.function.extraction import add_expression_column, add_expression_column_if
-from sklearn import datasets
+from brightics.common.datasets import load_iris
 
 df_example1 = pd.DataFrame({'num1':[1, 2, 3, 4, 5],
                             'num2':[10, 20, 30, 40, 50],
                             'str1':['a', 'b', 'c', 'd', 'e']}) 
-
-datasets_iris = datasets.load_iris()
-df_iris = pd.read_csv('../../testdata/sample_iris.csv')
 
 
 class AddFunctionColumnTest(unittest.TestCase):
@@ -28,8 +25,8 @@ class AddFunctionColumnTest(unittest.TestCase):
         out = add_expression_column(self.example_df, ['str2', 'num3', 'str3', 'num4'],
                                     [''' str1 || '_a' ''',
                                      ''' case when num1 > 2 then 100 else 0 end''',
-                                     ''' cast(num1 as str)''',
-                                     ''' cast(str3 as float)'''], expr_type='sqlite')['out_table']
+                                     ''' cast(num1 as char)''',
+                                     ''' cast(num1 as float)'''], expr_type='sqlite')['out_table']
         print(out)
         print(out.dtypes)
     
@@ -53,7 +50,7 @@ class AddFunctionColumnIfTest(unittest.TestCase):
     
     def test2(self):
         # df = df_iris.copy().query(''' species != 'setosa' ''')
-        df = df_iris.copy()
+        df = load_iris()
         print(df)
         out = add_expression_column_if(df,
                                      'encoded_species',
@@ -64,7 +61,7 @@ class AddFunctionColumnIfTest(unittest.TestCase):
         
     def test3(self):
         # df = df_iris.copy().query(''' species != 'setosa' ''')
-        df = df_iris.copy()
+        df = load_iris()
         print(df)
         out = add_expression_column_if(df,
                                      'encoded_species',

@@ -33,6 +33,7 @@ This function changes the abnormal values(null, nan) in the value of given numer
       - Max
 4. **Fill Value To**: The value to be filled with.
    - Value type : Double
+   - Default : 0
 5. **Limit**: The limit number of filled value in each given columns.
    - Value type : Integer
 6. **Group By**: Columns to group by
@@ -61,6 +62,7 @@ This function changes the abnormal values(null, nan) in the value of given numer
       - max
 4. **fill_value_to**: The value to be filled with.
    - Value type : Double
+   - Default : 0
 5. **limit**: The limit number of filled value in each given columns.
    - Value type : Integer
 6. **group_by**: Columns to group by

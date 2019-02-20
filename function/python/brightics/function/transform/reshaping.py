@@ -1,33 +1,19 @@
 import pandas as pd
-import numpy as np
+
 from brightics.common.groupby import _function_by_group
-from brightics.function.validation import raise_runtime_error
+from brightics.common.validation import raise_runtime_error
 from brightics.common.utils import check_required_parameters
+import brightics.common.statistics as brtc_stat
 
 
-def unpivot(table, group_by=None, **params):
-    check_required_parameters(_unpivot, params, ['table'])
-    if group_by is not None:
-        return _function_by_group(_unpivot, table, group_by=group_by, **params)
-    else:
-        return _unpivot(table, **params)
-
-
-def _unpivot(table, value_vars, var_name=None, value_name='value', col_level=None):
-    id_vars = [column for column in table.columns if column not in value_vars]
+def unpivot(table, value_vars, var_name=None, value_name='value', col_level=None, id_vars=None):
+    #if delete this, it is not consistent with the previous version.
+    #id_vars = [column for column in table.columns if column not in value_vars] 
     out_table = pd.melt(table, id_vars=id_vars, value_vars=value_vars, var_name=var_name, value_name=value_name, col_level=col_level)
     return {'out_table': out_table}
 
 
-def pivot(table, group_by=None, **params):
-    check_required_parameters(_pivot, params, ['table'])
-    if group_by is not None:
-        return _function_by_group(_pivot, table, group_by=group_by, **params)
-    else:
-        return _pivot(table, **params)
-
-    
-def _pivot(table, values, aggfunc, index=None, columns=None):  # TODO
+def pivot(table, values, aggfunc, index=None, columns=None):  # TODO
 
     if index is None and columns is None:
         # TODO: assign an error code.
@@ -35,23 +21,23 @@ def _pivot(table, values, aggfunc, index=None, columns=None):  # TODO
 
     def count(x): return len(x)
 
-    def mean(x): return np.mean(x)
+    def _sum(x): return brtc_stat.sum(x)
 
-    def std(x): return np.std(x)
+    def mean(x): return brtc_stat.mean(x)
 
-    def var(x): return np.var(x)
+    def std(x): return brtc_stat.std(x)
 
-    def min(x): return np.min(x)
+    def var(x): return brtc_stat.var_samp(x)
 
-    def _25th(x): return np.percentile(x, 0.25)
+    def _max(x): return brtc_stat.max(x)
 
-    def median(x): return np.median(x)
+    def _min(x): return brtc_stat.min(x)
 
-    def _75th(x): return np.percentile(x, 0.75)
+    def _25th(x): return brtc_stat.percentile(x, 25)
 
-    def max(x): return np.max(x)
+    def median(x): return brtc_stat.median(x)
 
-    def sum(x): return np.sum(x)
+    def _75th(x): return brtc_stat.percentile(x, 75)
     
     def _mi2index(mi):
         return pd.Index([_replace_col(col) for col in mi.get_values()])
@@ -75,7 +61,7 @@ def _pivot(table, values, aggfunc, index=None, columns=None):  # TODO
         elif func_name == 'var':
             func_list.append(var)
         elif func_name == 'min':
-            func_list.append(min)
+            func_list.append(_min)
         elif func_name == '_25th':
             func_list.append(_25th)
         elif func_name == 'median':
@@ -83,9 +69,9 @@ def _pivot(table, values, aggfunc, index=None, columns=None):  # TODO
         elif func_name == '_75th':
             func_list.append(_75th)
         elif func_name == 'max':
-            func_list.append(max)
+            func_list.append(_max)
         elif func_name == 'sum':
-            func_list.append(sum) 
+            func_list.append(_sum) 
     
     pivoted = pd.pivot_table(table, values=values, index=index, columns=columns, aggfunc=func_list, fill_value=None, margins=False, margins_name='All')
     pivoted.columns = _mi2index(pivoted.columns)
@@ -101,25 +87,25 @@ def transpose(table, group_by=None, **params):
         return _transpose(table, **params)
 
 
-def _transpose(table, columns, label_col=None, label_col_name='label'):
+def _transpose(table, input_cols, label_col=None, label_col_name='label'):
 
     sort_table = pd.DataFrame()
     feature_col_name = []
     
-    for i in range(0, len(table.transpose())):
-        if table.columns[i] in columns:
+    for i in range(0, len(table.columns)):
+        if table.columns[i] in input_cols:
             sort_table[table.columns[i]] = table[table.columns[i]]
             feature_col_name.append(table.columns[i])
-
+    
     out_table = sort_table.transpose()
-
+    
     if label_col is None:
         for i in range(0, len(table)):
             out_table = out_table.rename(columns={len(table) - i - 1:'x' + str(len(table) - i)})
     else:
         for i in range(0, len(table)):
             out_table = out_table.rename(columns={i:str(table[label_col][i])})
-
+    
     out_table.insert(loc=0, column=label_col_name, value=feature_col_name)
 
     return{'out_table':out_table}

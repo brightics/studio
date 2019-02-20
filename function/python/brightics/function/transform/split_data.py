@@ -1,5 +1,5 @@
 from sklearn.model_selection import train_test_split as sktrain_test_split
-from brightics.function.validation import validate, greater_than
+from brightics.common.validation import validate, greater_than
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 

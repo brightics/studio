@@ -6,7 +6,7 @@ from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, pl
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
-from brightics.function.validation import validate, greater_than_or_equal_to
+from brightics.common.validation import validate, greater_than_or_equal_to
 
 
 def xgb_regression_train(table, group_by=None, **params):
@@ -100,7 +100,7 @@ def _xgb_regression_train(table, feature_cols, label_col, max_depth=3, learning_
 
 def xgb_regression_predict(table, model, **params):
     check_required_parameters(_xgb_regression_predict, params, ['table', 'model'])
-    if '_group_by' in model:
+    if '_grouped_data' in model:
         return _function_by_group(_xgb_regression_predict, table, model, **params)
     else:
         return _xgb_regression_predict(table, model, **params)        

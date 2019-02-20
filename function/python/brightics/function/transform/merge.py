@@ -1,6 +1,5 @@
-from brightics.common.groupby import _function_by_group
-from brightics.common.utils import check_required_parameters
 import pandas as pd
+from brightics.common.validation import raise_runtime_error
 
 
 def bind_row_column(first_table, second_table, row_or_col):
@@ -20,13 +19,38 @@ def bind_row_column(first_table, second_table, row_or_col):
         
     return {'table' : table}
 
-#def merge(table, group_by=None, **params):
-#    check_required_parameters(_merge, params, ['table'])
-#    if group_by is not None:
-#        return _function_by_group(_merge, table, group_by=group_by, **params)
-#    else:
-#        return _merge(table, **params)
 
-
-def merge(left_table, right_table, left_on, right_on, how='inner', lsuffix='_left', rsuffix='_right', sort=False):
-    return {'table' : pd.merge(left_table, right_table, how=how, left_on=left_on, right_on=right_on, suffixes=(lsuffix, rsuffix), sort=sort)}
+def join(left_table, right_table, left_on, right_on, how='inner', lsuffix='_left', rsuffix='_right', sort=False):
+    if sort == True or sort == 'True' or sort == 'true':
+        sort = True
+    else:
+        sort = False
+    both_on = list(set(left_on) & set(right_on))
+    if len(both_on) > 0 and how in ['outer', 'left', 'right']:
+        left_table = left_table.rename(columns={key:key + lsuffix for key in both_on})
+        right_table = right_table.rename(columns={key:key + rsuffix for key in both_on})
+        left_on = [col_name + lsuffix if col_name in both_on else col_name for col_name in left_on]
+        right_on = [col_name + rsuffix if col_name in both_on else col_name for col_name in right_on]
+        
+    if how == 'left_exclude':
+        table = pd.merge(left_table, right_table, how='outer', left_on=left_on, right_on=right_on, suffixes=(lsuffix, rsuffix), sort=sort, indicator=True)
+        left_columns = left_table.columns
+        col_names_left = list(set(left_columns) & set(right_table.columns) - set(right_on))
+        col_names = [col_name + lsuffix if col_name in col_names_left else col_name for col_name in left_columns]
+        table = table[table['_merge'] == 'left_only'][col_names]
+        table = table.rename(columns={col_name + lsuffix:col_name for col_name in col_names_left})
+        if table.empty:
+            raise_runtime_error("The result is empty.")
+    elif how == 'right_exclude':
+        table = pd.merge(left_table, right_table, how='outer', left_on=left_on, right_on=right_on, suffixes=(lsuffix, rsuffix), sort=sort, indicator=True)
+        right_columns = right_table.columns
+        col_names_right = list(set(left_table.columns) & set(right_columns) - set(right_on))
+        col_names = [col_name + rsuffix if col_name in col_names_right else col_name for col_name in right_columns]
+        table = table[table['_merge'] == 'right_only'][col_names]
+        table = table.rename(columns={col_name + rsuffix:col_name for col_name in col_names_right})
+        if table.empty:
+            raise_runtime_error("The result is empty.")
+    else:
+        table = pd.merge(left_table, right_table, how=how, left_on=left_on, right_on=right_on, suffixes=(lsuffix, rsuffix), sort=sort)
+    
+    return {'table' : table}

@@ -1,11 +1,11 @@
 import unittest
-from brightics.function.test_data import get_iris
+from brightics.common.datasets import load_iris
 from brightics.function.extraction.pca import pca, pca_model
 import random
 
 
 def get_iris_randomgroup():
-    df = get_iris()
+    df = load_iris()
     random_group1 = []
     random_group2 = []
     random_group2_map = {1:'A', 2:'B'}
@@ -19,7 +19,7 @@ def get_iris_randomgroup():
 
 class PCATest(unittest.TestCase):
     
-    def groupby1(self):
+    def test_groupby1(self):
         df = get_iris_randomgroup()
         enc_out = pca(df, input_cols=['sepal_length', 'sepal_width', 'petal_length', 'petal_width'], group_by=['random_group1', 'random_group2'])
         print(enc_out['out_table'])

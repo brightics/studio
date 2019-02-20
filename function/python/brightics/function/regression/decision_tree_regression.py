@@ -7,7 +7,7 @@ from brightics.function.utils import _model_dict
 from sklearn.tree.export import export_graphviz
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
-from brightics.function.validation import validate, greater_than_or_equal_to
+from brightics.common.validation import validate, greater_than_or_equal_to
 
 
 def decision_tree_regression_train(table, group_by=None, **params):
@@ -113,7 +113,7 @@ def _decision_tree_regression_train(table, feature_cols, label_col,  # fig_size=
 
 def decision_tree_regression_predict(table, model, **params):
     check_required_parameters(_decision_tree_regression_predict, params, ['table', 'model'])
-    if '_group_by' in model:
+    if '_grouped_data' in model:
         return _function_by_group(_decision_tree_regression_predict, table, model, **params)
     else:
         return _decision_tree_regression_predict(table, model, **params)         
