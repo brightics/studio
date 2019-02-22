@@ -19,7 +19,7 @@ BRIGHTICS_PACKAGES_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && 
 # Check requirements
 command -v java >/dev/null 2>&1 || { echo >&2 "Java is missing. Ensure it is installed and placed in your PATH."; exit 1; }
 command -v python >/dev/null 2>&1 || { echo >&2 "Python is missing. Ensure it is installed and placed in your PATH."; exit 1; }
-command -v $BRIGHTICS_PACKAGES_HOME/lib/node/node >/dev/null 2>&1 || { echo >&2 "Node.js is missing. Ensure Visual-analytics is installed."; exit 1; }
+command -v node >/dev/null 2>&1 || { echo >&2 "Node.js is missing. Ensure Visual-analytics is installed."; exit 1; }
 
 source $BRIGHTICS_PACKAGES_HOME/lib/brightics_python_env/bin/activate
 
