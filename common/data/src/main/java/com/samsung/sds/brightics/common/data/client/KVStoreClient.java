@@ -14,6 +14,7 @@ import com.fasterxml.jackson.module.scala.DefaultScalaModule;
 import com.samsung.sds.brightics.common.core.util.JsonUtil;
 import com.samsung.sds.brightics.common.core.util.SystemEnvUtil;
 import com.samsung.sds.brightics.common.data.client.impl.H2Client;
+import com.samsung.sds.brightics.common.data.client.impl.InMemoryClient;
 import com.samsung.sds.brightics.common.data.client.impl.RedisClient;
 import com.samsung.sds.brightics.common.data.databind.KVStoredDataModule;
 
@@ -111,7 +112,8 @@ public abstract class KVStoreClient {
 
     enum KVStoreType {
         REDIS(RedisClient::new),
-        H2(H2Client::new);
+        H2(H2Client::new),
+    	INMEMORY(InMemoryClient::new);
 
         KVStoreType(Factory factory) {
             this.factory = factory;

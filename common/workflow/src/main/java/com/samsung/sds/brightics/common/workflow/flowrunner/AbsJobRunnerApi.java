@@ -17,7 +17,7 @@ public abstract class AbsJobRunnerApi {
         return getTaskResult(taskId);
 	}
 
-	//API related to execute job.
+	//API related to execute job. 
 	abstract public String executeTask(String taskId, String name, String parameters, String attributes);
 	abstract public boolean isFinishTask(String taskId);
 	abstract public Object getTaskResult(String taskId);
