@@ -27,9 +27,8 @@ def _decision_tree_regression_train(table, feature_cols, label_col,  # fig_size=
     
     param_validation_check = [greater_than_or_equal_to(min_samples_split, 2, 'min_samples_split'),
                               greater_than_or_equal_to(min_samples_leaf, 1, 'min_samples_leaf'),
-                              greater_than_or_equal_to(min_weight_fraction_leaf, 0.0, 'min_weight_fraction_leaf')]
-    if max_depth is not None:
-        param_validation_check.append(greater_than_or_equal_to(max_depth, 1, 'max_depth'))
+                              greater_than_or_equal_to(min_weight_fraction_leaf, 0.0, 'min_weight_fraction_leaf'),
+                              greater_than_or_equal_to(max_depth, 1, 'max_depth')]
         
     validate(*param_validation_check)
     
