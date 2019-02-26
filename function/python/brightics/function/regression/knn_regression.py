@@ -1,9 +1,14 @@
 from sklearn.neighbors import KNeighborsRegressor 
 import pandas as pd
-import numpy as np
+from brightics.common.utils import check_required_parameters
 
 
-def knn_regression(train_table, test_table, feature_cols, label_col, k=5, algorithm='auto', leaf_size=30, p=2, pred_col_name='prediction'):
+def knn_regression(train_table, test_table, **params):
+    check_required_parameters(_knn_regression, params, ['train_table', 'test_table'])
+    return _knn_regression(train_table, test_table, **params)
+
+
+def _knn_regression(train_table, test_table, feature_cols, label_col, k=5, algorithm='auto', leaf_size=30, p=2, pred_col_name='prediction'):
     
     X_train = train_table[feature_cols]
     y_train = train_table[label_col]
