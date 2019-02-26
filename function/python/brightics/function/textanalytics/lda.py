@@ -3,6 +3,7 @@ from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 from brightics.function.validation import raise_runtime_error
+from brightics.common.validation import validate, greater_than_or_equal_to, less_than_or_equal_to, greater_than
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
@@ -19,6 +20,15 @@ def lda(table, group_by=None, **params):
 
 
 def _lda(table, input_col, num_voca=1000, num_topic=3, num_topic_word=3, max_iter=20, learning_method='online', learning_offset=10., random_state=None):
+    param_validation_check = [greater_than_or_equal_to(num_voca, 2, 'num_voca'),
+                              greater_than_or_equal_to(num_topic, 2, 'num_topic'),
+                              greater_than_or_equal_to(num_topic_word, 2, 'num_topic_word'),
+                              less_than_or_equal_to(num_topic_word, num_voca, 'num_topic_word'),
+                              greater_than_or_equal_to(max_iter, 1, 'max_iter'),
+                              greater_than(learning_offset, 1.0, 'learning_offset')]
+    
+    validate(*param_validation_check)
+    
     corpus = table[input_col]
     tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=num_voca, stop_words='english')
     term_count = tf_vectorizer.fit_transform(corpus)

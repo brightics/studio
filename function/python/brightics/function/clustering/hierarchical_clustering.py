@@ -3,6 +3,7 @@ from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 from brightics.function.validation import raise_runtime_error
+from brightics.common.validation import validate, greater_than, greater_than_or_equal_to
 
 import matplotlib.pyplot as plt
 from scipy.cluster.hierarchy import dendrogram, linkage, fcluster, leaders
@@ -20,6 +21,11 @@ def hierarchical_clustering(table, group_by=None, **params):
 
 
 def _hierarchical_clustering(table, input_cols, input_mode='original', key_col=None, link='complete', met='euclidean', num_rows=20, figure_height=6.4, orient='right'):
+    param_validation_check = [greater_than(num_rows, 0, 'num_rows'),
+                              greater_than(figure_height, 0.0, 'figure_height')]
+        
+    validate(*param_validation_check)
+    
     out_table = table.copy()
     features = out_table[input_cols]
     
@@ -145,6 +151,10 @@ def hierarchical_clustering_post(model, **params):
 
 
 def _hierarchical_clustering_post(model, num_clusters, cluster_col='cluster'):
+    param_validation_check = [greater_than_or_equal_to(num_clusters, 1, 'num_clusters')]
+        
+    validate(*param_validation_check)
+    
     Z = model['model']
     mode = model['input_mode']
     out_table = model['linkage_matrix']
@@ -185,7 +195,7 @@ def _hierarchical_clustering_post(model, num_clusters, cluster_col='cluster'):
     |
     |{clusters_info_table}
     |
-    """.format(display_params=dict2MD(model['parameters']), clusters_info_table=pandasDF2MD(clusters_info_table))))
+    """.format(display_params=dict2MD(model['parameters']), clusters_info_table=pandasDF2MD(clusters_info_table,num_rows=len(clusters_info_table.index)+1))))
 
     model = _model_dict('hierarchical_clustering_post_process')
     model['clusters_info'] = clusters_info_table

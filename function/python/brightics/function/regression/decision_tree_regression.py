@@ -30,6 +30,12 @@ def _decision_tree_regression_train(table, feature_cols, label_col,  # fig_size=
                               greater_than_or_equal_to(min_weight_fraction_leaf, 0.0, 'min_weight_fraction_leaf')]
     if max_depth is not None:
         param_validation_check.append(greater_than_or_equal_to(max_depth, 1, 'max_depth'))
+    if max_features is not None:
+        param_validation_check.append(greater_than_or_equal_to(max_features, 1, 'max_features'))
+    if max_leaf_nodes is not None:
+        param_validation_check.append(greater_than_or_equal_to(max_leaf_nodes, 1, 'max_leaf_nodes'))
+    if min_impurity_split is not None:
+        param_validation_check.append(greater_than_or_equal_to(min_impurity_split, 0.0, 'min_impurity_split'))
         
     validate(*param_validation_check)
     

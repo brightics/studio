@@ -3,6 +3,7 @@ from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 from brightics.function.validation import raise_runtime_error
+from brightics.common.validation import validate, greater_than_or_equal_to, greater_than
 
 import pandas as pd
 import numpy as np
@@ -19,6 +20,13 @@ def tfidf(table, group_by=None, **params):
 
 
 def _tfidf(table, input_col, max_df=None, min_df=1, num_voca=1000, idf_weighting_scheme='inverseDocumentFrequency', norm='l2', smooth_idf=True, sublinear_tf=False, output_type=False):
+    param_validation_check = [greater_than_or_equal_to(min_df, 0, 'min_df'),
+                              greater_than_or_equal_to(num_voca, 2, 'num_voca')]
+    if max_df is not None:
+        param_validation_check.append(greater_than(max_df, 0, 'max_df'))
+        
+    validate(*param_validation_check)
+    
     corpus=table[input_col]
     if max_df==None:
         max_df=len(corpus)

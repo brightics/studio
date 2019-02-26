@@ -5,6 +5,7 @@ from sklearn.neighbors import LocalOutlierFactor
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 from brightics.common.validation import raise_runtime_error
+from brightics.common.validation import validate, greater_than, greater_than_or_equal_to
 
 
 def outlier_detection_tukey_carling(table, group_by=None, **params):
@@ -17,6 +18,12 @@ def outlier_detection_tukey_carling(table, group_by=None, **params):
 
 def _outlier_detection_tukey_carling(table, input_cols, outlier_method='tukey', multiplier=None, number_of_removal=1,
                                     result_type='add_prediction', new_column_prefix='is_outlier_'):
+    param_validation_check = []
+    if multiplier is not None:
+        param_validation_check.append(greater_than(multiplier, 0.0, 'multiplier'))
+        
+    validate(*param_validation_check)
+    
     out_table = table.copy()    
     median = out_table.median()
     q1s = out_table.quantile(0.25)
@@ -148,7 +155,11 @@ def outlier_detection_lof(table, group_by=None, **params):
         return _outlier_detection_lof(table, **params)
 
 
-def _outlier_detection_lof(table, input_cols, n_neighbors=20, result_type='add_prediction', new_column_name='is_outlier'): 
+def _outlier_detection_lof(table, input_cols, n_neighbors=20, result_type='add_prediction', new_column_name='is_outlier'):
+    param_validation_check = [greater_than_or_equal_to(n_neighbors, 1, 'n_neighbors')]
+        
+    validate(*param_validation_check)
+     
     out_table = table.copy()
     features = out_table[input_cols]
     lof_model = LocalOutlierFactor(n_neighbors, algorithm='auto', leaf_size=30, metric='minkowski', p=2, novelty=True, contamination=0.1)

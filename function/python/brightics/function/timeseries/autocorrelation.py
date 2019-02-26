@@ -2,6 +2,7 @@ from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, pl
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.common.validation import validate, greater_than_or_equal_to, less_than
 
 from statsmodels.graphics.tsaplots import plot_acf
 from statsmodels.graphics.tsaplots import plot_pacf
@@ -21,6 +22,12 @@ def autocorrelation(table, group_by=None, **params):
 
     
 def _autocorrelation(table, input_col, nlags=20, conf_level=0.95):
+    param_validation_check = [greater_than_or_equal_to(nlags, 1, 'nlags'),
+                              greater_than_or_equal_to(conf_level, 0.0, 'conf_level'),
+                              less_than(conf_level, 1.0, 'conf_level')]
+        
+    validate(*param_validation_check)
+    
     data = table[input_col]
     
     plt.figure()

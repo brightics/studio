@@ -3,6 +3,7 @@ from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 from brightics.function.validation import raise_runtime_error
+from brightics.common.validation import validate, greater_than_or_equal_to, less_than_or_equal_to, greater_than
 
 import pandas as pd
 import numpy as np
@@ -25,6 +26,14 @@ def penalized_linear_regression_train(table, group_by=None, **params):
 
     
 def _penalized_linear_regression_train(table, feature_cols, label_col, regression_type='ridge', alpha=1.0, l1_ratio=0.5, fit_intercept=True, max_iter=1000, tol=0.0001, random_state=None):
+    param_validation_check = [greater_than_or_equal_to(alpha, 0.0, 'alpha'),
+                              greater_than_or_equal_to(l1_ratio, 0.0, 'l1_ratio'),
+                              less_than_or_equal_to(l1_ratio, 1.0, 'l1_ratio'),
+                              greater_than_or_equal_to(max_iter, 1, 'max_iter'),
+                              greater_than(tol, 0.0, 'tol')]
+    
+    validate(*param_validation_check)
+    
     out_table = table.copy()
     features = out_table[feature_cols]
     label = out_table[label_col]
