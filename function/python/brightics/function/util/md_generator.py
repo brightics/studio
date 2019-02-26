@@ -35,10 +35,14 @@ def json_to_md(in_file_name):
             else:
                 description_key = 'type'
             func_input_description = func_jsonspec['meta'][func_input_name][description_key]
-            input_str = mdformat_param.format(index=idx, name=func_input_name, description=func_input_description)
-            func_inputs.append(input_str)
-        func_vainputs_str = '\n'.join(func_inputs)
-        func_pythoninputs_str = '\n'.join(func_inputs)
+#            input_str = mdformat_param.format(index=idx, name=func_input_name, description=func_input_description)
+            if 'table' in func_input_name:
+                func_input_name = 'table'
+            elif 'model' in func_input_name:
+                func_input_name = 'model'
+            func_inputs.append(func_input_name)
+        func_vainputs_str = ', '.join(func_inputs)
+        func_pythoninputs_str = ', '.join(func_inputs)
     else:
         func_vainputs_str = MESSAGE_NOINPUT
         func_pythoninputs_str = MESSAGE_NOINPUT
@@ -52,10 +56,14 @@ def json_to_md(in_file_name):
             else:
                 description_key = 'type'
             func_output_description = func_jsonspec['meta'][func_output_name][description_key]
-            input_str = mdformat_param.format(index=idx, name=func_output_name, description=func_output_description)
-            func_outputs.append(input_str)
-        func_vaoutputs_str = '\n'.join(func_outputs)
-        func_pythonoutputs_str = '\n'.join(func_outputs)
+#            input_str = mdformat_param.format(index=idx, name=func_output_name, description=func_output_description)
+            if 'table' in func_output_name:
+                func_output_name = 'table'
+            elif 'model' in func_output_name:
+                func_output_name = 'model'
+            func_outputs.append(func_output_name)
+        func_vaoutputs_str = ', '.join(func_outputs)
+        func_pythonoutputs_str = ', '.join(func_outputs)
     else:
         func_vaoutputs_str = MESSAGE_NOOUTPUT
         func_pythonoutputs_str = MESSAGE_NOOUTPUT
@@ -71,8 +79,31 @@ def json_to_md(in_file_name):
             mdformat = mdformat_param_mandatory
         else:
             mdformat = mdformat_param
-        vaparam_md = mdformat.format(index=idx, name=func_param['label'], description=func_param['description'])
-        pythonparam_md = mdformat.format(index=idx, name=func_param['id'], description=func_param['description'])
+
+        description = ''
+        if func_param['label'] == 'Feature Columns' or func_param['id'] == 'feature_cols':
+            description = 'Columns to select as features'
+        elif func_param['label'] == 'Label Column' or func_param['id'] == 'label_col':
+            description = 'Columns to select as label'
+        elif func_param['label'] == 'Input Column' or func_param['id'] == 'input_col':
+            description = 'Column to select as input'
+        elif func_param['label'] == 'Input Columns' or func_param['id'] == 'input_cols':
+            description = 'Columns to select as input'
+        elif func_param['label'] == 'Response Columns' or func_param['id'] == 'response_cols':
+            description = 'Columns to select as response'
+        elif func_param['label'] == 'Factor Column' or func_param['id'] == 'factor_col':
+            description = 'Column to select as factor'
+        elif func_param['label'] == 'Group By' or func_param['id'] == 'group_by':
+            description = 'Columns to group by'
+        elif func_param['label'] == 'Prediction Column Name' or func_param['id'] == 'prediction_col':
+            description = 'Column name for prediction'
+        elif func_param['label'] == 'Probability Column Prefix' or func_param['id'] == 'prob_col_prefix':
+            description = 'Prefix for column name of probability'
+        else:
+            description = func_param['description']
+
+        vaparam_md = mdformat.format(index=idx, name=func_param['label'], description=description)
+        pythonparam_md = mdformat.format(index=idx, name=func_param['id'], description=description)
 
         vaparam_additionals = []
         pythonparam_additionals = []
