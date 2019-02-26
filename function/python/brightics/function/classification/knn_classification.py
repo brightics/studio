@@ -1,9 +1,14 @@
 from sklearn.neighbors import KNeighborsClassifier 
 import pandas as pd
+from brightics.common.utils import check_required_parameters
 
 
+def knn_classification(train_table, test_table, **params):
+    check_required_parameters(_knn_classification, params, ['train_table', 'test_table'])
+    return _knn_classification(train_table, test_table, **params)
 
-def knn_classification(train_table, test_table, feature_cols, label_col, k=5, algorithm='auto', leaf_size=30, p=2, pred_col_name='prediction', prob_col_prefix='probability', suffix='index'):
+
+def _knn_classification(train_table, test_table, feature_cols, label_col, k=5, algorithm='auto', leaf_size=30, p=2, pred_col_name='prediction', prob_col_prefix='probability', suffix='index'):
     
     X_train = train_table[feature_cols]
     y_train = train_table[label_col]
