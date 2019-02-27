@@ -53,7 +53,7 @@ var responseFunctionHelp_DL = function (req, res, operation, palette, addon_js) 
 
 var responseFunctionHelp = function (req, res, operation, palette, fileContents) {
     try {
-        var availableContext = ['python', 'scala'];
+        var availableContext = ['common', 'python', 'scala'];
         var filename = operation;
         var context = req.query.context && availableContext.some(function (value) {
             return value === req.query.context;
