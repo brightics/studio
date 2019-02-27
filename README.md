@@ -57,6 +57,10 @@ Or download "BrighticsStudio-\<version\>-\<os name\>-patch" and run this from th
 ### Run
 Brightics Studio pops up on Chrome browser after launching start-brightics.cmd (or start-brightics.sh). Please go to http://127.0.0.1:3000 manually to use Brightics Studio if it does not pop up automatically.
 
+### Start from AWS Marketplace
+Brightics Studio is now available from AWS Marketplace(https://aws.amazon.com/marketplace/pp/B07P4399PD).<br>
+It just takes only 1~2 minutes to setup EC2 and launch Brightics Studio.
+
 ## Development
 ### Prerequisite
  * JDK 1.8, 1.9 (64bit)
