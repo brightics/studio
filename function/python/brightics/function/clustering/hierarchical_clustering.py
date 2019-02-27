@@ -164,7 +164,10 @@ def _hierarchical_clustering_post(model, num_clusters, cluster_col='cluster'):
         prediction_table = model['table']
     elif mode == 'matrix':
         prediction_table = model['dist_matrix'][['name']]
-    prediction_table[cluster_col] = predict
+    if num_clusters==1:
+        prediction_table[cluster_col]=[1 for _ in range(len(prediction_table.index))]
+    else:
+        prediction_table[cluster_col] = predict
     
     L, M = leaders(Z, predict)
     which_cluster = []
@@ -177,12 +180,17 @@ def _hierarchical_clustering_post(model, num_clusters, cluster_col='cluster'):
             which_cluster.append(out_table['joined column2'][select_indices])
     
     clusters_info_table = pd.DataFrame([])
-    clusters_info_table[cluster_col] = M
-    clusters_info_table['name of clusters'] = which_cluster
-    clusters_info_table = clusters_info_table.sort_values(cluster_col)
-    cluster_count = np.bincount(prediction_table[cluster_col])
-    cluster_count = cluster_count[cluster_count != 0]
-    clusters_info_table['number of entities'] = list(cluster_count)
+    if num_clusters==1:
+        clusters_info_table[cluster_col]=[1]
+        clusters_info_table['name of clusters']=[out_table['name of clusters'][len(Z)-1]]
+        clusters_info_table['number of entities']=[out_table['number of original'][len(Z)-1]]
+    else:
+        clusters_info_table[cluster_col] = M
+        clusters_info_table['name of clusters'] = which_cluster
+        clusters_info_table = clusters_info_table.sort_values(cluster_col)
+        cluster_count = np.bincount(prediction_table[cluster_col])
+        cluster_count = cluster_count[cluster_count != 0]
+        clusters_info_table['number of entities'] = list(cluster_count)
     
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""# Hierarchical Clustering Post Process Result"""))
