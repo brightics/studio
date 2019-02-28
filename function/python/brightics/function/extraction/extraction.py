@@ -5,6 +5,7 @@ from brightics.common.repr import pandasDF2MD
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.common.utils import get_default_from_parameters_if_required
 
 from collections import Counter
 import pandas as pd
@@ -30,6 +31,10 @@ def _add_row_number(table, new_col='add_row_number'):
 
 def discretize_quantile(table, group_by=None, **params):
     check_required_parameters(_discretize_quantile, params, ['table'])
+
+    params = get_default_from_parameters_if_required(params,_discretize_quantile)
+    param_validation_check = [greater_than_or_equal_to(params, 1, 'num_of_buckets')]
+
     if group_by is not None:
         return _function_by_group(_discretize_quantile, table, group_by=group_by, **params)
     else:
