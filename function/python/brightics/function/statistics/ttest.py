@@ -5,8 +5,7 @@ from brightics.common.repr import pandasDF2MD
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate
-from brightics.common.validation import greater_than_or_equal_to
-from brightics.common.validation import less_than_or_equal_to
+from brightics.common.validation import from_to
 from brightics.common.groupby import _function_by_group
 import numpy as np
 import pandas as pd
@@ -174,8 +173,7 @@ def _one_sample_ttest(table, input_cols, alternatives, hypothesized_mean=0, conf
 
 def two_sample_ttest_for_stacked_data(table, group_by=None, **params):
     params = get_default_from_parameters_if_required(params,_two_sample_ttest_for_stacked_data)
-    param_validation_check = [greater_than_or_equal_to(params, 0, 'confi_level'),
-                              less_than_or_equal_to(params, 1, 'confi_level')]
+    param_validation_check = [from_to(params, 0, 1, 'confi_level')]
         
     validate(*param_validation_check)
     check_required_parameters(_two_sample_ttest_for_stacked_data, params, ['table'])
