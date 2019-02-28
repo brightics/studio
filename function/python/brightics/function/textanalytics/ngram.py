@@ -1,8 +1,19 @@
+from brightics.common.utils import check_required_parameters
+from brightics.common.utils import get_default_from_parameters_if_required
 import pandas as pd
 import numpy as np
 
 
-def ngram(table, input_col, n=2):
+def ngram(table, **params):
+    check_required_parameters(_ngram, params, ['table'])
+    
+    params = get_default_from_parameters_if_required(params, _ngram)
+    param_validation_check = [greater_than_or_equal_to(params, 1, 'n')]
+    
+    return _ngram(table, **params)
+
+
+def _ngram(table, input_col, n=2):
     
     data = table[input_col]
     out_table = table.copy()
