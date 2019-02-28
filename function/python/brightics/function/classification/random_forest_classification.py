@@ -9,12 +9,20 @@ from brightics.common.repr import dict2MD
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.function.validation import validate
 from brightics.function.validation import greater_than_or_equal_to
 
 
 def random_forest_classification_train(table, group_by=None, **params):
     check_required_parameters(_random_forest_classification_train, params, ['table'])
+    
+    params = get_default_from_parameters_if_required(params,_random_forest_classification_train)
+    param_validation_check = [greater_than_or_equal_to(params, 1, 'n_estimators'),
+                              greater_than_or_equal_to(params, 1, 'max_depth'),
+                              greater_than_or_equal_to(params, 1, 'min_samples_split'),
+                              greater_than_or_equal_to(params, 1, 'min_samples_leaf')]
+    
     if group_by is not None:
         return _function_by_group(_random_forest_classification_train, table, group_by=group_by, **params)
     else:
