@@ -4,7 +4,7 @@ from brightics.common.repr import dict2MD
 from brightics.common.repr import pandasDF2MD
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
-from brightics.common.validation import validate, greater_than_or_equal_to, less_than_or_equal_to
+from brightics.common.validation import validate, from_to
 from brightics.common.groupby import _function_by_group
 import numpy as np
 import pandas as pd
@@ -20,8 +20,7 @@ def one_sample_ttest(table, group_by=None, **params):
     check_required_parameters(_one_sample_ttest, params, ['table'])
     
     params = get_default_from_parameters_if_required(params, _one_sample_ttest)
-    param_validation_check = [greater_than_or_equal_to(params, 0, 'conf_level'),
-                              less_than_or_equal_to(params, 1, 'conf_level')]
+    param_validation_check = [from_to(params, 0, 1, 'conf_level')]
     validate(*param_validation_check)
 
     if group_by is not None:
