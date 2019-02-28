@@ -9,6 +9,7 @@ from sklearn.metrics.cluster.unsupervised import silhouette_score, \
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate, greater_than_or_equal_to, \
     greater_than, all_elements_greater_than, raise_runtime_error
 
@@ -68,6 +69,16 @@ def _kmeans_pca_plot(labels, cluster_centers, pca2_model, pca2):
 
 def kmeans_train_predict(table, group_by=None, **params):
     check_required_parameters(_kmeans_train_predict, params, ['table'])
+    
+    params = get_default_from_parameters_if_required(params, _kmeans_train_predict)
+    param_validation_check = [greater_than_or_equal_to(params, 1, 'n_clusters'),
+             greater_than_or_equal_to(params, 1, 'n_init'),
+             greater_than_or_equal_to(params, 1, 'max_iter'),
+             greater_than(params, 0.0, 'tol'),
+             greater_than_or_equal_to(params, 1, 'n_jobs'),
+             greater_than_or_equal_to(params, 0, 'n_samples')]
+    validate(*param_validation_check)
+    
     if group_by is not None:
         grouped_model = _function_by_group(_kmeans_train_predict, table, group_by=group_by, **params)
         return grouped_model
