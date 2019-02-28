@@ -1,5 +1,7 @@
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
+from brightics.function.validation import validate
+from brightics.function.validation import greater_than_or_equal_to
 import pandas as pd
 import numpy as np
 
@@ -9,6 +11,7 @@ def ngram(table, **params):
     
     params = get_default_from_parameters_if_required(params, _ngram)
     param_validation_check = [greater_than_or_equal_to(params, 1, 'n')]
+    validate(*param_validation_check)
     
     return _ngram(table, **params)
 
