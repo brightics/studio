@@ -2,6 +2,8 @@ from sklearn.neighbors import KNeighborsRegressor
 import pandas as pd
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
+from brightics.function.validation import validate
+from brightics.function.validation import greater_than_or_equal_to
 
 
 def knn_regression(train_table, test_table, **params):
@@ -11,6 +13,7 @@ def knn_regression(train_table, test_table, **params):
     param_validation_check = [greater_than_or_equal_to(params, 1, 'k'),
                               greater_than_or_equal_to(params, 1, 'leaf_size'),
                               greater_than_or_equal_to(params, 1, 'p')]
+    validate(*param_validation_check)
 
     return _knn_regression(train_table, test_table, **params)
 
