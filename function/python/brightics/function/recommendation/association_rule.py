@@ -14,7 +14,7 @@ from brightics.common.validation import validate
 from brightics.common.validation import greater_than_or_equal_to
 from brightics.common.validation import less_than_or_equal_to
 from brightics.common.validation import greater_than
-
+from brightics.common.validation import from_to
 
 #-----------------------------------------------------------------------------------------------------
 """
@@ -357,10 +357,8 @@ def _table_to_transactions(table,items,user_name):
 def association_rule(table, group_by=None, **params):
     check_required_parameters(_association_rule, params, ['table'])
     params = get_default_from_parameters_if_required(params,_association_rule)
-    param_validation_check = [greater_than_or_equal_to(params, 0, 'min_support'),
-                              less_than_or_equal_to(params, 1, 'min_support'),
-                              greater_than_or_equal_to(params, 0, 'min_confidence'),
-                              less_than_or_equal_to(params, 1, 'min_confidence')]
+    param_validation_check = [from_to(params, 0, 1, 'min_support'),
+                              from_to(params, 0, 1, 'min_confidence')]
         
     validate(*param_validation_check)
     if group_by is not None:
