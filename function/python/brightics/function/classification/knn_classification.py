@@ -1,10 +1,17 @@
 from sklearn.neighbors import KNeighborsClassifier 
 import pandas as pd
 from brightics.common.utils import check_required_parameters
+from brightics.common.utils import get_default_from_parameters_if_required
 
 
 def knn_classification(train_table, test_table, **params):
     check_required_parameters(_knn_classification, params, ['train_table', 'test_table'])
+    
+    params = get_default_from_parameters_if_required(params,_knn_classification)
+    param_validation_check = [greater_than_or_equal_to(params, 1, 'k'),
+                              greater_than_or_equal_to(params, 1, 'leaf_size'),
+                              greater_than_or_equal_to(params, 1, 'p')]
+    
     return _knn_classification(train_table, test_table, **params)
 
 
