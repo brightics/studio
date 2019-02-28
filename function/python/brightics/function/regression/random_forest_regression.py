@@ -21,6 +21,7 @@ def random_forest_regression_train(table, group_by=None, **params):
                               greater_than_or_equal_to(params, 1, 'max_depth'),
                               greater_than_or_equal_to(params, 1, 'min_samples_split'),
                               greater_than_or_equal_to(params, 1, 'min_samples_leaf')]
+    validate(*param_validation_check)
     
     if group_by is not None:
         return _function_by_group(_random_forest_regression_train, table, group_by=group_by, **params)
