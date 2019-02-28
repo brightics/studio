@@ -3,6 +3,7 @@ from brightics.common.repr import strip_margin
 from brightics.common.repr import dict2MD
 from brightics.common.repr import pandasDF2MD
 from brightics.common.utils import check_required_parameters
+from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.groupby import _function_by_group
 import numpy as np
 import pandas as pd
@@ -13,8 +14,14 @@ from scipy import mean, stats
 from statsmodels.stats.weightstats import ttest_ind
 
 
-def one_sample_ttest(table, group_by=None, **params):
+def one_sample_ttest(table, group_by=None, **params):    
+    
     check_required_parameters(_one_sample_ttest, params, ['table'])
+    
+    params = get_default_from_parameters_if_required(params, _one_sample_ttest)
+    param_validation_check = [greater_than_or_equal_to(params, 0, 'conf_level'),
+                              less_than_or_equal_to(params, 1, 'conf_level')]
+
     if group_by is not None:
         return _function_by_group(_one_sample_ttest, table, group_by=group_by, **params)
     else:
