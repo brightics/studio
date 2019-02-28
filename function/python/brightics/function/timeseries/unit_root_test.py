@@ -2,8 +2,15 @@ from statsmodels.tsa.stattools import adfuller
 from brightics.common.repr import BrtcReprBuilder, strip_margin
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.common.utils import get_default_from_parameters_if_required
+from brightics.common.validation import validate
+from brightics.common.validation import greater_than_or_equal_to
 
 def unit_root_test(table, group_by=None, **params):
+    params = get_default_from_parameters_if_required(params,_unit_root_test)
+    param_validation_check = [greater_than_or_equal_to(params, 0, 'maxlag')]
+        
+    validate(*param_validation_check)
     check_required_parameters(_unit_root_test, params, ['table'])
     if group_by is not None:
         return _function_by_group(_unit_root_test, table, group_by=group_by, **params)

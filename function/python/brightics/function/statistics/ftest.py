@@ -6,9 +6,18 @@ from brightics.common.repr import BrtcReprBuilder, strip_margin, \
     pandasDF2MD
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
-
+from brightics.common.validation import validate
+from brightics.common.validation import greater_than_or_equal_to
+from brightics.common.validation import less_than_or_equal_to
+from brightics.common.utils import get_default_from_parameters_if_required
 
 def ftest_for_stacked_data(table, group_by=None, **params):
+    params = get_default_from_parameters_if_required(params,_ftest_for_stacked_data)
+    param_validation_check = [greater_than_or_equal_to(params, 0, 'confi_level'),
+                              less_than_or_equal_to(params, 1, 'confi_level')]
+        
+    validate(*param_validation_check)
+    
     check_required_parameters(_ftest_for_stacked_data, params, ['table'])
     if group_by is not None:
         return _function_by_group(_ftest_for_stacked_data, table, group_by=group_by, **params)
@@ -16,6 +25,7 @@ def ftest_for_stacked_data(table, group_by=None, **params):
         return _ftest_for_stacked_data(table, **params)
 
 def _ftest_for_stacked_data(table, response_cols, factor_col, alternatives, first = None, second = None, confi_level=0.95):
+   
     if first is not None or second is not None:
         check_table = np.array(table[factor_col])
         for element in check_table:
