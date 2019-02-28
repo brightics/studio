@@ -4,7 +4,7 @@ from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.function.validation import validate
-from brightics.function.validation import greater_than_or_equal_to, less_than
+from brightics.function.validation import from_under
 #from brightics.common.exception import BrighticsFunctionException
 
 from scipy.stats import bartlett
@@ -129,8 +129,7 @@ def tukeys_range_test(table, group_by=None, **params):
     check_required_parameters(_tukeys_range_test, params, ['table'])
     
     params = get_default_from_parameters_if_required(params, _tukeys_range_test)
-    param_validation_check = [greater_than_or_equal_to(params, 0.001, 'alpha'),
-                              less_than(params, 0.9, 'alpha')]
+    param_validation_check = [from_under(params, 0.001, 0.9, 'alpha')]
     validate(*param_validation_check)
     
     if group_by is not None:
