@@ -1,4 +1,11 @@
-def select_column(table, input_cols, output_cols=None, output_types=None):
+from brightics.common.utils import check_required_parameters
+
+def select_column(table, **params):
+    check_required_parameters(_select_column, params, ['table'])
+    return _select_column(table, **params)
+
+
+def _select_column(table, input_cols, output_cols=None, output_types=None):
     
     type_dict = {
         'int':'int32',
