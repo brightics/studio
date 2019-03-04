@@ -1,17 +1,28 @@
+from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, plt2MD, dict2MD
+from brightics.function.utils import _model_dict
+from brightics.common.utils import check_required_parameters
+from brightics.common.utils import get_default_from_parameters_if_required
+from brightics.common.validation import validate, greater_than_or_equal_to
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.tree import DecisionTreeRegressor
-from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, plt2MD, dict2MD
-from brightics.function.utils import _model_dict
 from sklearn.tree.export import export_graphviz
-from brightics.common.groupby import _function_by_group
-from brightics.common.utils import check_required_parameters
-from brightics.common.validation import validate, greater_than_or_equal_to
 
 
 def decision_tree_regression_train(table, group_by=None, **params):
     check_required_parameters(_decision_tree_regression_train, params, ['table'])
+    params = get_default_from_parameters_if_required(params, _decision_tree_regression_train)
+    param_validation_check = [greater_than_or_equal_to(params, 2, 'min_samples_split'),
+                              greater_than_or_equal_to(params, 1, 'min_samples_leaf'),
+                              greater_than_or_equal_to(params, 0.0, 'min_weight_fraction_leaf'),
+                              greater_than_or_equal_to(params, 1, 'max_depth'),
+                              greater_than_or_equal_to(params, 1, 'max_features'),
+                              greater_than_or_equal_to(params, 1, 'max_leaf_nodes'),
+                              greater_than_or_equal_to(params, 0.0, 'min_impurity_split')]
+    
+    validate(*param_validation_check)
     if group_by is not None:
         grouped_model = _function_by_group(_decision_tree_regression_train, table, group_by=group_by, **params)
         return grouped_model
@@ -24,13 +35,6 @@ def _decision_tree_regression_train(table, feature_cols, label_col,  # fig_size=
                                        min_weight_fraction_leaf=0.0, max_features=None, random_state=None, max_leaf_nodes=None,
                                        min_impurity_decrease=0.0, min_impurity_split=None, presort=False,
                                        sample_weight=None, check_input=True, X_idx_sorted=None):
-    
-    param_validation_check = [greater_than_or_equal_to(min_samples_split, 2, 'min_samples_split'),
-                              greater_than_or_equal_to(min_samples_leaf, 1, 'min_samples_leaf'),
-                              greater_than_or_equal_to(min_weight_fraction_leaf, 0.0, 'min_weight_fraction_leaf'),
-                              greater_than_or_equal_to(max_depth, 1, 'max_depth')]
-        
-    validate(*param_validation_check)
     
     regressor = DecisionTreeRegressor(criterion, splitter, max_depth, min_samples_split,
                                        min_samples_leaf, min_weight_fraction_leaf, max_features,
