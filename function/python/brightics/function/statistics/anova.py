@@ -5,7 +5,6 @@ from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate
 from brightics.common.validation import from_under
-#from brightics.common.exception import BrighticsFunctionException
 
 from scipy.stats import bartlett
 import seaborn as sns
@@ -131,6 +130,11 @@ def _oneway_anova(table, response_cols, factor_col):
 
 def tukeys_range_test(table, group_by=None, **params):
     check_required_parameters(_tukeys_range_test, params, ['table'])
+    
+    params = get_default_from_parameters_if_required(params, _tukeys_range_test)
+    param_validation_check = [from_under(params, 0.001, 0.9, 'alpha')]
+    validate(*param_validation_check)
+    
     if group_by is not None:
         return _function_by_group(_tukeys_range_test, table, group_by=group_by, **params)
     else:
@@ -138,8 +142,6 @@ def tukeys_range_test(table, group_by=None, **params):
     
     
 def _tukeys_range_test(table, response_cols, factor_col, alpha=0.05):
-    if alpha < 0.001 or alpha >= 0.9: 
-        raise BrighticsFunctionException("0006", ['alpha', 0.001, 0.9])
     
     rb = BrtcReprBuilder()
     rb.addMD("""## Tukey's range test Result""")
