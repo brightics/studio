@@ -2,7 +2,9 @@ from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, di
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
-from brightics.function.validation import raise_runtime_error
+from brightics.common.utils import get_default_from_parameters_if_required
+from brightics.common.validation import raise_runtime_error
+from brightics.common.validation import validate, greater_than_or_equal_to, greater_than, from_to
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
@@ -12,6 +14,14 @@ import pandas as pd
 
 def lda(table, group_by=None, **params):
     check_required_parameters(_lda, params, ['table'])
+    params = get_default_from_parameters_if_required(params, _lda)
+    param_validation_check = [greater_than_or_equal_to(params, 2, 'num_voca'),
+                              greater_than_or_equal_to(params, 2, 'num_topic'),
+                              from_to(params, 2, params['num_voca'], 'num_topic_word'),
+                              greater_than_or_equal_to(params, 1, 'max_iter'),
+                              greater_than(params, 1.0, 'learning_offset')]
+    
+    validate(*param_validation_check)
     if group_by is not None:
         return _function_by_group(_lda, table, group_by=group_by, **params)
     else:
@@ -58,7 +68,7 @@ def _lda(table, input_col, num_voca=1000, num_topic=3, num_topic_word=3, max_ite
         'Number of Vocabularies': num_voca,
         'Number of Topics': num_topic,
         'Number of Terminologies': num_topic_word,
-        'Iteration': max_iter,
+        'Iterations': max_iter,
         'Learning Method': learning_method,
     }
     
@@ -81,6 +91,7 @@ def _lda(table, input_col, num_voca=1000, num_topic=3, num_topic_word=3, max_ite
     """.format(display_params=dict2MD(params), topic_model=pandasDF2MD(topic_model, num_rows=num_topic + 1), doc_classification=pandasDF2MD(doc_classification, num_rows=len(corpus) + 1))))
     
     model = _model_dict('lda')
+    model['parameter'] = params
     model['topic_model'] = topic_model
     model['documents_classification'] = doc_classification
     model['_repr_brtc_'] = rb.get()
