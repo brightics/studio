@@ -2,7 +2,9 @@ from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, di
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
-from brightics.function.validation import raise_runtime_error
+from brightics.common.utils import get_default_from_parameters_if_required
+from brightics.common.validation import raise_runtime_error
+from brightics.common.validation import validate, greater_than, greater_than_or_equal_to
 
 import matplotlib.pyplot as plt
 from scipy.cluster.hierarchy import dendrogram, linkage, fcluster, leaders
@@ -13,6 +15,12 @@ import pandas as pd
 
 def hierarchical_clustering(table, group_by=None, **params):
     check_required_parameters(_hierarchical_clustering, params, ['table'])
+    params = get_default_from_parameters_if_required(params, _hierarchical_clustering)
+    param_validation_check = [greater_than(params, 0, 'num_rows'),
+                              greater_than(params, 0.0, 'figure_height')]
+        
+    validate(*param_validation_check)
+    
     if group_by is not None:
         return _function_by_group(_hierarchical_clustering, table, group_by=group_by, **params)
     else:
@@ -138,13 +146,17 @@ def _hierarchical_clustering(table, input_cols, input_mode='original', key_col=N
 
 def hierarchical_clustering_post(model, **params):
     check_required_parameters(_hierarchical_clustering_post, params, ['model'])
+    params = get_default_from_parameters_if_required(params, _hierarchical_clustering_post)
+    param_validation_check = [greater_than_or_equal_to(params, 1, 'num_clusters')]
+        
+    validate(*param_validation_check)
     if '_grouped_data' in model:
         return _function_by_group(_hierarchical_clustering_post, model=model, **params)
     else:
         return _hierarchical_clustering_post(model, **params)
 
 
-def _hierarchical_clustering_post(model, num_clusters, cluster_col='cluster'):
+def _hierarchical_clustering_post(model, num_clusters, cluster_col='cluster'): 
     Z = model['model']
     mode = model['input_mode']
     out_table = model['linkage_matrix']
@@ -154,7 +166,10 @@ def _hierarchical_clustering_post(model, num_clusters, cluster_col='cluster'):
         prediction_table = model['table']
     elif mode == 'matrix':
         prediction_table = model['dist_matrix'][['name']]
-    prediction_table[cluster_col] = predict
+    if num_clusters==1:
+        prediction_table[cluster_col]=[1 for _ in range(len(prediction_table.index))]
+    else:
+        prediction_table[cluster_col] = predict
     
     L, M = leaders(Z, predict)
     which_cluster = []
@@ -167,12 +182,17 @@ def _hierarchical_clustering_post(model, num_clusters, cluster_col='cluster'):
             which_cluster.append(out_table['joined column2'][select_indices])
     
     clusters_info_table = pd.DataFrame([])
-    clusters_info_table[cluster_col] = M
-    clusters_info_table['name of clusters'] = which_cluster
-    clusters_info_table = clusters_info_table.sort_values(cluster_col)
-    cluster_count = np.bincount(prediction_table[cluster_col])
-    cluster_count = cluster_count[cluster_count != 0]
-    clusters_info_table['number of entities'] = list(cluster_count)
+    if num_clusters==1:
+        clusters_info_table[cluster_col]=[1]
+        clusters_info_table['name of clusters']=[out_table['name of clusters'][len(Z)-1]]
+        clusters_info_table['number of entities']=[out_table['number of original'][len(Z)-1]]
+    else:
+        clusters_info_table[cluster_col] = M
+        clusters_info_table['name of clusters'] = which_cluster
+        clusters_info_table = clusters_info_table.sort_values(cluster_col)
+        cluster_count = np.bincount(prediction_table[cluster_col])
+        cluster_count = cluster_count[cluster_count != 0]
+        clusters_info_table['number of entities'] = list(cluster_count)
     
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""# Hierarchical Clustering Post Process Result"""))
@@ -185,7 +205,7 @@ def _hierarchical_clustering_post(model, num_clusters, cluster_col='cluster'):
     |
     |{clusters_info_table}
     |
-    """.format(display_params=dict2MD(model['parameters']), clusters_info_table=pandasDF2MD(clusters_info_table))))
+    """.format(display_params=dict2MD(model['parameters']), clusters_info_table=pandasDF2MD(clusters_info_table,num_rows=len(clusters_info_table.index)+1))))
 
     model = _model_dict('hierarchical_clustering_post_process')
     model['clusters_info'] = clusters_info_table
