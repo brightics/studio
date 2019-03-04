@@ -2,7 +2,9 @@ from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, di
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
-from brightics.function.validation import raise_runtime_error
+from brightics.common.utils import get_default_from_parameters_if_required
+from brightics.common.validation import raise_runtime_error
+from brightics.common.validation import validate, greater_than_or_equal_to, greater_than
 
 import pandas as pd
 import numpy as np
@@ -12,6 +14,11 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 def tfidf(table, group_by=None, **params):
     check_required_parameters(_tfidf, params, ['table'])
+    params = get_default_from_parameters_if_required(params, _tfidf)
+    param_validation_check = [greater_than_or_equal_to(params, 0, 'min_df'),
+                              greater_than_or_equal_to(params, 2, 'num_voca'),
+                              greater_than(params, 0, 'max_df')]
+    validate(*param_validation_check)
     if group_by is not None:
         return _function_by_group(_tfidf, table, group_by=group_by, **params)
     else:
@@ -96,6 +103,7 @@ def _tfidf(table, input_col, max_df=None, min_df=1, num_voca=1000, idf_weighting
     """.format(display_params=dict2MD(params), idf_table=pandasDF2MD(idf_table, num_rows=len(tf_feature_names)+1), tfidf_table=pandasDF2MD(tfidf_table, num_rows=len(tf_feature_names)*len(corpus)+1))))
 
     model=_model_dict('tfidf')
+    model['parameter'] = params
     model['idf_table']=idf_table
     model['tfidf_table']=tfidf_table
     model['_repr_brtc_']=rb.get()
