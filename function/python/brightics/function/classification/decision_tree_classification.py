@@ -8,12 +8,26 @@ from brightics.common.repr import dict2MD
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate
 from brightics.common.validation import greater_than_or_equal_to
 
 
 def decision_tree_classification_train(table, group_by=None, **params):
     check_required_parameters(_decision_tree_classification_train, params, ['table'])
+
+    params = get_default_from_parameters_if_required(params, _decision_tree_classification_train)
+
+    param_validation_check = [greater_than_or_equal_to(params, 2, 'min_samples_split'),
+                              greater_than_or_equal_to(params, 1, 'min_samples_leaf'),
+                              greater_than_or_equal_to(params, 0.0, 'min_weight_fraction_leaf'),
+                              greater_than_or_equal_to(params, 0.0, 'min_impurity_decrease'),
+                              greater_than_or_equal_to(params, 1, 'max_depth'),
+                              greater_than_or_equal_to(params, 1, 'max_features'),
+                              greater_than_or_equal_to(params, 1, 'max_leaf_nodes')]
+
+    validate(*param_validation_check)
+
     if group_by is not None:
         grouped_model = _function_by_group(_decision_tree_classification_train, table, group_by=group_by, **params)
         return grouped_model
@@ -21,27 +35,21 @@ def decision_tree_classification_train(table, group_by=None, **params):
         return _decision_tree_classification_train(table, **params)
 
 
-def _decision_tree_classification_train(table, feature_cols, label_col,  # fig_size=np.array([6.4, 4.8]), 
-                                       criterion='gini', splitter='best', max_depth=None, min_samples_split=2, min_samples_leaf=1,
-                                       min_weight_fraction_leaf=0.0, max_features=None, random_state=None, max_leaf_nodes=None,
-                                       min_impurity_decrease=0.0, min_impurity_split=None, class_weight=None, presort=False,
-                                       sample_weight=None, check_input=True, X_idx_sorted=None):
-    
-    param_validation_check = [greater_than_or_equal_to(min_samples_split, 2, 'min_samples_split'),
-             greater_than_or_equal_to(min_samples_leaf, 1, 'min_samples_leaf'),
-             greater_than_or_equal_to(min_weight_fraction_leaf, 0.0, 'min_weight_fraction_leaf'),
-             greater_than_or_equal_to(max_depth, 1, 'max_depth')]
-        
-    validate(*param_validation_check)
-    
+def _decision_tree_classification_train(table, feature_cols, label_col, # fig_size=np.array([6.4, 4.8]),
+                                        criterion='gini', splitter='best', max_depth=None, min_samples_split=2,
+                                        min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_features=None,
+                                        random_state=None, max_leaf_nodes=None, min_impurity_decrease=0.0,
+                                        min_impurity_split=None, class_weight=None, presort=False, sample_weight=None,
+                                        check_input=True, X_idx_sorted=None):
+
     classifier = DecisionTreeClassifier(criterion, splitter, max_depth, min_samples_split, min_samples_leaf,
                                        min_weight_fraction_leaf, max_features, random_state, max_leaf_nodes,
                                        min_impurity_decrease, min_impurity_split, class_weight, presort)
     classifier.fit(table[feature_cols], table[label_col],
                    sample_weight, check_input, X_idx_sorted)
-    
+
     try:
-        from sklearn.externals.six import StringIO  
+        from sklearn.externals.six import StringIO
         from sklearn.tree import export_graphviz
         import pydotplus
         dot_data = StringIO()
@@ -54,11 +62,11 @@ def _decision_tree_classification_train(table, feature_cols, label_col,  # fig_s
         fig_tree = png2MD(graph.create_png())
     except:
         fig_tree = "Graphviz is needed to draw a Decision Tree graph. Please download it from http://graphviz.org/download/ and install it to your computer."
-    
+
     # json
     model = _model_dict('decision_tree_classification_model')
     model['feature_cols'] = feature_cols
-    model['label_col'] = label_col    
+    model['label_col'] = label_col
     model['classes'] = classifier.classes_
     feature_importance = classifier.feature_importances_
     model['feature_importance'] = feature_importance
@@ -70,11 +78,11 @@ def _decision_tree_classification_train(table, feature_cols, label_col,  # fig_s
     get_param = classifier.get_params()
     model['parameters'] = get_param
     model['classifier'] = classifier
-    
-    # report        
+
+    # report
     indices = np.argsort(feature_importance)
     sorted_feature_cols = np.array(feature_cols)[indices]
-    
+
     plt.title('Feature Importances')
     plt.barh(range(len(indices)), feature_importance[indices], color='b', align='center')
     for i, v in enumerate(feature_importance[indices]):
@@ -85,10 +93,10 @@ def _decision_tree_classification_train(table, feature_cols, label_col,  # fig_s
     plt.tight_layout()
     fig_feature_importances = plt2MD(plt)
     plt.clf()
-    
+
     params = dict2MD(get_param)
-    
-    # Add tree plot        
+
+    # Add tree plot
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## Decision Tree Classification Train Result
@@ -103,10 +111,10 @@ def _decision_tree_classification_train(table, feature_cols, label_col,  # fig_s
     |
     """.format(fig_tree=fig_tree,
                fig_feature_importances=fig_feature_importances,
-               list_parameters=params            
-               )))     
-    model['_repr_brtc_'] = rb.get()   
-               
+               list_parameters=params
+               )))
+    model['_repr_brtc_'] = rb.get()
+
     return {'model' : model}
 
 
@@ -120,5 +128,5 @@ def decision_tree_classification_predict(table, model, **params):
 
 def _decision_tree_classification_predict(table, model, prediction_col='prediction', check_input=True):
     out_table = table.copy()
-    out_table[prediction_col] = model['classifier'].predict(table[model['feature_cols']], check_input)    
+    out_table[prediction_col] = model['classifier'].predict(table[model['feature_cols']], check_input)
     return {'out_table': out_table}
