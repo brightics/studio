@@ -2,6 +2,8 @@ from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, pl
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.common.utils import get_default_from_parameters_if_required
+from brightics.common.validation import validate, greater_than_or_equal_to, from_under
 
 from statsmodels.graphics.tsaplots import plot_acf
 from statsmodels.graphics.tsaplots import plot_pacf
@@ -13,6 +15,11 @@ from matplotlib import pyplot as plt
 
 def autocorrelation(table, group_by=None, **params):
     check_required_parameters(_autocorrelation, params, ['table'])
+    params = get_default_from_parameters_if_required(params, _autocorrelation)
+    param_validation_check = [greater_than_or_equal_to(params, 1, 'nlags'),
+                              from_under(params, 0.0, 1.0, 'conf_level')]
+    validate(*param_validation_check)
+    
     if group_by is not None:
         grouped_model = _function_by_group(_autocorrelation, table, group_by=group_by, **params)
         return grouped_model

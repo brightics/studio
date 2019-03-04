@@ -12,6 +12,7 @@ from brightics.common.datasource import DbEngine
 from brightics.common.validation import raise_runtime_error
 from brightics.brightics_data_api import _write_dataframe
 import brightics.common.data.utils as data_utils
+from brightics.common.utils import check_required_parameters
 
 def unload(table, partial_path):
     path = data_utils.make_data_path_from_key(partial_path[0])
@@ -43,9 +44,13 @@ def write_to_s3(table, datasource, object_key):
     table.to_csv(csv_buffer, index=False)
     csv_buffer.seek(0)
     client.put_object(Bucket=datasource['bucketName'], Key=object_key, Body=csv_buffer.getvalue())
+    
+def write_to_db(table, **params):
+    check_required_parameters(_write_to_db, params, ['table'])
+    return _write_to_db(table, **params)
 
 
-def write_to_db(table, tableName, datasource, ifExists='fail'):
+def _write_to_db(table, tableName, datasource, ifExists='fail'):
     if not isinstance(table, pd.DataFrame):
         raise_runtime_error('table is not pandas.DataFrame')
 

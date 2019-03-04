@@ -74,7 +74,7 @@ def _cross_table(table, input_cols_1, input_cols_2, result='N', margins=False):
     |
     | {result_table}
     |
-    """.format(result=result, result_table=pandasDF2MD(result_table, num_rows=500))))
+    """.format(result=result, result_table=pandasDF2MD(result_table, num_rows=len(result_table.index)+1))))
 
     model = _model_dict('cross_table')
     model['result'] = result

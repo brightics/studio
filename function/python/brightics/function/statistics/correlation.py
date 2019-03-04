@@ -1,17 +1,21 @@
+from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD, pandasDF2MD
+from brightics.common.groupby import _function_by_group
+from brightics.common.utils import check_required_parameters
+from brightics.common.utils import get_default_from_parameters_if_required
+from brightics.common.validation import validate, greater_than, greater_than_or_equal_to
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy import stats
-from brightics.common.groupby import _function_by_group
-from brightics.common.utils import check_required_parameters
 import pandas as pd
-from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD, \
-    pandasDF2MD
-from brightics.common.validation import validate, greater_than, \
-    greater_than_or_equal_to
 
 
 def correlation(table, group_by=None, **params):
     check_required_parameters(_correlation, params, ['table'])
+    params = get_default_from_parameters_if_required(params, _correlation)
+    param_validation_check = [greater_than(params, 0, 'height'),
+                              greater_than_or_equal_to(params, 1, 'corr_prec')]
+    validate(*param_validation_check)
     if group_by is not None:
         return _function_by_group(_correlation, table, group_by=group_by, **params)
     else:
@@ -19,10 +23,6 @@ def correlation(table, group_by=None, **params):
 
 
 def _correlation(table, vars, method='pearson', height=2.5, corr_prec=2):
-    
-    validate(greater_than(height, 0, 'height'),
-             greater_than_or_equal_to(corr_prec, 1, 'corr_prec'))
-    
     size = len(vars)
     
     s_default = plt.rcParams['lines.markersize'] ** 2.

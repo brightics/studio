@@ -1,14 +1,21 @@
 from brightics.common.repr import BrtcReprBuilder, strip_margin, dict2MD
 from brightics.function.utils import _model_dict
-import numpy as np
-from sklearn.neighbors import LocalOutlierFactor
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import raise_runtime_error
+from brightics.common.validation import validate, greater_than, greater_than_or_equal_to
+
+import numpy as np
+from sklearn.neighbors import LocalOutlierFactor
 
 
 def outlier_detection_tukey_carling(table, group_by=None, **params):
     check_required_parameters(_outlier_detection_tukey_carling, params, ['table'])
+    params = get_default_from_parameters_if_required(params, _outlier_detection_tukey_carling)
+    param_validation_check = [greater_than(params, 0.0, 'multiplier')]
+    validate(*param_validation_check)
+    
     if group_by is not None:
         return _function_by_group(_outlier_detection_tukey_carling, table, group_by=group_by, **params)
     else:
@@ -142,13 +149,17 @@ def _carling(x, median, iqr, multiplier):
     
 def outlier_detection_lof(table, group_by=None, **params):
     check_required_parameters(_outlier_detection_lof, params, ['table'])
+    params = get_default_from_parameters_if_required(params, _outlier_detection_lof)
+    param_validation_check = [greater_than_or_equal_to(params, 1, 'n_neighbors')]
+        
+    validate(*param_validation_check)
     if group_by is not None:
         return _function_by_group(_outlier_detection_lof, table, group_by=group_by, **params)
     else:
         return _outlier_detection_lof(table, **params)
 
 
-def _outlier_detection_lof(table, input_cols, n_neighbors=20, result_type='add_prediction', new_column_name='is_outlier'): 
+def _outlier_detection_lof(table, input_cols, n_neighbors=20, result_type='add_prediction', new_column_name='is_outlier'):
     out_table = table.copy()
     features = out_table[input_cols]
     lof_model = LocalOutlierFactor(n_neighbors, algorithm='auto', leaf_size=30, metric='minkowski', p=2, novelty=True, contamination=0.1)
