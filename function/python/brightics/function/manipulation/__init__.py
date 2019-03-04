@@ -145,10 +145,6 @@ def replace_missing_string(table, group_by=None, **params):
 
 
 def _replace_missing_string(table, input_cols, fill_method=None, fill_string='', limit=None, downcast=None):
-    # Validation : limit >= 1
-    if limit is not None:
-        validate(greater_than_or_equal_to(limit, 1, 'limit'))
-
     _table = table.copy()
     
     if input_cols is None or len(input_cols) == 0:
