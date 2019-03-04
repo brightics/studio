@@ -1,17 +1,27 @@
-import pandas as pd
-import matplotlib.pyplot as plt
-from xgboost import XGBClassifier
-from xgboost import plot_importance, plot_tree
 from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, plt2MD, dict2MD
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.common.utils import get_default_from_parameters_if_required
+from brightics.common.validation import validate
+from brightics.common.validation import greater_than_or_equal_to
+
 import numpy as np
-from brightics.common.validation import validate, greater_than_or_equal_to
+import pandas as pd
+import matplotlib.pyplot as plt
+from xgboost import XGBClassifier
+from xgboost import plot_importance, plot_tree
 
 
 def xgb_classification_train(table, group_by=None, **params):
     check_required_parameters(_xgb_classification_train, params, ['table'])
+    
+    params = get_default_from_parameters_if_required(params, _xgb_classification_train)
+    param_validation_check = [greater_than_or_equal_to(params, 1, 'max_depth'),
+             greater_than_or_equal_to(params, 0.0, 'learning_rate'),
+             greater_than_or_equal_to(params, 1, 'n_estimators')]
+    validate(*param_validation_check)
+    
     if group_by is not None:
         grouped_model = _function_by_group(_xgb_classification_train, table, group_by=group_by, **params) 
         return grouped_model
@@ -25,9 +35,6 @@ def _xgb_classification_train(table, feature_cols, label_col, max_depth=3, learn
             scale_pos_weight=1, base_score=0.5, random_state=0, seed=None, missing=None,
             sample_weight=None, eval_set=None, eval_metric=None, early_stopping_rounds=None, verbose=True,
             xgb_model=None, sample_weight_eval_set=None):
-    validate(greater_than_or_equal_to(max_depth, 1, 'max_depth'),
-             greater_than_or_equal_to(learning_rate, 0.0, 'learning_rate'),
-             greater_than_or_equal_to(n_estimators, 1, 'n_estimators'))
     
     classifier = XGBClassifier(max_depth, learning_rate, n_estimators,
                                silent, objective, booster, n_jobs, nthread, gamma, min_child_weight,
@@ -98,6 +105,7 @@ def _xgb_classification_train(table, feature_cols, label_col, max_depth=3, learn
 
 def xgb_classification_predict(table, model, **params):
     check_required_parameters(_xgb_classification_predict, params, ['table', 'model'])
+    
     if '_grouped_data' in model:
         return _function_by_group(_xgb_classification_predict, table, model, **params)
     else:
