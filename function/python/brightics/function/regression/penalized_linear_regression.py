@@ -2,7 +2,9 @@ from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD, pandasD
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
-from brightics.function.validation import raise_runtime_error
+from brightics.common.utils import get_default_from_parameters_if_required
+from brightics.common.validation import raise_runtime_error
+from brightics.common.validation import validate, greater_than_or_equal_to, less_than_or_equal_to, greater_than, from_to
 
 import pandas as pd
 import numpy as np
@@ -17,6 +19,12 @@ from sklearn.metrics import r2_score
 
 def penalized_linear_regression_train(table, group_by=None, **params):
     check_required_parameters(_penalized_linear_regression_train, params, ['table'])
+    params = get_default_from_parameters_if_required(params, _penalized_linear_regression_train)
+    param_validation_check = [greater_than_or_equal_to(params, 0.0, 'alpha'),
+                              from_to(params, 0.0, 1.0, 'l1_ratio'),
+                              greater_than_or_equal_to(params, 1, 'max_iter'),
+                              greater_than(params, 0.0, 'tol')]
+    validate(*param_validation_check)
     if group_by is not None:
         grouped_model = _function_by_group(_penalized_linear_regression_train, table, group_by=group_by, **params)
         return grouped_model
@@ -166,6 +174,7 @@ def _penalized_linear_regression_train(table, feature_cols, label_col, regressio
     model['label_col'] = label_col
     model['regression_type'] = regression_type
     model['regression_model'] = regression_model
+    model['parameters'] = params
     model['model_parameters'] = out_table1
     model['prediction_residual'] = out_table
     model['_repr_brtc_'] = rb.get()
