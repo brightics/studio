@@ -1,9 +1,14 @@
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.common.utils import get_default_from_parameters_if_required
+from brightics.common.validation import validate, all_elements_greater_than_or_equal_to
 
 
 def add_shift(table, group_by=None, **params):
     check_required_parameters(_add_shift, params, ['table'])
+    params = get_default_from_parameters_if_required(params, _add_shift)
+    param_validation_check = [all_elements_greater_than_or_equal_to(params, 0, 'shift_list')]
+    validate(*param_validation_check)
     if group_by is not None:
         return _function_by_group(_add_shift, table, group_by=group_by, **params)
     else:
