@@ -8,7 +8,10 @@ from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_sc
 from sklearn.metrics import roc_curve, auc, precision_recall_curve, average_precision_score
 from sklearn.utils.fixes import signature
 from brightics.common.groupby import _function_by_group
+from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.utils import check_required_parameters
+from brightics.common.validation import validate, greater_than, greater_than_or_equal_to, less_than, \
+    less_than_or_equal_to, raise_runtime_error
 
 
 def evaluate_regression(table, group_by=None, **params):
@@ -262,6 +265,11 @@ def _plot_binary(label, probability, threshold=None, fig_size=(6.4, 4.8), pos_la
 
 def plot_roc_pr_curve(table, group_by=None, **params):
     check_required_parameters(_plot_roc_pr_curve, params, ['table'])
+    params = get_default_from_parameters_if_required(params, _plot_roc_pr_curve)
+    param_validation_check = [greater_than_or_equal_to(params, 0.0, 'fig_w'),
+                              greater_than_or_equal_to(params, 0.0, 'fig_h')]
+    validate(*param_validation_check)
+
     if group_by is not None:
         return _function_by_group(_plot_roc_pr_curve, table, group_by=group_by, **params)
     else:
@@ -272,7 +280,8 @@ def _plot_roc_pr_curve(table, label_col, probability_col, fig_w=6.4, fig_h=4.8, 
     label = table[label_col]
     probability = table[probability_col]
     
-    threshold, fig_tpr_fpr, fig_roc, fig_precision_recall, fig_pr, fig_confusion = _plot_binary(label, probability, fig_size=(fig_w, fig_h), pos_label=pos_label)
+    threshold, fig_tpr_fpr, fig_roc, fig_precision_recall, fig_pr, fig_confusion = \
+        _plot_binary(label, probability, fig_size=(fig_w, fig_h), pos_label=pos_label)
 
     summary = dict()
     summary['threshold'] = threshold
@@ -301,4 +310,4 @@ def _plot_roc_pr_curve(table, label_col, probability_col, fig_w=6.4, fig_h=4.8, 
                )))     
     summary['_repr_brtc_'] = rb.get()
     
-    return {'result' : summary}
+    return {'result': summary}
