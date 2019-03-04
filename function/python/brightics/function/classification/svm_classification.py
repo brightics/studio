@@ -6,19 +6,17 @@ from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, di
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
-from brightics.common.validation import validate, greater_than, greater_than_or_equal_to, less_than,\
-    less_than_or_equal_to, raise_runtime_error
+from brightics.common.validation import validate, greater_than, greater_than_or_equal_to, less_than, \
+    over_to, less_than_or_equal_to, raise_runtime_error
 import sklearn.utils as sklearn_utils
 
 
 def svm_classification_train(table, group_by=None, **params):
     check_required_parameters(_svm_classification_train, params, ['table'])
     params = get_default_from_parameters_if_required(params, _svm_classification_train)
-    param_validation_check = [greater_than(params, 0.0, 'c'),
-                              less_than_or_equal_to(params, 1.0, 'c'),
+    param_validation_check = [over_to(params, 0.0, 1.0, 'c'),
                               greater_than_or_equal_to(params, 0, 'degree'),
                               greater_than(params, 0.0, 'tol')]
-
     validate(*param_validation_check)
 
     if group_by is not None:
