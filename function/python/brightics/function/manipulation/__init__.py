@@ -5,6 +5,7 @@ import numpy as np
 import math
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate, greater_than_or_equal_to, raise_error, require_param
 
 
@@ -95,6 +96,9 @@ def _sort(table, input_cols, is_asc=None):
 
 def replace_missing_number(table, group_by=None, **params):
     check_required_parameters(_replace_missing_number, params, ['table'])
+    params = get_default_from_parameters_if_required(params, _replace_missing_number)
+    param_validation_check = [greater_than_or_equal_to(params, 1, 'limit')]
+    validate(*param_validation_check)
     if group_by is not None:
         return _function_by_group(_replace_missing_number, table, group_by=group_by, **params)
     else:
@@ -102,10 +106,6 @@ def replace_missing_number(table, group_by=None, **params):
 
 
 def _replace_missing_number(table, input_cols, fill_method=None, fill_value='value', fill_value_to=0.0, limit=None, downcast=None):
-    # Validation : limit >= 1
-    if limit is not None:
-        validate(greater_than_or_equal_to(limit, 1, 'limit'))
-
     _table = table.copy()
     
     if input_cols is None or len(input_cols) == 0:
@@ -135,6 +135,9 @@ def _replace_missing_number(table, input_cols, fill_method=None, fill_value='val
 
 def replace_missing_string(table, group_by=None, **params):
     check_required_parameters(_replace_missing_string, params, ['table'])
+    params = get_default_from_parameters_if_required(params, _replace_missing_string)
+    param_validation_check = [greater_than_or_equal_to(params, 1, 'limit')]
+    validate(*param_validation_check)
     if group_by is not None:
         return _function_by_group(_replace_missing_string, table, group_by=group_by, **params)
     else:
