@@ -36,9 +36,9 @@ def json_to_md(in_file_name):
                 description_key = 'type'
             func_input_description = func_jsonspec['meta'][func_input_name][description_key]
 #            input_str = mdformat_param.format(index=idx, name=func_input_name, description=func_input_description)
-            if 'table' in func_input_name:
+            if 'table' in func_input_description:
                 func_input_name = 'table'
-            elif 'model' in func_input_name:
+            elif 'model' in func_input_description:
                 func_input_name = 'model'
             func_inputs.append(func_input_name)
         func_vainputs_str = ', '.join(func_inputs)
