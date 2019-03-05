@@ -93,7 +93,7 @@ def _discretize_quantile(table, input_col, num_of_buckets=2, out_col_name='bucke
 
 
 def binarizer(table, **params):
-    check_required_parameters(_binarizer, ['table'])
+    check_required_parameters(_binarizer, params, ['table'])
     return _binarizer(table, **params)
 
 
