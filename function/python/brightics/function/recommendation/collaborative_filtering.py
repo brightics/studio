@@ -10,6 +10,9 @@ from brightics.common.repr import dict2MD
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.common.validation import validate
+from brightics.common.validation import greater_than_or_equal_to
+from brightics.common.utils import get_default_from_parameters_if_required
 
 def _correlation(u, v):
     u = u - np.average(u)
@@ -112,6 +115,11 @@ def _nonzeros(m, row):
         yield m.indices[index], m.data[index]
 
 def collaborative_filtering_train(table, group_by=None, **params):
+    params = get_default_from_parameters_if_required(params,_collaborative_filtering_train)
+    param_validation_check = [greater_than_or_equal_to(params, 1, 'N'),
+                              greater_than_or_equal_to(params, 1, 'k')]
+        
+    validate(*param_validation_check)
     check_required_parameters(_collaborative_filtering_train, params, ['table'])
     if group_by is not None:
         return _function_by_group(_collaborative_filtering_train, table, group_by=group_by, **params)
@@ -120,6 +128,8 @@ def collaborative_filtering_train(table, group_by=None, **params):
 
 
 def _collaborative_filtering_train(table, user_col , item_col, rating_col, N=10, k=5, based = 'item', mode='train', method = 'cosine', weighted = True, centered = True, targets = None, normalize = True):
+
+    
     if based == 'item':
         normalize = False
     table_user_col = table[user_col]
@@ -255,6 +265,11 @@ def _collaborative_filtering_train(table, user_col , item_col, rating_col, N=10,
     return{'model' : model}
 
 def collaborative_filtering_recommend(table, group_by=None, **params):
+    params = get_default_from_parameters_if_required(params,_collaborative_filtering_recommend)
+    param_validation_check = [greater_than_or_equal_to(params, 1, 'N'),
+                              greater_than_or_equal_to(params, 1, 'k')]
+        
+    validate(*param_validation_check)
     check_required_parameters(_collaborative_filtering_recommend, params, ['table'])
     if group_by is not None:
         return _function_by_group(_collaborative_filtering_recommend, table, group_by=group_by, **params)

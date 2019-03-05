@@ -13,9 +13,16 @@ from brightics.common.repr import dict2MD
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.common.validation import validate
+from brightics.common.validation import greater_than
+from brightics.common.utils import get_default_from_parameters_if_required
 
 
 def naive_bayes_train(table, group_by=None, **params):
+    params = get_default_from_parameters_if_required(params,_naive_bayes_train)
+    param_validation_check = [greater_than(params, 0, 'alpha')]
+        
+    validate(*param_validation_check)
     check_required_parameters(_naive_bayes_train, params, ['table'])
     if group_by is not None:
         return _function_by_group(_naive_bayes_train, table, group_by=group_by, **params)
@@ -24,7 +31,6 @@ def naive_bayes_train(table, group_by=None, **params):
 
 
 def _naive_bayes_train(table, feature_cols, label_col, alpha=1.0, fit_prior=True, class_prior=None):
-
     features = table[feature_cols]
     label = table[label_col]
     label_encoder = preprocessing.LabelEncoder()

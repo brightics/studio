@@ -9,8 +9,12 @@ from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD, pandasD
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
-
-
+from brightics.common.utils import get_default_from_parameters_if_required
+from brightics.common.validation import validate
+from brightics.common.validation import greater_than_or_equal_to
+from brightics.common.validation import less_than_or_equal_to
+from brightics.common.validation import greater_than
+from brightics.common.validation import from_to
 
 #-----------------------------------------------------------------------------------------------------
 """
@@ -352,12 +356,18 @@ def _table_to_transactions(table,items,user_name):
 
 def association_rule(table, group_by=None, **params):
     check_required_parameters(_association_rule, params, ['table'])
+    params = get_default_from_parameters_if_required(params,_association_rule)
+    param_validation_check = [from_to(params, 0, 1, 'min_support'),
+                              from_to(params, 0, 1, 'min_confidence')]
+        
+    validate(*param_validation_check)
     if group_by is not None:
         return _function_by_group(_association_rule, table, group_by=group_by, **params)
     else:
         return _association_rule(table, **params)
 
 def _association_rule(table, input_mode=None, array_input=None, mul_items=None, items=None,user_name=None,min_support=0.01,min_confidence=0.8,min_lift=-math.inf,max_lift=math.inf,min_conviction=-math.inf,max_conviction=math.inf):
+
     if input_mode == 'user_multiple':
         transactions = []
         for column in mul_items:
@@ -412,6 +422,13 @@ def _n_blank_strings(number):
     return result
 
 def association_rule_visualization(table, group_by=None, **params):
+    params = get_default_from_parameters_if_required(params,_association_rule_visualization)
+    param_validation_check = [greater_than(params, 0, 'figure_size_muliplier'),
+                              greater_than(params, 0, 'edge_length_scaling'),
+                              greater_than(params, 0, 'node_size_scaling'),
+                              greater_than(params, 0, 'font_size')]
+        
+    validate(*param_validation_check)
     check_required_parameters(_association_rule_visualization, params, ['table'])
     if group_by is not None:
         return _function_by_group(_association_rule_visualization, table, group_by=group_by, **params)

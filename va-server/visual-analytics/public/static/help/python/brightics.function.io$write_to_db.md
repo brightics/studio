@@ -7,8 +7,7 @@ Inserting all data from a input table to selected database.
 
 ## Properties
 ### VA
-#### Inputs
-1. **table**: table
+#### Inputs: table
 
 #### Parameters
 1. **Data Source**<b style="color:red">*</b>: Predefined datasource. List of datasources can be updated from Datasource Management dialog on GUI.
