@@ -11,8 +11,8 @@ import seaborn as sns
 def pairplot(table, group_by=None, **params):
     check_required_parameters(_pairplot, params, ['table'])
     params = get_default_from_parameters_if_required(params, _pairplot)
-    param_validation_check = [greater_than(params, 0, 'height'),
-                              greater_than(params, 0, 'aspect')]
+    param_validation_check = [greater_than(params, 0.0, 'height'),
+                              greater_than(params, 0.0, 'aspect')]
     validate(*param_validation_check)
     
     if group_by is not None:
