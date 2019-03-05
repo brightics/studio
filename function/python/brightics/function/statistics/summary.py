@@ -1,5 +1,9 @@
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.common.utils import get_default_from_parameters_if_required
+from brightics.common.validation import validate
+from brightics.common.validation import from_to
+from brightics.common.validation import all_elements_from_under
 
 import brightics.common.statistics as brtc_stats
 import pandas as pd
@@ -75,6 +79,10 @@ def _statistic_summary(table, input_cols, statistics, percentile_amounts=None, t
 
 def statistic_derivation(table, group_by=None, **params):
     check_required_parameters(_statistic_derivation, params, ['table'])
+    params = get_default_from_parameters_if_required(params,_statistic_derivation)
+    param_validation_check = [from_to(params, 0, 100, 'percentile_amounts'),
+                              all_elements_from_under(params, 0, 0.5, 'trimmed_mean_amounts')]
+    validate(*param_validation_check)
     if group_by is not None:
         return _function_by_group(_statistic_derivation, table, group_by=group_by, **params)
     else:
