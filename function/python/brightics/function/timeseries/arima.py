@@ -4,6 +4,7 @@ from brightics.common.repr import dict2MD, plt2MD, pandasDF2MD
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate
+from brightics.common.validation import from_to
 from brightics.common.validation import greater_than_or_equal_to
 from brightics.common.groupby import _function_by_group
 from brightics.function.utils import _model_dict
@@ -19,7 +20,7 @@ def arima_train(table, group_by=None, **params):
     check_required_parameters(_arima_train, params, ['table'])
     params = get_default_from_parameters_if_required(params, _arima_train)
     param_validation_check = [greater_than_or_equal_to(params, 0, 'p'),
-                              greater_than_or_equal_to(params, 0, 'd'),
+                              from_to(params, 0, 2, 'd'),
                               greater_than_or_equal_to(params, 0, 'q')]
     validate(*param_validation_check)
     if group_by is not None:
@@ -93,9 +94,9 @@ def _arima_predict(model, prediction_num):
 def auto_arima_train(table, group_by=None, **params):
     check_required_parameters(_auto_arima_train, params, ['table'])
     params = get_default_from_parameters_if_required(params, _auto_arima_train)
-    param_validation_check = [greater_than_or_equal_to(params, 0, 'max_p'),
-# if (d!=None)                 greater_than_or_equal_to(params, 0, 'd'),
-                              greater_than_or_equal_to(params, 0, 'max_q')]
+    param_validation_check = [greater_than_or_equal_to(params, 2, 'max_p'),
+                              from_to(params, 0, 2, 'd'),
+                              greater_than_or_equal_to(params, 2, 'max_q')]
     validate(*param_validation_check)
     if group_by is not None:
         return _function_by_group(_auto_arima_train, table, group_by=group_by, **params)
