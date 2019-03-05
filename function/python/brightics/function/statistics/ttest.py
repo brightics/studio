@@ -4,7 +4,7 @@ from brightics.common.repr import dict2MD
 from brightics.common.repr import pandasDF2MD
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
-from brightics.common.validation import validate 
+from brightics.common.validation import validate
 from brightics.common.validation import from_to
 from brightics.common.groupby import _function_by_group
 import numpy as np
@@ -341,6 +341,9 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
 
 def paired_ttest(table, group_by=None, **params):
     check_required_parameters(_paired_ttest, params, ['table'])
+    params = get_default_from_parameters_if_required(params, _paired_ttest)
+    param_validation_check = [from_to(params, 0, 1, 'confidence_level')]
+    validate(*param_validation_check)
     if group_by is not None:
         return _function_by_group(_paired_ttest, table, group_by=group_by, **params)
     else:
