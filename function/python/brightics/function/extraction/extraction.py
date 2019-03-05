@@ -92,7 +92,14 @@ def _discretize_quantile(table, input_col, num_of_buckets=2, out_col_name='bucke
     return {'out_table': out_table, 'model': model}
 
 
-def binarizer(table, column, threshold=0, threshold_type='greater', out_col_name=None):
+def binarizer(table, **params):
+    check_required_parameters(_binarizer, ['table'])
+    params = get_default_from_parameters_if_required(params, _binarizer)
+    validate(*param_validation_check)
+    return _binarizer(table, **params)
+
+
+def _binarizer(table, column, threshold=0, threshold_type='greater', out_col_name=None):
     out_table = table.copy()
     if out_col_name is None:
         out_col_name = 'binarized_' + str(column)
