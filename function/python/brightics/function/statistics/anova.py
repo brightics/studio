@@ -2,6 +2,10 @@ from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD, \
     pandasDF2MD, keyValues2MD
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.common.utils import get_default_from_parameters_if_required
+from brightics.common.validation import validate
+from brightics.common.validation import from_under
+#from brightics.common.exception import BrighticsFunctionException
 
 from scipy.stats import bartlett
 import seaborn as sns
@@ -13,10 +17,14 @@ from statsmodels.stats.anova import anova_lm
 from statsmodels.stats.multicomp import pairwise_tukeyhsd
 import numpy as np
 import pandas as pd
-from brightics.common.exception import BrighticsFunctionException
 
 
-def bartletts_test(table, response_cols, factor_col):
+def bartletts_test(table, **params):
+    check_required_parameters(_bartletts_test, params, ['table'])
+    return _bartletts_test(table, **params)
+
+
+def _bartletts_test(table, response_cols, factor_col):
     groups = table[factor_col].unique()
     
     data_list = []
@@ -54,6 +62,7 @@ def bartletts_test(table, response_cols, factor_col):
 
 def oneway_anova(table, group_by=None, **params):
     check_required_parameters(_oneway_anova, params, ['table'])
+    
     if group_by is not None:
         return _function_by_group(_oneway_anova, table, group_by=group_by, **params)
     else:
