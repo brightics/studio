@@ -18,7 +18,7 @@ from brightics.common.validation import validate, greater_than_or_equal_to
 def pca(table, group_by=None, **params):
     check_required_parameters(_pca, params, ['table'])
     params = get_default_from_parameters_if_required(params,_pca)
-    param_validation_check = [greater_than_or_equal_to(params, 1, 'n_components')]
+    param_validation_check = [from_to(params, 1, len(params['input_cols']), 'n_components')]
     validate(*param_validation_check)
     if group_by is not None:
         grouped_model = _function_by_group(_pca, table, group_by=group_by, **params)
