@@ -17,7 +17,7 @@ from statsmodels.tsa.holtwinters import ExponentialSmoothing
 def holt_winters_train(table, group_by=None, **params):
     check_required_parameters(_holt_winters_train, params, ['table'])
     params = get_default_from_parameters_if_required(params,_holt_winters_train)
-    param_validation_check = [greater_than_or_equal_to(params, 1, 'period')]
+    param_validation_check = [greater_than_or_equal_to(params, 2, 'period')]
     validate(*param_validation_check)
     if group_by is not None:
         return _function_by_group(_holt_winters_train, table, group_by=group_by, **params)
