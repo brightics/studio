@@ -3,6 +3,7 @@ import pandas as pd
 from brightics.common.groupby import _function_by_group
 from brightics.common.validation import raise_runtime_error
 from brightics.common.utils import check_required_parameters
+from brightics.common.utils import get_default_from_parameters_if_required
 import brightics.common.statistics as brtc_stat
 
 
@@ -81,6 +82,7 @@ def pivot(table, values, aggfunc, index=None, columns=None):  # TODO
 
 def transpose(table, group_by=None, **params):
     check_required_parameters(_transpose, params, ['table'])
+    params = get_default_from_parameters_if_required(params,_transpose)
     if group_by is not None:
         return _function_by_group(_transpose, table, group_by=group_by, **params)
     else:
