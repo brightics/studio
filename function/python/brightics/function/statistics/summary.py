@@ -1,9 +1,9 @@
-import pandas as pd
-import brightics.common.statistics as brtc_stats
-import numpy as np
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 
+import brightics.common.statistics as brtc_stats
+import pandas as pd
+import numpy as np
 
 def statistic_summary(table, group_by=None, **params):
     check_required_parameters(_statistic_summary, params, ['table'])
