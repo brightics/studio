@@ -1,11 +1,16 @@
 package com.samsung.sds.brightics.common.workflow.flowrunner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.samsung.sds.brightics.common.workflow.flowrunner.job.DefaultJobRunnerApi;
 import com.samsung.sds.brightics.common.workflow.flowrunner.job.JobRunner;
 import com.samsung.sds.brightics.common.workflow.flowrunner.vo.JobParam;
 
 public class JobRunnerBuilder {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(JobRunnerBuilder.class);
+	
 	private AbsJobRunnerApi jobRunnerApi;
 	private JobRunnerConfig config;
 
@@ -42,6 +47,7 @@ public class JobRunnerBuilder {
 		}
 
 		if (jobRunnerApi == null) {
+			LOGGER.warn("Set default job runner API. default API only generates logs.");
 			jobRunnerApi = new DefaultJobRunnerApi();
 		}
 		JobRunner jobRunner = new JobRunner(jobParam, jobRunnerApi, config);
