@@ -34,8 +34,6 @@ def _pca(table, input_cols, new_column_name='projected_', n_components=None, cop
     if n_components is None:
         n_components = num_feature_cols
     
-    validate(greater_than_or_equal_to(n_components, 1, 'n_components'))
-        
     pca = PCA(None, copy, whiten, svd_solver, tol, iterated_power, random_state = seed)
     pca_model = pca.fit(table[input_cols])
         
