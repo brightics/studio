@@ -38,13 +38,20 @@ def _cross_table(table, input_cols_1, input_cols_2, result='N', margins=False):
     if len(input_cols_1) == 1:
         joined_row_name = [str(i) for i in row_names]
     else:
-        joined_row_name = ['_'.join(str(s) for s in row_names[i]) for i in range(len(row_names))]
+        if margins==False:
+            joined_row_name = ['_'.join(str(s) for s in row_names[i]) for i in range(len(row_names))]
+        elif margins==True:
+            joined_row_name = ['_'.join(str(s) for s in row_names[i]) for i in range(len(row_names)-1)] + [row_names[-1][0]]
+            
   
     column_names = list(result_table.columns)[:]
     if len(input_cols_2) == 1:
         joined_column_name = [str(i) for i in column_names]
     else:
-        joined_column_name = ['_'.join(str(s) for s in column_names[i]) for i in range(len(column_names))]
+        if margins==False:
+            joined_column_name = ['_'.join(str(s) for s in column_names[i]) for i in range(len(column_names))]
+        elif margins==True:
+            joined_column_name = ['_'.join(str(s) for s in column_names[i]) for i in range(len(column_names)-1)] + [column_names[-1][0]]
 
     # cross table
     if result == 'N':
