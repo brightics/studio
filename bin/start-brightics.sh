@@ -30,4 +30,5 @@ cd $BRIGHTICS_PACKAGES_HOME/brightics-server
 # Visual Analytics
 cd $BRIGHTICS_PACKAGES_HOME/visual-analytics
 $BRIGHTICS_PACKAGES_HOME/lib/node/node app.js --user_id $USER_ID --access_token $ACCESS_TOKEN &>/dev/null &
+echo $! > va.pid
 
