@@ -94,13 +94,6 @@ def _kmeans_train_predict(table, input_cols, n_clusters=3, prediction_col='predi
     if n_samples is None:
         n_samples = len(inputarr)
         
-    validate(greater_than_or_equal_to(n_clusters, 1, 'n_clusters'),
-             greater_than_or_equal_to(n_init, 1, 'n_init'),
-             greater_than_or_equal_to(max_iter, 1, 'max_iter'),
-             greater_than(tol, 0.0, 'tol'),
-             greater_than_or_equal_to(n_jobs, 1, 'n_jobs'),
-             greater_than_or_equal_to(n_samples, 0, 'n_samples'))
-        
     k_means = SKKMeans(n_clusters=n_clusters, init=init, n_init=n_init,
              max_iter=max_iter, tol=tol, precompute_distances=precompute_distances,
              verbose=0, random_state=seed, copy_x=True, n_jobs=n_jobs, algorithm=algorithm)
