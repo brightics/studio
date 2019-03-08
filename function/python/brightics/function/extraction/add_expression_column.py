@@ -1,3 +1,4 @@
+from brightics.common.utils import check_required_parameters
 from pandasql import sqldf
 from brightics.function.transform import sql_execute
 from brightics.common.repr import strip_margin
@@ -18,7 +19,12 @@ def add_expression_column(table, new_cols, formulas, expr_type='sqlite'):
     return {'out_table':_table}
 
 
-def add_expression_column_if(table, new_col, conditions, values, else_value, expr_type='sqlite'):
+def add_expression_column_if(table, **params):
+    check_required_parameters(_add_expression_column_if, params, ['table'])
+    return _add_expression_column_if(table, **params)
+
+
+def _add_expression_column_if(table, new_col, conditions, values, else_value, expr_type='sqlite'):
     _table = table.copy()
 
     _condition_size = min(len(conditions), len(values))
