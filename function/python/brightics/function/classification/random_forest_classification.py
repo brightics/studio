@@ -62,7 +62,7 @@ def _random_forest_classification_train(table, feature_cols, label_col,
     if max_features == "None":
         max_features = None
             
-    classifier = RandomForestClassifier(n_estimators, criterion, max_depth, min_samples_split, min_samples_leaf, min_weight_fraction_leaf, max_features, max_leaf_nodes, min_impurity_decrease)  # , bootstrap, oob_score, n_jobs, random_state, verbose, warm_start, class_weight)
+    classifier = RandomForestClassifier(n_estimators, criterion, max_depth, min_samples_split, min_samples_leaf, min_weight_fraction_leaf, max_features, max_leaf_nodes, min_impurity_decrease, bootstrap, oob_score, n_jobs, random_state, verbose, warm_start, class_weight)
     classifier.fit(X_train, y_train) 
 
     params = {'feature_cols': feature_cols,
@@ -85,7 +85,6 @@ def _random_forest_classification_train(table, feature_cols, label_col,
              'class_weight': class_weight}
     
     model = dict()
-    # get_param = classifier.get_params()
     model['classifier'] = classifier
     model['params'] = params
 

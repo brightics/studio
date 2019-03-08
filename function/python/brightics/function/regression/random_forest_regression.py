@@ -61,7 +61,7 @@ def _random_forest_regression_train(table, feature_cols, label_col,
     if max_features == "None":
         max_features = None
             
-    regressor = RandomForestRegressor(n_estimators, criterion, max_depth, min_samples_split, min_samples_leaf, min_weight_fraction_leaf, max_features, max_leaf_nodes, min_impurity_decrease)  # , bootstrap, oob_score, n_jobs, random_state, verbose, warm_start)
+    regressor = RandomForestRegressor(n_estimators, criterion, max_depth, min_samples_split, min_samples_leaf, min_weight_fraction_leaf, max_features, max_leaf_nodes, min_impurity_decrease, bootstrap, oob_score, n_jobs, random_state, verbose, warm_start)
     regressor.fit(X_train, y_train) 
 
     params = {'feature_cols': feature_cols,
@@ -83,7 +83,6 @@ def _random_forest_regression_train(table, feature_cols, label_col,
              'warm_start': warm_start}
     
     model = dict()
-    # get_param = regressor.get_params()
     model['regressor'] = regressor
     model['params'] = params
 
