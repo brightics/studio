@@ -142,7 +142,7 @@ def all_elements_over_under(params, over_v, under_v, var_name):
         return None
 
 
-def raise_error(error_code, error_message_params, true_condition=False):
+def raise_error(error_code, error_message_params=[], true_condition=False):
     if not true_condition:
         raise BrighticsFunctionException(error_code, error_message_params)
 
