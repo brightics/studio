@@ -32,12 +32,6 @@ public class WorkflowModelRunner extends AbsModelRunner {
 
             LoggerUtil.pushMDC("mid", mid);
 
-            // TODO realtime 로직 추가
-//			if (duration != -1) {
-//				context.beanHolder.streamService.checkActiveStream(context.agentId);
-//				logger.info("[MODEL PREPARE] Stream is available.");
-//			}
-
             logger.info("[MODEL START]");
             JobContextHolder.getJobStatusTracker().startModel(mid, this.pid);
 

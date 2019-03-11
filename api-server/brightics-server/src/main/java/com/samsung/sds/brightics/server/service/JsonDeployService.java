@@ -22,7 +22,6 @@ import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
 import com.samsung.sds.brightics.common.core.util.JsonUtil;
 import com.samsung.sds.brightics.common.workflow.flowrunner.data.PreparedData;
 import com.samsung.sds.brightics.common.workflow.flowrunner.vo.JobParam;
-import com.samsung.sds.brightics.common.workflow.util.JobParamUtil;
 import com.samsung.sds.brightics.server.common.util.AuthenticationUtil;
 import com.samsung.sds.brightics.server.common.util.ResultMapUtil;
 import com.samsung.sds.brightics.server.service.repository.JobRepository;
@@ -114,7 +113,7 @@ public class JsonDeployService {
         }
 
         if(globalVariable != null) {
-        	JobParamUtil.overrideVariables(jobParam, JsonUtil.toJsonObject(globalVariable));
+        	jobParam.overrideVariables(JsonUtil.toJsonObject(globalVariable));
         }
 	}
 

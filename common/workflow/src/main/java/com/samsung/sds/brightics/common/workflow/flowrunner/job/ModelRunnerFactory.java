@@ -15,14 +15,6 @@ final class ModelRunnerFactory {
             case "etl":
             case "script":
                 return new WorkflowModelRunner(model, pid);
-            // TODO realtime 로직 추가
-			/*
-			case "realtime":
-				if (model.get("duration").getAsInt() == -1) {
-					throw new BrighticsException(BrighticsServerMessage.EXCEPTION_INVALID_DURATION_TIME);
-				}
-				return new WorkflowModelRunner(model, pid);
-			*/
             case "deeplearning":
                 return new DeeplearningflowModelRunner(model, pid);
             default:
