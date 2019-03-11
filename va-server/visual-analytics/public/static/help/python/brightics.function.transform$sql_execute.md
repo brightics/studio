@@ -165,7 +165,7 @@ This function returns value for executed SQL Query. For a description of core fu
 1. **tables**: tables
 
 #### Parameters
-1. **Query**<b style="color:red">*</b>: SQL Query
+1. **SQL**<b style="color:red">*</b>: SQL Query
 
 #### Outputs
 1. **out_table**: table
