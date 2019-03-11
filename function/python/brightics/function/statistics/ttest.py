@@ -6,6 +6,7 @@ from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate
 from brightics.common.validation import from_to
+from brightics.common.validation import raise_error
 from brightics.common.groupby import _function_by_group
 import numpy as np
 import pandas as pd
@@ -226,7 +227,7 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
         for i in range(len(table[factor_col])):
             if table[factor_col][i] is not None and table[factor_col][i] not in tmp_factors:
                 if len(tmp_factors) == 2:
-                    raise Exception("Elements of factor column should be less than three.")
+                    raise_error('0719', 'factor_col')
                 else:
                     tmp_factors += [table[factor_col][i]]
     if first is None:
