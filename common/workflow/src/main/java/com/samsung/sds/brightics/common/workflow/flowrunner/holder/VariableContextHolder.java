@@ -29,7 +29,7 @@ public class VariableContextHolder {
 	public VariableContext getUserVariableContext(String user) {
 		return Optional.ofNullable(variableContextMap.get(user)).orElseGet(() -> {
 			VariableContext newVariableContext = new VariableContext(getUserVariableScope(user));
-			newVariableContext.addJsLibrary(new MomentJsLibrary());
+			newVariableContext.addJsLibrary(MomentJsLibrary.getInstance());
 			return newVariableContext;
 		});
 	}
