@@ -2,7 +2,6 @@ package com.samsung.sds.brightics.common.workflow.flowrunner;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.samsung.sds.brightics.common.workflow.context.parameter.Parameters;
 import com.samsung.sds.brightics.common.workflow.flowrunner.vo.JobParam;
 import com.samsung.sds.brightics.common.workflow.flowrunner.vo.JobStatusVO;
 
@@ -24,8 +23,6 @@ public abstract class AbsJobRunnerApi {
 	abstract public void stopTask(String taskId, String name, String context);
 
 	//API related to meta data.
-	abstract public JsonObject getDatasourceInfo(String name); //for import data.
-	abstract public String getScriptWithParam(Parameters params); //for ad python function.
 	abstract public boolean isMetadataRequest(JsonObject json); 
 	abstract public JsonElement convert(JsonObject json);
 	abstract public void updateJobStatus(JobParam jobParam, JobStatusVO jobStatusVO);
@@ -35,7 +32,6 @@ public abstract class AbsJobRunnerApi {
 	abstract public void addDataAlias(String source, String alias);
 	
 	//API for execute deep learning flow 
-	abstract public String getKerasPredictScript(String outDFAlias, JsonObject param);
 	abstract public void executeDLScript(JsonObject model, String jid);
 	
 }

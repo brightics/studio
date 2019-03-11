@@ -169,19 +169,6 @@ public class JobRunner implements IJobRunner {
 		JobContextHolder.getJobRunnerAPI().updateJobStatus(jobParam, status);
 	}
 
-//	private Map<String, String> buildExceptionInfo(Exception e) {
-//		Map<String, String> exceptionMap = new HashMap<>();
-//		if (e instanceof AbsBrighticsException) {
-//			AbsBrighticsException be = (AbsBrighticsException) e;
-//			exceptionMap.put("message", be.getMessage());
-//			exceptionMap.put("detailMessage", be.detailedCause);
-//		} else {
-//			exceptionMap.put("message", new BrighticsCoreException("3001").getMessage());
-//			exceptionMap.put("detailMessage", ExceptionUtils.getStackTrace(e));
-//		}
-//		return exceptionMap;
-//	}
-
     private JobErrorVO buildExceptionInfo(Exception e) {
         if (e instanceof AbsBrighticsException) {
             AbsBrighticsException be = (AbsBrighticsException) e;

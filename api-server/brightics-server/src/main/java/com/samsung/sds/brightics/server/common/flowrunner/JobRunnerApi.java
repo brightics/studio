@@ -2,15 +2,12 @@ package com.samsung.sds.brightics.server.common.flowrunner;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.samsung.sds.brightics.common.core.util.JsonUtil;
-import com.samsung.sds.brightics.common.workflow.context.parameter.Parameters;
 import com.samsung.sds.brightics.common.workflow.flowrunner.AbsJobRunnerApi;
 import com.samsung.sds.brightics.common.workflow.flowrunner.vo.JobParam;
 import com.samsung.sds.brightics.common.workflow.flowrunner.vo.JobStatusVO;
 import com.samsung.sds.brightics.server.common.holder.BeanHolder;
 import com.samsung.sds.brightics.server.common.message.task.TaskMessageBuilder;
 import com.samsung.sds.brightics.server.common.message.task.TaskMessageRepository;
-import com.samsung.sds.brightics.server.common.util.keras.KerasScriptUtil;
 
 public class JobRunnerApi extends AbsJobRunnerApi {
 
@@ -37,16 +34,6 @@ public class JobRunnerApi extends AbsJobRunnerApi {
 	}
 
 	@Override
-	public JsonObject getDatasourceInfo(String name) {
-		return JsonUtil.toJsonObject(BeanHolder.getBeanHolder().dataSourceService.getDatasourceInfo(name));
-	}
-
-	@Override
-	public String getScriptWithParam(Parameters params) {
-		return BeanHolder.getBeanHolder().pyFunctionService.getScriptWithParam(params);
-	}
-
-	@Override
 	public boolean isMetadataRequest(JsonObject json) {
 		return BeanHolder.getBeanHolder().metadataConverterService.isMetadataRequest(json);
 	}
@@ -70,11 +57,6 @@ public class JobRunnerApi extends AbsJobRunnerApi {
 	@Override
 	public void addDataAlias(String source, String alias) {
 		BeanHolder.getBeanHolder().dataService.addDataAlias(source, alias);
-	}
-
-	@Override
-	public String getKerasPredictScript(String outDFAlias, JsonObject param) {
-		return KerasScriptUtil.getKerasPredictScript(outDFAlias, param);
 	}
 
 	@Override

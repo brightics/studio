@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.samsung.sds.brightics.common.workflow.context.parameter.Parameters;
 import com.samsung.sds.brightics.common.workflow.flowrunner.AbsJobRunnerApi;
 import com.samsung.sds.brightics.common.workflow.flowrunner.vo.JobParam;
 import com.samsung.sds.brightics.common.workflow.flowrunner.vo.JobStatusVO;
@@ -40,18 +39,6 @@ public class DefaultJobRunnerApi extends AbsJobRunnerApi {
 	}
 
 	@Override
-	public JsonObject getDatasourceInfo(String name) {
-		logger.info(String.format("[Get datasource info] name : %s", name));
-		return null;
-	}
-
-	@Override
-	public String getScriptWithParam(Parameters params) {
-		logger.info(String.format("[Get script] params : %s", params));
-		return null;
-	}
-
-	@Override
 	public boolean isMetadataRequest(JsonObject json) {
 		logger.info(String.format("[Is metadata request] json : %s", json.toString()));
 		return false;
@@ -77,12 +64,6 @@ public class DefaultJobRunnerApi extends AbsJobRunnerApi {
 	@Override
 	public void addDataAlias(String source, String alias) {
 		logger.info(String.format("[Get data alias] source : %s, alias : %s", source, alias));
-	}
-
-	@Override
-	public String getKerasPredictScript(String outDFAlias, JsonObject param) {
-		logger.info(String.format("[Get keras predict script] out DF alias : %s, param : %s", outDFAlias, param));
-		return null;
 	}
 
 	@Override

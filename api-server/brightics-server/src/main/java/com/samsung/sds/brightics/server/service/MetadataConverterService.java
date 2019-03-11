@@ -2,10 +2,13 @@ package com.samsung.sds.brightics.server.service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +17,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.samsung.sds.brightics.common.core.util.JsonUtil;
 import com.samsung.sds.brightics.server.common.util.ValidationUtil;
+import com.samsung.sds.brightics.server.common.util.keras.KerasScriptUtil;
 import com.samsung.sds.brightics.server.model.entity.BrtcDatasources;
 import com.samsung.sds.brightics.server.model.entity.BrtcS3Datasource;
 import com.samsung.sds.brightics.server.model.entity.BrtcScript;
@@ -36,6 +40,9 @@ public class MetadataConverterService {
     
     @Autowired
     public BrtcS3DatasourceRepository brtcS3DatasourceRepository;
+    
+    @Autowired
+    public PyFunctionService pyFunctionService;
 
 
     public static final String METADATA_KEY = "metadata";
@@ -91,6 +98,33 @@ public class MetadataConverterService {
         }
         
     };
+    
+    public final Function<JsonObject, JsonElement> PY_FUNCTION = new Function<JsonObject, JsonElement>() {
+    	@Override
+		public JsonElement apply(JsonObject t) {
+			StringBuilder sb = new StringBuilder();
+			String scriptId = t.get("script-id").getAsString();
+			Map<String, JsonElement> filteredParam = t.entrySet().stream()
+					.filter(entry -> !"script-id".equals(entry.getKey()))
+					.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+			String pythonParamsJson = JsonUtil.toJson(filteredParam);
+			if (StringUtils.isNoneBlank(pythonParamsJson)) {
+				sb.append(String.format("params = %s", pythonParamsJson));
+				sb.append(System.lineSeparator());
+			}
+			sb.append(pyFunctionService.getScriptAsId(scriptId));
+			return JsonUtil.toJsonObject(sb.toString());
+		}
+    };
+
+    public final Function<JsonObject, JsonElement> KERAS_PREDICT = new Function<JsonObject, JsonElement>() {
+    	@Override
+    	public JsonElement apply(JsonObject t) {
+    		String outDFAlias = t.get("outDFAlias").getAsString();
+    		String kerasPredictScript = KerasScriptUtil.getKerasPredictScript(outDFAlias, t);
+    		return JsonUtil.toJsonObject(kerasPredictScript);
+    	}
+    };
 
     @PostConstruct
     public void initConverterFunctions() {
@@ -98,6 +132,8 @@ public class MetadataConverterService {
         metadataRepositoryFunctions.put("script", SCRIPT);
         metadataRepositoryFunctions.put("datasource", DATASOURCE);
         metadataRepositoryFunctions.put("s3", S3_DATASOURCE);
+        metadataRepositoryFunctions.put("pyfunction", PY_FUNCTION);
+        metadataRepositoryFunctions.put("keraspredict", KERAS_PREDICT);
     }
 
     public boolean isMetadataRequest(JsonObject json) {

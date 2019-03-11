@@ -1,5 +1,7 @@
 package com.samsung.sds.brightics.common.workflow.flowrunner.job.model.impl;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -15,6 +17,7 @@ import com.samsung.sds.brightics.common.core.exception.AbsBrighticsException;
 import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
 import com.samsung.sds.brightics.common.core.util.IdGenerator;
 import com.samsung.sds.brightics.common.core.util.JsonObjectUtil;
+import com.samsung.sds.brightics.common.core.util.JsonUtil;
 import com.samsung.sds.brightics.common.core.util.LoggerUtil;
 import com.samsung.sds.brightics.common.core.util.ValidationUtil;
 import com.samsung.sds.brightics.common.workflow.context.WorkContext;
@@ -159,7 +162,9 @@ public class FunctionWork extends Work {
         }
         try {
             // get python function script.
-            pb.add("script", JobContextHolder.getJobRunnerAPI().getScriptWithParam(resolvedParameters));
+        	JsonObject paramObject = resolvedParameters.toJsonObject();
+        	paramObject.addProperty("metadata", "pyfunction");
+            pb.add("script", JobContextHolder.getJobRunnerAPI().convert(paramObject).getAsString());
         } catch (Exception e) {
             throw new BrighticsCoreException("3137").initCause(e);
         }
@@ -177,7 +182,10 @@ public class FunctionWork extends Work {
         outTableAlias.add(resultDF);
 
         try {
-            String script = JobContextHolder.getJobRunnerAPI().getKerasPredictScript(resultDF, resolvedParameters.toJsonObject());
+        	JsonObject paramObject = resolvedParameters.toJsonObject();
+        	paramObject.addProperty("metadata", "keraspredict");
+    		paramObject.addProperty("outDFAlias", resultDF);
+            String script = JobContextHolder.getJobRunnerAPI().convert(paramObject).getAsString();
             pb.add("script", script);
             pb.add("out-table-alias", outTableAlias);
         } catch (Exception e) {
@@ -206,7 +214,12 @@ public class FunctionWork extends Work {
             // data flow file upload does not have datasource-name
             if ("jdbc".equals(datasourceType) && params.contains(DATASOURCE_NAME) && StringUtils.isNotEmpty(params.getString(DATASOURCE_NAME))) {
                 String dataSourceName = params.getString(DATASOURCE_NAME);
-                JsonObject datasourceInfo = JobContextHolder.getJobRunnerAPI().getDatasourceInfo(dataSourceName);
+
+                Map<String, String> metaMap = new HashMap<>();
+                metaMap.put("metadata", "datasource");
+                metaMap.put("datasourceName", dataSourceName);
+                JsonElement datasourceElm = JobContextHolder.getJobRunnerAPI().convert(JsonUtil.toJsonObject(metaMap));
+                JsonObject datasourceInfo = datasourceElm.getAsJsonObject();
                 pb.add("ip", datasourceInfo.get("ip"));
                 pb.add("port", datasourceInfo.get("port"));
                 pb.add("username", datasourceInfo.get("username"));
