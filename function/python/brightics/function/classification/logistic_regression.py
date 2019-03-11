@@ -10,10 +10,20 @@ from brightics.common.utils import check_required_parameters
 from brightics.common.validation import raise_runtime_error
 from brightics.common.validation import raise_error
 import sklearn.utils as sklearn_utils
+from brightics.common.utils import get_default_from_parameters_if_required
+from brightics.common.validation import validate
+from brightics.common.validation import greater_than
+from brightics.common.validation import greater_than_or_equal_to
 
 
 def logistic_regression_train(table, group_by=None, **params):
     check_required_parameters(_logistic_regression_train, params, ['table'])
+    params = get_default_from_parameters_if_required(params, _logistic_regression_train)
+    param_validation_check = [greater_than(params, 0.0, 'C'),
+                              greater_than_or_equal_to(params, 1, 'max_iter'),
+                              greater_than(params, 0.0, 'tol')]
+    validate(*param_validation_check)
+
     if group_by is not None:
         grouped_model = _function_by_group(_logistic_regression_train, table, group_by=group_by, **params)
         return grouped_model
@@ -21,14 +31,19 @@ def logistic_regression_train(table, group_by=None, **params):
         return _logistic_regression_train(table, **params)
 
 
-def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dual=False, tol=0.0001, C=1.0, fit_intercept=True, intercept_scaling=1, class_weight=None, random_state=None, solver='liblinear', max_iter=100, multi_class='ovr', verbose=0, warm_start=False, n_jobs=1):
+def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dual=False, tol=0.0001, C=1.0,
+                               fit_intercept=True, intercept_scaling=1, class_weight=None, random_state=None,
+                               solver='liblinear', max_iter=100, multi_class='ovr', verbose=0, warm_start=False,
+                               n_jobs=1):
+
     features = table[feature_cols]
     label = table[label_col]
 
     if(sklearn_utils.multiclass.type_of_target(label) == 'continuous'):
-        raise_runtime_error('''Label Column should not be continuous.''')
+        raise_error('0718')
     
-    lr_model = LogisticRegression(penalty, dual, tol, C, fit_intercept, intercept_scaling, class_weight, random_state, solver, max_iter, multi_class, verbose, warm_start, n_jobs)
+    lr_model = LogisticRegression(penalty, dual, tol, C, fit_intercept, intercept_scaling, class_weight, random_state,
+                                  solver, max_iter, multi_class, verbose, warm_start, n_jobs)
     lr_model.fit(features, label)
 
     intercept = lr_model.intercept_
@@ -86,7 +101,9 @@ def logistic_regression_predict(table, model, **params):
         return _logistic_regression_predict(table, model, **params)
 
 
-def _logistic_regression_predict(table, model, prediction_col='prediction', prob_prefix='probability', output_log_prob=False, log_prob_prefix='log_probability', thresholds=None, suffix='index'):
+def _logistic_regression_predict(table, model, prediction_col='prediction', prob_prefix='probability',
+                                 output_log_prob=False, log_prob_prefix='log_probability', thresholds=None,
+                                 suffix='index'):
     feature_cols = model['features']
     features = table[feature_cols]
     lr_model = model['lr_model']

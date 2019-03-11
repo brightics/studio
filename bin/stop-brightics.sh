@@ -7,5 +7,5 @@ cd $BRIGHTICS_PACKAGES_HOME/brightics-server
 ./stop-server.sh
 
 # Visual Analytics
-kill -9 `pgrep -f node`
+kill -9 `cat  $BRIGHTICS_PACKAGES_HOME/visual-analytics/va.pid`
 

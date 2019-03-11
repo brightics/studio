@@ -5,13 +5,20 @@ from brightics.function.utils import _model_dict
 from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, dict2MD
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
-from brightics.common.validation import validate, greater_than, \
-    raise_runtime_error
+from brightics.common.utils import get_default_from_parameters_if_required
+from brightics.common.validation import validate, greater_than, greater_than_or_equal_to, less_than, \
+    over_to, less_than_or_equal_to, raise_runtime_error
 import sklearn.utils as sklearn_utils
 
 
 def svm_classification_train(table, group_by=None, **params):
     check_required_parameters(_svm_classification_train, params, ['table'])
+    params = get_default_from_parameters_if_required(params, _svm_classification_train)
+    param_validation_check = [over_to(params, 0.0, 1.0, 'c'),
+                              greater_than_or_equal_to(params, 0, 'degree'),
+                              greater_than(params, 0.0, 'tol')]
+    validate(*param_validation_check)
+
     if group_by is not None:
         grouped_model = _function_by_group(_svm_classification_train, table, group_by=group_by, **params)
         return grouped_model
@@ -19,10 +26,8 @@ def svm_classification_train(table, group_by=None, **params):
         return _svm_classification_train(table, **params)
 
 
-def _svm_classification_train(table, feature_cols, label_col, c=1.0, kernel='rbf', degree=3, gamma='auto', coef0=0.0, shrinking=True,
-              probability=True, tol=1e-3, max_iter=-1, random_state=None):
-    validate(greater_than(c, 0.0, 'c'))
-    
+def _svm_classification_train(table, feature_cols, label_col, c=1.0, kernel='rbf', degree=3, gamma='auto', coef0=0.0,
+                              shrinking=True, probability=True, tol=1e-3, max_iter=-1, random_state=None):
     _table = table.copy()
     
     _feature_cols = _table[feature_cols]
@@ -62,7 +67,9 @@ def svm_classification_predict(table, model, **params):
         return _svm_classification_predict(table, model, **params)
 
 
-def _svm_classification_predict(table, model, prediction_col='prediction', prob_prefix='probability', display_log_prob=False, log_prob_prefix='log_probability', thresholds=None, suffix='index'):
+def _svm_classification_predict(table, model, prediction_col='prediction', prob_prefix='probability',
+                                display_log_prob=False, log_prob_prefix='log_probability', thresholds=None,
+                                suffix='index'):
     _table = table.copy()
     
     feature_cols = model['features']
@@ -100,11 +107,11 @@ def _svm_classification_predict(table, model, prediction_col='prediction', prob_
     
     if display_log_prob == True:
         log_prob = svc_model.predict_log_proba(features)
-        logprob_cols = ['{log_probability_col}_{suffix}'.format(log_probability_col=log_prob_prefix, suffix=suffix) for suffix in suffixes]
+        logprob_cols = ['{log_probability_col}_{suffix}'.format(log_probability_col=log_prob_prefix, suffix=suffix)
+                        for suffix in suffixes]
         logprob_df = pd.DataFrame(data=log_prob, columns=logprob_cols)
         out_table = pd.concat([out_table, prob_df, logprob_df], axis=1)
     else:
         out_table = pd.concat([out_table, prob_df], axis=1)
-        
-    
+
     return {'out_table' : out_table}

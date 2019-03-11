@@ -2,6 +2,10 @@ from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, di
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.common.utils import get_default_from_parameters_if_required
+from brightics.common.validation import validate
+from brightics.common.validation import greater_than_or_equal_to
+from brightics.common.validation import greater_than
 
 import numpy as np
 import pandas as pd
@@ -10,6 +14,12 @@ from sklearn.mixture import GaussianMixture
 
 def gaussian_mixture_train(table, group_by=None, **params):
     check_required_parameters(_gaussian_mixture_train, params, ['table'])
+    params = get_default_from_parameters_if_required(params,_gaussian_mixture_train)
+    param_validation_check = [greater_than_or_equal_to(params, 1, 'number_of_components'),
+                              greater_than(params, 0, 'tolerance'),
+                              greater_than(params, 0, 'regularize_covariance'),
+                              greater_than_or_equal_to(params, 1, 'max_iteration')]
+    validate(*param_validation_check)
     if group_by is not None:
         return _function_by_group(_gaussian_mixture_train, table, group_by=group_by, **params)
     else:

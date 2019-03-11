@@ -5,6 +5,9 @@ from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, pl
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.common.utils import get_default_from_parameters_if_required
+from brightics.common.validation import validate
+from brightics.common.validation import from_to
 import seaborn as sns
 import numpy as np
 import matplotlib.cm as cm
@@ -14,6 +17,9 @@ from brightics.common.validation import validate, greater_than_or_equal_to
 
 def pca(table, group_by=None, **params):
     check_required_parameters(_pca, params, ['table'])
+    params = get_default_from_parameters_if_required(params,_pca)
+    param_validation_check = [from_to(params, 1, len(params['input_cols']), 'n_components')]
+    validate(*param_validation_check)
     if group_by is not None:
         grouped_model = _function_by_group(_pca, table, group_by=group_by, **params)
         return grouped_model
@@ -22,15 +28,13 @@ def pca(table, group_by=None, **params):
     
     
 def _pca(table, input_cols, new_column_name='projected_', n_components=None, copy=True, whiten=False, svd_solver='auto',
-            tol=0.0, iterated_power='auto', random_state=None, hue=None, alpha=0, key_col=None):
+            tol=0.0, iterated_power='auto', seed=None, hue=None, alpha=0, key_col=None):
     
     num_feature_cols = len(input_cols)
     if n_components is None:
         n_components = num_feature_cols
     
-    validate(greater_than_or_equal_to(n_components, 1, 'n_components'))
-        
-    pca = PCA(None, copy, whiten, svd_solver, tol, iterated_power, random_state)
+    pca = PCA(None, copy, whiten, svd_solver, tol, iterated_power, random_state = seed)
     pca_model = pca.fit(table[input_cols])
         
     column_names = []

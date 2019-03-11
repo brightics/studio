@@ -8,9 +8,11 @@ from sklearn.metrics.cluster.unsupervised import silhouette_score, \
     silhouette_samples
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
+from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.utils import check_required_parameters
-from brightics.common.validation import validate, greater_than_or_equal_to, \
-    greater_than, all_elements_greater_than, raise_runtime_error
+from brightics.common.utils import get_default_from_parameters_if_required
+from brightics.common.validation import validate
+from brightics.common.validation import greater_than_or_equal_to, greater_than, all_elements_greater_than, raise_runtime_error
 
 
 def _kmeans_centers_plot(input_cols, cluster_centers):
@@ -68,6 +70,16 @@ def _kmeans_pca_plot(labels, cluster_centers, pca2_model, pca2):
 
 def kmeans_train_predict(table, group_by=None, **params):
     check_required_parameters(_kmeans_train_predict, params, ['table'])
+    
+    params = get_default_from_parameters_if_required(params, _kmeans_train_predict)
+    param_validation_check = [greater_than_or_equal_to(params, 1, 'n_clusters'),
+             greater_than_or_equal_to(params, 1, 'n_init'),
+             greater_than_or_equal_to(params, 1, 'max_iter'),
+             greater_than(params, 0.0, 'tol'),
+             greater_than_or_equal_to(params, 1, 'n_jobs'),
+             greater_than_or_equal_to(params, 0, 'n_samples')]
+    validate(*param_validation_check)
+    
     if group_by is not None:
         grouped_model = _function_by_group(_kmeans_train_predict, table, group_by=group_by, **params)
         return grouped_model
@@ -162,6 +174,15 @@ def _kmeans_predict(table, model, prediction_col='prediction'):
 
 def kmeans_silhouette_train_predict(table, group_by=None, **params):
     check_required_parameters(_kmeans_silhouette_train_predict, params, ['table'])
+    params = get_default_from_parameters_if_required(params, _kmeans_silhouette_train_predict)
+    param_validation_check = [all_elements_greater_than(params, 1, 'n_clusters_list'),
+                              greater_than_or_equal_to(params, 1, 'n_init'),
+                              greater_than_or_equal_to(params, 1, 'max_iter'),
+                              greater_than(params, 0.0, 'tol'),
+                              greater_than_or_equal_to(params, 1, 'n_jobs'),
+                              greater_than_or_equal_to(params, 0, 'n_samples')]
+    validate(*param_validation_check)
+
     if group_by is not None:
         grouped_model = _function_by_group(_kmeans_silhouette_train_predict, table, group_by=group_by, **params) 
         return grouped_model
@@ -169,32 +190,25 @@ def kmeans_silhouette_train_predict(table, group_by=None, **params):
         return _kmeans_silhouette_train_predict(table, **params)
     
 
-def _kmeans_silhouette_train_predict(table, input_cols, n_clusters_list=range(2, 10), prediction_col='prediction', init='k-means++', n_init=10,
-             max_iter=300, tol=1e-4, precompute_distances='auto', seed=None,
-             n_jobs=1, algorithm='auto', n_samples=None):
+def _kmeans_silhouette_train_predict(table, input_cols, n_clusters_list=range(2, 10), prediction_col='prediction',
+                                     init='k-means++', n_init=10, max_iter=300, tol=1e-4, precompute_distances='auto',
+                                     seed=None, n_jobs=1, algorithm='auto', n_samples=None):
     if n_samples is None:
         n_samples = len(table)
     inputarr = table[input_cols]
-    
-    validate(all_elements_greater_than(n_clusters_list, 1, 'n_clusters_list'),
-         greater_than_or_equal_to(n_init, 1, 'n_init'),
-         greater_than_or_equal_to(max_iter, 1, 'max_iter'),
-         greater_than(tol, 0.0, 'tol'),
-         greater_than_or_equal_to(n_jobs, 1, 'n_jobs'),
-         greater_than_or_equal_to(n_samples, 0, 'n_samples'))
     
     pca2_model = PCA(n_components=2).fit(inputarr)
     pca2 = pca2_model.transform(inputarr)
     
     silhouette_list = []
-    silouette_samples_list = []
+    silhouette_samples_list = []
     models = []
     centers_list = []
     images = []
     for k in n_clusters_list:
-        k_means = SKKMeans(n_clusters=k, init=init, n_init=n_init,
-             max_iter=max_iter, tol=tol, precompute_distances=precompute_distances,
-             verbose=0, random_state=seed, copy_x=True, n_jobs=n_jobs, algorithm=algorithm)
+        k_means = SKKMeans(n_clusters=k, init=init, n_init=n_init, max_iter=max_iter, tol=tol,
+                           precompute_distances=precompute_distances, verbose=0, random_state=seed, copy_x=True,
+                           n_jobs=n_jobs, algorithm=algorithm)
         k_means.fit(inputarr)
         models.append(k_means)
         predict = k_means.labels_
@@ -204,7 +218,7 @@ def _kmeans_silhouette_train_predict(table, input_cols, n_clusters_list=range(2,
         score = silhouette_score(inputarr, predict)
         silhouette_list.append(score)
         samples = silhouette_samples(inputarr, predict)
-        silouette_samples_list.append(samples)
+        silhouette_samples_list.append(samples)
     
         pca2_centers = pca2_model.transform(centersk)
 
@@ -262,7 +276,8 @@ def _kmeans_silhouette_train_predict(table, input_cols, n_clusters_list=range(2,
     | {fig_centers}
     | {fig_samples}
     |
-    """.format(fig_silhouette=fig_silhouette, best_k=best_k, fig_pca=fig_pca, fig_centers=fig_centers, fig_samples=fig_samples)))
+    """.format(fig_silhouette=fig_silhouette, best_k=best_k, fig_pca=fig_pca, fig_centers=fig_centers,
+               fig_samples=fig_samples)))
 
     for k, image in zip(n_clusters_list, images):
         rb.addMD(strip_margin("""
@@ -281,4 +296,4 @@ def _kmeans_silhouette_train_predict(table, input_cols, n_clusters_list=range(2,
     out_table = table.copy()
     out_table[prediction_col] = predict
     
-    return {'out_table':out_table, 'model':model}
+    return {'out_table': out_table, 'model': model}

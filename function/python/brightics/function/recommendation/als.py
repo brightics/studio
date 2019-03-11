@@ -12,6 +12,9 @@ from brightics.common.repr import dict2MD
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.common.validation import validate
+from brightics.common.validation import greater_than_or_equal_to
+from brightics.common.utils import get_default_from_parameters_if_required
 
 #--------------------------------------------------------------------------------------------------------
 """
@@ -195,6 +198,15 @@ def least_squares(implicit, alpha, Rui, X, Y, regularization):
 
 def als_train(table, group_by=None, **params):
     check_required_parameters(_als_train, params, ['table'])
+    params = get_default_from_parameters_if_required(params,_als_train)
+    param_validation_check = [greater_than_or_equal_to(params, 1, 'number'),
+                              greater_than_or_equal_to(params, 1, 'iterations'),
+                              greater_than_or_equal_to(params, 0.1, 'reg_param'),
+                              greater_than_or_equal_to(params, 1, 'rank'),
+                              greater_than_or_equal_to(params, 0, 'alpha'),
+                              greater_than_or_equal_to(params, 0, 'seed')]
+        
+    validate(*param_validation_check)
     if group_by is not None:
         return _function_by_group(_als_train, table, group_by=group_by, **params)
     else:
@@ -202,6 +214,7 @@ def als_train(table, group_by=None, **params):
 
 
 def _als_train(table, user_col, item_col, rating_col, mode = 'train', number=10, implicit = False, iterations = 10, reg_param = 0.1, rank = 10, alpha = 1.0, seed = None, targets = None):
+
     table_user_col = table[user_col]
     table_item_col = table[item_col]
     rating_col = table[rating_col]
@@ -259,7 +272,8 @@ def _als_train(table, user_col, item_col, rating_col, mode = 'train', number=10,
     parameters['Reg Param'] = reg_param
     parameters['Seed'] = seed
     parameters['Rank'] = rank
-    parameters['alpha'] = alpha
+    if implicit:
+        parameters['alpha'] = alpha
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## ALS Train Result
@@ -286,6 +300,15 @@ def _als_train(table, user_col, item_col, rating_col, mode = 'train', number=10,
 
 def als_recommend(table, group_by=None, **params):
     check_required_parameters(_als_recommend, params, ['table'])
+    params = get_default_from_parameters_if_required(params,_als_recommend)
+    param_validation_check = [greater_than_or_equal_to(params, 1, 'number'),
+                              greater_than_or_equal_to(params, 1, 'iterations'),
+                              greater_than_or_equal_to(params, 0.1, 'reg_param'),
+                              greater_than_or_equal_to(params, 1, 'rank'),
+                              greater_than_or_equal_to(params, 0, 'alpha'),
+                              greater_than_or_equal_to(params, 0, 'seed')]
+        
+    validate(*param_validation_check)
     if group_by is not None:
         return _function_by_group(_als_recommend, table, group_by=group_by, **params)
     else:

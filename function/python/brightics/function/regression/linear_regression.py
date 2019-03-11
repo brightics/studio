@@ -13,9 +13,15 @@ from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils.table_converters import simple_tables2df_list
 from brightics.function.utils import _model_dict
-
+from brightics.common.validation import validate
+from brightics.common.validation import greater_than_or_equal_to
+from brightics.common.utils import get_default_from_parameters_if_required
 
 def linear_regression_train(table, group_by=None, **params):
+    params = get_default_from_parameters_if_required(params,_linear_regression_train)
+    param_validation_check = [greater_than_or_equal_to(params, 1, 'vif_threshold')]
+        
+    validate(*param_validation_check)
     check_required_parameters(_linear_regression_train, params, ['table'])
     if group_by is not None:
         grouped_model = _function_by_group(_linear_regression_train, table, group_by=group_by, **params)

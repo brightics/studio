@@ -256,7 +256,7 @@ process.on('uncaughtException', function (err) {
 //     return dbType + '://' + dbUserName + '@' + dbAddress;
 // };
 
-var server = http.createServer(app).listen(__BRTC_CONF.port, function () {
+var server = http.createServer(app).listen(__BRTC_CONF.port, __BRTC_CONF.host || '0.0.0.0', function () {
     log.info('   O');
     log.info('  P');
     log.info(' E');
