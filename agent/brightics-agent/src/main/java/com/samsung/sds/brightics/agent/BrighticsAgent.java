@@ -113,7 +113,7 @@ public class BrighticsAgent {
                 logger.info("Agent over idle time. start to terminate agent.");
                 Runtime.getRuntime().exit(0);
             }
-        }, SystemEnvUtil.IDLE_TIME_MIN * 1000 * 60);
+        }, SystemEnvUtil.IDLE_TIME_MIN * 1000 * 60L);
     }
 
     private static void destroyProcess() {

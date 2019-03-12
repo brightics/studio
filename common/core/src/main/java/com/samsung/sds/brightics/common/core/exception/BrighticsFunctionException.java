@@ -18,14 +18,14 @@ public class BrighticsFunctionException extends AbsBrighticsException {
 
 	private static final long serialVersionUID = 1L;
 
-	public List<brighticsErrorVO> brtcErrors = new ArrayList<>();
+	public List<BrighticsErrorVO> brtcErrors = new ArrayList<>();
 	public String functionName;
 	public boolean isParsing = false;
 	
-	public class brighticsErrorVO {
+	public static class BrighticsErrorVO {
 		public String code;
 		public String[] params;
-		public brighticsErrorVO(String code, String[] params){
+		public BrighticsErrorVO(String code, String[] params){
 			this.code = code;
 			this.params = params;
 		}
@@ -35,7 +35,7 @@ public class BrighticsFunctionException extends AbsBrighticsException {
 	 * @param code  : set just error code number. ex) 0001
 	 */
 	public BrighticsFunctionException(String code) {
-		this.brtcErrors.add(new brighticsErrorVO("FN"+ HYPHEN + code, ArrayUtils.EMPTY_STRING_ARRAY));
+		this.brtcErrors.add(new BrighticsErrorVO("FN"+ HYPHEN + code, ArrayUtils.EMPTY_STRING_ARRAY));
 	}
 
 	/**
@@ -43,7 +43,7 @@ public class BrighticsFunctionException extends AbsBrighticsException {
 	 * @param params : exception message parameters. ex) {column, in-data}
 	 */
 	public BrighticsFunctionException(String code, String[] params) {
-		this.brtcErrors.add(new brighticsErrorVO("FN"+ HYPHEN + code, params));
+		this.brtcErrors.add(new BrighticsErrorVO("FN"+ HYPHEN + code, params));
 	}
 	
 	/**
@@ -52,7 +52,7 @@ public class BrighticsFunctionException extends AbsBrighticsException {
 	public BrighticsFunctionException(List<Map<String, String[]>> errors) {
 		for (Map<String, String[]> error : errors) {
 			for (String code : error.keySet()) {
-				this.brtcErrors.add(new brighticsErrorVO("FN"+ HYPHEN + code, error.get(code)));
+				this.brtcErrors.add(new BrighticsErrorVO("FN"+ HYPHEN + code, error.get(code)));
 			}
 		}
 	}
@@ -71,7 +71,7 @@ public class BrighticsFunctionException extends AbsBrighticsException {
 	 */
 	public BrighticsFunctionException setTagFunction(String functionName) {
 		this.functionName = functionName;
-		for (brighticsErrorVO brighticsErrorVO : brtcErrors) {
+		for (BrighticsErrorVO brighticsErrorVO : brtcErrors) {
 			if(brighticsErrorVO.params.length > 0){
 				isParsing = true;
 				break;
