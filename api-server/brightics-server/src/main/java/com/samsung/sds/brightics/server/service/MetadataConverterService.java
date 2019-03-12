@@ -136,17 +136,17 @@ public class MetadataConverterService {
         metadataRepositoryFunctions.put("keraspredict", KERAS_PREDICT);
     }
 
-    public boolean isMetadataRequest(JsonObject json) {
+    private boolean isMetadataRequest(JsonObject json) {
         return json.has(METADATA_KEY) && metadataRepositoryFunctions.containsKey(json.get(METADATA_KEY).getAsString());
     }
 
-    public JsonElement convert(JsonObject json) {
-        Function<JsonObject, JsonElement> func = metadataRepositoryFunctions.get(json.get(METADATA_KEY).getAsString());
-        if (func == null) {
-            return json;
-        } else {
-            return func.apply(json);
-        }
-    }
+	public JsonElement convert(JsonObject json) {
+		if (isMetadataRequest(json)) {
+			return metadataRepositoryFunctions.get(json.get(METADATA_KEY).getAsString()).apply(json);
+		} else {
+			return json;
+		}
+
+	}
 
 }

@@ -13,12 +13,8 @@ public class MetadataVariableResolver implements IVariableResolver {
         // 1. Make sure this JsonElement represents metadata.
         if(elem != null && elem.isJsonObject()){
             JsonObject json = elem.getAsJsonObject();
-            if(JobContextHolder.getJobRunnerAPI().isMetadataRequest(json)){
-                // 2. Change the elem. Applying functions for the metadata repositories.
-                return JobContextHolder.getJobRunnerAPI().convert(json);
-            } else {
-                return elem;
-            }
+            // 2. Change the elem. Applying functions for the metadata repositories.
+            return JobContextHolder.getJobRunnerAPI().convert(json);
         } else {
             // don't touch anything.
             return elem;

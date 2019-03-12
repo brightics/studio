@@ -15,10 +15,9 @@ public class DefaultJobRunnerApi extends AbsJobRunnerApi {
 	
 	
 	@Override
-	public String executeTask(String taskId, String name, String parameters, String attributes) {
+	public void executeTask(String taskId, String name, String parameters, String attributes) {
 		logger.info(String.format("[Execute task] task Id : %s, function name : %s, parameters : %s, attributes : %s",
 				taskId, name, parameters, attributes));
-		return taskId;
 	}
 
 	@Override
@@ -39,12 +38,6 @@ public class DefaultJobRunnerApi extends AbsJobRunnerApi {
 	}
 
 	@Override
-	public boolean isMetadataRequest(JsonObject json) {
-		logger.info(String.format("[Is metadata request] json : %s", json.toString()));
-		return false;
-	}
-
-	@Override
 	public JsonElement convert(JsonObject json) {
 		logger.info(String.format("[Metadata convert] json : %s", json.toString()));
 		return null;
@@ -56,8 +49,8 @@ public class DefaultJobRunnerApi extends AbsJobRunnerApi {
 	}
 
 	@Override
-	public Object getData(String mid, String tid, long min, long max) {
-		logger.info(String.format("[Get data] mid : %s, tid : %s", mid, tid));
+	public Object getData(String key, long min, long max) {
+		logger.info(String.format("[Get data] key : %s", key));
 		return null;
 	}
 

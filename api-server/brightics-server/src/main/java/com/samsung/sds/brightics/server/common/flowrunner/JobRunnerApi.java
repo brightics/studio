@@ -12,10 +12,9 @@ import com.samsung.sds.brightics.server.common.message.task.TaskMessageRepositor
 public class JobRunnerApi extends AbsJobRunnerApi {
 
 	@Override
-	public String executeTask(String taskId, String name, String parameters, String attributes) {
+	public void executeTask(String taskId, String name, String parameters, String attributes) {
 		BeanHolder.getBeanHolder().taskService.executeTask(TaskMessageBuilder.newBuilder(taskId, name)
 				.setAttributes(attributes).setParameters(parameters).build());
-		return taskId;
 	}
 
 	@Override
@@ -34,11 +33,6 @@ public class JobRunnerApi extends AbsJobRunnerApi {
 	}
 
 	@Override
-	public boolean isMetadataRequest(JsonObject json) {
-		return BeanHolder.getBeanHolder().metadataConverterService.isMetadataRequest(json);
-	}
-
-	@Override
 	public JsonElement convert(JsonObject json) {
 		return BeanHolder.getBeanHolder().metadataConverterService.convert(json);
 	}
@@ -46,12 +40,11 @@ public class JobRunnerApi extends AbsJobRunnerApi {
 	@Override
 	public void updateJobStatus(JobParam jobParam, JobStatusVO jobStatusVO) {
 		BeanHolder.getBeanHolder().jobStatusService.updateJobStatus(jobParam, jobStatusVO);
-
 	}
 
 	@Override
-	public Object getData(String mid, String tid, long min, long max) {
-		return BeanHolder.getBeanHolder().dataService.getData(mid, tid, min, max);
+	public Object getData(String key, long min, long max) {
+		return BeanHolder.getBeanHolder().dataService.getData(key, min, max);
 	}
 
 	@Override

@@ -28,7 +28,6 @@ import com.samsung.sds.brightics.server.common.thread.concurrent.JobModelExecute
 import com.samsung.sds.brightics.server.common.util.LoggerUtil;
 import com.samsung.sds.brightics.server.common.util.ResultMapUtil;
 import com.samsung.sds.brightics.server.common.util.ValidationUtil;
-import com.samsung.sds.brightics.server.model.vo.ExceptionInfoVO;
 import com.samsung.sds.brightics.server.service.repository.JobRepository;
 
 @Service

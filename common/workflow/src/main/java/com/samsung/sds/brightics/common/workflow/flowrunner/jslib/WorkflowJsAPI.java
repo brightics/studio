@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.annotations.JSFunction;
@@ -97,9 +99,8 @@ public class WorkflowJsAPI extends ScriptableObject {
 	 */
 	@JSFunction
 	public synchronized Object getCellValue(String tableName, String columnName, int rowNumber) {
-
-		Object result = JobContextHolder.getJobRunnerAPI().getData(
-				JobContextHolder.getJobStatusTracker().getCurrentModelMid(), tableName, rowNumber - 1, rowNumber);
+		String dataKey = buildDataKey(JobContextHolder.getJobStatusTracker().getCurrentModelMid(), tableName);
+		Object result = JobContextHolder.getJobRunnerAPI().getData(dataKey, rowNumber - 1, rowNumber);
 
 		JsonObject table = Optional.ofNullable(JsonUtil.jsonToObject(result.toString()))
 				.orElseThrow(() -> new BrighticsCoreException("3102", "no data")).getAsJsonObject("data");
@@ -108,6 +109,11 @@ public class WorkflowJsAPI extends ScriptableObject {
 		LOGGER.info("[WORKFLOW.JS] cell : {}", cellValue);
 		return cellValue;
 	}
+	
+	private String buildDataKey(String mid, String tid) {
+        String user = JobContextHolder.getJobStatusTracker().getJobStatus().getUser();
+        return Stream.of(user, mid, tid).collect(Collectors.joining("/", "/", ""));
+    }
 
 	private Object extractColumnValue(JsonObject table, String columnName) {
 		if (table.getAsJsonArray("data").size() <= 0) {
