@@ -142,12 +142,13 @@ public class MetaDataService {
             String remotePath = jsonToParam.getOrException("remotePath");
             long limit = jsonToParam.getOrDefault("limit", 100L).longValue();
             InputStream in = FileClient.open(remotePath);
-            BufferedReader br = new BufferedReader(new InputStreamReader(in));
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < limit; i++) {
-                sb.append(br.readLine());
-                if (i < limit - 1) {
-                    sb.append("\n");
+            try(BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
+                for (int i = 0; i < limit; i++) {
+                    sb.append(br.readLine());
+                    if (i < limit - 1) {
+                        sb.append("\n");
+                    }
                 }
             }
             return getSuccessResult(sb.toString());
