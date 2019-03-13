@@ -17,8 +17,9 @@ from brightics.common.validation import validate
 from brightics.common.validation import greater_than_or_equal_to
 from brightics.common.utils import get_default_from_parameters_if_required
 
+
 def linear_regression_train(table, group_by=None, **params):
-    params = get_default_from_parameters_if_required(params,_linear_regression_train)
+    params = get_default_from_parameters_if_required(params, _linear_regression_train)
     param_validation_check = [greater_than_or_equal_to(params, 1, 'vif_threshold')]
         
     validate(*param_validation_check)
@@ -30,12 +31,12 @@ def linear_regression_train(table, group_by=None, **params):
         return _linear_regression_train(table, **params)
 
     
-def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True, is_vif=True, vif_threshold=10):
+def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True, is_vif=False, vif_threshold=10):
     features = table[feature_cols]
     label = table[label_col]
 
     if fit_intercept == True:
-        features = sm.add_constant(features)
+        features = sm.add_constant(features, has_constant='add')
         lr_model_fit = sm.OLS(label, features).fit()
     else:
         lr_model_fit = sm.OLS(label, features).fit()
@@ -136,19 +137,19 @@ def linear_regression_predict(table, model, **params):
 
 def _linear_regression_predict(table, model, prediction_col='prediction'):
 
+    result = table.copy()
     feature_cols = model['features']
-    features = table[feature_cols]
+    features = result[feature_cols]
     fit_intercept = model['fit_intercept']
 
     lr_model_fit = model['lr_model']
 
     if fit_intercept == True:
-        features = sm.add_constant(features)
+        features = sm.add_constant(features, has_constant='add')
         prediction = lr_model_fit.predict(features)
     else:
         prediction = lr_model_fit.predict(features)
 
-    result = table.copy()
     result[prediction_col] = prediction
 
     return {'out_table' : result}
