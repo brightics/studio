@@ -12,6 +12,7 @@ from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate
 from brightics.common.validation import greater_than_or_equal_to
 from brightics.common.validation import raise_error
+import sklearn.utils as sklearn_utils
 
 
 def decision_tree_classification_train(table, group_by=None, **params):
