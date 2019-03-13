@@ -1,6 +1,3 @@
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier 
 from brightics.common.repr import BrtcReprBuilder
 from brightics.common.repr import strip_margin
@@ -12,6 +9,11 @@ from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate
 from brightics.common.validation import greater_than_or_equal_to
+from brightics.common.validation import raise_error
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
 
 
 def random_forest_classification_train(table, group_by=None, **params):
@@ -57,19 +59,22 @@ def _random_forest_classification_train(table, feature_cols, label_col,
     
     X_train = table[feature_cols]
     y_train = table[label_col]   
+
+    if(sklearn_utils.multiclass.type_of_target(y_train) == 'continuous'):
+        raise_error('0718', 'label_col')
     
     if max_features == "None":
         max_features = None
             
-    classifier = RandomForestClassifier(n_estimators = n_estimators, 
-                                        criterion = criterion, 
-                                        max_depth = max_depth, 
-                                        min_samples_split = min_samples_split, 
-                                        min_samples_leaf = min_samples_leaf, 
-                                        min_weight_fraction_leaf = min_weight_fraction_leaf, 
-                                        max_features = max_features, 
-                                        max_leaf_nodes = max_leaf_nodes, 
-                                        min_impurity_decrease = min_impurity_decrease, 
+    classifier = RandomForestClassifier(n_estimators=n_estimators,
+                                        criterion=criterion,
+                                        max_depth=max_depth,
+                                        min_samples_split=min_samples_split,
+                                        min_samples_leaf=min_samples_leaf,
+                                        min_weight_fraction_leaf=min_weight_fraction_leaf,
+                                        max_features=max_features,
+                                        max_leaf_nodes=max_leaf_nodes,
+                                        min_impurity_decrease=min_impurity_decrease,
                                         random_state=random_state)
     classifier.fit(X_train, y_train) 
 

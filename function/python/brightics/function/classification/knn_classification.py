@@ -1,9 +1,11 @@
-from sklearn.neighbors import KNeighborsClassifier 
-import pandas as pd
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate
 from brightics.common.validation import greater_than_or_equal_to
+from brightics.common.validation import raise_error
+
+from sklearn.neighbors import KNeighborsClassifier 
+import pandas as pd
 
 
 def knn_classification(train_table, test_table, **params):
@@ -23,6 +25,9 @@ def _knn_classification(train_table, test_table, feature_cols, label_col, k=5, a
     X_train = train_table[feature_cols]
     y_train = train_table[label_col]
     X_test = test_table[feature_cols]
+    
+    if(sklearn_utils.multiclass.type_of_target(y_train) == 'continuous'):
+        raise_error('0718', 'label_col')
 
     knn = KNeighborsClassifier(n_neighbors=k, algorithm=algorithm, leaf_size=leaf_size, p=p)
     

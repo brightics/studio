@@ -11,6 +11,7 @@ from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate
 from brightics.common.validation import greater_than_or_equal_to
+from brightics.common.validation import raise_error
 
 
 def decision_tree_classification_train(table, group_by=None, **params):
@@ -35,13 +36,18 @@ def decision_tree_classification_train(table, group_by=None, **params):
         return _decision_tree_classification_train(table, **params)
 
 
-def _decision_tree_classification_train(table, feature_cols, label_col, # fig_size=np.array([6.4, 4.8]),
+def _decision_tree_classification_train(table, feature_cols, label_col,  # fig_size=np.array([6.4, 4.8]),
                                         criterion='gini', splitter='best', max_depth=None, min_samples_split=2,
                                         min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_features=None,
                                         random_state=None, max_leaf_nodes=None, min_impurity_decrease=0.0,
                                         min_impurity_split=None, class_weight=None, presort=False, sample_weight=None,
                                         check_input=True, X_idx_sorted=None):
 
+    y_train = table[label_col]
+    
+    if(sklearn_utils.multiclass.type_of_target(y_train) == 'continuous'):
+        raise_error('0718', 'label_col')
+        
     classifier = DecisionTreeClassifier(criterion, splitter, max_depth, min_samples_split, min_samples_leaf,
                                        min_weight_fraction_leaf, max_features, random_state, max_leaf_nodes,
                                        min_impurity_decrease, min_impurity_split, class_weight, presort)
