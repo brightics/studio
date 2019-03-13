@@ -17,7 +17,7 @@ var subPathUrl = subPath ? ('/' + subPath) : ('');
 var baseUrl = __BRTC_CONF['callback-host'] + subPathUrl + '/';
 
 var responseFunctionHelp_DL = function (req, res, operation, palette, addon_js) {
-    __REQ_fs.readFile(__REQ_path.join(__dirname, '../../../../public/static/help/scala/' + operation + '.md'), { encoding: 'utf-8' }, function (err, data) {
+    __REQ_fs.readFile(__REQ_path.join(__dirname, '../../../../public/static/help/scala/' + operation + '.md'), {encoding: 'utf-8'}, function (err, data) {
         var innerHtml;
         var status;
         if (!err) {
@@ -65,7 +65,7 @@ var responseFunctionHelp = function (req, res, operation, palette, fileContents)
             func2spec[spec.func] = spec;
         });
         filename = (func2spec[operation] && func2spec[operation].name) ? func2spec[operation].name : filename;
-        __REQ_fs.readFile(__REQ_path.join(__dirname, '../../../../public/static/help/' + context + '/' + filename + '.md'), { encoding: 'utf-8' }, function (err, data) {
+        __REQ_fs.readFile(__REQ_path.join(__dirname, '../../../../public/static/help/' + context + '/' + filename + '.md'), {encoding: 'utf-8'}, function (err, data) {
             var innerHtml;
             var status;
             if (!err) {
@@ -98,7 +98,7 @@ var responseFunctionHelp = function (req, res, operation, palette, fileContents)
                     '<li>We recommend you to preprocess abnormal values such as NaN or null beforehand. You can use Brightics preprocessing functions before analyzing data.</li>' +
                     '<li>The result of the function may vary depending on the system even if the same seed is used.</li>' +
                     '<li>The results of Spark and Python functions may differ even if you use the same function because of the internal algorithms are different.</li>' +
-                    '</ul>';
+                    '</ul>' +
                     '</div>' +
                     '</div>';
 
@@ -123,11 +123,12 @@ var responseFunctionHelp = function (req, res, operation, palette, fileContents)
 };
 
 var renderFunctionHelp = function (req, res) {
+    const matFn = (func) => (fnUnit) => fnUnit.func === func;
     try {
         var operation = req.params.name || '_default';
         if (operation.startsWith('udf_')) {
             getPalette(req, res)
-                .then(({ palette, fileContents, dbContents }) => {
+                .then(({palette, fileContents, dbContents}) => {
                     var func = operation.substring(4);
                     var cont = dbContents.filter((element) => element.id === func)[0];
                     var pmd = (cont && cont.markdown && cont.markdown !== null) ? cont.markdown : '';
@@ -146,45 +147,39 @@ var renderFunctionHelp = function (req, res) {
                         version: __BRTC_CONF['use-spark'],
                     });
                 });
-        } else {
-            var modelType = req.query.type;
-            if (modelType === 'deeplearning') {
-                var palette = getPaletteByModelType(modelType);
-                responseFunctionHelp_DL(req, res, operation, palette);
-            } else if (modelType === 'script') {
-                getPaletteModelType(req, res, modelType)
-                    .then(({ palette }) => {
-                        responseFunctionHelp(req, res, operation, palette, []);
-                    });
-            } else {
-                getPalette(req, res)
-                    .then(({ palette, fileContents }) => {
-                    for (var f in fileContents) {
+            return;
+        }
+        var modelType = req.query.type;
+        if (modelType === 'deeplearning') {
+            var palette = getPaletteByModelType(modelType);
+            responseFunctionHelp_DL(req, res, operation, palette);
+            return;
+        }
+        if (modelType === 'script') {
+            getPaletteModelType(req, res, modelType)
+                .then(({palette}) => {
+                    responseFunctionHelp(req, res, operation, palette, []);
+                });
+            return;
+        }
+        getPalette(req, res)
+            .then(({palette, fileContents}) => {
+                for (var f in fileContents) {
                     var func = fileContents[f].specJson.func;
                     var category = fileContents[f].specJson.category;
 
-                    var exist = false;
                     var obj = {func: func, visible: true};
 
                     for (var c in palette) {
-                        if (palette[c].key === category) {
-                            for (var k in palette[c].functions) {
-                                var fnUnit = palette[c].functions[k];
-                                if (fnUnit.func === func) {
-                                    exist = true;
-                                    break;
-                                }
-                            }
-                            if (!exist && category !== 'udf') {
-                                palette[c].functions.push(obj);
-                            }
+                        if (palette[c].key !== category) continue;
+                        var exist = palette[c].functions.some(matFn(func));
+                        if (!exist && category !== 'udf') {
+                            palette[c].functions.push(obj);
                         }
                     }
                 }
-                        responseFunctionHelp(req, res, operation, palette, fileContents);
-                    });
-            }
-        }
+                responseFunctionHelp(req, res, operation, palette, fileContents);
+            });
     } catch (err) {
         __BRTC_ERROR_HANDLER.sendError(res, 35021);
     }
@@ -215,7 +210,7 @@ var responseFormatHelp = function (req, res) {
         })
             ? req.query.context
             : '';
-        __REQ_fs.readFile(__REQ_path.join(__dirname, '../../../../public/static/help/' + context + '/' + operation + '.md'), { encoding: 'utf-8' }, function (err, data) {
+        __REQ_fs.readFile(__REQ_path.join(__dirname, '../../../../public/static/help/' + context + '/' + operation + '.md'), {encoding: 'utf-8'}, function (err, data) {
             var html = '<!DOCTYPE html><html><head></head><body>' + md.render(data) + '</body></html>';
             var callback = function (formatText) {
                 res.json({

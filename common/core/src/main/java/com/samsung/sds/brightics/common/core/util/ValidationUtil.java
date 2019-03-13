@@ -20,7 +20,7 @@ public class ValidationUtil {
         } else {
             if (((object instanceof String) && StringUtils.isBlank((String) object))
                 || ((object instanceof List) && ((List) object).isEmpty())
-                || ((object instanceof Arrays) && ArrayUtils.isEmpty((Object[]) object))
+                || ((object instanceof Object[]) && ArrayUtils.isEmpty((Object[]) object))
                 || ((object instanceof ArrayList) && (((ArrayList) object).size() == 0))
                 || ((object instanceof Integer) && ((Integer) object == 0))) {
                 // This %s doesn't exist.

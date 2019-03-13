@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
 import com.samsung.sds.brightics.common.core.exception.BrighticsFunctionException;
-import com.samsung.sds.brightics.common.core.exception.BrighticsFunctionException.brighticsErrorVO;
+import com.samsung.sds.brightics.common.core.exception.BrighticsFunctionException.BrighticsErrorVO;
 import com.samsung.sds.brightics.common.core.exception.BrighticsUncodedException;
 import com.samsung.sds.brightics.common.core.exception.provider.ExceptionProvider;
 import com.samsung.sds.brightics.common.core.util.JsonUtil;
@@ -98,7 +98,7 @@ public class TaskMessageManager {
 
 	private String getFunctionLabelParsedMessage(BrighticsFunctionException bfe) {
 		List<String> exceptionMessages = new ArrayList<>();
-		for(brighticsErrorVO brtcError : bfe.brtcErrors){
+		for(BrighticsErrorVO brtcError : bfe.brtcErrors){
 			String errorCode = brtcError.code;
 			String[] params = new String[brtcError.params.length];
 			for (int i = 0; i < params.length; i++) {

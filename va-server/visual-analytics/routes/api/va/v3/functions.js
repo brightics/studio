@@ -1,5 +1,5 @@
 const locations = {
-    js: [   './public/js/va/functions/',
+    js: ['./public/js/va/functions/',
         './public/js/va/addonfunctions/'],
     // json: [ './public/js/va/functions/json/',
     //     './public/js/va/addonfunctions/json/'],
@@ -38,13 +38,13 @@ const DBLoadPromise = (req, res, palette) => new Promise((resolve, reject) => {
                 const list = JSON.parse(response.body);
                 list.forEach(fn => {
                     const name = fn.id
-                    const item = {func: name, visible: true, deletable: fn.creator === req.user.id? true: false}
+                    const item = {func: name, visible: true, deletable: fn.creator === req.user.id ? true : false}
                     const category = JSON.parse(fn.contents).category
                     const list = palette.filter(p => p.key === category)
                     // const action =
-                        list.reduce((s, i) => s || !i.functions.some(obj => obj.func === name), false) ?
-                            list.map(obj => obj.functions.push(item)) && `success ${name}` :
-                            `fail ${name}`;
+                    list.reduce((s, i) => s || !i.functions.some(obj => obj.func === name), false) ?
+                        list.map(obj => obj.functions.push(item)) && `success ${name}` :
+                        `fail ${name}`;
                 })
                 resolve(list);
             } else {
@@ -63,9 +63,9 @@ const JSLoader = (palette, list) => {
             const item = {func: name, visible: true};
             const list = palette.filter(p => p.key === category)
             // const action =
-                list.reduce((s, i) => s || !i.functions.some(obj => obj.func === name), false) ?
-                    list.map(obj => obj.functions.push(item)) && `success ${name}` :
-                    `fail ${name}`;
+            list.reduce((s, i) => s || !i.functions.some(obj => obj.func === name), false) ?
+                list.map(obj => obj.functions.push(item)) && `success ${name}` :
+                `fail ${name}`;
             // console.log(action)
         });
 };
@@ -76,9 +76,9 @@ const getFileContentsViaCorePromise = (req, res) => new Promise((resolve, reject
         if (error) {
             reject(response);
         } else {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 const list = JSON.parse(response.body);
-                resolve(Object.values(list) || []);
+                resolve(Object.values(list));
             } else {
                 reject(response.statusCode);
             }
