@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.extraction import add_expression_column
-res = add_expression_column(new_cols = ,formulas = )
+res = add_expression_column(new_cols = ,expr_type = ,formulas = )
 res['out_table']
 ```
 
@@ -13,34 +13,30 @@ This function adds new column with given expression.
 
 ## Properties
 ### VA
-#### Inputs
-1. **table**: table
+#### Inputs: table
 
 #### Parameters
 1. **New Column Name**<b style="color:red">*</b>: New column name to be added.
-3. **Expression Type**<b style="color:red">*</b>: Expression type 
+   - Value type : String
+2. **Expression Type**<b style="color:red">*</b>
    - Available items
       - SQLite (default)
       - Python
-2. **Expression**<b style="color:red">*</b>: Expression
+3. **Expression**<b style="color:red">*</b>: Query.
 
-#### Outputs
-1. **out_table**: table
+#### Outputs: table
 
 ### Python
-#### Inputs
-1. **table**: table
+#### Inputs: table
 
 #### Parameters
 1. **new_cols**<b style="color:red">*</b>: New column name to be added.
-3. **expr_type**: Expression type 
+   - Value type : String
+2. **expr_type**<b style="color:red">*</b>
    - Available items
       - sqlite (default)
-      - numexpr
       - python
-2. **formulas**<b style="color:red">*</b>: Expression
-      
-#### Outputs
-1. **out_table**: table
-2. **model**: model
+3. **formulas**<b style="color:red">*</b>: Query.
+
+#### Outputs: table
 
