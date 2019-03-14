@@ -11,7 +11,7 @@ from brightics.common.validation import raise_runtime_error
 
 
 def read_csv(path):
-    return {'table': table_reader.read_csv(path)}
+    return {'table': table_reader.read_csv(path,quoting=3)}
 
 
 def load_model(path):
