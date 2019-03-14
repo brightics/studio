@@ -23,9 +23,11 @@ import com.samsung.sds.brightics.common.core.util.ValidationUtil;
 import com.samsung.sds.brightics.common.workflow.context.WorkContext;
 import com.samsung.sds.brightics.common.workflow.context.parameter.Parameters;
 import com.samsung.sds.brightics.common.workflow.context.parameter.ParametersBuilder;
-import com.samsung.sds.brightics.common.workflow.model.Work;
 import com.samsung.sds.brightics.common.workflow.flowrunner.holder.JobContextHolder;
 import com.samsung.sds.brightics.common.workflow.flowrunner.status.Status;
+import com.samsung.sds.brightics.common.workflow.flowrunner.vo.MetaConvertVO;
+import com.samsung.sds.brightics.common.workflow.flowrunner.vo.MetaConvertVO.MetaConvertType;
+import com.samsung.sds.brightics.common.workflow.model.Work;
 
 public class FunctionWork extends Work {
 
@@ -157,18 +159,19 @@ public class FunctionWork extends Work {
 	}
 
 	private void complementPyFunctionParam(ParametersBuilder pb) {
-        if (!"PyFunction".equals(functionName)) {
-            return;
-        }
-        try {
-            // get python function script.
-        	JsonObject paramObject = resolvedParameters.toJsonObject();
-        	paramObject.addProperty("metadata", "pyfunction");
-            pb.add("script", JobContextHolder.getJobRunnerAPI().convert(paramObject).getAsString());
-        } catch (Exception e) {
-            throw new BrighticsCoreException("3137").initCause(e);
-        }
-    }
+		if (!"PyFunction".equals(functionName)) {
+			return;
+		}
+		try {
+			// get python function script.
+			JsonObject paramObject = resolvedParameters.toJsonObject();
+
+			pb.add("script", JobContextHolder.getJobRunnerAPI()
+					.convert(new MetaConvertVO(MetaConvertType.PYFUNCTION, paramObject)).getAsString());
+		} catch (Exception e) {
+			throw new BrighticsCoreException("3137").initCause(e);
+		}
+	}
 
     private void complementDLPredictParam(ParametersBuilder pb) {
         if (!"DLPredict".equals(functionName)) {
@@ -181,14 +184,14 @@ public class FunctionWork extends Work {
         JsonArray outTableAlias = new JsonArray();
         outTableAlias.add(resultDF);
 
-        try {
-        	JsonObject paramObject = resolvedParameters.toJsonObject();
-        	paramObject.addProperty("metadata", "keraspredict");
-    		paramObject.addProperty("outDFAlias", resultDF);
-            String script = JobContextHolder.getJobRunnerAPI().convert(paramObject).getAsString();
-            pb.add("script", script);
-            pb.add("out-table-alias", outTableAlias);
-        } catch (Exception e) {
+		try {
+			JsonObject paramObject = resolvedParameters.toJsonObject();
+			paramObject.addProperty("outDFAlias", resultDF);
+			String script = JobContextHolder.getJobRunnerAPI()
+					.convert(new MetaConvertVO(MetaConvertType.DLPREDICT, paramObject)).getAsString();
+			pb.add("script", script);
+			pb.add("out-table-alias", outTableAlias);
+		} catch (Exception e) {
             throw new BrighticsCoreException("3133", e.getMessage()).initCause(e);
         }
     }
@@ -212,22 +215,22 @@ public class FunctionWork extends Work {
             }
 
             // data flow file upload does not have datasource-name
-            if ("jdbc".equals(datasourceType) && params.contains(DATASOURCE_NAME) && StringUtils.isNotEmpty(params.getString(DATASOURCE_NAME))) {
-                String dataSourceName = params.getString(DATASOURCE_NAME);
-
-                Map<String, String> metaMap = new HashMap<>();
-                metaMap.put("metadata", "datasource");
-                metaMap.put("datasourceName", dataSourceName);
-                JsonElement datasourceElm = JobContextHolder.getJobRunnerAPI().convert(JsonUtil.toJsonObject(metaMap));
-                JsonObject datasourceInfo = datasourceElm.getAsJsonObject();
-                pb.add("ip", datasourceInfo.get("ip"));
-                pb.add("port", datasourceInfo.get("port"));
-                pb.add("username", datasourceInfo.get("username"));
-                pb.add("password", datasourceInfo.get("password"));
-                pb.add("db-name", datasourceInfo.get("dbName"));
-                pb.add("db-type", datasourceInfo.get("dbType"));
-                pb.remove(DATASOURCE_NAME);
-            }
+			if ("jdbc".equals(datasourceType) && params.contains(DATASOURCE_NAME)
+					&& StringUtils.isNotEmpty(params.getString(DATASOURCE_NAME))) {
+				String dataSourceName = params.getString(DATASOURCE_NAME);
+				Map<String, String> metaMap = new HashMap<>();
+				metaMap.put("datasourceName", dataSourceName);
+				JsonElement datasourceElm = JobContextHolder.getJobRunnerAPI()
+						.convert(new MetaConvertVO(MetaConvertType.DATASOURCE, JsonUtil.toJsonObject(metaMap)));
+				JsonObject datasourceInfo = datasourceElm.getAsJsonObject();
+				pb.add("ip", datasourceInfo.get("ip"));
+				pb.add("port", datasourceInfo.get("port"));
+				pb.add("username", datasourceInfo.get("username"));
+				pb.add("password", datasourceInfo.get("password"));
+				pb.add("db-name", datasourceInfo.get("dbName"));
+				pb.add("db-type", datasourceInfo.get("dbType"));
+				pb.remove(DATASOURCE_NAME);
+			}
 
             if ("jdbc".equals(datasourceType) && !params.contains(DATASOURCE_NAME)) {
                 ValidationUtil.throwIfEmpty(params.getParam("ip"), "datasource");

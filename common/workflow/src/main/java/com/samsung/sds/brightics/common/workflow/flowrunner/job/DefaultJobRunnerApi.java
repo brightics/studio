@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.samsung.sds.brightics.common.workflow.flowrunner.AbsJobRunnerApi;
+import com.samsung.sds.brightics.common.workflow.flowrunner.vo.MetaConvertVO;
 import com.samsung.sds.brightics.common.workflow.flowrunner.vo.JobParam;
 import com.samsung.sds.brightics.common.workflow.flowrunner.vo.JobStatusVO;
 
@@ -38,8 +39,8 @@ public class DefaultJobRunnerApi extends AbsJobRunnerApi {
 	}
 
 	@Override
-	public JsonElement convert(JsonObject json) {
-		logger.info(String.format("[Metadata convert] json : %s", json.toString()));
+	public JsonElement convert(MetaConvertVO metaConvertVO) {
+		logger.info(String.format("[Metadata convert] type : %s", metaConvertVO.metadata.name()));
 		return null;
 	}
 

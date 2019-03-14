@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.samsung.sds.brightics.common.workflow.flowrunner.AbsJobRunnerApi;
 import com.samsung.sds.brightics.common.workflow.flowrunner.vo.JobParam;
 import com.samsung.sds.brightics.common.workflow.flowrunner.vo.JobStatusVO;
+import com.samsung.sds.brightics.common.workflow.flowrunner.vo.MetaConvertVO;
 import com.samsung.sds.brightics.server.common.holder.BeanHolder;
 import com.samsung.sds.brightics.server.common.message.task.TaskMessageBuilder;
 import com.samsung.sds.brightics.server.common.message.task.TaskMessageRepository;
@@ -33,8 +34,8 @@ public class JobRunnerApi extends AbsJobRunnerApi {
 	}
 
 	@Override
-	public JsonElement convert(JsonObject json) {
-		return BeanHolder.getBeanHolder().metadataConverterService.convert(json);
+	public JsonElement convert(MetaConvertVO metaConvertVO) {
+		return BeanHolder.getBeanHolder().metadataConverterService.convert(metaConvertVO);
 	}
 
 	@Override

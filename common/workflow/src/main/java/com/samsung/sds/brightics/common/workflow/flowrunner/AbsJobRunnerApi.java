@@ -2,6 +2,7 @@ package com.samsung.sds.brightics.common.workflow.flowrunner;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.samsung.sds.brightics.common.workflow.flowrunner.vo.MetaConvertVO;
 import com.samsung.sds.brightics.common.workflow.flowrunner.vo.JobParam;
 import com.samsung.sds.brightics.common.workflow.flowrunner.vo.JobStatusVO;
 
@@ -22,7 +23,7 @@ public abstract class AbsJobRunnerApi {
 
 	/**
 	 * <b>[API related to execute job]</b><br>
-	 * Execute function or script in work node. Call it task
+	 * Execute function or script in work node.<br>
 	 * If the task complete normally. 
 	 * The results of the task must be stored in a custom store (memory or database),
 	 * for asynchronous communication.
@@ -62,11 +63,11 @@ public abstract class AbsJobRunnerApi {
 	/**
 	 * <b>[API related to meta data]</b><br>
 	 * It converts various metadata and returns the result.<br>
-	 * Kinds : <b>sql, script, datasource, s3, pyfunction, keraspredict</b>.
-	 * @param json : metadata (ex {"metadata" : "datasource", "datasourceName": "default"})
+	 * Kinds : <b>sql, script, datasource, s3, pyfunction, deeplearning predict</b>.
+	 * @param metaConvertVO : contain type and parameters
 	 * @return (JsonElement) metadata search results.
 	 */
-	abstract public JsonElement convert(JsonObject json);
+	abstract public JsonElement convert(MetaConvertVO metaConvertVO);
 	
 	/**
 	 * <b>[API related to meta data]</b><br>

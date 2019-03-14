@@ -16,6 +16,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.samsung.sds.brightics.common.core.util.JsonUtil;
+import com.samsung.sds.brightics.common.workflow.flowrunner.vo.MetaConvertVO;
+import com.samsung.sds.brightics.common.workflow.flowrunner.vo.MetaConvertVO.MetaConvertType;
 import com.samsung.sds.brightics.server.common.util.ValidationUtil;
 import com.samsung.sds.brightics.server.common.util.keras.KerasScriptUtil;
 import com.samsung.sds.brightics.server.model.entity.BrtcDatasources;
@@ -45,8 +47,7 @@ public class MetadataConverterService {
     public PyFunctionService pyFunctionService;
 
 
-    public static final String METADATA_KEY = "metadata";
-    private Map<String, Function<JsonObject, JsonElement>> metadataRepositoryFunctions = new HashMap<>();
+    private Map<MetaConvertType, Function<JsonObject, JsonElement>> metadataRepositoryFunctions = new HashMap<>();
     
     public final Function<JsonObject, JsonElement> SQL = new Function<JsonObject, JsonElement>() {
 
@@ -128,25 +129,16 @@ public class MetadataConverterService {
 
     @PostConstruct
     public void initConverterFunctions() {
-        metadataRepositoryFunctions.put("sql", SQL);
-        metadataRepositoryFunctions.put("script", SCRIPT);
-        metadataRepositoryFunctions.put("datasource", DATASOURCE);
-        metadataRepositoryFunctions.put("s3", S3_DATASOURCE);
-        metadataRepositoryFunctions.put("pyfunction", PY_FUNCTION);
-        metadataRepositoryFunctions.put("keraspredict", KERAS_PREDICT);
+        metadataRepositoryFunctions.put(MetaConvertType.SQL, SQL);
+        metadataRepositoryFunctions.put(MetaConvertType.SCRIPT, SCRIPT);
+        metadataRepositoryFunctions.put(MetaConvertType.DATASOURCE, DATASOURCE);
+        metadataRepositoryFunctions.put(MetaConvertType.S3, S3_DATASOURCE);
+        metadataRepositoryFunctions.put(MetaConvertType.PYFUNCTION, PY_FUNCTION);
+        metadataRepositoryFunctions.put(MetaConvertType.DLPREDICT, KERAS_PREDICT);
     }
 
-    private boolean isMetadataRequest(JsonObject json) {
-        return json.has(METADATA_KEY) && metadataRepositoryFunctions.containsKey(json.get(METADATA_KEY).getAsString());
-    }
-
-	public JsonElement convert(JsonObject json) {
-		if (isMetadataRequest(json)) {
-			return metadataRepositoryFunctions.get(json.get(METADATA_KEY).getAsString()).apply(json);
-		} else {
-			return json;
-		}
-
+	public JsonElement convert(MetaConvertVO metaConvertVO) {
+		return metadataRepositoryFunctions.get(metaConvertVO.metadata).apply(metaConvertVO.getJsonObject());
 	}
 
 }
