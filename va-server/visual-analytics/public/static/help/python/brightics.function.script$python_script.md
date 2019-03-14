@@ -14,7 +14,7 @@ This function returns value for executed Python Script.
     iris = inputs[0]
     result = iris.groupby("species", as_index=False)['petal_length', 'petal_width'].mean().round(3)
     ```
-2. **Out Table Alias**<b style='color:red'>*</b>: result
+2. **Outputs**: result
 
 ##### ++In++
 
