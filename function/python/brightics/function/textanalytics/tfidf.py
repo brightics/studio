@@ -8,6 +8,7 @@ from brightics.common.validation import validate, greater_than_or_equal_to, grea
 
 import pandas as pd
 import numpy as np
+from operator import itemgetter
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 
@@ -26,53 +27,54 @@ def tfidf(table, group_by=None, **params):
 
 
 def _tfidf(table, input_col, max_df=None, min_df=1, num_voca=1000, idf_weighting_scheme='inverseDocumentFrequency', norm='l2', smooth_idf=True, sublinear_tf=False, output_type=False):
-    corpus=table[input_col]
-    if max_df==None:
-        max_df=len(corpus)
-    tf_vectorizer=CountVectorizer(stop_words='english', max_df=max_df, min_df=min_df, max_features=num_voca)
+    corpus = table[input_col]
+    if max_df == None:
+        max_df = len(corpus)
+    tf_vectorizer = CountVectorizer(stop_words='english', max_df=max_df, min_df=min_df, max_features=num_voca)
     tf_vectorizer.fit(corpus)
+    tfidf_vectorizer = TfidfVectorizer(stop_words='english', max_df=max_df, min_df=min_df, max_features=num_voca, norm=norm, use_idf=True, smooth_idf=smooth_idf, sublinear_tf=sublinear_tf)   
     
-    voca_dict=tf_vectorizer.vocabulary_
+    voca_dict = sorted(tf_vectorizer.vocabulary_.items(), key=itemgetter(1))
+    len_voca = len(voca_dict)
     
-    
-    tfidf_vectorizer=TfidfVectorizer(stop_words='english', max_df=max_df, min_df=min_df, max_features=num_voca, norm=norm, use_idf=True, smooth_idf=smooth_idf, sublinear_tf=sublinear_tf)
-    tfidf_vectorizer.fit(corpus)
-    
+    # tf-idf table
 
-    tf_feature_names=tf_vectorizer.get_feature_names()
-    idf_table=pd.DataFrame()
-    idf_table['vocabulary']=tf_feature_names
-    if idf_weighting_scheme=='inverseDocumentFrequency':
-        idf_table['idf weight']=tfidf_vectorizer.idf_.tolist()
-    elif idf_weighting_scheme=='unary':
-        idf_table['idf weight']=float(1)
-    
-    
-    tfidf_table=pd.DataFrame()
+    document_list = []
+    vocabulary_list = []
+    index_list = []
+    label_table = pd.DataFrame()
     for doc in range(len(corpus)):
-        each_tfidf_table=pd.DataFrame()
-        each_tfidf_table[input_col]=[str(corpus[doc]) for j in range(len(voca_dict.keys()))]
-        each_tfidf_table['vocabulary']=voca_dict.keys()
-        each_tfidf_table['index']=voca_dict.values()
-        each_tfidf_table['frequency']=[np.ravel(tf_vectorizer.transform([corpus[doc]]).toarray())[idx] for idx in voca_dict.values()]
-        if idf_weighting_scheme=='inverseDocumentFrequency':
-            each_tfidf_table['tfidf score']=[np.ravel(tfidf_vectorizer.transform([corpus[doc]]).toarray())[idx] for idx in voca_dict.values()]
-        elif idf_weighting_scheme=='unary':
-            each_tfidf_table['tfidf score']=[np.ravel(tfidf_vectorizer.transform([corpus[doc]]).toarray())[idx] / float(tfidf_vectorizer.idf_[idx]) for idx in voca_dict.values()]
-        each_tfidf_table=each_tfidf_table.sort_values(by=['index'], axis=0)
-        tfidf_table=pd.concat([tfidf_table, each_tfidf_table], axis=0)
-        
+        document_list += [str(corpus[doc]) for j in range(len_voca)]
+        vocabulary_list += [voca_dict[j][0] for j in range(len_voca)]
+        index_list += [voca_dict[j][1] for j in range(len_voca)]
+    label_table[input_col] = document_list
+    label_table['vocabulary'] = vocabulary_list
+    label_table['index'] = index_list
+    tfidf_table = label_table
+    tfidf_table['frequency'] = np.ravel(tf_vectorizer.transform(corpus).toarray())
+    if idf_weighting_scheme == 'inverseDocumentFrequency':
+        tfidf_table['tfidf score'] = np.ravel(tfidf_vectorizer.fit_transform(corpus).toarray())
+    elif idf_weighting_scheme == 'unary':
+        tfidf_table['tfidf score'] = list(map(float, np.array(tfidf_table['frequency'])))
     
-    if output_type==False:
+    if output_type == False:
         pass
-    elif output_type==True:
-        remain_idx=tfidf_table['frequency'].apply(lambda x: x!=0)
-        tfidf_table=tfidf_table[remain_idx.values]
+    elif output_type == True:
+        remain_idx = tfidf_table['frequency'].apply(lambda x: x is not 0)
+        tfidf_table = tfidf_table[remain_idx.values]
     else:
         raise_runtime_error("Please check 'output_type'.")
+    
+    # idf table
+    
+    idf_table = pd.DataFrame()
+    idf_table['vocabulary'] = [voca_dict[j][0] for j in range(len(voca_dict))]
+    if idf_weighting_scheme == 'inverseDocumentFrequency':
+        idf_table['idf weight'] = tfidf_vectorizer.idf_.tolist()
+    elif idf_weighting_scheme == 'unary':
+        idf_table['idf weight'] = float(1)
         
-        
-    params={
+    params = {
         'Input Column': input_col,
         'Max DF': max_df,
         'Min DF': min_df,
@@ -84,7 +86,7 @@ def _tfidf(table, input_col, max_df=None, min_df=1, num_voca=1000, idf_weighting
         'Remove Zero Counts': output_type
     }
     
-    rb=BrtcReprBuilder()
+    rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""# TF-IDF Result"""))
     rb.addMD(strip_margin("""
     |
@@ -100,12 +102,12 @@ def _tfidf(table, input_col, max_df=None, min_df=1, num_voca=1000, idf_weighting
     |
     |{tfidf_table}
     |
-    """.format(display_params=dict2MD(params), idf_table=pandasDF2MD(idf_table, num_rows=len(tf_feature_names)+1), tfidf_table=pandasDF2MD(tfidf_table, num_rows=len(tf_feature_names)*len(corpus)+1))))
+    """.format(display_params=dict2MD(params), idf_table=pandasDF2MD(idf_table, num_rows=len_voca + 1), tfidf_table=pandasDF2MD(tfidf_table, num_rows=len_voca * len(corpus) + 1))))
 
-    model=_model_dict('tfidf')
+    model = _model_dict('tfidf')
     model['parameter'] = params
-    model['idf_table']=idf_table
-    model['tfidf_table']=tfidf_table
-    model['_repr_brtc_']=rb.get()
+    model['idf_table'] = idf_table
+    model['tfidf_table'] = tfidf_table
+    model['_repr_brtc_'] = rb.get()
     
     return {'model' : model}
