@@ -13,12 +13,12 @@ public class MetaConvertVO {
 	public JsonObject jsonObject; 
 	
 	public enum MetaConvertType {
-		SQL,
-		SCRIPT, 
-		DATASOURCE,
-		S3,
-		PYFUNCTION,
-		DLPREDICT;
+		SQL, 		// Distribute JDBC loader.
+		SCRIPT, 	// UDF.
+		DATASOURCE, // Read from DB.
+		S3, 		// Read from S3.
+		PYFUNCTION, // Python function like AD.
+		DLPREDICT;	// Deeplearning predict.
 	}
 }
 
