@@ -13,20 +13,17 @@ This function sorts specific columns as a given order.
 
 ## Properties
 ### VA
-#### Inputs
-1. **table**: table
+#### Inputs: table
 
 #### Parameters
 1. **Sort Rule**<b style="color:red">*</b>: Columns and sorting type (desc, asc)
    - Allowed column type : Double, Float, Integer, Long, String
 2. **Group By**: Columns to group by
 
-#### Outputs
-1. **out_table**: table
+#### Outputs: table
 
 ### Python
-#### Inputs
-1. **table**: table
+#### Inputs: table
 
 #### Parameters
 1. **input_cols**<b style="color:red">*</b>: Input columns.
@@ -35,5 +32,4 @@ This function sorts specific columns as a given order.
    - Value type : Boolean
 8. **group_by**: Columns to group by
 
-#### Outputs
-1. **out_table**: table
+#### Outputs: table

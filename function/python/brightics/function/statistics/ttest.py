@@ -282,10 +282,10 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
                 margin = t.ppf((confi_level) , df) * std_number1number2 * sqrt(1 / number1 + 1 / number2)
             if equal_vari == 'unequal':
                 margin = t.ppf((confi_level) , df) * sqrt(std1 ** 2 / (number1) + std2 ** 2 / (number2))
-            tmp_model += [['true difference in means > 0.0'] + 
+            tmp_model += [['true difference in means > {}'.format(hypo_diff)] + 
             [ttestresult[1]] + [(mean1 - mean2 - margin, math.inf)]]
             tmp_table += [['%s by %s(%s,%s)' % (response_col, factor_col, first, second)] + 
-            ['true difference in means > 0.0'] + 
+            ['true difference in means > {}'.format(hypo_diff)] + 
             ['t statistic, t distribution with %f degrees of freedom under the null hypothesis' % ttestresult[2]] + 
             [ttestresult[0]] + [ttestresult[1]] + [confi_level] + [mean1 - mean2 - margin] + [math.inf]]
 
@@ -297,10 +297,10 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
                 margin = t.ppf((confi_level) , df) * std_number1number2 * sqrt(1 / number1 + 1 / number2)
             if equal_vari == 'unequal':
                 margin = t.ppf((confi_level) , df) * sqrt(std1 ** 2 / (number1) + std2 ** 2 / (number2))
-            tmp_model += [['true difference in means < 0.0'] + 
+            tmp_model += [['true difference in means < {}'.format(hypo_diff)] + 
             [ttestresult[1]] + [(-math.inf, mean1 - mean2 + margin)]] 
             tmp_table += [['%s by %s(%s,%s)' % (response_col, factor_col, first, second)] + 
-            ['true difference in means < 0.0'] + 
+            ['true difference in means < {}'.format(hypo_diff)] + 
             ['t statistic, t distribution with %f degrees of freedom under the null hypothesis' % ttestresult[2]] + 
             [ttestresult[0]] + [ttestresult[1]] + [confi_level] + [-math.inf] + [mean1 - mean2 + margin]] 
 
@@ -312,10 +312,10 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
                 margin = t.ppf((confi_level + 1) / 2 , df) * std_number1number2 * sqrt(1 / number1 + 1 / number2)
             if equal_vari == 'unequal':
                 margin = t.ppf((confi_level + 1) / 2 , df) * sqrt(std1 ** 2 / (number1) + std2 ** 2 / (number2))
-            tmp_model += [['true difference in means != 0.0'] + 
+            tmp_model += [['true difference in means != {}'.format(hypo_diff)] + 
             [ttestresult[1]] + [(mean1 - mean2 - margin, mean1 - mean2 + margin)]]
             tmp_table += [['%s by %s(%s,%s)' % (response_col, factor_col, first, second)] + 
-            ['true difference in means != 0.0'] + 
+            ['true difference in means != {}'.format(hypo_diff)] + 
             ['t statistic, t distribution with %f degrees of freedom under the null hypothesis' % ttestresult[2]] + 
             [ttestresult[0]] + [ttestresult[1]] + [confi_level] + [mean1 - mean2 - margin] + [mean1 - mean2 + margin]]
 
