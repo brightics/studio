@@ -3,6 +3,8 @@ package com.samsung.sds.brightics.agent.service;
 import java.io.IOException;
 import java.util.Map;
 import java.util.StringJoiner;
+import java.util.UUID;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.hadoop.conf.Configuration;
@@ -18,6 +20,7 @@ import com.samsung.sds.brightics.agent.util.ThreadUtil;
 import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
 import com.samsung.sds.brightics.common.core.util.JsonUtil;
 import com.samsung.sds.brightics.common.core.util.JsonUtil.JsonParam;
+import com.samsung.sds.brightics.common.core.util.SystemEnvUtil;
 import com.samsung.sds.brightics.common.data.DataStatus;
 import com.samsung.sds.brightics.common.data.client.FileClient;
 import com.samsung.sds.brightics.common.data.parquet.reader.DefaultRecord;
@@ -37,7 +40,20 @@ public class StreamService {
 
     private static final Logger logger = LoggerFactory.getLogger(StreamService.class);
 
+    /**
+     * store ArrayBlockingQueue for control data stream speed between server and client.
+     */
+    private static Map<String, ArrayBlockingQueue<Boolean>> blockingQueueMap = new ConcurrentHashMap<>(); 
+
+	public static void readStreamDone(ReadMessage message) {
+		if(blockingQueueMap.containsKey(message.getTempKey())){
+			logger.debug("Read stream done from server.");
+			blockingQueueMap.get(message.getTempKey()).poll();
+		}
+	}
+    
     public static void readFile(ReadMessage message, StreamObserver<ByteStreamMessage> responseObserver) {
+    	String tempKey = UUID.randomUUID().toString();
         try {
             String dataKey = message.getKey();
             String delimiter = message.getDelimiter();
@@ -52,8 +68,13 @@ public class StreamService {
             if (dataStatus.contextType != ContextType.FILESYSTEM) {
                 throw new BrighticsCoreException("3002", "file");
             }
-
-            ByteStreamSender byteStreamSender = new ByteStreamSender(responseObserver, "");
+            // Make it configurable. Max gRPC message size(32Mb) X this num. = max direct memory consumption for the client.
+			final int MAX_UPLOAD_BUFFERS = Integer.parseInt(SystemEnvUtil.getEnvOrPropOrElse(
+					"GRPC_STREAM_MAX_UPLOAD_BUFFERS", "grpc.stream.maxbuffer", Integer.toString(8)));
+            ArrayBlockingQueue<Boolean> writeQueue = new ArrayBlockingQueue<>(MAX_UPLOAD_BUFFERS);
+            blockingQueueMap.put(tempKey, writeQueue);
+            
+            ByteStreamSender byteStreamSender = new ByteStreamSender(responseObserver, tempKey, writeQueue);
             String path = dataStatus.path;
 
             ParquetInformation info = BrighticsParquetUtils.getParquetInformation(new Path(path), new Configuration());
@@ -78,6 +99,7 @@ public class StreamService {
             logger.error("[Common network] fail to send file stream.", e);
             responseObserver.onError(e);
         } finally {
+        	blockingQueueMap.remove(tempKey);
             logger.info("[Common network] complete to send file stream.");
         }
     }

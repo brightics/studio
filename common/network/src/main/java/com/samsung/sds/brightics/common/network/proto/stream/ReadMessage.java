@@ -19,6 +19,7 @@ private static final long serialVersionUID = 0L;
     user_ = "";
     key_ = "";
     delimiter_ = "";
+    tempKey_ = "";
   }
 
   @java.lang.Override
@@ -68,6 +69,12 @@ private static final long serialVersionUID = 0L;
             java.lang.String s = input.readStringRequireUtf8();
 
             delimiter_ = s;
+            break;
+          }
+          case 34: {
+            java.lang.String s = input.readStringRequireUtf8();
+
+            tempKey_ = s;
             break;
           }
         }
@@ -196,6 +203,40 @@ private static final long serialVersionUID = 0L;
     }
   }
 
+  public static final int TEMPKEY_FIELD_NUMBER = 4;
+  private volatile java.lang.Object tempKey_;
+  /**
+   * <code>string tempKey = 4;</code>
+   */
+  public java.lang.String getTempKey() {
+    java.lang.Object ref = tempKey_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      tempKey_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>string tempKey = 4;</code>
+   */
+  public com.google.protobuf.ByteString
+      getTempKeyBytes() {
+    java.lang.Object ref = tempKey_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      tempKey_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
   private byte memoizedIsInitialized = -1;
   public final boolean isInitialized() {
     byte isInitialized = memoizedIsInitialized;
@@ -217,6 +258,9 @@ private static final long serialVersionUID = 0L;
     if (!getDelimiterBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 3, delimiter_);
     }
+    if (!getTempKeyBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 4, tempKey_);
+    }
     unknownFields.writeTo(output);
   }
 
@@ -233,6 +277,9 @@ private static final long serialVersionUID = 0L;
     }
     if (!getDelimiterBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, delimiter_);
+    }
+    if (!getTempKeyBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, tempKey_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -256,6 +303,8 @@ private static final long serialVersionUID = 0L;
         .equals(other.getKey());
     result = result && getDelimiter()
         .equals(other.getDelimiter());
+    result = result && getTempKey()
+        .equals(other.getTempKey());
     result = result && unknownFields.equals(other.unknownFields);
     return result;
   }
@@ -273,6 +322,8 @@ private static final long serialVersionUID = 0L;
     hash = (53 * hash) + getKey().hashCode();
     hash = (37 * hash) + DELIMITER_FIELD_NUMBER;
     hash = (53 * hash) + getDelimiter().hashCode();
+    hash = (37 * hash) + TEMPKEY_FIELD_NUMBER;
+    hash = (53 * hash) + getTempKey().hashCode();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -408,6 +459,8 @@ private static final long serialVersionUID = 0L;
 
       delimiter_ = "";
 
+      tempKey_ = "";
+
       return this;
     }
 
@@ -433,6 +486,7 @@ private static final long serialVersionUID = 0L;
       result.user_ = user_;
       result.key_ = key_;
       result.delimiter_ = delimiter_;
+      result.tempKey_ = tempKey_;
       onBuilt();
       return result;
     }
@@ -484,6 +538,10 @@ private static final long serialVersionUID = 0L;
       }
       if (!other.getDelimiter().isEmpty()) {
         delimiter_ = other.delimiter_;
+        onChanged();
+      }
+      if (!other.getTempKey().isEmpty()) {
+        tempKey_ = other.tempKey_;
         onChanged();
       }
       this.mergeUnknownFields(other.unknownFields);
@@ -716,6 +774,75 @@ private static final long serialVersionUID = 0L;
   checkByteStringIsUtf8(value);
       
       delimiter_ = value;
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object tempKey_ = "";
+    /**
+     * <code>string tempKey = 4;</code>
+     */
+    public java.lang.String getTempKey() {
+      java.lang.Object ref = tempKey_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        tempKey_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>string tempKey = 4;</code>
+     */
+    public com.google.protobuf.ByteString
+        getTempKeyBytes() {
+      java.lang.Object ref = tempKey_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        tempKey_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>string tempKey = 4;</code>
+     */
+    public Builder setTempKey(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  
+      tempKey_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string tempKey = 4;</code>
+     */
+    public Builder clearTempKey() {
+      
+      tempKey_ = getDefaultInstance().getTempKey();
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string tempKey = 4;</code>
+     */
+    public Builder setTempKeyBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      
+      tempKey_ = value;
       onChanged();
       return this;
     }

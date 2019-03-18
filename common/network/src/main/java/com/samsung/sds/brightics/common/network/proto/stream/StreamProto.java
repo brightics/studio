@@ -39,26 +39,30 @@ public final class StreamProto {
   static {
     java.lang.String[] descriptorData = {
       "\n\014stream.proto\0225com.samsung.sds.brightic" +
-      "s.common.network.proto.stream\";\n\013ReadMes" +
+      "s.common.network.proto.stream\"L\n\013ReadMes" +
       "sage\022\014\n\004user\030\001 \001(\t\022\013\n\003key\030\002 \001(\t\022\021\n\tdelim" +
-      "iter\030\003 \001(\t\"e\n\014WriteMessage\022\014\n\004user\030\001 \001(\t" +
-      "\022\014\n\004path\030\002 \001(\t\022\017\n\007tempKey\030\003 \001(\t\022\022\n\nparam" +
-      "eters\030\004 \001(\t\022\024\n\014errorMessage\030\005 \001(\t\"2\n\021Byt" +
-      "eStreamMessage\022\014\n\004data\030\001 \001(\014\022\017\n\007tempKey\030" +
-      "\002 \001(\t2\374\003\n\rStreamService\022\244\001\n\026writeStreami" +
-      "nitializer\022C.com.samsung.sds.brightics.c" +
-      "ommon.network.proto.stream.WriteMessage\032" +
-      "C.com.samsung.sds.brightics.common.netwo" +
-      "rk.proto.stream.WriteMessage\"\000\022\236\001\n\nreadS" +
-      "tream\022B.com.samsung.sds.brightics.common" +
-      ".network.proto.stream.ReadMessage\032H.com." +
-      "samsung.sds.brightics.common.network.pro" +
-      "to.stream.ByteStreamMessage\"\0000\001\022\242\001\n\013writ" +
-      "eStream\022H.com.samsung.sds.brightics.comm" +
-      "on.network.proto.stream.ByteStreamMessag" +
-      "e\032C.com.samsung.sds.brightics.common.net" +
-      "work.proto.stream.WriteMessage\"\000(\0010\001B\017B\013" +
-      "StreamProtoP\001b\006proto3"
+      "iter\030\003 \001(\t\022\017\n\007tempKey\030\004 \001(\t\"e\n\014WriteMess" +
+      "age\022\014\n\004user\030\001 \001(\t\022\014\n\004path\030\002 \001(\t\022\017\n\007tempK" +
+      "ey\030\003 \001(\t\022\022\n\nparameters\030\004 \001(\t\022\024\n\014errorMes" +
+      "sage\030\005 \001(\t\"2\n\021ByteStreamMessage\022\014\n\004data\030" +
+      "\001 \001(\014\022\017\n\007tempKey\030\002 \001(\t2\231\005\n\rStreamService" +
+      "\022\244\001\n\026writeStreaminitializer\022C.com.samsun" +
+      "g.sds.brightics.common.network.proto.str" +
+      "eam.WriteMessage\032C.com.samsung.sds.brigh" +
+      "tics.common.network.proto.stream.WriteMe" +
+      "ssage\"\000\022\242\001\n\013writeStream\022H.com.samsung.sd" +
+      "s.brightics.common.network.proto.stream." +
+      "ByteStreamMessage\032C.com.samsung.sds.brig" +
+      "htics.common.network.proto.stream.WriteM" +
+      "essage\"\000(\0010\001\022\236\001\n\nreadStream\022B.com.samsun" +
+      "g.sds.brightics.common.network.proto.str" +
+      "eam.ReadMessage\032H.com.samsung.sds.bright" +
+      "ics.common.network.proto.stream.ByteStre" +
+      "amMessage\"\0000\001\022\232\001\n\016readStreamDone\022B.com.s" +
+      "amsung.sds.brightics.common.network.prot" +
+      "o.stream.ReadMessage\032B.com.samsung.sds.b" +
+      "rightics.common.network.proto.stream.Rea" +
+      "dMessage\"\000B\017B\013StreamProtoP\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -77,7 +81,7 @@ public final class StreamProto {
     internal_static_com_samsung_sds_brightics_common_network_proto_stream_ReadMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_samsung_sds_brightics_common_network_proto_stream_ReadMessage_descriptor,
-        new java.lang.String[] { "User", "Key", "Delimiter", });
+        new java.lang.String[] { "User", "Key", "Delimiter", "TempKey", });
     internal_static_com_samsung_sds_brightics_common_network_proto_stream_WriteMessage_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_com_samsung_sds_brightics_common_network_proto_stream_WriteMessage_fieldAccessorTable = new

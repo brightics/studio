@@ -4,6 +4,7 @@ import java.io.Closeable;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,10 +47,17 @@ public class ByteStreamSender implements Closeable {
 			final int newSize = itemBuffer.position() + dataLength;
 			if (newSize >= NetworkServer.MAXIMUM_BYTESTREAM_SIZE) {
 			    if(writeQueue != null){
-    			    try {
-    			        if(writeQueue.remainingCapacity() == 0) logger.debug("Wait for the client to write already sent buffers.");
-                        writeQueue.put(true);
-                    } catch (InterruptedException e) {
+					try {
+						if (writeQueue.remainingCapacity() == 0)
+							logger.debug("Wait for the client to write already sent buffers.");
+						boolean valid = writeQueue.offer(true,
+								(int) NetworkServer.MAXIMUM_BYTESTREAM_SIZE / (1024 * 1024), TimeUnit.SECONDS);
+						if (!valid) {
+							throw new BrighticsCoreException("3102",
+									"Data chunk(" + NetworkServer.MAXIMUM_BYTESTREAM_SIZE / (1024 * 1024)
+											+ "M) transmission time(1 hours) exceeded.");
+						}
+					} catch (InterruptedException e) {
                         logger.warn("[Common network] fail to manage write job queue.", e);
                     }
 			    }

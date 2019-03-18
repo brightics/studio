@@ -36,4 +36,14 @@ public interface ReadMessageOrBuilder extends
    */
   com.google.protobuf.ByteString
       getDelimiterBytes();
+
+  /**
+   * <code>string tempKey = 4;</code>
+   */
+  java.lang.String getTempKey();
+  /**
+   * <code>string tempKey = 4;</code>
+   */
+  com.google.protobuf.ByteString
+      getTempKeyBytes();
 }

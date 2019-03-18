@@ -25,7 +25,21 @@ public class StreamReceiver extends StreamServiceGrpc.StreamServiceImplBase {
 	public StreamReceiver(ReceiveMessageListener listener) {
 		this.listener = listener;
 	}
-
+	
+	@Override
+	public void readStreamDone(ReadMessage message, StreamObserver<ReadMessage> responseObserver) {
+		String key = listener.receive(message);
+		try {
+			StreamService.readStreamDone(message);
+			responseObserver.onNext(ReadMessage.newBuilder().build());
+			responseObserver.onCompleted();
+		} catch (Exception e) {
+			logger.error("Cannot read file", e);
+			responseObserver.onError(e);
+		}
+		listener.onCompleted(key);
+	}
+	
 	@Override
 	public void readStream(ReadMessage message, StreamObserver<ByteStreamMessage> responseObserver) {
 		String key = listener.receive(message);
@@ -36,6 +50,8 @@ public class StreamReceiver extends StreamServiceGrpc.StreamServiceImplBase {
 
 		listener.onCompleted(key);
 	}
+	
+
 
 	@Override
 	public void writeStreaminitializer(WriteMessage message, StreamObserver<WriteMessage> responseObserver) {

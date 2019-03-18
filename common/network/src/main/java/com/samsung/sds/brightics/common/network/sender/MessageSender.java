@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.ByteString;
 import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
+import com.samsung.sds.brightics.common.core.util.SystemEnvUtil;
 import com.samsung.sds.brightics.common.network.config.NetworkConfig;
 import com.samsung.sds.brightics.common.network.proto.ClientReadyMessage;
 import com.samsung.sds.brightics.common.network.proto.CommonServiceGrpc;
@@ -43,6 +44,7 @@ import com.samsung.sds.brightics.common.network.proto.metadata.ResultDataMessage
 import com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage;
 import com.samsung.sds.brightics.common.network.proto.stream.ReadMessage;
 import com.samsung.sds.brightics.common.network.proto.stream.StreamServiceGrpc;
+import com.samsung.sds.brightics.common.network.proto.stream.StreamServiceGrpc.StreamServiceBlockingStub;
 import com.samsung.sds.brightics.common.network.proto.stream.WriteMessage;
 import com.samsung.sds.brightics.common.network.proto.task.ExecuteTaskMessage;
 import com.samsung.sds.brightics.common.network.proto.task.ResultTaskMessage;
@@ -72,6 +74,7 @@ public class MessageSender {
     private MetaDataServiceBlockingStub metaDataBlockingStub;
     private DatabaseServiceBlockingStub databaseBlockingStub;
     private DeeplearningServiceBlockingStub deeplearningBlockingStub;
+    private StreamServiceBlockingStub StreamBlockingStub;
 
     private ManagedChannel channel;
     private NetworkConfig config;
@@ -93,6 +96,7 @@ public class MessageSender {
         this.metaDataBlockingStub = MetaDataServiceGrpc.newBlockingStub(channel);
         this.databaseBlockingStub = DatabaseServiceGrpc.newBlockingStub(channel);
         this.deeplearningBlockingStub = DeeplearningServiceGrpc.newBlockingStub(channel);
+        this.StreamBlockingStub = StreamServiceGrpc.newBlockingStub(channel);
 
         if (config.getIsCheckHeartbeat()) {
             Thread thread = new Thread(heartbeatRunnable());
@@ -153,8 +157,9 @@ public class MessageSender {
                 .writeStreaminitializer(writeMessage);
         String tempKey = writeStreamInitializer.getTempKey();
 
-		// TODO Make it configurable. Max gRPC message size(32Mb) X this num. = max direct memory consumption for the client.
-		final int MAX_UPLOAD_BUFFERS=8;
+		// Make it configurable. Max gRPC message size(32Mb) X this num. = max direct memory consumption for the client.
+		final int MAX_UPLOAD_BUFFERS = Integer.parseInt(SystemEnvUtil
+				.getEnvOrPropOrElse("GRPC_STREAM_MAX_UPLOAD_BUFFERS", "grpc.stream.maxbuffer", Integer.toString(8)));
         CountDownLatch doneSignal = new CountDownLatch(1);
 		ArrayBlockingQueue<Boolean> writeQueue = new ArrayBlockingQueue<>(MAX_UPLOAD_BUFFERS);
         List<String> errorSignal = new ArrayList<>();
@@ -221,8 +226,10 @@ public class MessageSender {
             @Override
             public void onNext(ByteStreamMessage value) {
                 try {
-                    ByteString data = value.getData();
-                    data.writeTo(outputstream);
+    				ByteString data = value.getData();
+    				data.writeTo(outputstream);
+    				//send done message.
+    				StreamBlockingStub.readStreamDone(ReadMessage.newBuilder().setTempKey(value.getTempKey()).build());
                 } catch (Exception e) {
                     logger.error("[Common network] fail to write data stream.", e);
                 }
