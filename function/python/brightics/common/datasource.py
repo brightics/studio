@@ -4,7 +4,7 @@ from sqlalchemy.pool import NullPool
 
 class DbEngine:
     dialect_dict = {
-        'postgre': 'postgresql+psycopg2',
+        'postgre': 'postgresql+pg8000',
         'oracle': 'oracle+cx_oracle',
         'mysql': 'mysql+pymysql',
         'mariadb': 'mysql+pymysql'
