@@ -166,12 +166,10 @@ This function returns value for executed SQL Query. For a description of core fu
 #### Parameters
 1. **SQL**<b style="color:red">*</b>: SQL Query
 
-#### Outputs
-1. **out_table**: table
+#### Outputs: table
 
 ### Python
-#### Inputs
-1. **tables**: tables
+#### Inputs: tables
 
 #### Parameters
 1. **query**<b style="color:red">*</b>: SQL Query
