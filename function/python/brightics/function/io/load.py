@@ -23,10 +23,10 @@ def load_model(path):
 
 def read_from_s3(datasource, object_key):
     client = boto3.client(
-            's3',
-            aws_access_key_id=datasource['accessKeyId'],
-            aws_secret_access_key=datasource['secretAccessKey'],
-            use_ssl=False
+        's3',
+        aws_access_key_id=datasource['accessKeyId'],
+        aws_secret_access_key=datasource['secretAccessKey'],
+        use_ssl=False
     )
     obj = client.get_object(Bucket=datasource['bucketName'], Key=object_key)
     return {'table': pd.read_csv(obj['Body'])}
