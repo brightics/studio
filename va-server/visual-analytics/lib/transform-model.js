@@ -24,9 +24,6 @@ function transformModel(model, operationTree) {
                     model.pop();
                 } else if (action === 'add') {
                     model.push(child.val);
-                    if (model.length - 1 != key) {
-                        throw new Error('ERRRRR');
-                    }
                 }
             } else {
                 model[key] = transformModel(model[key], child);

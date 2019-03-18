@@ -67,9 +67,9 @@ const FILE_CREATE_SQLITE = `
         $4,
         $5,
         $6,
-        datetime('now'),
+        datetime('now', 'localtime'),
         $7,
-        datetime('now'),
+        datetime('now', 'localtime'),
         strftime('%Y_%H%M%f', current_timestamp),
         $8,
         $9)
@@ -83,7 +83,7 @@ const FILE_UPDATE_DEFAULT = '' +
 const FILE_UPDATE_SQLITE = `
     UPDATE brtc_file
        SET (label, contents, description, updater, update_time, event_key, type, tag)
-        = ($1, $2, $3, $4, datetime('now'), strftime('%Y_%H%M%f', current_timestamp), $5, $6)
+        = ($1, $2, $3, $4, datetime('now', 'localtime'), strftime('%Y_%H%M%f', current_timestamp), $5, $6)
      WHERE id=$7 AND project_id=$8 AND (event_key=$9 OR event_key IS NULL)
 `;
 

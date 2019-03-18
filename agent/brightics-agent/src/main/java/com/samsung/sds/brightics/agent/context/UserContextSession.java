@@ -30,7 +30,7 @@ public class UserContextSession implements Serializable {
     private static final long serialVersionUID = -3347175498518796807L;
     private static final Logger LOGGER = LoggerFactory.getLogger(UserContextSession.class);
 
-    private final transient ConcurrentHashMap<ContextType, AbstractContext> contexts = new ConcurrentHashMap<>(3);
+    private transient ConcurrentHashMap<ContextType, AbstractContext> contexts;
     @Getter
     private final ConcurrentHashMap<String, String> dataLinks = new ConcurrentHashMap<>();
     @Getter
@@ -45,6 +45,13 @@ public class UserContextSession implements Serializable {
     public UserContextSession(String user) {
         this();
         this.user = user;
+    }
+
+    private ConcurrentHashMap<ContextType, AbstractContext> getContexts(){
+        if(contexts == null){
+            contexts = new ConcurrentHashMap<>(3);
+        }
+        return contexts;
     }
 
     public String getLink(String linkOrKey) {
@@ -146,23 +153,23 @@ public class UserContextSession implements Serializable {
     }
 
     public boolean containsContext(ContextType contextType) {
-        return contexts.containsKey(contextType);
+        return getContexts().containsKey(contextType);
     }
 
     public void putContext(ContextType contextType, AbstractContext context) {
-        contexts.put(contextType, context);
+        getContexts().put(contextType, context);
     }
 
     public AbstractContext getContext(ContextType contextType) {
-        return contexts.get(contextType);
+        return getContexts().get(contextType);
     }
 
     public void closeContext(ContextType contextType) {
-        contexts.get(contextType).close();
+        getContexts().get(contextType).close();
     }
 
     public void closeContexts() {
-        for (AbstractContext context : contexts.values()) {
+        for (AbstractContext context : getContexts().values()) {
             context.close();
         }
     }
