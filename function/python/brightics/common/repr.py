@@ -7,31 +7,31 @@ from brightics.common.datasets import load_iris
 class BrtcReprBuilder:
 
     def __init__(self):
-        self.res = {'contents':[]}
-    
+        self.res = {'contents': []}
+
     def addPlt(self, plt):
-        self.res['contents'].append({'text':plt2MD(plt), 'type':'md'})
-    
+        self.res['contents'].append({'text': plt2MD(plt), 'type': 'md'})
+
     def addMD(self, str_):
-        self.res['contents'].append({'text':str_, 'type':'md'})
-        
+        self.res['contents'].append({'text': str_, 'type': 'md'})
+
     def addRawTextMD(self, str_):
-        self.res['contents'].append({'text':"""```
+        self.res['contents'].append({'text': """```
         {str_}
-        ```""".format(str_=str_), 'type':'md'})
-    
+        ```""".format(str_=str_), 'type': 'md'})
+
     def addHTML(self, str_):
-        self.res['contents'].append({'text':str_, 'type':'html'})
-    
+        self.res['contents'].append({'text': str_, 'type': 'html'})
+
     def addMDFront(self, str_):
-        self.res['contents'] = [{'text':str_, 'type':'md'}] + self.res['contents']
-    
+        self.res['contents'] = [{'text': str_, 'type': 'md'}] + self.res['contents']
+
     def addHTMLFront(self, str_):
-        self.res['contents'] = [{'text':str_, 'type':'html'}] + self.res['contents']
-    
+        self.res['contents'] = [{'text': str_, 'type': 'html'}] + self.res['contents']
+
     def get(self):
         return self.res
-    
+
     def merge(self, other_res):
         self.res['contents'].extend(other_res['contents'])
 
@@ -43,27 +43,26 @@ def plt2MD(plt):
 def png2MD(png):
     return '![image]({image})'.format(image=_png2uri(png))
 
-            
+
 def strip_margin(text):
     return re.sub('\n[ \t]*\|', '\n', text)
 
 
 def pandasDF2MD(table, num_rows=20, precision=None, col_max_width=None):
-    
     if precision is None:
         _table = table[:num_rows].copy()
     else:
         _table = table[:num_rows].copy().round(precision)
-    
+
     COL_DIVIDER = '|'
     md_line = []
-    
+
     cols = list(_table.columns)
     types = _table.dtypes.values
-    
-    def get_align(dtype): 
-        return '--:' if np.issubdtype(dtype, np.number) else ':--' 
-    
+
+    def get_align(dtype):
+        return '--:' if np.issubdtype(dtype, np.number) else ':--'
+
     def to_string(v, col_max_width=None):
         if not isinstance(v, str):
             return str(v)
@@ -74,27 +73,29 @@ def pandasDF2MD(table, num_rows=20, precision=None, col_max_width=None):
                 return str(v)
             else:
                 return s[0:col_max_width - 3] + '...'
-    
+
     data = _table.values
-    
+
     md_line.append(COL_DIVIDER + COL_DIVIDER.join([str(c) for c in cols]) + COL_DIVIDER)
     md_line.append(COL_DIVIDER + COL_DIVIDER.join([get_align(dt) for dt in types]) + COL_DIVIDER)
-    
+
     for row in data:
         md_line.append(COL_DIVIDER + COL_DIVIDER.join([to_string(c, col_max_width) for c in row]) + COL_DIVIDER)
         # for c in row:
-            
+
     return '\n'.join(md_line)
 
 
 def keyValues2MD(keys, values, precision=6):
-    return '\n'.join(['- {key}: {value}'.format(key=key, value=_display_value(value, precision)) for key, value in zip(keys, values)])
+    return '\n'.join(['- {key}: {value}'.format(key=key, value=_display_value(value, precision)) for key, value in
+                      zip(keys, values)])
 
 
 def dict2MD(dict_, precision=6):  # 
-    return '\n'.join(['- {key}: {value}'.format(key=key, value=_display_value(value, precision)) for key, value in dict_.items()])
+    return '\n'.join(
+        ['- {key}: {value}'.format(key=key, value=_display_value(value, precision)) for key, value in dict_.items()])
 
-    
+
 def _display_value(value, precision=6):
     if isinstance(value, float):
         return '{:.{prec}f}'.format(value, prec=precision)

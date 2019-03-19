@@ -2,7 +2,7 @@ import unittest
 import pandas as pd
 from brightics.common.datasets import load_iris, _load_iris_sklearn, \
     load_random_table, load_random_float_table, add_category_column, \
-    load_basic_test_data, load_random_classification, load_random_regression,\
+    load_basic_test_data, load_random_classification, load_random_regression, \
     _save_dataset, load_dataset, _remove_dataset
 import random
 import string
@@ -79,7 +79,6 @@ class DatasetTest(unittest.TestCase):
         pd.testing.assert_frame_equal(rf1, rf2)
 
     def test_randomdata(self):
-
         RANDOM_COLUMN = [
             {'name': 'float1', 'type': 'float', 'min_value': -1000.0,
              'max_value': 1000.0, 'n_null': 5},
@@ -95,7 +94,7 @@ class DatasetTest(unittest.TestCase):
              'population': (string.ascii_uppercase +
                             string.ascii_lowercase +
                             string.punctuation)}
-            ]
+        ]
 
         _seed = random.randint(0, 100)
         _data_size = 30

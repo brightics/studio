@@ -22,7 +22,8 @@ class ParamValidator(object):
 
     def among(self, target):
         if self.value not in target:
-            self.errors.append(('BR-0000', '{name} not in {target}'.format(name=self.name, target=', '.join(str(t) for t in target))))
+            self.errors.append(
+                ('BR-0000', '{name} not in {target}'.format(name=self.name, target=', '.join(str(t) for t in target))))
 
         return self
 
@@ -43,7 +44,8 @@ class DataFrameValidator(ParamValidator):
         df_columns = self.value.columns
         non_existing_cols = [col_name for col_name in columns if col_name not in df_columns]
         if len(non_existing_cols) != 0:
-            self.errors.append(('BR-0000', ', '.join(non_existing_cols) + ' are not in dataframe columns ' + ', '.join(df_columns)))
+            self.errors.append(
+                ('BR-0000', ', '.join(non_existing_cols) + ' are not in dataframe columns ' + ', '.join(df_columns)))
 
         return self
 
@@ -82,6 +84,3 @@ class NumberValidator(ParamValidator):
         if self.value < criteria:
             self.errors.append(('BR-0000', str(self.name) + ' should be greater than or equal to ' + str(criteria)))
         return self
-
-
-
