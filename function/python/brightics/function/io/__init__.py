@@ -21,3 +21,4 @@ from .create_table import create_table
 
 from .image import image_load
 from .image import resize
+from .image import import_image

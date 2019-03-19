@@ -2,16 +2,18 @@ import unittest
 import glob
 import matplotlib.pyplot as plt
 from brightics.common.image import byte_to_img
-from brightics.function.io import image_load, resize
+from brightics.function.io import image_load, resize, import_image
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 import random
 import time
+import numpy as np
 
 
 class ImageTest(unittest.TestCase):
-    image_path = '''D:/dev/datasets/fruits-sampled'''
+    # image_path = '''D:/dev/datasets/fruits-sampled'''
+    image_path = '''D:/dev/datasets/fruits-sampled2'''
     # image_path = '''D:/dev/datasets/fruits-360/Training'''
     image_files = glob.glob('''{}/*/*'''.format(image_path))
 
@@ -72,3 +74,48 @@ class ImageTest(unittest.TestCase):
 
         print('read_dataset : {}'.format(t0))
         print('read_table : {}'.format(t1))
+
+    def test_import_image(self):
+        out_path = 'd:/dev/temp/parquet/image1'
+        ts = time.perf_counter()
+        out = import_image(self.image_path, out_path)
+        t = time.perf_counter() - ts
+        print(out['out_table'][:20])
+        print('function running time : {}'.format(t))
+
+        img_path = out['out_table']['images'][0]
+        img = np.load('{}/{}'.format(out_path, img_path))
+        plt.imsave('d:/dev/temp/img1.png', img, format='png')
+
+    def test_import_image_onenpy(self):
+        out_path = 'd:/dev/temp/parquet/image2'
+        ts = time.perf_counter()
+        out = import_image(self.image_path, out_path, image_type='npy_one')
+        t = time.perf_counter() - ts
+        print(out['out_table'][:20])
+        print('function running time : {}'.format(t))
+
+        # img_path = out['out_table']['images'][0]
+        # img = plt.imread('{}/{}'.format(out_path, img_path))
+        # plt.imsave('d:/dev/temp/img2.png', img, format='png')
+
+    def test_temp_convert(self):
+        out_path = '{}-png'.format(self.image_path)
+        images_file_list = glob.glob('''{}/*/*'''.format(self.image_path))
+
+        label = [os.path.split(os.path.dirname(os.path.abspath(x)))[1] for x in images_file_list]
+        for i in images_file_list:
+            img = plt.imread(i)
+
+    def test_schema(self):
+
+        sampled_df = image_load(self.image_path)['out_table']
+        image_col = [byte_to_img(x) for x in sampled_df['image']]
+        sampled_df['image'] = image_col
+
+        print(sampled_df)
+        # img = byte_to_img(table['image'][0])
+        # plt.imsave('img.png', img, format='png')
+
+        # patable = pa.Table.from_pandas(df)
+        # print(patable.schema.metadata)

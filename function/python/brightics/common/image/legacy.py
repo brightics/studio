@@ -40,37 +40,42 @@ def imgfile_to_byte(img_path):
 
 
 def img_to_byte(np_img):
-    # byte map : data_type(1)::shape_degree(1)::raw_size(4)::shape(4*shape_degree)::raw(raw_size)
+    # byte map : data_type(1)::shape_degree(1)::thumb_size(4)::raw_size(4)::shape(4*shape_degree)::thumb(thumb_size)::raw(raw_size)
     raw = np_img
     shape = np.array(raw.shape)
+    thumb = get_thumb_bytes(raw)
     raw_bytes = raw.tobytes()
+    thumb_bytes = thumb.tobytes()
 
     data_type = 1
     n_shape = len(shape)
+    n_thumb = len(thumb_bytes)
     n_raw = len(raw_bytes)
     shape_format = 'I' * n_shape
+    thumb_format = '{}s'.format(n_thumb)
     raw_format = '{}s'.format(n_raw)
-    pack_format = '<BBI{0}{1}'.format(shape_format, raw_format)
+    pack_format = '<BBII{0}{1}{2}'.format(shape_format, thumb_format, raw_format)
 
-    return struct.pack(pack_format, data_type, n_shape, n_raw, *shape, raw_bytes)
+    return struct.pack(pack_format, data_type, n_shape, n_thumb, n_raw, *shape, thumb_bytes, raw_bytes)
 
 
 def byte_to_imgset(encoded_bytes):
     bio = io.BytesIO(encoded_bytes)
-    tp, shape_deg, n_raw = struct.unpack('<BBI', bio.read(6))
+    tp, shape_deg, n_thumb, n_raw = struct.unpack('<BBII', bio.read(10))
 
     shape_format = '<' + ('I' * shape_deg)
     shape = struct.unpack(shape_format, bio.read(4 * shape_deg))
 
+    thumb = base64.b64encode(bio.read(n_thumb)).decode('utf-8')
     raw = np.frombuffer(bio.read(n_raw), dtype=np.uint8).reshape(shape)
 
     return {'type': tp, 'shape_degree': shape_deg,
-            'n_raw': n_raw, 'shape': shape, 'raw': raw}
+            'n_thumb': n_thumb, 'n_raw': n_raw, 'shape': shape, 'thumb': thumb, 'raw': raw}
 
 
 def byte_to_img(encoded_bytes):
     bio = io.BytesIO(encoded_bytes)
-    tp, shape_deg, n_raw = struct.unpack('<BBI', bio.read(6))
+    tp, shape_deg, _, n_raw = struct.unpack('<BBII', bio.read(10))
 
     shape_format = '<' + ('I' * shape_deg)
     shape = struct.unpack(shape_format, bio.read(4 * shape_deg))
@@ -98,4 +103,3 @@ def is_image_col(table, input_col, n_sample=3):
     sample_data = table[input_col].sample(n_sample)
 
     return all([is_image(x) for x in sample_data])
-
