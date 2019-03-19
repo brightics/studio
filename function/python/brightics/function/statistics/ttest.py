@@ -219,17 +219,9 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
                 else:
                     break
     if first is None or second is None:
-        tmp_factors = []
-        if first is not None:
-            tmp_factors += [first]
-        if second is not None:
-            tmp_factors += [second]
-        for i in range(len(table[factor_col])):
-            if table[factor_col][i] is not None and table[factor_col][i] not in tmp_factors:
-                if len(tmp_factors) == 2:
-                    raise_error('0719', 'factor_col')
-                else:
-                    tmp_factors += [table[factor_col][i]]
+        tmp_factors=np.unique(table[factor_col])
+        if len(tmp_factors) != 2:
+            raise_error('0719', 'factor_col')
     if first is None:
         if tmp_factors[0] != second:
             first = tmp_factors[0]
