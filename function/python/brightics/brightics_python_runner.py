@@ -184,12 +184,14 @@ if __name__ == '__main__':
                 brtc_java_gateway.notify_brightics_core_exception(traceback.format_exc(), str(bce.code), bce.message)
                 brtc_java_gateway.logger.info("[Python] " + traceback.format_exc())
             except Exception as e:
-                brtc_java_gateway.notify_python_process_finished(traceback.format_exc(), True, traceback.format_exception_only(type(e), e)[-1])
+                brtc_java_gateway.notify_python_process_finished(traceback.format_exc(), True,
+                                                                 traceback.format_exception_only(type(e), e)[-1])
                 brtc_java_gateway.logger.info("[Python] " + traceback.format_exc())
             finally:
                 s = brtc_java_gateway.get_script()
     except Exception as e:
-        brtc_java_gateway.notify_python_process_finished(traceback.format_exc(), True, traceback.format_exception_only(type(e), e)[-1])
+        brtc_java_gateway.notify_python_process_finished(traceback.format_exc(), True,
+                                                         traceback.format_exception_only(type(e), e)[-1])
         brtc_java_gateway.logger.info("[Python] " + traceback.format_exc())
     finally:
         try:
