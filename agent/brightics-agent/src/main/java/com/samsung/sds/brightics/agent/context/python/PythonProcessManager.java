@@ -107,7 +107,11 @@ public class PythonProcessManager {
         }
 
         try {
-            Runtime.getRuntime().exec("kill -SIGINT " + pythonProcessPid);
+            if(IS_WINDOWS){
+                Runtime.getRuntime().exec("taskkill /F /PID " + pythonProcessPid);
+            } else {
+                Runtime.getRuntime().exec("kill -SIGINT " + pythonProcessPid);
+            }
             return true;
         } catch (IOException e) {
             logger.error("Failed to stop task " + e.getMessage());
