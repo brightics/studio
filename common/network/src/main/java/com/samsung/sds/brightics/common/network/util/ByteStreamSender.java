@@ -50,8 +50,9 @@ public class ByteStreamSender implements Closeable {
 					try {
 						if (writeQueue.remainingCapacity() == 0)
 							logger.debug("Wait for the client to write already sent buffers.");
+						// Wait few second that maximum stream megabyte size * 2 
 						boolean valid = writeQueue.offer(true,
-								(int) NetworkServer.MAXIMUM_BYTESTREAM_SIZE / (1024 * 1024), TimeUnit.SECONDS);
+								(NetworkServer.MAXIMUM_BYTESTREAM_SIZE * 2) / (1024 * 1024) , TimeUnit.SECONDS);
 						if (!valid) {
 							throw new BrighticsCoreException("3102",
 									"Data chunk(" + NetworkServer.MAXIMUM_BYTESTREAM_SIZE / (1024 * 1024)
@@ -85,6 +86,7 @@ public class ByteStreamSender implements Closeable {
 		int length = itemBuffer.limit();
 		byte[] data = new byte[length];
 		itemBuffer.get(data);
+		logger.debug("send data. queue size : " + writeQueue.remainingCapacity() );
 		so.onNext(ByteStreamMessage.newBuilder().setTempKey(tempKey)
 				.setData(ByteString.copyFrom(data)).build());
 		itemBuffer.clear();
