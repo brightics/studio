@@ -98,6 +98,11 @@ public class ContextManager {
         return getUserContextSession(user);
     }
 
+    public static void close() {
+    	//Close all user context
+    	userContextSessions.values().stream().forEach(context -> context.closeContexts());
+    }
+
     public static UserContextSession getUserContextSession(String user) {
         if (!userContextSessions.containsKey(user)) {
             userContextSessions.put(user, UserContextSessionLoader.loadUserContextSession(user));

@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.AbstractMessage;
+import com.samsung.sds.brightics.agent.context.ContextManager;
 import com.samsung.sds.brightics.agent.network.BrighticsNetworkManager;
 import com.samsung.sds.brightics.agent.network.listener.ReceiveMessageListener;
 import com.samsung.sds.brightics.agent.service.task.RunningTasks;
@@ -118,12 +119,11 @@ public class BrighticsAgent {
 
     private static void destroyProcess() {
         logger.info("Agent terminated. shutdown all process.");
-
         File pidfile = new File(SystemEnvUtil.PID_PATH + "/" + agentId + ".pid");
         if (pidfile.exists()) {
             pidfile.delete();
         }
-
+        ContextManager.close();
         network.destroy();
     }
 

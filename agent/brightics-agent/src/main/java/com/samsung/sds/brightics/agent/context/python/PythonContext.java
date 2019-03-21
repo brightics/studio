@@ -35,13 +35,12 @@ public class PythonContext extends AbstractContext {
     public void init() {
         processManager = new PythonProcessManager(id);
         processManager.init();
-
-        Runtime.getRuntime().addShutdownHook(new Thread("PythonContextShutdownHook") {
-            @Override
-            public void run() {
-                PythonContext.this.close();
-            }
-        });
+//        Runtime.getRuntime().addShutdownHook(new Thread("PythonContextShutdownHook") {
+//            @Override
+//            public void run() {
+//                PythonContext.this.close();
+//            }
+//        });
     }
 
     @Override
