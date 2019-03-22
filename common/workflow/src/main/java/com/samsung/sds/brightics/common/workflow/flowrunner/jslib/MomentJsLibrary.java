@@ -57,10 +57,11 @@ public class MomentJsLibrary implements JsLibrary {
 	@Override
 	public void loadLibrary(VariableScope variableScope) {
 		try {
-			Context.enter();
+			Context cx = Context.enter();
+			cx.setOptimizationLevel(-1);
 			initLibrary();
-			Context.getCurrentContext().evaluateString(variableScope.getScope(), momentJsString, "moment.js", 1, null);
-			Context.exit();
+			cx.evaluateString(variableScope.getScope(), momentJsString, "moment.js", 1, null);
+			Context.exit(); 
 		} catch (Exception e) {
 			LOGGER.error("Failed to load lib, so ignored.", e);
 		}

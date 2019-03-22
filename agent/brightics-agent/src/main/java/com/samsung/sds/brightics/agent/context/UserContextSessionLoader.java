@@ -29,7 +29,13 @@ public class UserContextSessionLoader {
     }
 
     public static void saveUserContextSession(String user, UserContextSession session) {
-        KVStoreClient.getInstance().put(createSessionKey(user), session);
+        String createSessionKey = createSessionKey(user);
+		KVStoreClient.getInstance().put(createSessionKey, session);
+    }
+
+    public static void clearUserContextSession(String user) {
+    	String createSessionKey = createSessionKey(user);
+    	KVStoreClient.getInstance().delete(createSessionKey);
     }
 
     private static UserContextSession retrieveSessionDataFromStorage(String user) {
