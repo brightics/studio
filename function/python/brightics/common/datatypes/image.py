@@ -15,7 +15,7 @@ class Image(object):
         self.data = arr
         self.height, self.width, self.n_channels = self.data.shape
         self.origin = None
-        self.mode = 'BRG'
+        self.mode = 'BGR'
         if origin is not None:
             self.origin = origin
         if mode is not None:
