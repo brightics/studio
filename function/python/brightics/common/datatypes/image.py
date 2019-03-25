@@ -12,8 +12,15 @@ class Image(object):
     _pack_format = ''.join([_header_format,'I{}s', 'I{}s', 'I{}s'])
 
     def __init__(self, arr, origin=None, mode=None):
-        self.data = arr
-        self.height, self.width, self.n_channels = self.data.shape
+        if len(arr.shape) == 2:
+            self.height, self.width = arr.shape
+            self.n_channels = 1
+            self.data = arr.reshape(self.height,self.width,1)
+        elif len(self.data.shape) == 3:
+            self.height, self.width, self.n_channels = self.data.shape
+        else:
+            raise Exception("Unknown shape.")
+
         self.origin = None
         self.mode = 'BGR'
         if origin is not None:
@@ -48,7 +55,9 @@ class Image(object):
         buf = io.BytesIO(b)
         brtc_code, data_type, height, width, n_channels = \
             struct.unpack(cls._header_format, buf.read(BRTC_CODE_SIZE + 1 + 4 + 4 + 4))
-
+        print(brtc_code, data_type, height, width, n_channels)
+        print(brtc_code)
+        print(BRTC_CODE)
         if brtc_code != BRTC_CODE:
             raise Exception("Unknown data")
         if data_type != cls._data_type:
