@@ -23,7 +23,7 @@ class Image(object):
 
     def tobytes(self):
         '''
-        brtc_code(16)::data_type(1)::height(4)::width(4)::n_channels(4)::
+        brtc_code(40)::data_type(1)::height(4)::width(4)::n_channels(4)::
         mode_size(4)::mode(mode_size)::
         origin_size(4)::origin(origin_size)::
         data_size(4)::data(data_size)
