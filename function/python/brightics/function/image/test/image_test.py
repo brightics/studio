@@ -36,9 +36,9 @@ class ImageTest(unittest.TestCase):
         print('All images are loaded.')
         org_img = Image.from_bytes(test_table['image'][0])
         resized = resize(test_table, 'image', size_type='fixed-ratio',
-                         target_height=0.6, target_width=0.5)['out_table']
+                         target_height=0.6, target_width=0.5, out_col='out_img')['out_table']
 
-        resized_img = Image.from_bytes(resized['image_resized'][0])
+        resized_img = Image.from_bytes(resized['out_img'][0])
         print(resized)
         print(org_img.data.shape)
         print(resized_img.data.shape)
@@ -46,9 +46,9 @@ class ImageTest(unittest.TestCase):
     def test_convert_grayscale(self):
         test_table = image_load(self.image_path)['out_table']
         org_img = Image.from_bytes(test_table['image'][0])
-        converted = convert_colorspace(test_table, 'image', color_space='GRAY')['out_table']
+        converted = convert_colorspace(test_table, 'image', color_space='GRAY', out_col='out_img')['out_table']
 
-        converted_img = Image.from_bytes(converted['image_converted'][0])
+        converted_img = Image.from_bytes(converted['out_img'][0])
         print(converted)
         print(org_img.mode)
         print(converted_img.mode)

@@ -36,7 +36,7 @@ import numpy as np
 #              cropping-left-center, cropping-right-center,
 #              cropping-left-bottom, cropping-center-bottom, cropping-right-bottom
 def resize(table, input_col, size_type='fixed-ratio', target_height=1.0, target_width=1.0, shrink_type='scailing',
-           zoom_type='scailing'):
+           zoom_type='scailing', out_col='image_resized'):
     if not _is_image_col(table, input_col):
         raise_runtime_error("input column {} is not an image column.".format(input_col))
 
@@ -94,13 +94,13 @@ def resize(table, input_col, size_type='fixed-ratio', target_height=1.0, target_
     else:
         resized_imgs = [_resize_img(x, size_type='size', dsize=(target_height, target_width)) for x in npy_imgs]
 
-    table['image_resized'] = resized_imgs
+    table[out_col] = resized_imgs
 
     return {'out_table': table}
 
 
 # colorspace : BGR(default), RGB, GRAY, HSV
-def convert_colorspace(table, input_col, color_space='BGR'):
+def convert_colorspace(table, input_col, color_space='BGR', out_col='image_converted'):
     if not _is_image_col(table, input_col):
         raise_runtime_error("input column {} is not an image column.".format(input_col))
 
@@ -131,7 +131,7 @@ def convert_colorspace(table, input_col, color_space='BGR'):
     imgs = [Image.from_bytes(x) for x in table[input_col]]
     converted_imgs = [_convert_image(x, x.mode, color_space).tobytes() for x in imgs]
 
-    table['image_converted'] = converted_imgs
+    table[out_col] = converted_imgs
     return {'out_table': table}
 
 
