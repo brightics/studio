@@ -30,24 +30,30 @@ def split(arr, n):
 
 
 def images_from_files(valid_files, directory, class_dict):
-    classes = []
-    filenames = []
     images = []
-
+    relative_paths = []
+    filenames = []
+    extensions = []
+    classes = []
+    
     for root, file in valid_files:
-        class_ = os.path.relpath(root, directory) if class_dict is None \
-            else class_dict[os.path.relpath(root, directory)]
+        relative_path = os.path.relpath(root, directory)
+        class_ = relative_path if class_dict is None \
+            else class_dict[relative_path]
 
-        filename = os.path.join(root, file)
+        fullname = os.path.join(root, file)
         classes.append(class_)
+        filename = os.path.splitext(file)[0].lower()
+        extension = os.path.splitext(file)[1][1:].lower()
         filenames.append(filename)
+        extensions.append(extension)
+        relative_paths.append(relative_path)
+        images.append(Image(cv2.imread(fullname, cv2.IMREAD_UNCHANGED), fullname).tobytes())
 
-        images.append(Image(cv2.imread(filename), filename).tobytes())
-
-    return classes, filenames, images
+    return images, relative_paths, filenames, extensions, classes
 
 
-def _valid_images(directory, white_list_formats, class_dict=None, n_jobs=4):
+def _valid_images(directory, white_list_formats, class_dict=None, n_jobs=None):
     valid_files = _iter_validfiles(directory, white_list_formats)
 
     split_files = split([*valid_files], n_jobs)
@@ -65,26 +71,41 @@ def _valid_images(directory, white_list_formats, class_dict=None, n_jobs=4):
     classes = []
     filenames = []
     images = []
+    relative_paths = []
+    extensions = []
     for res in results:
-        classes_sub, filenames_sub, images_sub = res.get()
-        classes.extend(classes_sub)
-        filenames.extend(filenames_sub)
-        images.extend(images_sub)
+        images_sub, relative_paths_sub, filenames_sub, extensions_sub, classes_sub = res.get()
 
-    return classes, filenames, images
+        images.extend(images_sub)
+        relative_paths.extend(relative_paths_sub)
+        filenames.extend(filenames_sub)
+        extensions.extend(extensions_sub)
+        classes.extend(classes_sub)
+
+    return images, relative_paths, filenames, extensions, classes
 
 
 @time_usage
-def load_from_directory(path, white_list_formats=None, n_jobs=8):
+def load_from_directory(path, white_list_formats=None, class_dict=None, n_jobs=8):
     if white_list_formats is None:
         white_list_formats = WHITE_LIST
 
-    classes, filenames, images = _valid_images(path, white_list_formats, n_jobs=n_jobs)
+    images, relative_paths, filenames, extensions, classes = _valid_images(path, white_list_formats, class_dict, n_jobs)
 
-    table = pd.DataFrame.from_dict({
-        'image': images,
-        'filename': filenames,
-        'class': classes})
+    if class_dict is None:
+        table = pd.DataFrame.from_dict({
+            'image': images,
+            'relative_path': relative_paths,
+            'filename': filenames,
+            'extension': extensions})
+    else:
+        table = pd.DataFrame.from_dict({
+            'image': images,
+            'relative_path': relative_paths,
+            'filename': filenames,
+            'extension': extensions,
+            'class': classes})
+
 
     return {'table': table}
 
