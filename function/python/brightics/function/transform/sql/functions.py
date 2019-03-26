@@ -5,6 +5,7 @@ import numpy as np
 from .serializer import _serialize
 from .serializer import _deserialize
 import re
+from brightics.common.datatypes.image import Image
 
 """ 
 constants 
@@ -131,3 +132,10 @@ def split(str_, *sep):
 def size(serialized_list):
     arr = _deserialize(serialized_list)
     return len(arr)
+
+
+""" 
+array related functions  
+"""
+def vectorize(img):
+    return _serialize(Image.from_bytes(img).data.reshape(-1))

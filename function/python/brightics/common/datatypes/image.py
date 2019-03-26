@@ -16,8 +16,9 @@ class Image(object):
             self.height, self.width = arr.shape
             self.n_channels = 1
             self.data = arr.reshape(self.height,self.width,1)
-        elif len(self.data.shape) == 3:
-            self.height, self.width, self.n_channels = self.data.shape
+        elif len(arr.shape) == 3:
+            self.height, self.width, self.n_channels = arr.shape
+            self.data=arr
         else:
             raise Exception("Unknown shape.")
 
@@ -55,9 +56,6 @@ class Image(object):
         buf = io.BytesIO(b)
         brtc_code, data_type, height, width, n_channels = \
             struct.unpack(cls._header_format, buf.read(BRTC_CODE_SIZE + 1 + 4 + 4 + 4))
-        print(brtc_code, data_type, height, width, n_channels)
-        print(brtc_code)
-        print(BRTC_CODE)
         if brtc_code != BRTC_CODE:
             raise Exception("Unknown data")
         if data_type != cls._data_type:

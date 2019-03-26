@@ -12,10 +12,10 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 import pathlib
 import time
-
+import cv2
 
 def image_load(path, labeling='label'):
-    images_file_list = glob.glob('''{}/*/*'''.format(path))
+    images_file_list = glob.glob('''{}/*/*'''.format(path)) # todo
 
     if labeling == 'label':
         label = [os.path.split(os.path.dirname(os.path.abspath(x)))[1] for x in images_file_list]
@@ -26,11 +26,7 @@ def image_load(path, labeling='label'):
     encoded_images = [img_to_byte(x) for x in images]
 
     sample_idx = random.randint(0, len(images_file_list))
-    print('''image_path : {}'''.format(images_file_list[sample_idx]))
-    print('''encoded_image : {}'''.format(encoded_images[sample_idx]))
-    print('''labeling : {}'''.format(labeling))
-    print('''label : {}'''.format(label[sample_idx]))
-
+    
     out_df = pd.DataFrame({'image': encoded_images, 'label': label})
 
     return {'out_table': out_df}
