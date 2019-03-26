@@ -98,8 +98,17 @@ public class ContextManager {
         return getUserContextSession(user);
     }
 
+    //Close contexts of user session and remove user session.
+    public static void removeUserContextSession(){
+    	String user = ThreadUtil.getCurrentUser();
+    	if(userContextSessions.containsKey(user)){
+    		userContextSessions.get(user).closeContexts();
+    		userContextSessions.remove(user);
+    	}
+    }
+    
+    //Close all user context.
     public static void close() {
-    	//Close all user context
     	userContextSessions.values().stream().forEach(context -> context.closeContexts());
     }
 

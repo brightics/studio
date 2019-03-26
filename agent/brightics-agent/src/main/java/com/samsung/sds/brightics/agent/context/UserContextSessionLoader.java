@@ -33,6 +33,7 @@ public class UserContextSessionLoader {
 		KVStoreClient.getInstance().put(createSessionKey, session);
     }
 
+    //clear user context session info.
     public static void clearUserContextSession(String user) {
     	String createSessionKey = createSessionKey(user);
     	KVStoreClient.getInstance().delete(createSessionKey);
