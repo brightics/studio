@@ -19,7 +19,6 @@ public class jobRunnerThread extends Thread {
 	private final ThreadPoolExecutor threadPoolExecutor;
 	
 	public jobRunnerThread(Socket socket, ThreadPoolExecutor threadPoolExecutor) {
-		super("UnknownRemoteAddressConnection");
 		String remoteAddress = socket.getRemoteSocketAddress().toString();
 		if (remoteAddress != null) {
 			setName(remoteAddress);
@@ -56,18 +55,18 @@ public class jobRunnerThread extends Thread {
 						}
 					}); 
 				} catch (Exception e) {
-					logger.error("Cannot run work flow model",e);
+					logger.error("Cannot run work flow model", e);
 				}
 
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Cannt read inputstream.", e);
 		} finally {
 			try {
 				socket.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error("Cannot close socket.", e);
 			}
 		}
 	}

@@ -9,14 +9,8 @@ import redis.clients.jedis.JedisPoolConfig;
 
 public class RedisClient extends KVStoreClient {
 
-    private static JedisPool pool;
-
-    public RedisClient() {
-        if (pool == null) {
-            pool = new JedisPool(new JedisPoolConfig(), SystemEnvUtil.getEnvOrPropOrElse("REDIS_SERVER_HOST", "brightics.redis.server.host", "localhost"),
-                    Integer.parseInt(SystemEnvUtil.getEnvOrPropOrElse("REDIS_SERVER_PORT", "brightics.redis.server.port","6379")));
-        }
-    }
+    private final static JedisPool pool = new JedisPool(new JedisPoolConfig(), SystemEnvUtil.getEnvOrPropOrElse("REDIS_SERVER_HOST", "brightics.redis.server.host", "localhost"),
+            Integer.parseInt(SystemEnvUtil.getEnvOrPropOrElse("REDIS_SERVER_PORT", "brightics.redis.server.port","6379")));;
 
     @Override
     protected void putImpl(String key, Object data) {

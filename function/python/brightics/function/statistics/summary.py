@@ -11,6 +11,11 @@ import pandas as pd
 import numpy as np
 
 def statistic_summary(table, group_by=None, **params):
+    params = get_default_from_parameters_if_required(params,_statistic_summary)
+    param_validation_check = [all_elements_from_to(params, 0, 100, 'percentile_amounts'),
+                              all_elements_from_under(params, 0, 0.5, 'trimmed_mean_amounts')]
+        
+    validate(*param_validation_check)
     check_required_parameters(_statistic_summary, params, ['table'])
     if group_by is not None:
         return _function_by_group(_statistic_summary, table, group_by=group_by, **params)

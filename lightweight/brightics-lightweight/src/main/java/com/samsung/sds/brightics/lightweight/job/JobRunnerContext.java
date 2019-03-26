@@ -78,10 +78,11 @@ public class JobRunnerContext {
 			}
 			jobParam.setDatas(preparedDatas);
 		}
-		String userId = generateUid();
-		jobParam.setUser(userId);
+		if(jobParam.getUser() == null || jobParam.getUser().isEmpty()){
+			jobParam.setUser(generateUid());
+		}
 		jobParam.setJid(generateJid());
-		return new JobRunnerWrapper(jobRunnerBuilder.create(jobParam)).setUser(userId);
+		return new JobRunnerWrapper(jobRunnerBuilder.create(jobParam)).setUser(jobParam.getUser());
 	}
 
 	private String generateUid() {

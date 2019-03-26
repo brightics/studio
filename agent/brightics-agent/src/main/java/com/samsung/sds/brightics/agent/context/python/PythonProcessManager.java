@@ -4,11 +4,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.samsung.sds.brightics.agent.context.ContextManager;
-import com.samsung.sds.brightics.common.core.util.SystemEnvUtil;
 import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
 import com.samsung.sds.brightics.common.core.exception.BrighticsFunctionException;
 import com.samsung.sds.brightics.common.core.thread.ThreadLocalContext;
 import com.samsung.sds.brightics.common.core.util.JsonUtil;
+import com.samsung.sds.brightics.common.core.util.SystemEnvUtil;
 import com.samsung.sds.brightics.common.data.DataStatus;
 import com.samsung.sds.brightics.common.data.client.KVStoreClient;
 import org.apache.commons.lang3.ArrayUtils;
@@ -49,6 +49,7 @@ public class PythonProcessManager {
     private GatewayServer gatewayServer;
     private Process pythonProcess;
     private int pythonProcessPid = -1;
+    private boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase().startsWith("windows");
 
     static {
     	String FUNCTION_ROOT = SystemEnvUtil.getEnvOrPropOrElse("BRIGHTICS_FUNCTION_HOME", "brightics.function.home", "");
@@ -77,7 +78,11 @@ public class PythonProcessManager {
         try {
             if (pythonProcess != null && pythonProcess.isAlive()) {
                 if (pythonProcessPid > 0) {
-                    run("exit()");
+                    if(IS_WINDOWS){
+                        Runtime.getRuntime().exec("taskkill /F /PID " + pythonProcessPid);
+                    } else {
+                        Runtime.getRuntime().exec("kill -SIGKILL " + pythonProcessPid);
+                    }
                 } else {
                     pythonProcess.destroyForcibly();
                 }
@@ -102,7 +107,11 @@ public class PythonProcessManager {
         }
 
         try {
-            Runtime.getRuntime().exec("kill -SIGINT " + pythonProcessPid);
+            if(IS_WINDOWS){
+                Runtime.getRuntime().exec("taskkill /F /PID " + pythonProcessPid);
+            } else {
+                Runtime.getRuntime().exec("kill -SIGINT " + pythonProcessPid);
+            }
             return true;
         } catch (IOException e) {
             logger.error("Failed to stop task " + e.getMessage());

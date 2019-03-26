@@ -191,8 +191,7 @@ public class MessageSender {
                     }
                 });
         ByteStreamSender byteStreamSender = new ByteStreamSender(writeObserver, tempKey, writeQueue);
-        try {
-            BufferedReader lineBuffer = new BufferedReader(new InputStreamReader(inputstream, "UTF-8"));
+        try(BufferedReader lineBuffer = new BufferedReader(new InputStreamReader(inputstream, "UTF-8"))) {
             String line;
             if (isSchemaRemove) { //remove first schemaLine
                 lineBuffer.readLine();

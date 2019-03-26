@@ -75,7 +75,6 @@ public class JobRunnerWrapper {
 				Thread.sleep(1000);
 				processSecond++;
 			}
-			// clear job runner.
 		}catch(Exception e) {
 			logger.error("Cannot run work flow model.", e);
 			throw new RuntimeException(e);
