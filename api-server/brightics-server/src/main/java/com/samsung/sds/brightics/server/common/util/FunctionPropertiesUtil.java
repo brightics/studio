@@ -64,6 +64,10 @@ public class FunctionPropertiesUtil {
 				FunctionMetaParam functionMetaParam = JsonUtil.fromJson(new FileInputStream(functionHelpFile),
 						FunctionMetaParam.class);
 				Map<String, Object> specJson = functionMetaParam.getSpecJson();
+				if (specJson == null || specJson.isEmpty()) {
+					logger.debug("It is not a json of the function meta spec. file name : " + filename);
+					return;
+				}
 				setFunctionLabelInfo(specJson);
 				functionMetaMap.put(String.valueOf(specJson.get(FUNC)), functionMetaParam);
 			} catch (Exception e) {
