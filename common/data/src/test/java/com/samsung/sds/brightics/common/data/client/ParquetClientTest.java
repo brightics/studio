@@ -1,24 +1,5 @@
 package com.samsung.sds.brightics.common.data.client;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.URL;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
-import org.apache.parquet.hadoop.ParquetFileReader;
-import org.apache.parquet.hadoop.ParquetFileWriter.Mode;
-import org.apache.parquet.hadoop.ParquetReader;
-import org.apache.parquet.hadoop.ParquetWriter;
-import org.apache.parquet.hadoop.metadata.ParquetMetadata;
-import org.junit.Test;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.samsung.sds.brightics.common.data.parquet.reader.AbstractRecord;
@@ -26,8 +7,26 @@ import com.samsung.sds.brightics.common.data.parquet.reader.BrighticsParquetRead
 import com.samsung.sds.brightics.common.data.parquet.reader.DefaultRecord;
 import com.samsung.sds.brightics.common.data.parquet.writer.CsvParquetWriterBuilder;
 import com.samsung.sds.brightics.common.data.util.NumberParser;
-import com.samsung.sds.brightics.common.data.view.JsonTable;
 import com.samsung.sds.brightics.common.data.view.ObjectTable;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.parquet.hadoop.ParquetFileReader;
+import org.apache.parquet.hadoop.ParquetFileWriter.Mode;
+import org.apache.parquet.hadoop.ParquetReader;
+import org.apache.parquet.hadoop.ParquetWriter;
+import org.apache.parquet.hadoop.metadata.ParquetMetadata;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class ParquetClientTest {
 
@@ -77,11 +76,19 @@ public class ParquetClientTest {
 
     @Test
     public void testReadParquet() throws IOException {
-        ObjectTable table = ParquetClient.readParquet(path, 0, 110);
+        String parquetPath = "D:/dev/temp/image_table.pq";
+
+        ObjectTable table = ParquetClient.readParquet(parquetPath, 0, 2);
         ObjectMapper mapper = new ObjectMapper();
         System.out.println(mapper.writeValueAsString(table));
+        System.out.println(table.getData().get("data"));
     }
 
+    @Test
+    public void testDataType() throws IOException {
+        String datatype = DigestUtils.sha1Hex("brightics-studio v1.0");
+        Assert.assertEquals("83c78ba730ba09fa13c8559f2a616e887005e021", datatype);
+    }
     /**
      * The input data for this test is from Spark using code below.
      * 
