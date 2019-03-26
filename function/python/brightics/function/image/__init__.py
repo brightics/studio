@@ -1,5 +1,7 @@
 from brightics.common.datatypes.image import Image
+from brightics.common.validation import raise_runtime_error
 import cv2
+import numpy as np
 
 
 # size
@@ -33,9 +35,10 @@ import cv2
 #  zoom_type : scailing, cropping-center, cropping-left-top, cropping-center-top, cropping-right-top
 #              cropping-left-center, cropping-right-center,
 #              cropping-left-bottom, cropping-center-bottom, cropping-right-bottom
-def resize(table, input_col, size_type='fixed-ratio', target_height=1.0, target_width=1.0, shrink_type='scailing', zoom_type='scailing'):
+def resize(table, input_col, size_type='fixed-ratio', target_height=1.0, target_width=1.0, shrink_type='scailing',
+           zoom_type='scailing'):
     if not _is_image_col(table, input_col):
-        raise ValueError("input column {} is not an image column.".format(input_col))
+        raise_runtime_error("input column {} is not an image column.".format(input_col))
 
     def _resize_img(img, size_type, dsize):
         # img_np = byte_to_img(img_byte)
@@ -93,6 +96,42 @@ def resize(table, input_col, size_type='fixed-ratio', target_height=1.0, target_
 
     table['image_resized'] = resized_imgs
 
+    return {'out_table': table}
+
+
+# colorspace : BGR(default), RGB, GRAY, HSV
+def convert_colorspace(table, input_col, color_space='BGR'):
+    if not _is_image_col(table, input_col):
+        raise_runtime_error("input column {} is not an image column.".format(input_col))
+
+    def _get_color_code(src_mode, dst_mode):
+        if src_mode == 'BGR' and dst_mode == 'RGB':
+            return cv2.COLOR_BGR2RGB
+        elif src_mode == 'BGR' and dst_mode == 'GRAY':
+            return cv2.COLOR_BGR2GRAY
+        elif src_mode == 'RGB' and dst_mode == 'BGR':
+            return cv2.COLOR_RGB2BGR
+        elif src_mode == 'RGB' and dst_mode == 'GRAY':
+            return cv2.COLOR_RGB2GRAY
+        elif src_mode == 'GRAY' and dst_mode == 'RGB':
+            return cv2.COLOR_GRAY2RGB
+        elif src_mode == 'GRAY' and dst_mode == 'BGR':
+            return cv2.COLOR_GRAY2BGR
+
+    def _convert_image(img, src_space, dst_space):
+        if src_space != dst_space:
+            converted_img_npy = cv2.cvtColor(img.data, code=_get_color_code(img.mode, color_space))
+            if dst_space == 'GRAY':
+                converted_img_npy = np.stack((converted_img_npy,) * 3, axis=-1)
+
+            return Image(converted_img_npy, origin=img.origin, mode=dst_space)
+        else:
+            return img
+
+    imgs = [Image.from_bytes(x) for x in table[input_col]]
+    converted_imgs = [_convert_image(x, x.mode, color_space).tobytes() for x in imgs]
+
+    table['image_converted'] = converted_imgs
     return {'out_table': table}
 
 

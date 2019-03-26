@@ -1,8 +1,11 @@
 import glob
 import unittest
 
+import cv2
+import numpy as np
+
 from brightics.common.datatypes.image import Image
-from brightics.function.image import resize
+from brightics.function.image import resize, convert_colorspace
 from brightics.function.io import image_load
 
 
@@ -39,3 +42,14 @@ class ImageTest(unittest.TestCase):
         print(resized)
         print(org_img.data.shape)
         print(resized_img.data.shape)
+
+    def test_convert_grayscale(self):
+        test_table = image_load(self.image_path)['out_table']
+        org_img = Image.from_bytes(test_table['image'][0])
+        converted = convert_colorspace(test_table, 'image', color_space='GRAY')['out_table']
+
+        converted_img = Image.from_bytes(converted['image_converted'][0])
+        print(converted)
+        print(org_img.mode)
+        print(converted_img.mode)
+        cv2.imwrite('image.png', converted_img.data)
