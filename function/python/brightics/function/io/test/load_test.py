@@ -1,3 +1,4 @@
+import glob
 import unittest
 from brightics.common.datasets import load_iris
 from brightics.function.io.unload import write_csv
@@ -7,7 +8,6 @@ import os
 
 
 class LoadTest(unittest.TestCase):
-
     path_kr = '아이리스.csv'
 
     def tearDown(self):

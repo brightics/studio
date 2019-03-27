@@ -217,7 +217,8 @@ def _convert_colorspace(img, src_space, dst_space):
     if src_space != dst_space:
         converted_img_npy = cv2.cvtColor(img.data, code=_get_color_code(src_space, dst_space))
         if dst_space == 'GRAY':
-            converted_img_npy = np.stack((converted_img_npy,) * 3, axis=-1)
+            #converted_img_npy = np.stack((converted_img_npy,) * 3, axis=-1)
+            converted_img_npy = converted_img_npy.reshape(img.height, img.width, 1)
 
         return Image(converted_img_npy, origin=img.origin, mode=dst_space)
     else:

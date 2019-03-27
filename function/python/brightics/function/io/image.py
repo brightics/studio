@@ -16,16 +16,24 @@ import cv2
 from brightics.common.datatypes.image import Image
 
 
-def image_load(path, labeling='label', n_sample=None):
-    images_file_list = glob.glob('''{}/*/*'''.format(path))
+#
+# labelling
+# dir : (label)/files....
+# none : no label
+# file_prefix : (label)_files...
+#
+def image_load(path, labeling='dir', image_col='image', n_sample=None):
 
-    if n_sample is not None:
-        images_file_list = random.sample(images_file_list, n_sample)
-
-    if labeling == 'label':
+    if labeling == 'dir':
+        images_file_list = glob.glob('''{}/*/*'''.format(path))
+        if n_sample is not None:
+            images_file_list = random.sample(images_file_list, n_sample)
         label = [os.path.split(os.path.dirname(os.path.abspath(x)))[1] for x in images_file_list]
     else:
-        label = list(range(0, images_file_list))
+        images_file_list = glob.glob('''{}/*'''.format(path))
+        if n_sample is not None:
+            images_file_list = random.sample(images_file_list, n_sample)
+        label = None
 
     images = [(cv2.imread(x), x) for x in images_file_list]
     # encoded_images = [img_to_byte(x) for x in images]
@@ -38,7 +46,9 @@ def image_load(path, labeling='label', n_sample=None):
     # print('''labeling : {}'''.format(labeling))
     # print('''label : {}'''.format(label[sample_idx]))
 
-    out_df = pd.DataFrame({'image': encoded_images, 'label': label})
+    out_df = pd.DataFrame({image_col: encoded_images})
+    if label is not None:
+        out_df['label'] = label
 
     return {'out_table': out_df}
 

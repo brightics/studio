@@ -14,6 +14,7 @@ class ImageTest(unittest.TestCase):
     image_path = '''D:/dev/datasets/fruits-sampled4'''
     full_image_path = '''D:/dev/datasets/fruits-360/Training'''
     image_files = glob.glob('''{}/*/*'''.format(image_path))
+    image_nonelabel = '''d:/dev/datasets/avito_images'''
 
     def setUp(self):
         self.test_table = image_load(self.image_path)['out_table']
@@ -21,6 +22,10 @@ class ImageTest(unittest.TestCase):
     def test_load(self):
         self.assertEqual(len(self.image_files), len(self.test_table))
         self.assertEqual((100, 100, 3), Image.from_bytes(self.test_table['image'][0]).data.shape)
+
+    def test_load_nonelabel(self):
+        table_nonelabel = image_load(self.image_nonelabel, labeling='none')['out_table']
+        self.assertEqual(1, len(table_nonelabel.columns))
 
     def test_resize_min(self):
         resized = resize(self.test_table, 'image', size_type='min')['out_table']
