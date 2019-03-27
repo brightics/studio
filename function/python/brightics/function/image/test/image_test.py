@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 
 from brightics.common.datatypes.image import Image
-from brightics.function.image import resize, convert_colorspace, extract_features, split_by_channels
+from brightics.function.image import resize, convert_colorspace, extract_features, split_by_channels, normalize
 from brightics.function.io import image_load
 
 
@@ -41,6 +41,8 @@ class ImageTest(unittest.TestCase):
     def test_extract_features(self):
         out_table = extract_features(self.test_table, 'image')['out_table']
         sample_row = out_table.sample(5)
+        # print(sample_row['image_blurriness'])
+        # print(sample_row[['image_dominant_red', 'image_dominant_blue', 'image_dominant_green']])
         for i, row in sample_row.iterrows():
             sample_img = Image.from_bytes(row['image'])
             self.assertEqual(row['image_height'], sample_img.height)
@@ -50,8 +52,6 @@ class ImageTest(unittest.TestCase):
 
     def test_split_by_channels(self):
         out_table = split_by_channels(self.test_table, 'image')['out_table']
-        print(out_table)
-        print(out_table.columns)
         sample_row = out_table.sample(1)
         for i, row in sample_row.iterrows():
             sample_img = Image.from_bytes(row['image'])
@@ -64,3 +64,13 @@ class ImageTest(unittest.TestCase):
             img_new[:, :, 1] = img_c1[:, :, 1]
             img_new[:, :, 2] = img_c2[:, :, 2]
             np.testing.assert_array_equal(img_new, sample_img.data)
+
+    def test_normalize(self):
+        out_table = normalize(self.test_table, 'image', alpha=128, beta=255, out_col='img_norm')['out_table']
+        sample_row = out_table.sample(3)
+        for i, row in sample_row.iterrows():
+            sample_img = Image.from_bytes(row['image']).data
+            new_img1 = Image.from_bytes(row['img_norm']).data
+            new_img2 = cv2.normalize(sample_img, np.zeros(sample_img.shape), alpha=128, beta=255,
+                                     norm_type=cv2.NORM_MINMAX)
+            np.testing.assert_array_equal(new_img2, new_img1)

@@ -15,10 +15,10 @@ class Image(object):
         if len(arr.shape) == 2:
             self.height, self.width = arr.shape
             self.n_channels = 1
-            self.data = arr.reshape(self.height,self.width,1)
+            self.data = arr.reshape(self.height, self.width, 1)
         elif len(arr.shape) == 3:
             self.height, self.width, self.n_channels = arr.shape
-            self.data=arr
+            self.data = arr
         else:
             raise Exception("Unknown shape.")
 

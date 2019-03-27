@@ -2,6 +2,7 @@ from brightics.common.datatypes.image import Image
 from brightics.common.validation import raise_runtime_error
 import cv2
 import numpy as np
+from scipy.stats import itemfreq
 
 
 # size
@@ -96,33 +97,8 @@ def resize(table, input_col, size_type='fixed-ratio', target_height=1.0, target_
 # colorspace : BGR(default), RGB, GRAY, HSV
 def convert_colorspace(table, input_col, color_space='BGR', out_col='image_converted'):
     _check_image_col(table, input_col)
-
-    def _get_color_code(src_mode, dst_mode):
-        if src_mode == 'BGR' and dst_mode == 'RGB':
-            return cv2.COLOR_BGR2RGB
-        elif src_mode == 'BGR' and dst_mode == 'GRAY':
-            return cv2.COLOR_BGR2GRAY
-        elif src_mode == 'RGB' and dst_mode == 'BGR':
-            return cv2.COLOR_RGB2BGR
-        elif src_mode == 'RGB' and dst_mode == 'GRAY':
-            return cv2.COLOR_RGB2GRAY
-        elif src_mode == 'GRAY' and dst_mode == 'RGB':
-            return cv2.COLOR_GRAY2RGB
-        elif src_mode == 'GRAY' and dst_mode == 'BGR':
-            return cv2.COLOR_GRAY2BGR
-
-    def _convert_image(img, src_space, dst_space):
-        if src_space != dst_space:
-            converted_img_npy = cv2.cvtColor(img.data, code=_get_color_code(img.mode, color_space))
-            if dst_space == 'GRAY':
-                converted_img_npy = np.stack((converted_img_npy,) * 3, axis=-1)
-
-            return Image(converted_img_npy, origin=img.origin, mode=dst_space)
-        else:
-            return img
-
     imgs = [Image.from_bytes(x) for x in table[input_col]]
-    converted_imgs = [_convert_image(x, x.mode, color_space).tobytes() for x in imgs]
+    converted_imgs = [_convert_colorspace(x, x.mode, color_space).tobytes() for x in imgs]
 
     table[out_col] = converted_imgs
     return {'out_table': table}
@@ -135,11 +111,16 @@ def extract_features(table, input_col):
     table['{}_width'.format(input_col)] = [x.width for x in imgs]
     table['{}_color_space'.format(input_col)] = [x.mode for x in imgs]
     table['{}_origin_path'.format(input_col)] = [x.origin for x in imgs]
+
+    # table['{}_blurriness'.format(input_col)] = [_get_blurriness_score(x) for x in imgs]
+    # dominant_colors = np.array([_get_dominant_color(x) for x in imgs]).T.tolist()
+    # table['{}_dominant_red'.format(input_col)] = dominant_colors[0]
+    # table['{}_dominant_blue'.format(input_col)] = dominant_colors[1]
+    # table['{}_dominant_green'.format(input_col)] = dominant_colors[2]
     return {'out_table': table}
 
 
 def split_by_channels(table, input_col):
-
     # img : brightics.common.datatypes.image.Image
     def _split_image_by_channels(img):
         img_channel_list = []
@@ -155,6 +136,18 @@ def split_by_channels(table, input_col):
     for i, col_data in enumerate(np.array(imgs_split).T.tolist()):
         table['{}_channel_{}'.format(input_col, i)] = [x.tobytes() for x in col_data]
 
+    return {'out_table': table}
+
+
+def normalize(table, input_col, alpha=0, beta=255, norm_type='minmax', out_col='image_normalized'):
+    _check_image_col(table, input_col)
+
+    imgs = [Image.from_bytes(x) for x in table[input_col]]
+    imgs_normalized = [
+        Image(cv2.normalize(x.data, dst=np.zeros(x.data.shape), alpha=alpha, beta=beta, norm_type=cv2.NORM_MINMAX),
+              origin=x.origin, mode=x.mode).tobytes() for x in imgs]
+
+    table[out_col] = imgs_normalized
     return {'out_table': table}
 
 
@@ -175,3 +168,57 @@ def _is_image_col(table, input_col, n_sample=3):
     sampled_data = table[input_col].sample(_n_sample)
 
     return all([Image.is_image(x) for x in sampled_data])
+
+
+def _get_color_code(src_mode, dst_mode):
+    if src_mode == 'BGR' and dst_mode == 'RGB':
+        return cv2.COLOR_BGR2RGB
+    elif src_mode == 'BGR' and dst_mode == 'GRAY':
+        return cv2.COLOR_BGR2GRAY
+    elif src_mode == 'RGB' and dst_mode == 'BGR':
+        return cv2.COLOR_RGB2BGR
+    elif src_mode == 'RGB' and dst_mode == 'GRAY':
+        return cv2.COLOR_RGB2GRAY
+    elif src_mode == 'GRAY' and dst_mode == 'RGB':
+        return cv2.COLOR_GRAY2RGB
+    elif src_mode == 'GRAY' and dst_mode == 'BGR':
+        return cv2.COLOR_GRAY2BGR
+
+
+def _get_blurriness_score(img):
+    img_gray = cv2.cvtColor(img.data, _get_color_code(img.mode, 'GRAY'))
+    fm = cv2.Laplacian(img_gray, cv2.CV_64F).var()
+    return fm
+
+
+def _kmeans(img, n_clusters=5, max_iter=200, epsilon=.1):
+    pixels = np.float32(img.data.reshape((-1, 3)))
+
+    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, max_iter, epsilon)
+    flags = cv2.KMEANS_RANDOM_CENTERS
+    return cv2.kmeans(pixels, n_clusters, None, criteria, 10, flags)
+
+
+def _get_quantize_image(img, n_clusters=5, max_iter=200, epsilon=.1):
+    _, labels, centroids = _kmeans(img, n_clusters=n_clusters, max_iter=max_iter, epsilon=epsilon)
+    palette = np.uint8(centroids)
+    quantized = palette[labels.flatten()]
+    quantized = quantized.reshape(img.data.shape)
+    return Image(quantized, origin=img.origin, mode=img.mode)
+
+
+def _get_dominant_color(img, n_clusters=5, max_iter=200, epsilon=.1):
+    _, labels, centroids = _kmeans(img, n_clusters=n_clusters, max_iter=max_iter, epsilon=epsilon)
+    palette = np.uint8(centroids)
+    return palette[np.argmax(itemfreq(labels)[:, -1])]
+
+
+def _convert_colorspace(img, src_space, dst_space):
+    if src_space != dst_space:
+        converted_img_npy = cv2.cvtColor(img.data, code=_get_color_code(src_space, dst_space))
+        if dst_space == 'GRAY':
+            converted_img_npy = np.stack((converted_img_npy,) * 3, axis=-1)
+
+        return Image(converted_img_npy, origin=img.origin, mode=dst_space)
+    else:
+        return img
