@@ -37,8 +37,7 @@ import numpy as np
 #              cropping-left-bottom, cropping-center-bottom, cropping-right-bottom
 def resize(table, input_col, size_type='fixed-ratio', target_height=1.0, target_width=1.0, shrink_type='scailing',
            zoom_type='scailing', out_col='image_resized'):
-    if not _is_image_col(table, input_col):
-        raise_runtime_error("input column {} is not an image column.".format(input_col))
+    _check_image_col(table, input_col)
 
     def _resize_img(img, size_type, dsize):
         # img_np = byte_to_img(img_byte)
@@ -78,10 +77,12 @@ def resize(table, input_col, size_type='fixed-ratio', target_height=1.0, target_
         resized_imgs = [_resize_img(x, size_type=size_type, dsize=dsize) for x in npy_imgs]
     elif size_type == 'x-min':
         dsize_w = min([x.width for x in npy_imgs])
-        resized_imgs = [_resize_img(x, size_type=size_type, dsize=(dsize_w, int(dsize_w * x.height / x.width))) for x in npy_imgs]
+        resized_imgs = [_resize_img(x, size_type=size_type, dsize=(dsize_w, int(dsize_w * x.height / x.width))) for x in
+                        npy_imgs]
     elif size_type == 'y-min':
         dsize_h = min([x.height for x in npy_imgs])
-        resized_imgs = [_resize_img(x, size_type=size_type, dsize=(int(dsize_h * x.width / x.height), dsize_h)) for x in npy_imgs]
+        resized_imgs = [_resize_img(x, size_type=size_type, dsize=(int(dsize_h * x.width / x.height), dsize_h)) for x in
+                        npy_imgs]
     elif size_type == 'fixed-ratio':
         resized_imgs = [_resize_img(x, size_type='ratio', dsize=(target_width, target_height)) for x in npy_imgs]
     else:
@@ -94,8 +95,7 @@ def resize(table, input_col, size_type='fixed-ratio', target_height=1.0, target_
 
 # colorspace : BGR(default), RGB, GRAY, HSV
 def convert_colorspace(table, input_col, color_space='BGR', out_col='image_converted'):
-    if not _is_image_col(table, input_col):
-        raise_runtime_error("input column {} is not an image column.".format(input_col))
+    _check_image_col(table, input_col)
 
     def _get_color_code(src_mode, dst_mode):
         if src_mode == 'BGR' and dst_mode == 'RGB':
@@ -126,6 +126,41 @@ def convert_colorspace(table, input_col, color_space='BGR', out_col='image_conve
 
     table[out_col] = converted_imgs
     return {'out_table': table}
+
+
+def extract_features(table, input_col):
+    _check_image_col(table, input_col)
+    imgs = [Image.from_bytes(x) for x in table[input_col]]
+    table['{}_height'.format(input_col)] = [x.height for x in imgs]
+    table['{}_width'.format(input_col)] = [x.width for x in imgs]
+    table['{}_color_space'.format(input_col)] = [x.mode for x in imgs]
+    table['{}_origin_path'.format(input_col)] = [x.origin for x in imgs]
+    return {'out_table': table}
+
+
+def split_by_channels(table, input_col):
+
+    # img : brightics.common.datatypes.image.Image
+    def _split_image_by_channels(img):
+        img_channel_list = []
+        for i in range(img.n_channels):
+            img_out = np.zeros((img.height, img.width, img.n_channels), dtype=img.data.dtype)
+            img_out[:, :, i] = img.data[:, :, i]
+            img_channel_list.append(img_out)
+        return [Image(x, origin=img.origin, mode=img.mode) for x in img_channel_list]
+
+    _check_image_col(table, input_col)
+    imgs_split = [_split_image_by_channels(Image.from_bytes(x)) for x in table[input_col]]
+
+    for i, col_data in enumerate(np.array(imgs_split).T.tolist()):
+        table['{}_channel_{}'.format(input_col, i)] = [x.tobytes() for x in col_data]
+
+    return {'out_table': table}
+
+
+def _check_image_col(table, input_col):
+    if not _is_image_col(table, input_col):
+        raise_runtime_error("input column {} is not an image column.".format(input_col))
 
 
 def _is_image_col(table, input_col, n_sample=3):
