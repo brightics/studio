@@ -42,30 +42,26 @@ def resize(table, input_col, size_type='fixed-ratio', target_height=1.0, target_
 
     def _resize_img(img, size_type, dsize):
         # img_np = byte_to_img(img_byte)
-        org_x = img.width
-        org_y = img.height
-        size_org = org_x * org_y
+        org_dsize = (img.width, img.height)
+        org_area = org_dsize[0] * org_dsize[1]
 
         if size_type == 'size':
-            new_x = int(dsize[0])
-            new_y = int(dsize[1])
+            new_dsize = (int(dsize[0]), int(dsize[1]))
         elif size_type == 'ratio':
-            new_x = int(org_x * dsize[0])
-            new_y = int(org_x * dsize[1])
+            new_dsize = (int(org_dsize[0] * dsize[0]), int(org_dsize[1] * dsize[1]))
         else:
-            new_x = int(dsize[0])
-            new_y = int(dsize[1])
+            new_dsize = (int(dsize[0]), int(dsize[1]))
 
-        size_new = new_x * new_y
-        if org_x == new_x and org_y == new_y:
+        new_area = new_dsize[0] * new_dsize[1]
+        if org_dsize == new_dsize:
             # no change
             img_resized = img.data
-        elif size_org > size_new:
+        elif org_area > new_area:
             # make smaller
-            img_resized = cv2.resize(img.data, dsize=(new_x, new_y), interpolation=cv2.INTER_AREA)
+            img_resized = cv2.resize(img.data, dsize=new_dsize, interpolation=cv2.INTER_AREA)
         else:
             # make larger
-            img_resized = cv2.resize(img.data, dsize=(new_x, new_y), interpolation=cv2.INTER_LINEAR)
+            img_resized = cv2.resize(img.data, dsize=new_dsize, interpolation=cv2.INTER_LINEAR)
 
         return Image(img_resized, origin=img.origin, mode=img.mode).tobytes()
 
@@ -78,21 +74,18 @@ def resize(table, input_col, size_type='fixed-ratio', target_height=1.0, target_
     npy_imgs = [Image.from_bytes(x) for x in table[input_col]]
 
     if size_type == 'min':
-        dsize_x = min([x.width for x in npy_imgs])
-        dsize_y = min([x.height for x in npy_imgs])
-        resized_imgs = [_resize_img(x, size_type=size_type, dsize=(dsize_x, dsize_y)) for x in npy_imgs]
+        dsize = (min([x.width for x in npy_imgs]), min([x.height for x in npy_imgs]))
+        resized_imgs = [_resize_img(x, size_type=size_type, dsize=dsize) for x in npy_imgs]
     elif size_type == 'x-min':
-        dsize_x = min([x.width for x in npy_imgs])
-        dsize_y = [int(dsize_x * x.height / x.width) for x in npy_imgs]
-        resized_imgs = [_resize_img(x, size_type=size_type, dsize=(dsize_x, dsize_y)) for x in npy_imgs]
+        dsize_w = min([x.width for x in npy_imgs])
+        resized_imgs = [_resize_img(x, size_type=size_type, dsize=(dsize_w, int(dsize_w * x.height / x.width))) for x in npy_imgs]
     elif size_type == 'y-min':
-        dsize_y = min([x.height for x in npy_imgs])
-        dsize_x = [int(dsize_y * x.width / x.height) for x in npy_imgs]
-        resized_imgs = [_resize_img(x, size_type=size_type, dsize=(dsize_x, dsize_y)) for x in npy_imgs]
+        dsize_h = min([x.height for x in npy_imgs])
+        resized_imgs = [_resize_img(x, size_type=size_type, dsize=(int(dsize_h * x.width / x.height), dsize_h)) for x in npy_imgs]
     elif size_type == 'fixed-ratio':
-        resized_imgs = [_resize_img(x, size_type='ratio', dsize=(target_height, target_width)) for x in npy_imgs]
+        resized_imgs = [_resize_img(x, size_type='ratio', dsize=(target_width, target_height)) for x in npy_imgs]
     else:
-        resized_imgs = [_resize_img(x, size_type='size', dsize=(target_height, target_width)) for x in npy_imgs]
+        resized_imgs = [_resize_img(x, size_type='size', dsize=(target_width, target_height)) for x in npy_imgs]
 
     table[out_col] = resized_imgs
 
