@@ -151,6 +151,11 @@ def normalize(table, input_col, alpha=0, beta=255, norm_type='minmax', out_col='
     return {'out_table': table}
 
 
+def vectorize_image(table, input_col, out_col='image_vector'):
+    table[out_col] = [Image.from_bytes(x).data.reshape(-1).tolist() for x in table[input_col]]
+    return {'out_table': table}
+
+
 def _check_image_col(table, input_col):
     if not _is_image_col(table, input_col):
         raise_runtime_error("input column {} is not an image column.".format(input_col))
@@ -217,7 +222,7 @@ def _convert_colorspace(img, src_space, dst_space):
     if src_space != dst_space:
         converted_img_npy = cv2.cvtColor(img.data, code=_get_color_code(src_space, dst_space))
         if dst_space == 'GRAY':
-            #converted_img_npy = np.stack((converted_img_npy,) * 3, axis=-1)
+            # converted_img_npy = np.stack((converted_img_npy,) * 3, axis=-1)
             converted_img_npy = converted_img_npy.reshape(img.height, img.width, 1)
 
         return Image(converted_img_npy, origin=img.origin, mode=dst_space)

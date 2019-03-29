@@ -5,14 +5,16 @@ import cv2
 import numpy as np
 
 from brightics.common.datatypes.image import Image
-from brightics.function.image import resize, convert_colorspace, extract_features, split_by_channels, normalize
+from brightics.function.image import resize, convert_colorspace, extract_features, split_by_channels, normalize, \
+    vectorize_image
 from brightics.function.io import image_load
 
 
+@unittest.skip('test files only exist in local system.')
 class ImageTest(unittest.TestCase):
     # image_path = '''D:/dev/datasets/fruits-sampled'''
     image_path = '''D:/dev/datasets/fruits-sampled4'''
-    full_image_path = '''D:/dev/datasets/fruits-360/Training'''
+    #full_image_path = '''D:/dev/datasets/fruits-360/Training'''
     image_files = glob.glob('''{}/*/*'''.format(image_path))
     image_nonelabel = '''d:/dev/datasets/avito_images'''
 
@@ -79,3 +81,11 @@ class ImageTest(unittest.TestCase):
             new_img2 = cv2.normalize(sample_img, np.zeros(sample_img.shape), alpha=128, beta=255,
                                      norm_type=cv2.NORM_MINMAX)
             np.testing.assert_array_equal(new_img2, new_img1)
+
+    def test_vectorize(self):
+        out_table = vectorize_image(self.test_table, 'image', 'image_vector')['out_table']
+        sample_row = out_table.sample(3)
+        print(sample_row)
+        # for i, row in sample_row.iterrows():
+        #     sample_img = Image.from_bytes(row['image']).data
+        #     print(sample_img.reshape(-1).shape)
