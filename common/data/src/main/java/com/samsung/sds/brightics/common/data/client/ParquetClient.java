@@ -9,10 +9,9 @@ import com.samsung.sds.brightics.common.data.parquet.reader.info.FileIndex;
 import com.samsung.sds.brightics.common.data.parquet.reader.info.ParquetInformation;
 import com.samsung.sds.brightics.common.data.parquet.reader.util.BrighticsParquetUtils;
 import com.samsung.sds.brightics.common.data.parquet.writer.CsvParquetWriterBuilder;
+import com.samsung.sds.brightics.common.data.util.BinaryDataType;
 import com.samsung.sds.brightics.common.data.util.DelimiterUtil;
-import com.samsung.sds.brightics.common.data.view.Column;
-import com.samsung.sds.brightics.common.data.view.ObjectTable;
-import com.samsung.sds.brightics.common.data.view.Table;
+import com.samsung.sds.brightics.common.data.view.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -116,27 +115,28 @@ public class ParquetClient {
 
         // TODO: Find Indices of image columns
         // TODO: Need Extract to separated method
-        int IMAGE_OBJECT_OFFSET = 27;
-        int heightFrom = IMAGE_OBJECT_OFFSET + 41;
+        int OBJECT_BINARY_OFFSET = 27;
+        int heightFrom = OBJECT_BINARY_OFFSET + 41;
         int widthFrom = heightFrom + 4;
         int channelFrom = widthFrom + 4;
         int modeSizeFrom = channelFrom + 4;
         int modeFrom = modeSizeFrom + 4;
 
-        byte[] DATATYPE_BYTES = DigestUtils.sha1Hex("brightics-studio v1.0").getBytes();
+        byte[] BRIGHTICS_DATATYPE_BINARY_HEADER = DigestUtils.sha1Hex("brightics-studio v1.0").getBytes();
 
-        List<Integer> imageColumnIndices = new ArrayList<>();
+        List<Integer> binaryColumnIndices = new ArrayList<>();
         for (int columnIndex = 0; columnIndex < schema.length; columnIndex++) {
             Column columnInfo = schema[columnIndex];
             String columnType = columnInfo.getColumnType();
             if ("binary".equals(columnType)) {
-                imageColumnIndices.add(columnIndex);
+                binaryColumnIndices.add(columnIndex);
             }
         }
-        LOGGER.debug("image column indices == " + imageColumnIndices.toString());
+        LOGGER.debug("binary column indices == " + binaryColumnIndices.toString());
 
+        // TODO: move code location
         // convert image column type name
-        for (int imageColIdx : imageColumnIndices) {
+        for (int imageColIdx : binaryColumnIndices) {
             LOGGER.debug("change column type of '" + schema[imageColIdx] + "' to image.");
             schema[imageColIdx].setColumnType("image");
         }
@@ -171,55 +171,65 @@ public class ParquetClient {
                     // TODO: Extract this to the separated method
                     Object[] rowValue = record.getValues();
                     LOGGER.debug("row value size == " + rowValue.length + ", schema length == " + schema.length);
-                    for (int imageColIdx : imageColumnIndices) {
-                        Object originalImageData = rowValue[imageColIdx];
+                    for (int binaryColIdx : binaryColumnIndices) {
+                        Object originalBinaryData = rowValue[binaryColIdx];
+                        BinaryData binaryData = new BinaryData(originalBinaryData);
+
+                        if(binaryData.getDataType() == BinaryDataType.Image) {
+                            ImageData imageData = new ImageData(binaryData);
+                        }
+
                         ByteArrayOutputStream bos = new ByteArrayOutputStream();
                         try {
 
                             ObjectOutputStream oos = new ObjectOutputStream(bos);
-                            oos.writeObject(originalImageData);
+                            oos.writeObject(originalBinaryData);
                             oos.flush();
-                            byte[] imageBytes = bos.toByteArray();
-                            byte[] dataType = new byte[40];
-                            System.arraycopy(imageBytes, IMAGE_OBJECT_OFFSET, dataType, 0, 40);
+                            byte[] binaryDataBytes = bos.toByteArray();
+                            byte[] binaryDataHeader = new byte[40];
+                            System.arraycopy(binaryDataBytes, OBJECT_BINARY_OFFSET, binaryDataHeader, 0, 40);
 
 //                            LOGGER.debug("index == " + imageColIdx + " image data type1 == " + imageBytes[0]
 //                                    + " image object length = " + imageBytes.length);
-                            if (Arrays.equals(dataType, DATATYPE_BYTES)) {
+                            if (Arrays.equals(binaryDataHeader, BRIGHTICS_DATATYPE_BINARY_HEADER)) {
 
-                                byte imageType = imageBytes[IMAGE_OBJECT_OFFSET + 40];
+                                byte dataTypeCode = binaryDataBytes[OBJECT_BINARY_OFFSET + 40];
+                                LOGGER.debug("binary type : " + dataTypeCode);
 
-                                LOGGER.debug("image type : " + imageType);
-
-                                if (imageType == 0b00) {
+                                if (dataTypeCode == 0b00) {
                                     // image type
 //                                    brtc_code(40)::data_type(1)::height(4)::width(4)::n_channels(4)::
 //                                    mode_size(4)::mode(mode_size)::
 //                                    origin_size(4)::origin(origin_size)::
 //                                    data_size(4)::data(data_size)
 
-                                    int height = bytesToInt(imageBytes, heightFrom, widthFrom, java.nio.ByteOrder.LITTLE_ENDIAN);
-                                    int width = bytesToInt(imageBytes, widthFrom, channelFrom, java.nio.ByteOrder.LITTLE_ENDIAN);
-                                    int channel = bytesToInt(imageBytes, channelFrom, modeSizeFrom, java.nio.ByteOrder.LITTLE_ENDIAN);
-                                    int modeSize = bytesToInt(imageBytes, modeSizeFrom, modeFrom, java.nio.ByteOrder.LITTLE_ENDIAN);
+                                    int height = bytesToInt(binaryDataBytes, heightFrom, widthFrom, java.nio.ByteOrder.LITTLE_ENDIAN);
+                                    int width = bytesToInt(binaryDataBytes, widthFrom, channelFrom, java.nio.ByteOrder.LITTLE_ENDIAN);
+                                    int channel = bytesToInt(binaryDataBytes, channelFrom, modeSizeFrom, java.nio.ByteOrder.LITTLE_ENDIAN);
+                                    int modeSize = bytesToInt(binaryDataBytes, modeSizeFrom, modeFrom, java.nio.ByteOrder.LITTLE_ENDIAN);
 
                                     int originSizeFrom = modeFrom + modeSize;
-                                    String mode = new String(java.nio.ByteBuffer.wrap(Arrays.copyOfRange(imageBytes, modeFrom, originSizeFrom)).array());
+                                    String mode = new String(java.nio.ByteBuffer.wrap(Arrays.copyOfRange(binaryDataBytes, modeFrom, originSizeFrom)).array());
 
                                     int originFrom = originSizeFrom + 4;
-                                    int originSize = bytesToInt(imageBytes, originSizeFrom, originFrom, java.nio.ByteOrder.LITTLE_ENDIAN);
+                                    int originSize = bytesToInt(binaryDataBytes, originSizeFrom, originFrom, java.nio.ByteOrder.LITTLE_ENDIAN);
 
                                     int dataSizeFrom = originFrom + originSize;
-                                    String origin = new String(java.nio.ByteBuffer.wrap(Arrays.copyOfRange(imageBytes, originFrom, dataSizeFrom)).array());
+                                    String origin = new String(java.nio.ByteBuffer.wrap(Arrays.copyOfRange(binaryDataBytes, originFrom, dataSizeFrom)).array());
 
                                     int dataFrom = dataSizeFrom + 4;
-                                    int dataSize = bytesToInt(imageBytes, dataSizeFrom, dataFrom, java.nio.ByteOrder.LITTLE_ENDIAN);
+                                    int dataSize = bytesToInt(binaryDataBytes, dataSizeFrom, dataFrom, java.nio.ByteOrder.LITTLE_ENDIAN);
 
                                     int dataTo = dataFrom + dataSize;
-                                    byte[] imageData = java.nio.ByteBuffer.wrap(Arrays.copyOfRange(imageBytes, dataFrom, dataTo)).array();
+                                    byte[] imageData = java.nio.ByteBuffer.wrap(Arrays.copyOfRange(binaryDataBytes, dataFrom, dataTo)).array();
 
                                     ByteArrayOutputStream imagebos = new ByteArrayOutputStream();
-                                    BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+                                    BufferedImage image;
+                                    if ("GRAY".equals(mode)) {
+                                        image = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+                                    } else {
+                                        image = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+                                    }
                                     final byte[] targetPixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
                                     System.arraycopy(imageData, 0, targetPixels, 0, imageData.length);
 
@@ -253,7 +263,7 @@ public class ParquetClient {
                                                 + ", dataSize = " + dataSize);
                                         String imageJsonString = new Gson().toJson(imageJson);
                                         LOGGER.debug("image string : " + imageJsonString);
-                                        record.add(imageColIdx, imageJsonString);
+                                        record.add(binaryColIdx, imageJsonString);
                                     } finally {
                                         imageBos.close();
                                     }
