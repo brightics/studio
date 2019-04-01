@@ -6,17 +6,19 @@ import numpy as np
 
 from brightics.common.datatypes.image import Image
 from brightics.function.image import resize, convert_colorspace, extract_features, split_by_channels, normalize, \
-    vectorize_image
-from brightics.function.io import image_load
+    vectorize_image, save_to_npy
+from brightics.function.io import image_load, image_unload
 
 
-@unittest.skip('test files only exist in local system.')
+# @unittest.skip('test files only exist in local system.')
 class ImageTest(unittest.TestCase):
     # image_path = '''D:/dev/datasets/fruits-sampled'''
     image_path = '''D:/dev/datasets/fruits-sampled4'''
-    #full_image_path = '''D:/dev/datasets/fruits-360/Training'''
+    # full_image_path = '''D:/dev/datasets/fruits-360/Training'''
     image_files = glob.glob('''{}/*/*'''.format(image_path))
     image_nonelabel = '''d:/dev/datasets/avito_images'''
+    image_mnist_training = '''D:/dev/datasets/mnist_png/training'''
+    image_mnist_testing = '''D:/dev/datasets/mnist_png/testing'''
 
     def setUp(self):
         self.test_table = image_load(self.image_path)['out_table']
@@ -89,3 +91,23 @@ class ImageTest(unittest.TestCase):
         # for i, row in sample_row.iterrows():
         #     sample_img = Image.from_bytes(row['image']).data
         #     print(sample_img.reshape(-1).shape)
+
+    def test_save_to_npy(self):
+        # mnist_train_table = image_load(self.image_mnist_training)['out_table']
+        # save_to_npy(mnist_train_table, 'image', 'label', 'mnist_train_data.npy', 'mnist_train_label.npy')
+        # train_data_loaded = np.load('mnist_train_data.npy')
+        # train_label_loaded = np.load('mnist_train_label.npy')
+        # print(train_data_loaded.shape)
+        # print(train_label_loaded.shape)
+
+        mnist_test_table = image_load(self.image_mnist_testing)['out_table']
+        save_to_npy(mnist_test_table, 'image', 'label', 'mnist_test_data.npy', 'mnist_test_label.npy')
+        test_data_loaded = np.load('mnist_test_data.npy')
+        test_label_loaded = np.load('mnist_test_label.npy')
+        print(test_data_loaded.shape)
+        print(test_label_loaded.shape)
+
+    def test_image_unload(self):
+        out_table = self.test_table.sample(3)
+        print(out_table)
+        image_unload(out_table, input_col='image', path='./out_images')

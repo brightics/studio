@@ -14,6 +14,7 @@ import pathlib
 import time
 import cv2
 from brightics.common.datatypes.image import Image
+from brightics.common.validation import raise_runtime_error
 
 
 #
@@ -23,7 +24,6 @@ from brightics.common.datatypes.image import Image
 # file_prefix : (label)_files...
 #
 def image_load(path, labeling='dir', image_col='image', n_sample=None):
-
     if labeling == 'dir':
         images_file_list = glob.glob('''{}/*/*'''.format(path))
         if n_sample is not None:
@@ -51,6 +51,38 @@ def image_load(path, labeling='dir', image_col='image', n_sample=None):
         out_df['label'] = label
 
     return {'out_table': out_df}
+
+
+def image_unload(table, input_col, path, type='png', label_col=None, labelling='dir'):
+    if not _is_image_col(table, input_col):
+        raise_runtime_error('{} is not an image type column.'.format(input_col))
+
+    # def _save_image
+    # images_npy = [Image.from_bytes(x).data for x in table[input_col]]
+    pathlib.Path(path).mkdir(parents=True, exist_ok=True)
+
+    if label_col is None:
+        for i, x in enumerate(table[input_col]):
+            img_npy = Image.from_bytes(x).data
+            # if type == 'png':
+            out_file_name = '{}/{}.{}'.format(path, i, type)
+            print(out_file_name)
+            cv2.imwrite(out_file_name, img_npy)
+
+
+def _is_image_col(table, input_col, n_sample=3):
+    if table[input_col].dtype != object:
+        return False
+
+    _n_table = len(table)
+    if _n_table == 0:
+        # ignore validation
+        return True
+
+    _n_sample = min(n_sample, _n_table)
+    sampled_data = table[input_col].sample(_n_sample)
+
+    return all([Image.is_image(x) for x in sampled_data])
 
 # def import_image(in_path, out_path, image_type='npy', labeling='label'):
 #     images_file_list = glob.glob('''{}/*/*'''.format(in_path))

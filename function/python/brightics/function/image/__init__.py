@@ -151,6 +151,15 @@ def normalize(table, input_col, alpha=0, beta=255, norm_type='minmax', out_col='
     return {'out_table': table}
 
 
+def save_to_npy(table, input_col, label_col, data_output_path, label_output_path):
+    _check_image_col(table, input_col)
+
+    data_npy = np.array([Image.from_bytes(x).data for x in table[input_col]])
+    label_npy = np.array(table[label_col])
+    np.save(file=data_output_path, arr=data_npy)
+    np.save(file=label_output_path, arr=label_npy)
+
+
 def vectorize_image(table, input_col, out_col='image_vector'):
     table[out_col] = [Image.from_bytes(x).data.reshape(-1).tolist() for x in table[input_col]]
     return {'out_table': table}
