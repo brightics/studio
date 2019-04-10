@@ -19,7 +19,7 @@ export JAVA_OPTS="-Xmx256m -Djava.net.preferIPv4Stack=true -Dlogback.configurati
 export CLASSPATH=":$appdir/lib/*"
 export MAIN="com.samsung.sds.brightics.lightweight.Application"
 
-#source $appdir/envlib/brightics_python_env/bin/activate
+source $appdir/envlib/brightics_python_env/bin/activate
 
 $JAVA_HOME/bin/java $JAVA_OPTS $GC_OPTS -cp $CLASSPATH:brightics-lightweight-3.5.0.jar $MAIN  &
 

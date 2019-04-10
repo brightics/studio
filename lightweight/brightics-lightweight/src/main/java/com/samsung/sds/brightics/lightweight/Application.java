@@ -8,7 +8,6 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.samsung.sds.brightics.agent.context.python.PythonContext;
 import com.samsung.sds.brightics.common.core.util.SystemEnvUtil;
 import com.samsung.sds.brightics.lightweight.job.thread.jobRunnerThread;
 

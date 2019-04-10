@@ -103,7 +103,7 @@ public class JobRunnerContext {
 				getAbsolutePath(SystemEnvUtil.BRIGHTICS_SERVER_HOME, "functions"));
 		System.setProperty("brightics.data.root", 
 				getAbsolutePath(SystemEnvUtil.BRIGHTICS_SERVER_HOME, "data"));
-		System.setProperty("brightics.kv.store", "H2");
+		System.setProperty("brightics.kv.store", "INMEMORY");
 		System.setProperty("brightics.grpc.mode", "local"); 
 		System.setProperty("brightics.agent.host", "localhost"); // do nothing
 		System.setProperty("brightics.server.host", "localhost"); // do nothing

@@ -72,7 +72,7 @@ public class JobRunnerWrapper {
 				if (processSecond > timeoutSecond) {
 					throw new TimeoutException("The working time of the workflow exceeded the standard.");
 				}
-				Thread.sleep(1000);
+				Thread.sleep(100);
 				processSecond++;
 			}
 		}catch(Exception e) {
@@ -81,7 +81,7 @@ public class JobRunnerWrapper {
 		} finally {
 			//close userContext 
 			UserContextSessionLoader.clearUserContextSession(user);
-			ContextManager.removeUserContextSession();
+//			ContextManager.removeUserContextSession();
 			jobRunner.clear();
 		}
 	}
