@@ -14,6 +14,7 @@ from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate
 from brightics.common.validation import greater_than
 from brightics.common.validation import greater_than_or_equal_to
+from brightics.common.classify_input_type import check_col_type
 
 
 def logistic_regression_train(table, group_by=None, **params):
@@ -36,7 +37,7 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
                                solver='liblinear', max_iter=100, multi_class='ovr', verbose=0, warm_start=False,
                                n_jobs=1):
 
-    features = table[feature_cols]
+    feature_names, features = check_col_type(table,feature_cols)
     label = table[label_col]
 
     if(sklearn_utils.multiclass.type_of_target(label) == 'continuous'):
@@ -50,9 +51,8 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
     coefficients = lr_model.coef_
     classes = lr_model.classes_
     is_binary = len(classes) == 2
-
     if (fit_intercept == True):
-        summary = pd.DataFrame({'features': ['intercept'] + feature_cols})
+        summary = pd.DataFrame({'features': ['intercept'] + feature_names})
         print(intercept)
         print(coefficients)
         
@@ -63,7 +63,7 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
             summary = pd.concat((summary, pd.DataFrame(coef_trans, columns=[classes[0]])), axis=1)
             
     else:
-        summary = pd.DataFrame({'features': feature_cols})
+        summary = pd.DataFrame({'features': feature_names})
         coef_trans = np.transpose(coefficients)
         
         if not is_binary:
@@ -105,7 +105,7 @@ def _logistic_regression_predict(table, model, prediction_col='prediction', prob
                                  output_log_prob=False, log_prob_prefix='log_probability', thresholds=None,
                                  suffix='index'):
     feature_cols = model['features']
-    features = table[feature_cols]
+    feature_names, features = check_col_type(table,feature_cols)
     lr_model = model['lr_model']
     classes = lr_model.classes_
     len_classes = len(classes)
