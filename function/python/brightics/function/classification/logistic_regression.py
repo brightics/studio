@@ -41,7 +41,7 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
     label = table[label_col]
 
     if(sklearn_utils.multiclass.type_of_target(label) == 'continuous'):
-        raise_runtime_error('''Label Column should not be continuous.''')
+        raise_error('0718', 'label_col')
     
     lr_model = LogisticRegression(penalty, dual, tol, C, fit_intercept, intercept_scaling, class_weight, random_state,
                                   solver, max_iter, multi_class, verbose, warm_start, n_jobs)
