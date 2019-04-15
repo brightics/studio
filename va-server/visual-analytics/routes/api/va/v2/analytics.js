@@ -241,7 +241,7 @@ router.get('/jobs/:jid', function (req, res) {
     });
 });
 
-function IsJsonObject(str) {
+let isJsonObject = function (str) {
     var parsed;
     try {
         parsed = JSON.parse(str);
