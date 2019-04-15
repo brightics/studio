@@ -34,7 +34,7 @@ def _function_by_group2(function, table=None, model=None, columns=None, group_by
     if isinstance(model, dict):
         groups = model['_grouped_data']['groups']
         group_by = model['_grouped_data']['group_by']
-    elif isinstance(table, pd.DataFrame):
+    if isinstance(table, pd.DataFrame):
         table, groups = _group(table, params, group_by)  # use group keys from table even there is a model.
     sample_result = _sample_result(function, table, model, params, groups)
     res_keys, df_keys, model_keys_containing_repr = _info_from_sample_result(sample_result, group_by, groups)
