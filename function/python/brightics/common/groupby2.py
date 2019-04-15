@@ -127,7 +127,7 @@ def _run_function(function, table, model, params, group):
 
 def _info_from_sample_result(sample_result, group_by, groups):
     res_keys = [*sample_result]
-    df_keys = [k for k, v in sample_result.items()]
+    df_keys = [k for k, v in sample_result.items() if isinstance(v, list)]
     model_keys_containing_repr = [k for k, v in sample_result.items()
                                   if isinstance(v, dict) and '_repr_brtc_' in v]
     return res_keys, df_keys, model_keys_containing_repr
