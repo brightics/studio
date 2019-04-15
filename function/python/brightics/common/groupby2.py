@@ -43,7 +43,7 @@ def _function_by_group2(function, table=None, model=None, columns=None, group_by
         rb = BrtcReprBuilder()
         for group in success_keys:
             rb.addMD('--- \n\n ### Group by {group_by} : {tmp_group}\n\n---'.format(group_by=group_by, tmp_group=group_key_dict[group]))
-            rb.merge(res_dict[repr_key]['_grouped_data']['data'][group]['_repr_brtc_'])
+            rb.merge(res_dict[repr_key]['_grouped_data']['data'][tuple(group)]['_repr_brtc_'])
         res_dict[repr_key]['_repr_brtc_'] = rb.get()
     for df_key in df_keys:
         res_dict[df_key] = _flatten(res_dict[df_key],groups, group_by, columns)
