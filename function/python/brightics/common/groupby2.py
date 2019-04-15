@@ -118,7 +118,7 @@ def _run_function(function, table, model, params, group):
     if table is not None and model is None:
         res_group = function(table=table['_grouped_data']['data'][tuple(group)], **params)
     elif table is not None and model is not None:
-        res_group = function(table=table['_grouped_data']['data'][tuple(group)], model=model['_grouped_data']['data'][group], **params)
+        res_group = function(table=table['_grouped_data']['data'][tuple(group)], model=model['_grouped_data']['data'][tuple(group)], **params)
     else:
         res_group = function(model=model['_grouped_data']['data'][tuple(group)], **params)
 
