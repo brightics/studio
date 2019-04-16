@@ -4,7 +4,7 @@ import numpy as np
 def check_col_type(table,feature_cols):
     test_table=table[feature_cols]
     if(check_list(test_table)):
-        test_table = list(table[feature_cols[0]])
+        test_table = table[feature_cols[0]].tolist()
         feature_names=[feature_cols[0]+'_{}'.format(i) for i in range(len(test_table[0]))]
         return feature_names, test_table
     elif(check_all_numbers(test_table)):
