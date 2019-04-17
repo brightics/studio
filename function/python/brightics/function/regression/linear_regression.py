@@ -117,13 +117,13 @@ def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True,
     model['f_static'] = lr_model_fit.fvalue
     model['tvalues'] = lr_model_fit.tvalues
     model['pvalues'] = lr_model_fit.pvalues
-    model['lr_model'] = lr_model_fit
     model['_repr_brtc_'] = rb.get()
 
     model['summary0'] = summary0
     model['summary1'] = summary1
     model['summary2'] = summary2
-
+    lr_model_fit.remove_data()
+    model['lr_model'] = lr_model_fit
     return {'model' : model}
 
 
