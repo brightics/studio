@@ -18,7 +18,6 @@ public class jobRunnerThread extends Thread {
 	private static final Logger logger = LoggerFactory.getLogger(jobRunnerThread.class);
 	private final Socket socket;
 	private final ThreadPoolExecutor threadPoolExecutor;
-	private final JobRunnerContext jobRunnerContext;
 
 	public jobRunnerThread(Socket socket, ThreadPoolExecutor threadPoolExecutor) {
 		String remoteAddress = socket.getRemoteSocketAddress().toString();
@@ -27,7 +26,6 @@ public class jobRunnerThread extends Thread {
 		}
 		this.socket = socket;
 		this.threadPoolExecutor = threadPoolExecutor;
-		this.jobRunnerContext = new JobRunnerContext();
 	}
 
 	@Override
@@ -42,9 +40,8 @@ public class jobRunnerThread extends Thread {
 						@Override
 						public void run() {
 							try {
-								JobRunnerWrapper jobRunable = jobRunnerContext.createJobRunner(modelPath);
+								JobRunnerWrapper jobRunable = JobRunnerContext.getInstance().createJobRunner(Thread.currentThread().getName(), modelPath);
 								jobRunable.setTimeout(threadPoolExecutor.getCorePoolSize());
-								jobRunable.setUser(Thread.currentThread().getName());
 								String threadName = Thread.currentThread().getName();
 								long startTime = System.currentTimeMillis();
 								logger.info(String.format(

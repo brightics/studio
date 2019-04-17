@@ -23,7 +23,7 @@ public class JobRunnerContextTest {
 		JobRunnerWrapper jobRunner = null;
 		try {
 			logger.info("Start job runner test.");
-			jobRunner = new JobRunnerContext().createJobRunner(modelPath + "/eventloadtest.json",
+			jobRunner = JobRunnerContext.getInstance().createJobRunnerWithEventLoadData("proc01", modelPath + "/eventloadtest.json",
 					"[{\"mid\":\"myq944vftm7cys4p\",\"fid\":\"fn6h23gnp8ed9ntc\",\"tid\":\"tmncknxtypj2h6bh\",\"data\":{\"col_names\":[\"test\",\"test2\"],\"type_array\":[\"int\",\"string\"],\"data_array\":[[\"1\",\"test\"]]}},{\"mid\":\"mid01\",\"fid\":\"fid02\",\"tid\":\"tid02\",\"data\":{\"col_names\":[\"test\",\"test2\"],\"type_array\":[\"int\",\"string\"],\"data_array\":[[\"1\",\"test\"]]}}]");
 			jobRunner.run();
 
@@ -43,12 +43,11 @@ public class JobRunnerContextTest {
 	public void executeJobRunner() {
 		
 		// create job runner context.
-		JobRunnerContext jobRunnerContext = new JobRunnerContext();
+		JobRunnerContext jobRunnerContext = JobRunnerContext.getInstance();
 		try {
 			// Create job runner as model01
-			JobRunnerWrapper jobRunner01 = jobRunnerContext.createJobRunner("./jsonflow/model01.json");
+			JobRunnerWrapper jobRunner01 = jobRunnerContext.createJobRunner("proc01", "./jsonflow/model01.json");
 			// Set user (default brightics@samsung.com)
-			jobRunner01.setUser("user01");
 			// Set timeout second (default Integer.MAX)
 			jobRunner01.setTimeout(10);
 			// Run model
@@ -57,9 +56,9 @@ public class JobRunnerContextTest {
 			logger.info(String.format("Resut status : %s", jobRunner01.getStatus()));
 
 			// Create job runner as model02
-			JobRunnerWrapper jobRunner02 = jobRunnerContext.createJobRunner("./jsonflow/model02.json");
+			JobRunnerWrapper jobRunner02 = jobRunnerContext.createJobRunner("proc02","./jsonflow/model02.json");
 			// Run model
-			jobRunner02.setUser("user02").run();
+			jobRunner02.run();
 			
 		} catch (Exception e) {
 			logger.error("Cannot execute job", e);

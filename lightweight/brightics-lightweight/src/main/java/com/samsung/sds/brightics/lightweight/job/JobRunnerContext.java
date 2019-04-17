@@ -21,22 +21,30 @@ import com.samsung.sds.brightics.common.workflow.flowrunner.data.PreparedData;
 import com.samsung.sds.brightics.common.workflow.flowrunner.vo.JobParam;
 
 /**
- * The class which creates job runner for lightweight analysis. This class constructs a
- * single instance JobRunnerBuilder and creates a job runner using model
- * information(file or json string).
+ * The class which creates job runner for lightweight analysis. This class
+ * constructs a single instance JobRunnerBuilder and creates a job runner using
+ * model information(file or json string).
  * 
  * @author hk.im
  *
  */
 public class JobRunnerContext {
 
+	private static JobRunnerContext instance;
+
+	public static synchronized JobRunnerContext getInstance() {
+		if (instance == null)
+			instance = new JobRunnerContext();
+		return instance;
+	}
+
 	private JobRunnerBuilder jobRunnerBuilder;
 
-	public  JobRunnerContext() {
-		
-		//init application env
+	private JobRunnerContext() {
+
+		// init application env
 		autoConfigurer();
-		
+
 		// initialize job runner API, configuration.
 		JobRunnerConfig config = new JobRunnerConfig();
 		boolean isForcedNotPersist = Boolean.parseBoolean(
@@ -52,23 +60,27 @@ public class JobRunnerContext {
 
 	/**
 	 * create JobRnnner which contain model.
+	 * @param pythonProcessName : Set the python process name to be executed.
+	 * @param modelFilePath : runnable model json file path. 
 	 */
-	public JobRunnerWrapper createJobRunner(String modelFilePath) throws Exception {
-		return createJobRunner(modelFilePath, null);
+	public JobRunnerWrapper createJobRunner(String pythonProcessName, String modelFilePath) throws Exception {
+		return createJobRunnerWithEventLoadData(pythonProcessName, modelFilePath, null);
 	}
 
 	/**
 	 * create JobRnnner which contain model and EventLoad data set.
 	 */
-	public JobRunnerWrapper createJobRunner(String modelFilePath, String eventloadData) throws Exception {
+	public JobRunnerWrapper createJobRunnerWithEventLoadData(String pythonProcessName, String modelFilePath,
+			String eventloadData) throws Exception {
 		String modelJsonString = FileUtils.readFileToString(new File(modelFilePath));
-		return createJobRunnerWithJsonString(modelJsonString, eventloadData);
+		return createJobRunnerWithJsonString(pythonProcessName, modelJsonString, eventloadData);
 	}
 
 	/**
 	 * create JobRnnner which contain json string model and EventLoad data set.
 	 */
-	public JobRunnerWrapper createJobRunnerWithJsonString(String modelJsonString, String eventloadData) throws Exception {
+	private JobRunnerWrapper createJobRunnerWithJsonString(String pythonProcessName, String modelJsonString,
+			String eventloadData) throws Exception {
 		JobParam jobParam = convertStringToJobParam(modelJsonString);
 		if (eventloadData != null && !eventloadData.isEmpty()) {
 			List<PreparedData> preparedDatas = new ArrayList<>();
@@ -78,16 +90,11 @@ public class JobRunnerContext {
 			}
 			jobParam.setDatas(preparedDatas);
 		}
-		if(jobParam.getUser() == null || jobParam.getUser().isEmpty()){
-			jobParam.setUser(generateUid());
-		}
+		jobParam.setUser(pythonProcessName);
 		jobParam.setJid(generateJid());
-		return new JobRunnerWrapper(jobRunnerBuilder.create(jobParam)).setUser(jobParam.getUser());
+		return new JobRunnerWrapper(jobRunnerBuilder.create(jobParam)).setProcessName(pythonProcessName);
 	}
 
-	private String generateUid() {
-		return RandomStringUtils.randomAlphanumeric(8);
-	}
 	private String generateJid() {
 		return "c_" + RandomStringUtils.randomAlphanumeric(16) + "_"
 				+ DateTimeFormat.forPattern("yyyyMMddHHmmssSSSS").print(new DateTime());
@@ -101,10 +108,9 @@ public class JobRunnerContext {
 		System.setProperty("brightics.agent.home", getAbsolutePath(SystemEnvUtil.BRIGHTICS_SERVER_HOME));
 		System.setProperty("brightics.function.home",
 				getAbsolutePath(SystemEnvUtil.BRIGHTICS_SERVER_HOME, "functions"));
-		System.setProperty("brightics.data.root", 
-				getAbsolutePath(SystemEnvUtil.BRIGHTICS_SERVER_HOME, "data"));
+		System.setProperty("brightics.data.root", getAbsolutePath(SystemEnvUtil.BRIGHTICS_SERVER_HOME, "data"));
 		System.setProperty("brightics.kv.store", "INMEMORY");
-		System.setProperty("brightics.grpc.mode", "local"); 
+		System.setProperty("brightics.grpc.mode", "local");
 		System.setProperty("brightics.agent.host", "localhost"); // do nothing
 		System.setProperty("brightics.server.host", "localhost"); // do nothing
 		System.setProperty("brightics.server.port", "9098"); // do nothing

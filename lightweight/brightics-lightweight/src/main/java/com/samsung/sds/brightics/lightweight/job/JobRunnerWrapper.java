@@ -5,7 +5,6 @@ import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.samsung.sds.brightics.agent.context.ContextManager;
 import com.samsung.sds.brightics.agent.context.UserContextSessionLoader;
 import com.samsung.sds.brightics.common.core.thread.ThreadLocalContext;
 import com.samsung.sds.brightics.common.workflow.flowrunner.job.JobRunner;
@@ -33,8 +32,8 @@ public class JobRunnerWrapper {
 	 * 
 	 * @param user : execute user
 	 */
-	public JobRunnerWrapper setUser(String user) {
-		this.user = user;
+	public JobRunnerWrapper setProcessName(String processName) {
+		this.user = processName;
 		return this;
 	}
 	
@@ -79,9 +78,8 @@ public class JobRunnerWrapper {
 			logger.error("Cannot run work flow model.", e);
 			throw new RuntimeException(e);
 		} finally {
-			//close userContext 
+			//remove userContext 
 			UserContextSessionLoader.clearUserContextSession(user);
-//			ContextManager.removeUserContextSession();
 			jobRunner.clear();
 		}
 	}
