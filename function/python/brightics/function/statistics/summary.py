@@ -16,21 +16,25 @@ def _amounts_colname(a): return str(a).replace('.', '_')
 def _unique_list(l): return np.unique(list(filter(lambda x: x is not None and not np.isnan(x), l)))
 
 def statistic_summary(table, group_by=None, **params):
+    check_required_parameters(_statistic_summary, params, ['table'])
+    column_indices = []
+    for i in params['input_cols']:
+        column_indices.append(table.columns.get_loc(i))
+    params['column_indices'] = column_indices
     columns = ['column_name'] + params['statistics'].copy()
     if 'percentile' in columns:
         columns.remove('percentile')
-        if params['percentile_amounts'] is not None:
+        if 'percentile_amounts' in params:
             for pa in _unique_list(params['percentile_amounts']):
                 columns.append('percentile_{}'.format(_amounts_colname(pa)))
     if 'trimmed_mean' in columns:
         columns.remove('trimmed_mean')
-        if params['trimmed_mean_amounts'] is not None:
+        if 'trimmed_mean_amounts' in params:
             for ta in _unique_list(params['trimmed_mean_amounts']):
                 columns.append('trimmed_mean_{}'.format(_amounts_colname(ta)))
     if 'mode' in columns:
         columns.remove('mode')
         columns.append('mode')
-    check_required_parameters(_statistic_summary, params, ['table'])
     if group_by is not None:
         return _function_by_group2(_statistic_summary, table, columns=columns, group_by=group_by, **params)
     else:
@@ -40,7 +44,7 @@ def statistic_summary(table, group_by=None, **params):
         return result
 
 
-def _statistic_summary(table, input_cols, statistics, percentile_amounts=None, trimmed_mean_amounts=None):
+def _statistic_summary(table, input_cols, statistics, column_indices=None, percentile_amounts=None, trimmed_mean_amounts=None):
     tmp_table=table.copy()
     tmp_table=list(map(list, zip(*tmp_table)))
     result=[]
@@ -48,45 +52,45 @@ def _statistic_summary(table, input_cols, statistics, percentile_amounts=None, t
         data = [input_cols[i]]
         for st in statistics:
             if 'max' == st:
-                data.append(brtc_stats.max(tmp_table[i]))
+                data.append(brtc_stats.max(tmp_table[column_indices[i]]))
             elif 'min' == st:
-                data.append(brtc_stats.min(tmp_table[i]))
+                data.append(brtc_stats.min(tmp_table[column_indices[i]]))
             elif 'range' == st:
-                data.append(brtc_stats.range(tmp_table[i]))
+                data.append(brtc_stats.range(tmp_table[column_indices[i]]))
             elif 'sum' == st:
-                data.append(brtc_stats.sum(tmp_table[i]))
+                data.append(brtc_stats.sum(tmp_table[column_indices[i]]))
             elif 'avg' == st:
-                data.append(brtc_stats.mean(tmp_table[i]))
+                data.append(brtc_stats.mean(tmp_table[column_indices[i]]))
             elif 'variance' == st:
-                data.append(brtc_stats.var_samp(tmp_table[i]))
+                data.append(brtc_stats.var_samp(tmp_table[column_indices[i]]))
             elif 'stddev' == st:
-                data.append(brtc_stats.std(tmp_table[i]))
+                data.append(brtc_stats.std(tmp_table[column_indices[i]]))
             elif 'skewness' == st:
-                data.append(brtc_stats.skewness(tmp_table[i]))
+                data.append(brtc_stats.skewness(tmp_table[column_indices[i]]))
             elif 'kurtosis' == st:
-                data.append(brtc_stats.kurtosis(tmp_table[i]))
+                data.append(brtc_stats.kurtosis(tmp_table[column_indices[i]]))
             elif 'nrow' == st:
-                data.append(brtc_stats.num_row(tmp_table[i]))
+                data.append(brtc_stats.num_row(tmp_table[column_indices[i]]))
             elif 'num_of_value' == st:
-                data.append(brtc_stats.num_value(tmp_table[i]))
+                data.append(brtc_stats.num_value(tmp_table[column_indices[i]]))
             elif 'null_count' == st:
-                data.append(brtc_stats.num_null(tmp_table[i]))
+                data.append(brtc_stats.num_null(tmp_table[column_indices[i]]))
             elif 'mode' == st:
-                data.append(brtc_stats.mode(tmp_table[i]))
+                data.append(brtc_stats.mode(tmp_table[column_indices[i]]))
             elif 'median' == st:
-                data.append(brtc_stats.median(tmp_table[i]))
+                data.append(brtc_stats.median(tmp_table[column_indices[i]]))
             elif 'q1' == st:
-                data.append(brtc_stats.q1(tmp_table[i]))
+                data.append(brtc_stats.q1(tmp_table[column_indices[i]]))
             elif 'q3' == st:
-                data.append(brtc_stats.q3(tmp_table[i]))
+                data.append(brtc_stats.q3(tmp_table[column_indices[i]]))
             elif 'iqr' == st:
-                data.append(brtc_stats.iqr(tmp_table[i]))
+                data.append(brtc_stats.iqr(tmp_table[column_indices[i]]))
             elif 'percentile' == st and percentile_amounts is not None:
                 for pa in _unique_list(percentile_amounts):
-                    data.append(brtc_stats.percentile(tmp_table[i],pa))
+                    data.append(brtc_stats.percentile(tmp_table[column_indices[i]],pa))
             elif 'trimmed_mean' == st and trimmed_mean_amounts is not None:
                 for ta in _unique_list(trimmed_mean_amounts):
-                    data.append(brtc_stats.trimmed_mean(tmp_table[i],ta))
+                    data.append(brtc_stats.trimmed_mean(tmp_table[column_indices[i]],ta))
         result.append(data)
     return {'out_table' : result}
 
