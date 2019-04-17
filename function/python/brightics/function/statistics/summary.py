@@ -91,6 +91,61 @@ def _statistic_summary(table, input_cols, statistics, percentile_amounts=None, t
     return {'out_table' : result}
 
 
+#todo : erase _statistic_summary2 and update _statistic_derivation.
+
+def _statistic_summary2(table, input_cols, statistics, percentile_amounts=None, trimmed_mean_amounts=None):
+    
+    _table = table.copy()    
+    data = {'column_name':input_cols}
+    for st in statistics:
+        if 'max' == st:
+            data['max'] = [brtc_stats.max(_table[x]) for x in input_cols]
+        if 'min' == st:
+            data['min'] = [brtc_stats.min(_table[x]) for x in input_cols]
+        if 'range' == st:
+            data['range'] = [brtc_stats.range(_table[x]) for x in input_cols]
+        if 'sum' == st:
+            data['sum'] = [brtc_stats.sum(_table[x]) for x in input_cols]
+        if 'avg' == st:
+            data['avg'] = [brtc_stats.mean(_table[x]) for x in input_cols]
+        if 'variance' == st:
+            data['variance'] = [brtc_stats.var_samp(_table[x]) for x in input_cols]
+        if 'stddev' == st:
+            data['stddev'] = [brtc_stats.std(_table[x]) for x in input_cols]
+        if 'skewness' == st:
+            data['skewness'] = [brtc_stats.skewness(_table[x]) for x in input_cols]
+        if 'kurtosis' == st:
+            data['kurtosis'] = [brtc_stats.kurtosis(_table[x]) for x in input_cols]
+        if 'nrow' == st:
+            data['num_of_row'] = [brtc_stats.num_row(_table[x]) for x in input_cols]
+        if 'num_of_value' == st:
+            data['num_of_value'] = [brtc_stats.num_value(_table[x]) for x in input_cols]
+        if 'null_count' == st:
+            data['null_count'] = [brtc_stats.num_null(_table[x]) for x in input_cols]
+        if 'mode' == st:
+            data['mode'] = [brtc_stats.mode(_table[x]) for x in input_cols]
+        if 'median' == st:
+            data['median'] = [brtc_stats.median(_table[x]) for x in input_cols]
+        if 'q1' == st:
+            data['q1'] = [brtc_stats.q1(_table[x]) for x in input_cols]
+        if 'q3' == st:
+            data['q3'] = [brtc_stats.q3(_table[x]) for x in input_cols]
+        if 'iqr' == st:
+            data['iqr'] = [brtc_stats.iqr(_table[x]) for x in input_cols]
+        if 'percentile' == st and percentile_amounts is not None:
+            for pa in _unique_list(percentile_amounts):
+                pa_colname = 'percentile_{}'.format(_amounts_colname(pa))
+                data[pa_colname] = [brtc_stats.percentile(_table[x], pa) for x in input_cols]
+        if 'trimmed_mean' == st and trimmed_mean_amounts is not None:
+            for ta in _unique_list(trimmed_mean_amounts):
+                ta_colname = 'trimmed_mean_{}'.format(_amounts_colname(ta))
+                data[ta_colname] = [brtc_stats.trimmed_mean(_table[x], ta) for x in input_cols]
+            
+    result = pd.DataFrame(data)
+    
+    return {'out_table' : result}
+
+
 def statistic_derivation(table, group_by=None, **params):
     check_required_parameters(_statistic_derivation, params, ['table'])
     params = get_default_from_parameters_if_required(params,_statistic_derivation)
@@ -107,7 +162,7 @@ def _statistic_derivation(table, input_cols, statistics, percentile_amounts=[], 
     
     _table = table.copy()
     
-    _table_stat = _statistic_summary(_table, input_cols, statistics, percentile_amounts, trimmed_mean_amounts)['out_table']
+    _table_stat = _statistic_summary2(_table, input_cols, statistics, percentile_amounts, trimmed_mean_amounts)['out_table']
     
     _statistics = _table_stat.columns.tolist()
     _statistics.remove('column_name')
