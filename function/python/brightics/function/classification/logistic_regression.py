@@ -89,6 +89,7 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
     model['solver'] = solver
     model['lr_model'] = lr_model
     model['_repr_brtc_'] = rb.get()
+    model['summary'] = summary
 
     return {'model' : model}
 
