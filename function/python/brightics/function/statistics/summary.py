@@ -16,6 +16,7 @@ def _amounts_colname(a): return str(a).replace('.', '_')
 def _unique_list(l): return np.unique(list(filter(lambda x: x is not None and not np.isnan(x), l)))
 
 def statistic_summary(table, group_by=None, **params):
+    check_required_parameters(_statistic_summary, params, ['table'])
     column_indices = []
     for i in params['input_cols']:
         column_indices.append(table.columns.get_loc(i))
@@ -34,7 +35,6 @@ def statistic_summary(table, group_by=None, **params):
     if 'mode' in columns:
         columns.remove('mode')
         columns.append('mode')
-    check_required_parameters(_statistic_summary, params, ['table'])
     if group_by is not None:
         return _function_by_group2(_statistic_summary, table, columns=columns, group_by=group_by, **params)
     else:
@@ -44,7 +44,7 @@ def statistic_summary(table, group_by=None, **params):
         return result
 
 
-def _statistic_summary(table, input_cols, column_indices, statistics, percentile_amounts=None, trimmed_mean_amounts=None):
+def _statistic_summary(table, input_cols, statistics, column_indices=None, percentile_amounts=None, trimmed_mean_amounts=None):
     tmp_table=table.copy()
     tmp_table=list(map(list, zip(*tmp_table)))
     result=[]
