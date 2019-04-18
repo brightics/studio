@@ -331,12 +331,25 @@ def _als_predict(table, model, prediction_col = 'prediction'):
     user_encoder = model['user_encoder']
     user_col = model['user_col']
     item_col = model['item_col']
-    encoded_user_col = user_encoder.transform(table[user_col])
-    encoded_item_col = item_encoder.transform(table[item_col])
+    tmp_user = np.array(table[user_col])
+    tmp_item = np.array(table[item_col])
+    valid_indices = [i for i in range(len(tmp_user)) if tmp_user[i] in user_encoder.classes_ and tmp_item[i] in item_encoder.classes_]
+    valid_user = [tmp_user[i] for i in valid_indices]
+    valid_item = [tmp_item[i] for i in valid_indices]
+    encoded_user_col = user_encoder.transform(valid_user)
+    encoded_item_col = item_encoder.transform(valid_item)
     result = []
-    for i in range(len(table[user_col])):
-        predict = als_model.predict(encoded_user_col[i], encoded_item_col[i])
-        result += [[table[user_col][i],table[item_col][i],predict]]
+    check_num_total = 0
+    check_num_valid = 0
+    while check_num_total < len(tmp_user):
+        if check_num_total not in valid_indices:
+            predict = None
+        else:
+            predict = als_model.predict(encoded_user_col[check_num_valid], encoded_item_col[check_num_valid])
+            check_num_valid += 1            
+        result += [[table[user_col][check_num_total],table[item_col][check_num_total],predict]]
+        check_num_total += 1
+
     result = pd.DataFrame(result)
     result.columns = [user_col, item_col, prediction_col]
     return {'out_table' : result}
