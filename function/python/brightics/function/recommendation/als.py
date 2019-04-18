@@ -214,27 +214,17 @@ def als_train(table, group_by=None, **params):
 
 
 def _als_train(table, user_col, item_col, rating_col, mode = 'train', number=10, implicit = False, iterations = 10, reg_param = 0.1, rank = 10, alpha = 1.0, seed = None, targets = None):
-
     table_user_col = table[user_col]
     table_item_col = table[item_col]
     rating_col = table[rating_col]
+    rating_col = np.where(rating_col == 0, -1, rating_col)
     user_encoder = preprocessing.LabelEncoder()
     item_encoder = preprocessing.LabelEncoder()
     user_encoder.fit(table_user_col)
     item_encoder.fit(table_item_col)
     user_correspond = user_encoder.transform(table_user_col)
-    item_correspond = item_encoder.transform(table_item_col)
-    item_users = np.zeros((len(item_encoder.classes_),len(user_encoder.classes_)))
-    for i in range(len(table_user_col)):
-        if implicit:
-            item_users[item_correspond[i]][user_correspond[i]] = rating_col[i]
-        else:
-            if rating_col[i] == 0:
-                item_users[item_correspond[i]][user_correspond[i]] = -1
-            else:
-                item_users[item_correspond[i]][user_correspond[i]] = rating_col[i]
-        
-    item_users = csr_matrix(item_users)
+    item_correspond = item_encoder.transform(table_item_col)       
+    item_users = csr_matrix((rating_col,(item_correspond,user_correspond)))
     als_model = AlternatingLeastSquares(factors = rank,implicit = implicit,iterations = iterations, regularization = reg_param, alpha = alpha, seed = seed)
     als_model.fit(item_users)
     tmp_col = list(als_model.user_factors)
