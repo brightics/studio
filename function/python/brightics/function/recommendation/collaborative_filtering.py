@@ -181,6 +181,8 @@ def _collaborative_filtering_train(table, user_col , item_col, rating_col, N=10,
     if mode == 'Topn':
         if targets is None:
             targets = user_encoder.classes_
+        if table_user_col.dtype in (np.floating,float,np.int,int,np.int64):
+            targets = [float(i) for i in targets]
         targets_en = user_encoder.transform(targets)      
         Topn_result = []
         for user in targets_en:
