@@ -25,7 +25,7 @@ def _predict(ratings, similar_coeff, target, k, weighted, normalize, user_avg, t
         for i in _nonzeros(ratings,target):
                 new_ratings += [[similar_coeff[i[0]],i[1]]]
     best =  sorted(enumerate(new_ratings), key=lambda x: -x[1][0])
-    modi_best = [i for i in best if i[1][0] != -1]
+    modi_best = [i for i in best if i[1][0] > 0]
     if len(modi_best) < k:
         return None
     top = modi_best[0:k]
@@ -34,7 +34,7 @@ def _predict(ratings, similar_coeff, target, k, weighted, normalize, user_avg, t
         sim = 0
         for i in range(k):
             multiple += top[i][1][0]*top[i][1][1]
-            sim += abs(top[i][1][0])
+            sim += top[i][1][0]
         result = multiple/sim
     else:
         sum = 0
@@ -173,8 +173,6 @@ def _collaborative_filtering_train(table, user_col , item_col, rating_col, N=10,
         similar_coeff = cosine_similarity(result)
     elif method == 'jaccard':
         similar_coeff = 1 - pairwise_distances(centered_ratings.toarray(), metric = "hamming")
-    for item in range(num_item):
-        similar_coeff[item][item] = -1
     if based== 'user':
         item_users = item_users.transpose().tocsr()
 
