@@ -277,7 +277,7 @@ def _als_train(table, user_col, item_col, rating_col, mode = 'train', number=10,
     | ### User Factors
     | {user_factors}
     |
-    """.format(item_factors=pandasDF2MD(item_factors, num_rows = item_users.shape[0]), user_factors=pandasDF2MD(user_factors, num_rows = item_users.shape[1]), parameters=dict2MD(parameters))))
+    """.format(item_factors=pandasDF2MD(item_factors, num_rows = 100), user_factors=pandasDF2MD(user_factors, num_rows = 100), parameters=dict2MD(parameters))))
 
     model = _model_dict('ALS')
     model['als_model'] = als_model
@@ -330,18 +330,10 @@ def _als_predict(table, model, prediction_col = 'prediction'):
     valid_item = [tmp_item[i] for i in valid_indices]
     encoded_user_col = user_encoder.transform(valid_user)
     encoded_item_col = item_encoder.transform(valid_item)
-    result = []
-    check_num_total = 0
-    check_num_valid = 0
-    while check_num_total < len(tmp_user):
-        if check_num_total not in valid_indices:
-            predict = None
-        else:
-            predict = als_model.predict(encoded_user_col[check_num_valid], encoded_item_col[check_num_valid])
-            check_num_valid += 1            
-        result += [[table[user_col][check_num_total],table[item_col][check_num_total],predict]]
-        check_num_total += 1
-
-    result = pd.DataFrame(result)
-    result.columns = [user_col, item_col, prediction_col]
+    result = [None]*len(tmp_user)
+    for i in range(len(valid_indices)):
+        predict = als_model.predict(encoded_user_col[i], encoded_item_col[i])
+        result[valid_indices[i]] = predict
+    result = pd.DataFrame(result,columns=[prediction_col])
+    result = pd.concat([table[user_col],table[item_col],result],axis=1)
     return {'out_table' : result}

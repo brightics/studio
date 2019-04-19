@@ -277,26 +277,19 @@ def _collaborative_filtering_predict(table, model, prediction_col ='prediction')
     valid_item = [tmp_item[i] for i in valid_indices]
     encoded_user_col = user_encoder.transform(valid_user)
     encoded_item_col = item_encoder.transform(valid_item)
-    result = []
-    check_num_total = 0
-    check_num_valid = 0
-    while check_num_total < len(tmp_user):
-        if check_num_total not in valid_indices:
-            predict = None
-        else:
-            if based == 'item':
-                if array_item_users[encoded_item_col[check_num_valid]][encoded_user_col[check_num_valid]] != 0:
-                    predict = array_item_users[encoded_item_col[check_num_valid]][encoded_user_col[check_num_valid]]
-                else:
-                    predict = _predict(user_items, similar_coeff[encoded_item_col[check_num_valid]], encoded_user_col[check_num_valid], k, weighted, normalize, user_avg, None)
+    result = [None]*len(tmp_user)
+    for i in range(len(valid_indices)):
+        if based == 'item':
+            if array_item_users[encoded_item_col[i]][encoded_user_col[i]] != 0:
+                predict = array_item_users[encoded_item_col[i]][encoded_user_col[i]]
             else:
-                if array_item_users[encoded_item_col[check_num_valid]][encoded_user_col[check_num_valid]] != 0:
-                    predict = array_item_users[encoded_item_col[check_num_valid]][encoded_user_col[check_num_valid]]
-                else:
-                    predict = _predict(item_users, similar_coeff[encoded_user_col[check_num_valid]], encoded_item_col[check_num_valid], k, weighted, normalize, user_avg, user_avg[encoded_user_col[check_num_valid]])
-            check_num_valid += 1
-        result += [[tmp_user[check_num_total], tmp_item[check_num_total],predict]]
-        check_num_total += 1
-    result = pd.DataFrame(result)
-    result.columns = [user_col, item_col, prediction_col]
+                predict = _predict(user_items, similar_coeff[encoded_item_col[i]], encoded_user_col[i], k, weighted, normalize, user_avg, None)
+        else:
+            if array_item_users[encoded_item_col[i]][encoded_user_col[i]] != 0:
+                predict = array_item_users[encoded_item_col[i]][encoded_user_col[i]]
+            else:
+                predict = _predict(item_users, similar_coeff[encoded_user_col[i]], encoded_user_col[i], k, weighted, normalize, user_avg, user_avg[encoded_user_col[i]])
+        result[valid_indices[i]] = predict
+    result = pd.DataFrame(result,columns=[prediction_col])
+    result = pd.concat([table[user_col],table[item_col],result],axis=1)
     return {'out_table' : result}
