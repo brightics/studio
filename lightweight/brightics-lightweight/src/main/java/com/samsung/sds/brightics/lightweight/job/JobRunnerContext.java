@@ -13,6 +13,7 @@ import org.joda.time.format.DateTimeFormat;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.samsung.sds.brightics.agent.context.ContextManager;
 import com.samsung.sds.brightics.common.core.util.JsonUtil;
 import com.samsung.sds.brightics.common.core.util.SystemEnvUtil;
 import com.samsung.sds.brightics.common.workflow.flowrunner.JobRunnerBuilder;
@@ -56,6 +57,13 @@ public class JobRunnerContext {
 		if (jobRunnerBuilder == null) {
 			jobRunnerBuilder = JobRunnerBuilder.builder().config(config).jobRunnerApi(new LightweightJobRunnerApi());
 		}
+		
+		Runtime.getRuntime().addShutdownHook(new Thread("brightics-lightweight-shutdownHook") {
+            @Override
+            public void run() {
+            	ContextManager.close();
+            }
+        });
 	}
 
 	/**

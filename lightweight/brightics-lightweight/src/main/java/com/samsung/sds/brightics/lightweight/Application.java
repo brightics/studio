@@ -37,14 +37,6 @@ public class Application {
 		} catch (Throwable e) {
 			logger.error("", e);
 		}
-		
-		Runtime.getRuntime().addShutdownHook(new Thread("allShutdownHook") {
-            @Override
-            public void run() {
-            	logger.info("Brightics lightweight engine is terminated.");
-            }
-        });
-		
 	}
 
 	private static int getMaxPoolSizeBy(int maxConcurrentJobs) {

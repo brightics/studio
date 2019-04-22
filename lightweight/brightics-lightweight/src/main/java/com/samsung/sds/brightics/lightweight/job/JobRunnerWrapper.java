@@ -32,7 +32,7 @@ public class JobRunnerWrapper {
 	 * 
 	 * @param user : execute user
 	 */
-	public JobRunnerWrapper setProcessName(String processName) {
+	protected JobRunnerWrapper setProcessName(String processName) {
 		this.user = processName;
 		return this;
 	}
@@ -59,6 +59,8 @@ public class JobRunnerWrapper {
 	 * Run work flow model and get finish status (SUCCESS, FAIL) .
 	 */
 	public void run() {
+		String jobId = jobRunner.getStatus().getJobId();
+		logger.info(String.format("Lightweight job(%s) start in python process(%s).", jobId, user));
 		try {
 			ThreadLocalContext.put("user", user);
 			// start model.
@@ -74,13 +76,14 @@ public class JobRunnerWrapper {
 				Thread.sleep(100);
 				processSecond++;
 			}
-		}catch(Exception e) {
+		} catch (Exception e) {
 			logger.error("Cannot run work flow model.", e);
 			throw new RuntimeException(e);
 		} finally {
-			//remove userContext 
+			// remove userContext
 			UserContextSessionLoader.clearUserContextSession(user);
 			jobRunner.clear();
+			logger.info(String.format("Lightweight job(%s) finish in python process(%s).", jobId, user));
 		}
 	}
 
