@@ -288,7 +288,7 @@ def _collaborative_filtering_predict(table, model, prediction_col ='prediction')
             if array_item_users[encoded_item_col[i]][encoded_user_col[i]] != 0:
                 predict = array_item_users[encoded_item_col[i]][encoded_user_col[i]]
             else:
-                predict = _predict(item_users, similar_coeff[encoded_user_col[i]], encoded_user_col[i], k, weighted, normalize, user_avg, user_avg[encoded_user_col[i]])
+                predict = _predict(item_users, similar_coeff[encoded_user_col[i]], encoded_item_col[i], k, weighted, normalize, user_avg, user_avg[encoded_user_col[i]])
         result[valid_indices[i]] = predict
     result = pd.DataFrame(result,columns=[prediction_col])
     result = pd.concat([table[user_col],table[item_col],result],axis=1)
