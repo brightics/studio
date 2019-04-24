@@ -39,6 +39,8 @@ def statistic_summary(table, group_by=None, **params):
         return _function_by_group2(_statistic_summary, table, columns=columns, group_by=group_by, **params)
     else:
         tmp_table = table.values
+        if 'workers' in params:
+            del params['workers']
         result = _statistic_summary(tmp_table, **params)
         result['out_table']=pd.DataFrame(result['out_table'],columns=columns)
         return result
