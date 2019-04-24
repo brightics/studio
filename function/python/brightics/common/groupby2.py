@@ -6,7 +6,22 @@ import numpy as np
 
 from brightics.common.repr import BrtcReprBuilder
 from brightics.common.utils import time_usage
+from multiprocessing import Pool
 
+
+def apply_list(args):
+    df, func, kwargs = args
+    kwargs['groups']=df
+    return func(**kwargs)
+
+
+
+def apply_by_multiprocessing_list_to_list(df, func, **kwargs):
+    workers = kwargs.pop('workers')
+    pool = Pool(processes=workers)
+    result = pool.map(apply_list, [(d, func, kwargs) for d in np.array_split(df, workers)])
+    pool.close()
+    return result
 
 def _concat_two_list_elements(list):
     result = []
@@ -29,6 +44,10 @@ def _grouped_data(group_by, groups):
 
 
 def _function_by_group2(function, table=None, model=None, columns=None, group_by=None, **params):
+    if 'workers' in params:
+        workers = params.pop('workers')
+    else:
+        workers = 1
     if isinstance(model, dict) and '_grouped_data' not in model:
         raise Exception('Unsupported model. model requires _grouped_data.')
     if isinstance(model, dict):
@@ -38,7 +57,10 @@ def _function_by_group2(function, table=None, model=None, columns=None, group_by
         table, groups = _group(table, params, group_by)  # use group keys from table even there is a model.
     sample_result = _sample_result(function, table, model, params, groups)
     res_keys, df_keys, model_keys_containing_repr = _info_from_sample_result(sample_result, group_by, groups)
-    res_dict, success_keys = _function_by_group_key(function, table, model, params, groups, res_keys, group_by)
+    if workers ==1:
+        res_dict, success_keys = _function_by_group_key(function, table, model, params, groups, res_keys, group_by)
+    else:
+        res_dict, success_keys = _function_by_group_key2(function, table, model, params, groups, res_keys, group_by, workers)
     for repr_key in model_keys_containing_repr:
         rb = BrtcReprBuilder()
         for group in success_keys:
@@ -112,6 +134,38 @@ def _function_by_group_key(function, table, model, params, groups, res_keys, gro
 
     #print( '_function_by_group_key finished.' )
     return res_dict, success_keys
+
+def _function_by_group_key2(function, table, model, params, groups, res_keys, group_by, workers):
+    #print( '_function_by_group_key is running' )
+    res_dict = dict()
+    for res_key in res_keys:
+        res_dict[res_key] = {'_grouped_data': _grouped_data(group_by, groups)}
+    #start=time.time()
+    result = apply_by_multiprocessing_list_to_list(groups,_function_by_group_key_multi,workers=workers,function=function, table=table, model=model, params=params)
+    #print(time.time()-start)
+    success_keys = []
+    success_results = []
+    for elem in result:
+        success_keys+=elem[0]
+        success_results+=elem[1]
+    for i in range(len(success_keys)):        
+        for res_key in res_keys:
+            res_dict[res_key]['_grouped_data']['data'][tuple(success_keys[i])] = success_results[i][res_key]
+    #print( '_function_by_group_key finished.' )
+    return res_dict, success_keys
+
+def _function_by_group_key_multi(function, table, model, params, groups):
+    success_keys=[]
+    success_results=[]
+    for group in groups:  # todo try except
+    #print( '_function_by_group_key for group {} is running.'.format(group_key) )
+        try:
+            success_results.append(_run_function(function, table, model, params, group))
+            success_keys.append(group)
+        except Exception:
+            #print( '_function_by_group_key got an exception while running for group {}.'.format(group_key) )
+            traceback.print_exc()
+    return success_keys, success_results
 
 
 def _run_function(function, table, model, params, group):
