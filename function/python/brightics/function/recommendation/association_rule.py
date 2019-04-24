@@ -1,6 +1,8 @@
 import itertools
 import math
 import pandas as pd
+import matplotlib
+matplotlib.use("agg")
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
