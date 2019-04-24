@@ -13,57 +13,33 @@ from brightics.common.utils import check_required_parameters
 from brightics.common.validation import validate
 from brightics.common.validation import greater_than_or_equal_to
 from brightics.common.utils import get_default_from_parameters_if_required
+from sklearn.metrics.pairwise import cosine_similarity, pairwise_distances
+from multiprocessing import Pool
 
-def _correlation(u, v):
-    u = u - np.average(u)
-    v = v - np.average(v)
-    denom = np.sqrt(np.inner(u,u)*np.inner(v,v))
-    if denom == 0:
-        result = -1
-    else:
-        result = np.inner(u,v)/denom
+def apply_list(args):
+    df, func, kwargs = args
+    kwargs['users']=df
+    return func(**kwargs)
+
+
+
+def apply_by_multiprocessing_list_to_list(df, func, **kwargs):
+    workers = kwargs.pop('workers')
+    pool = Pool(processes=workers)
+    result = pool.map(apply_list, [(d, func, kwargs) for d in np.array_split(df, workers)])
+    pool.close()
     return result
-
-def _cosine(u, v):
-    denom = np.sqrt(np.inner(u,u)*np.inner(v,v))
-    if denom == 0:
-        result = -1
-    else:
-        result = np.inner(u,v)/denom
-    return result
-    
-def _jaccard(u, v):
-    denom = (sum(np.absolute(u))+sum(np.absolute(v))-np.dot(u,v))
-    if denom == 0:
-        result = -1
-    else:
-        result = np.inner(u,v)/denom
-    return result
-
-
-    
-def _similar_coeff(centered_ratings, i, j, method):
-
-    if method == 'cosine':
-        similar_coeff = _cosine(centered_ratings[i],centered_ratings[j])
-    elif method == 'pearson':
-        similar_coeff = _correlation(centered_ratings[i],centered_ratings[j])
-    elif method == 'jaccard':
-        similar_coeff = _jaccard(centered_ratings[i],centered_ratings[j])
-    return similar_coeff
 
 def _predict(ratings, similar_coeff, target, k, weighted, normalize, user_avg, target_user_avg):
     new_ratings = []
     if normalize:
-        for i in range(ratings.shape[1]):
-            if ratings[target][i] != 0:
-                new_ratings += [[similar_coeff[i],ratings[target][i]-user_avg[i]]]
+        for i in _nonzeros(ratings,target):
+                new_ratings += [[similar_coeff[i[0]],i[1]-user_avg[i[0]]]]
     else:
-        for i in range(ratings.shape[1]):
-            if ratings[target][i] != 0:
-                new_ratings += [[similar_coeff[i],ratings[target][i]]]
+        for i in _nonzeros(ratings,target):
+                new_ratings += [[similar_coeff[i[0]],i[1]]]
     best =  sorted(enumerate(new_ratings), key=lambda x: -x[1][0])
-    modi_best = [i for i in best if i[1][0] != -1]
+    modi_best = [i for i in best if i[1][0] > 0]
     if len(modi_best) < k:
         return None
     top = modi_best[0:k]
@@ -72,7 +48,7 @@ def _predict(ratings, similar_coeff, target, k, weighted, normalize, user_avg, t
         sim = 0
         for i in range(k):
             multiple += top[i][1][0]*top[i][1][1]
-            sim += abs(top[i][1][0])
+            sim += top[i][1][0]
         result = multiple/sim
     else:
         sum = 0
@@ -84,17 +60,15 @@ def _predict(ratings, similar_coeff, target, k, weighted, normalize, user_avg, t
     return result
 
 def _indices(m, row):
-    result = []
-    for i in range(len(m[row])):
-        if m[row][i] != 0:
-            result += [i]
+    result=[]
+    for index in range(m.indptr[row], m.indptr[row+1]):
+        result.append(m.indices[index])
     return result
 
-    
 def _recommend(target_user, item_users, similar_coeff, N, k, method, weighted, centered, based, normalize, user_avg):
 
         # calculate the top N items, removing the users own liked items from the results
-    user_items = np.transpose(item_users)
+    user_items = item_users.transpose().tocsr()
     liked = set(_indices(user_items, target_user))
     scores = []
     for target_item in range(user_items.shape[1]):
@@ -127,9 +101,7 @@ def collaborative_filtering_train(table, group_by=None, **params):
         return _collaborative_filtering_train(table, **params)
 
 
-def _collaborative_filtering_train(table, user_col , item_col, rating_col, N=10, k=5, based = 'item', mode='train', method = 'cosine', weighted = True, centered = True, targets = None, normalize = True):
-
-    
+def _collaborative_filtering_train(table, user_col , item_col, rating_col, N=10, k=5, based = 'item', mode='train', method = 'cosine', weighted = True, centered = True, targets = None, normalize = True, workers = 1):
     if based == 'item':
         normalize = False
     table_user_col = table[user_col]
@@ -141,37 +113,38 @@ def _collaborative_filtering_train(table, user_col , item_col, rating_col, N=10,
     item_encoder.fit(table_item_col)
     user_correspond = user_encoder.transform(table_user_col)
     item_correspond = item_encoder.transform(table_item_col)
-    item_users = np.zeros((len(item_encoder.classes_),len(user_encoder.classes_)))
-    for i in range(len(table_user_col)):
-        item_users[item_correspond[i]][user_correspond[i]] = rating_col[i]+1
+    if based=='item':
+        item_users = csr_matrix((rating_col,(item_correspond,user_correspond)))
+        check_cen = csr_matrix((rating_col+1,(item_correspond,user_correspond)))
+    else:
+        item_users = csr_matrix((rating_col,(user_correspond,item_correspond)))
+        check_cen = csr_matrix((rating_col+1,(user_correspond,item_correspond)))
     centered_ratings = item_users.copy()
+    
     num_item, num_user = item_users.shape
-    if centered and based == 'item':
-        check_cen = csr_matrix(centered_ratings)
+    if centered:
+        update_item = []
+        update_user = []
+        update_rating = []
         for item in range(num_item):
             index = 0
             sum = 0
             for user, rating in _nonzeros(check_cen, item):
                 index += 1
                 sum+= rating
-            avg = sum / index
+            avg = sum / index -1
             for user, rating in _nonzeros(check_cen, item):
-                centered_ratings[item][user] -= avg
-    if centered and based == 'user':
-        check_cen = csr_matrix(np.transpose(centered_ratings))
-        for user in range(num_user):
-            index = 0
-            sum = 0
-            for item, rating in _nonzeros(check_cen, user):
-                index += 1
-                sum+= rating
-            avg = sum / index
-            for item, rating in _nonzeros(check_cen, user):
-                centered_ratings[item][user] -= avg
-    for i in range(len(table_user_col)):
-        item_users[item_correspond[i]][user_correspond[i]] -= 1
-    if method == 'adjusted' or normalize:
-        check_cen = csr_matrix(np.transpose(item_users))
+                update_item.append(item)
+                update_user.append(user)
+                update_rating.append(avg)
+                
+        centered_ratings -= csr_matrix((update_rating,(update_item,update_user)))
+    if (method == 'adjusted' or normalize) and based == 'item':
+        check_cen = check_cen.transpose().tocsr()
+    if based == 'user':
+        tmp = num_user
+        num_user = num_item
+        num_item = tmp
     user_avg = []
     if normalize:
         for user in range(num_user):
@@ -183,42 +156,59 @@ def _collaborative_filtering_train(table, user_col , item_col, rating_col, N=10,
             avg = sum / index
             user_avg.append(avg)
     if method == 'adjusted':
+        update_item = []
+        update_user = []
+        update_rating = []
         for user in range(num_user):
             sum = 0
             for item, rating in _nonzeros(check_cen, user):
                 sum+= rating
             avg = sum / num_item
             for item in range(num_item):
-                centered_ratings[item][user] -= avg
+                update_item.append(item)
+                update_user.append(user)
+                update_rating.append(avg)
+        if based=='item':
+            centered_ratings -= csr_matrix((update_rating,(update_item,update_user)))
+        else:
+            centered_ratings -= csr_matrix((update_rating,(update_user,update_item)))
         method = 'cosine'     
+    if based == 'user':
+        tmp = num_user
+        num_user = num_item
+        num_item = tmp
         
-    if based =='item':
-        similar_coeff = np.zeros((num_item,num_item))
-        for item in range(num_item):
-            similar_coeff[item][item] = -1
-            for diff_item in range(item+1,num_item):
-                similar_coeff[item][diff_item] = _similar_coeff(centered_ratings, item, diff_item, method)
-                similar_coeff[diff_item][item] = similar_coeff[item][diff_item]
-                
-    else:
-        similar_coeff = np.zeros((num_user,num_user))
-        for user in range(num_user):
-            similar_coeff[user][user] = -1
-            for diff_user in range(user+1,num_user):
-                similar_coeff[user][diff_user] = _similar_coeff(np.transpose(centered_ratings), user, diff_user, method)
-                similar_coeff[diff_user][user] = similar_coeff[user][diff_user]
-                   
+    if method == 'cosine':
+        similar_coeff = cosine_similarity(centered_ratings)
+    elif method == 'pearson':
+        result=[]
+        for i in centered_ratings.toarray():
+            result.append(i-np.average(i))
+        similar_coeff = cosine_similarity(result)
+    elif method == 'jaccard':
+        similar_coeff = 1 - pairwise_distances(centered_ratings.toarray(), metric = "hamming")
+    if based== 'user':
+        item_users = item_users.transpose().tocsr()
+
     if mode == 'Topn':
         if targets is None:
             targets = user_encoder.classes_
+        if table_user_col.dtype in (np.floating,float,np.int,int,np.int64):
+            targets = [float(i) for i in targets]
         targets_en = user_encoder.transform(targets)      
         Topn_result = []
-        for user in targets_en:
-            recommendations_corre = _recommend(user, item_users, similar_coeff, N, k, method, weighted, centered, based, normalize, user_avg)
-            recommendations = []
-            for (item,rating) in recommendations_corre:
-                recommendations += [item_encoder.inverse_transform([item])[0],rating]
-            Topn_result += [recommendations]
+        if workers == 1:
+            for user in targets_en:
+                recommendations_corre = _recommend(user, item_users, similar_coeff, N, k, method, weighted, centered, based, normalize, user_avg)
+                recommendations = []
+                for (item,rating) in recommendations_corre:
+                    recommendations += [item_encoder.inverse_transform([item])[0],rating]
+                Topn_result += [recommendations]
+        else:
+            Topn_result_tmp = apply_by_multiprocessing_list_to_list(targets_en, _recommend_multi, item_users = item_users, similar_coeff = similar_coeff, N = N, k = k, method = method, weighted = weighted, centered = centered, based = based, normalize = normalize, user_avg = user_avg, item_encoder = item_encoder, workers = workers)
+            Topn_result=[]
+            for i in range(workers):
+                Topn_result += Topn_result_tmp[i]
         Topn_result = pd.DataFrame(Topn_result)
         Topn_result = pd.concat([pd.DataFrame(targets), Topn_result], axis=1, ignore_index=True)
         column_names=['user_name']
@@ -263,6 +253,16 @@ def _collaborative_filtering_train(table, user_col , item_col, rating_col, N=10,
     model['normalize'] = normalize
     model['user_avg'] = user_avg
     return{'model' : model}
+    
+def _recommend_multi(users, item_users, similar_coeff, N, k, method, weighted, centered, based, normalize, user_avg, item_encoder):
+    Topn_result = []
+    for user in users:
+        recommendations_corre = _recommend(user, item_users, similar_coeff, N, k, method, weighted, centered, based, normalize, user_avg)
+        recommendations = []
+        for (item,rating) in recommendations_corre:
+            recommendations += [item_encoder.inverse_transform([item])[0],rating]
+        Topn_result.append(recommendations)
+    return Topn_result
 
 def collaborative_filtering_recommend(table, group_by=None, **params):
     params = get_default_from_parameters_if_required(params,_collaborative_filtering_recommend)
@@ -276,8 +276,8 @@ def collaborative_filtering_recommend(table, group_by=None, **params):
     else:
         return _collaborative_filtering_recommend(table, **params)
     
-def _collaborative_filtering_recommend(table, user_col , item_col, rating_col, N=10, k=5, based = 'item', mode='Topn', method = 'cosine', weighted = True, centered = True, targets = None, normalize = True):
-    return _collaborative_filtering_train(table, user_col , item_col, rating_col, N, k, based, mode, method, weighted, centered, targets, normalize)
+def _collaborative_filtering_recommend(table, user_col , item_col, rating_col, N=10, k=5, based = 'item', mode='Topn', method = 'cosine', weighted = True, centered = True, targets = None, normalize = True, workers = 1):
+    return _collaborative_filtering_train(table, user_col , item_col, rating_col, N, k, based, mode, method, weighted, centered, targets, normalize, workers)
 
 def collaborative_filtering_predict(table, model, **params):
     check_required_parameters(_collaborative_filtering_predict, params, ['table', 'model'])
@@ -295,6 +295,8 @@ def _collaborative_filtering_predict(table, model, prediction_col ='prediction')
     item_encoder = model['item_encoder']
     user_encoder = model['user_encoder']
     item_users = model['item_users']
+    array_item_users = item_users.toarray()
+    user_items = item_users.transpose().tocsr()
     user_col = model['user_col']
     item_col = model['item_col']
     based = model['based']
@@ -305,26 +307,19 @@ def _collaborative_filtering_predict(table, model, prediction_col ='prediction')
     valid_item = [tmp_item[i] for i in valid_indices]
     encoded_user_col = user_encoder.transform(valid_user)
     encoded_item_col = item_encoder.transform(valid_item)
-    result = []
-    check_num_total = 0
-    check_num_valid = 0
-    while check_num_total < len(tmp_user):
-        if check_num_total not in valid_indices:
-            predict = None
-        else:
-            if based == 'item':
-                if item_users[encoded_item_col[check_num_valid]][encoded_user_col[check_num_valid]] != 0:
-                    predict = item_users[encoded_item_col[check_num_valid]][encoded_user_col[check_num_valid]]
-                else:
-                    predict = _predict(np.transpose(item_users), similar_coeff[encoded_item_col[check_num_valid]], encoded_user_col[check_num_valid], k, weighted, normalize, user_avg, None)
+    result = [None]*len(tmp_user)
+    for i in range(len(valid_indices)):
+        if based == 'item':
+            if array_item_users[encoded_item_col[i]][encoded_user_col[i]] != 0:
+                predict = array_item_users[encoded_item_col[i]][encoded_user_col[i]]
             else:
-                if item_users[encoded_item_col[check_num_valid]][encoded_user_col[check_num_valid]] != 0:
-                    predict = item_users[encoded_item_col[check_num_valid]][encoded_user_col[check_num_valid]]
-                else:
-                    predict = _predict(item_users, similar_coeff[encoded_user_col[check_num_valid]], encoded_item_col[check_num_valid], k, weighted, normalize, user_avg, user_avg[encoded_user_col[check_num_valid]])
-            check_num_valid += 1
-        result += [[tmp_user[check_num_total], tmp_item[check_num_total],predict]]
-        check_num_total += 1
-    result = pd.DataFrame(result)
-    result.columns = [user_col, item_col, prediction_col]
+                predict = _predict(user_items, similar_coeff[encoded_item_col[i]], encoded_user_col[i], k, weighted, normalize, user_avg, None)
+        else:
+            if array_item_users[encoded_item_col[i]][encoded_user_col[i]] != 0:
+                predict = array_item_users[encoded_item_col[i]][encoded_user_col[i]]
+            else:
+                predict = _predict(item_users, similar_coeff[encoded_user_col[i]], encoded_user_col[i], k, weighted, normalize, user_avg, user_avg[encoded_user_col[i]])
+        result[valid_indices[i]] = predict
+    result = pd.DataFrame(result,columns=[prediction_col])
+    result = pd.concat([table[user_col],table[item_col],result],axis=1)
     return {'out_table' : result}
