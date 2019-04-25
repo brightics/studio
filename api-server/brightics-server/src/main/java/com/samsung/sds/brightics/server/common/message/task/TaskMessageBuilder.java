@@ -33,19 +33,23 @@ public class TaskMessageBuilder {
     }
 
     public ExecuteTaskMessage build() {
-        Builder builder = ExecuteTaskMessage.newBuilder().setName(name).setTaskId(taskId)
-                .setUser(AuthenticationUtil.getRequestUserId());
-        if (StringUtils.isNoneBlank(parameters)) {
-            builder.setParameters(parameters);
-        } else {
-            builder.setParameters("{}");
-        }
-
-        if (StringUtils.isNoneBlank(attributes)) {
-            builder.setAttributes(attributes);
-        } else {
-            builder.setAttributes("{}");
-        }
-        return builder.build();
+        return build(AuthenticationUtil.getRequestUserId());
+    }
+    
+    public ExecuteTaskMessage build(String user) {
+    	Builder builder = ExecuteTaskMessage.newBuilder().setName(name).setTaskId(taskId)
+    			.setUser(user);
+    	if (StringUtils.isNoneBlank(parameters)) {
+    		builder.setParameters(parameters);
+    	} else {
+    		builder.setParameters("{}");
+    	}
+    	
+    	if (StringUtils.isNoneBlank(attributes)) {
+    		builder.setAttributes(attributes);
+    	} else {
+    		builder.setAttributes("{}");
+    	}
+    	return builder.build();
     }
 }

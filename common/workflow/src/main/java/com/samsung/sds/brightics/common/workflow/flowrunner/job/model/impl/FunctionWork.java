@@ -88,8 +88,9 @@ public class FunctionWork extends Work {
             Parameters params = complementParameters();
             LOGGER.info("[FUNCTION PROCESSING] [{}] parameters : {}", label, params);
 
-			Object result = JobContextHolder.getJobRunnerAPI().executeTaskAndGetResult(taskId, functionName,
-					params.toJsonString(), buildAttributes().toString());
+			Object result = JobContextHolder.getJobRunnerAPI().executeTaskAndGetResult(taskId,
+					JobContextHolder.getJobRunner().getStatus().getUser(), functionName, params.toJsonString(),
+					buildAttributes().toString());
             LOGGER.info("[TASK SUCCESS] {}", result);
         } catch (InterruptedException e) {
             LOGGER.error("[TASK INTERRUPTED]", e);

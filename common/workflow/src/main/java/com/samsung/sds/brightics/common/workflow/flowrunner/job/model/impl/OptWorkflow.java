@@ -228,8 +228,9 @@ public abstract class OptWorkflow extends SequentialWorkflow {
 			LOGGER.info("[OPT SCRIPT PROCESSING] [{}] parameters : {}", label, params);
 
 			// executeTask
-			Object result = JobContextHolder.getJobRunnerAPI().executeTaskAndGetResult(taskId, "Python",
-					params.toJsonString(), buildAttributes().toString());
+			Object result = JobContextHolder.getJobRunnerAPI().executeTaskAndGetResult(taskId,
+					JobContextHolder.getJobRunner().getStatus().getUser(), "Python", params.toJsonString(),
+					buildAttributes().toString());
 			LOGGER.info("[OPT TASK SUCCESS] {}", result);
 			return result;
 		} catch (InterruptedException e) {

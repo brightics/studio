@@ -146,8 +146,8 @@ public class WorkflowJsAPI extends ScriptableObject {
 
 		try {
 			LOGGER.info("[WORKFLOW.JS TASK START]");
-			Object result = JobContextHolder.getJobRunnerAPI().executeTaskAndGetResult(taskId, name, parameters,
-					attributes);
+			Object result = JobContextHolder.getJobRunnerAPI().executeTaskAndGetResult(taskId,
+					JobContextHolder.getJobRunner().getStatus().getUser(), name, parameters, attributes);
 			LOGGER.info("[WORKFLOW.JS TASK SUCCESS] result: {}", result);
 		} catch (InterruptedException e) {
 			LOGGER.error("[WORKFLOW.JS TASK INTERRUPTED]", e);

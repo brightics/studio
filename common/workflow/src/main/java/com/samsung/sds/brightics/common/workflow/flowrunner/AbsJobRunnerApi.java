@@ -13,8 +13,8 @@ import com.samsung.sds.brightics.common.workflow.flowrunner.vo.JobStatusVO;
 public abstract class AbsJobRunnerApi {
 	
 	//easy execute task. 
-	public Object executeTaskAndGetResult(String taskId, String name, String parameters, String attributes) throws InterruptedException {
-		executeTask(taskId, name, parameters, attributes);
+	public Object executeTaskAndGetResult(String taskId,  String userName, String name, String parameters, String attributes) throws InterruptedException {
+		executeTask(taskId, userName, name, parameters, attributes);
 		while (!isFinishTask(taskId)) {
             Thread.sleep(50L);
         }
@@ -29,11 +29,12 @@ public abstract class AbsJobRunnerApi {
 	 * for asynchronous communication.
 	 * 
 	 * @param task Id : task id for stop task.
+	 * @param userName : execute user name
 	 * @param name : function or script name.
 	 * @param parameters : information for each function and script.
 	 * @param attributes : contain mid, persist, label.
 	 */
-	abstract public void executeTask(String taskId, String name, String parameters, String attributes);
+	abstract public void executeTask(String taskId, String userName, String name, String parameters, String attributes);
 	
 	/**
 	 * <b>[API related to execute job]</b><br>

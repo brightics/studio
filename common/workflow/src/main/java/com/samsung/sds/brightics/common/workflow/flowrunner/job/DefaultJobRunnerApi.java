@@ -16,7 +16,7 @@ public class DefaultJobRunnerApi extends AbsJobRunnerApi {
 	
 	
 	@Override
-	public void executeTask(String taskId, String name, String parameters, String attributes) {
+	public void executeTask(String taskId, String userName, String name, String parameters, String attributes) {
 		logger.info(String.format("[Execute task] task Id : %s, function name : %s, parameters : %s, attributes : %s",
 				taskId, name, parameters, attributes));
 	}

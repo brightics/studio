@@ -13,9 +13,9 @@ import com.samsung.sds.brightics.server.common.message.task.TaskMessageRepositor
 public class JobRunnerApi extends AbsJobRunnerApi {
 
 	@Override
-	public void executeTask(String taskId, String name, String parameters, String attributes) {
+	public void executeTask(String taskId, String userName, String name, String parameters, String attributes) {
 		BeanHolder.getBeanHolder().taskService.executeTask(TaskMessageBuilder.newBuilder(taskId, name)
-				.setAttributes(attributes).setParameters(parameters).build());
+				.setAttributes(attributes).setParameters(parameters).build(userName));
 	}
 
 	@Override
