@@ -148,10 +148,10 @@ def delete_data(key):
 
 def put_data(key, data, label="Python data", data_type=None):
     if data_type is None:
-        data_type = _get_data_type(data)
+        data, data_type = _get_data_type(data)
     status = gateway.data_status(key, data_type, label)
 
-    data_dict[key] = {'data': _generate_matplotlib_data(data) if data_type == 'image' else data, 'status': status}
+    data_dict[key] = {'data': data, 'status': status}
 
     gateway.notify_data_updated(key, status)
 
@@ -192,11 +192,16 @@ def _make_directory_if_needed(path):
         os.makedirs(directory_path)
 
 
-def _generate_matplotlib_data(p):  # common?
+def _generate_pil_data(p):
+    buffered = BytesIO()
+    p.save(buffered, format="PNG")
+    return _png2uri(buffered.getvalue())
+
+
+def _generate_matplotlib_data(p):
     img = BytesIO()
     p.savefig(img, format='png')
     p.clf()  # clear the current figure
-
     return _png2uri(img.getvalue().strip())
 
 
@@ -204,15 +209,20 @@ def _png2uri(png_str):
     img_str = b"data:image/png;base64,"
     img_str += base64.b64encode(png_str)
     img_str = img_str.decode('ascii')
-
     return img_str
 
 
 def _get_data_type(data):
     if isinstance(data, pd.DataFrame) or (psdf and isinstance(data, psdf.DataFrame)):
-        return 'table'
+        return data, 'table'
     elif hasattr(data, 'savefig'):
-        return 'image'
+        return _generate_matplotlib_data(data), 'image'
+    elif 'PIL' in str(type(data)):
+        return _generate_pil_data(data), 'image'
+    # TODO numpy.ndarray sometimes means image from cv2 that must be parsed by this way.
+    #    import cv2
+    #    retval, buffer = cv2.imencode('.png', img)
+    #    return _png2uri(base64.b64encode(buffer))
     elif isinstance(data, str):
-        return 'text'
-    return type(data).__name__
+        return data, 'text'
+    return data, type(data).__name__
