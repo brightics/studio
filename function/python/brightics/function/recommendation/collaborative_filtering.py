@@ -321,7 +321,10 @@ def _collaborative_filtering_predict(table, model, prediction_col ='prediction')
                 if item_users[encoded_item_col[check_num_valid]][encoded_user_col[check_num_valid]] != 0:
                     predict = item_users[encoded_item_col[check_num_valid]][encoded_user_col[check_num_valid]]
                 else:
-                    predict = _predict(item_users, similar_coeff[encoded_user_col[check_num_valid]], encoded_item_col[check_num_valid], k, weighted, normalize, user_avg, user_avg[encoded_user_col[check_num_valid]])
+                    if normalize:
+                        predict = _predict(item_users, similar_coeff[encoded_user_col[check_num_valid]], encoded_item_col[check_num_valid], k, weighted, normalize, user_avg, user_avg[encoded_user_col[check_num_valid]])
+                    else:
+                        predict = _predict(item_users, similar_coeff[encoded_user_col[check_num_valid]], encoded_item_col[check_num_valid], k, weighted, normalize, user_avg, None)
             check_num_valid += 1
         result += [[tmp_user[check_num_total], tmp_item[check_num_total],predict]]
         check_num_total += 1
