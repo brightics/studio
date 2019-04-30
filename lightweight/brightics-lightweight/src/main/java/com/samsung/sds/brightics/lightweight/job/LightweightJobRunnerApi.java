@@ -34,7 +34,7 @@ public class LightweightJobRunnerApi extends AbsJobRunnerApi {
 	private static ConcurrentHashMap<String, ResultTaskMessage> taskResultMap = new ConcurrentHashMap<>();
 
 	@Override
-	public void executeTask(String taskId, String name, String parameters, String attributes) {
+	public void executeTask(String taskId, String userName, String name, String parameters, String attributes) {
 
 		Builder builder = ExecuteTaskMessage.newBuilder().setName(name).setTaskId(taskId)
 				.setUser(ThreadLocalContext.get("user").toString());
