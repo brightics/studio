@@ -71,7 +71,7 @@ public class FunctionPropertiesUtil {
 				setFunctionLabelInfo(specJson);
 				functionMetaMap.put(String.valueOf(specJson.get(FUNC)), functionMetaParam);
 			} catch (Exception e) {
-				logger.error("Cannot initialize function meta json. file name : " + filename, e);
+				logger.warn("Cannot initialize function meta json. file name : " + filename);
 			}
 		} else {
 			try {
@@ -83,7 +83,7 @@ public class FunctionPropertiesUtil {
 					functionHelpMap.put(filename, contents);
 				}
 			} catch (Exception e) {
-				logger.error("Cannot initialize function help. file name : " + filename, e);
+				logger.warn("Cannot initialize function help. file name : " + filename);
 			}
 		}
 	}
