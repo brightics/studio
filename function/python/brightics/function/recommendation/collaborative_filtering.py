@@ -30,16 +30,17 @@ def apply_by_multiprocessing_list_to_list(df, func, **kwargs):
     pool.close()
     return result
 
-def _predict(ratings, similar_coeff, target, k, weighted, normalize, user_avg, target_user_avg):
+def _predict(ratings, similar_coeff, target, k, weighted, normalize, user_avg, target_user_avg, filter_minus):
     new_ratings = []
     if normalize:
-        for i in _nonzeros(ratings,target):
-                new_ratings += [[similar_coeff[i[0]],i[1]-user_avg[i[0]]]]
+        new_ratings = [[similar_coeff[i[0]],i[1]-user_avg[i[0]]] for i in _nonzeros(ratings,target)]
     else:
-        for i in _nonzeros(ratings,target):
-                new_ratings += [[similar_coeff[i[0]],i[1]]]
+        new_ratings = [[similar_coeff[i[0]],i[1]] for i in _nonzeros(ratings,target)]
     best =  sorted(enumerate(new_ratings), key=lambda x: -x[1][0])
-    modi_best = [i for i in best if i[1][0] > 0]
+    if filter_minus:
+        modi_best = [i for i in best if i[1][0] > 0]
+    else:
+        modi_best = best
     if len(modi_best) < k:
         return None
     top = modi_best[0:k]
@@ -48,7 +49,7 @@ def _predict(ratings, similar_coeff, target, k, weighted, normalize, user_avg, t
         sim = 0
         for i in range(k):
             multiple += top[i][1][0]*top[i][1][1]
-            sim += top[i][1][0]
+            sim += abs(top[i][1][0])
         result = multiple/sim
     else:
         sum = 0
@@ -59,27 +60,30 @@ def _predict(ratings, similar_coeff, target, k, weighted, normalize, user_avg, t
         result += target_user_avg
     return result
 
-def _indices(m, row):
-    result=[]
-    for index in range(m.indptr[row], m.indptr[row+1]):
-        result.append(m.indices[index])
-    return result
 
-def _recommend(target_user, item_users, similar_coeff, N, k, method, weighted, centered, based, normalize, user_avg):
-
+def _recommend(target_user, item_users, similar_coeff, N, k, method, weighted, centered, based, normalize, user_avg, filter, filter_minus, maintain_already_scored):
+    
         # calculate the top N items, removing the users own liked items from the results
     user_items = item_users.transpose().tocsr()
-    liked = set(_indices(user_items, target_user))
+    if filter:
+        liked = set(user_items[target_user].indices)
+    else:
+        liked = set()
     scores = []
     for target_item in range(user_items.shape[1]):
         if based == 'item':
-            scores += [_predict(user_items, similar_coeff[target_item], target_user, k, weighted, normalize, user_avg, None)]
+            if maintain_already_scored and item_users[target_item,target_user] != 0:
+                scores += [item_users[target_item,target_user]]
+            else:
+                scores += [_predict(user_items, similar_coeff[target_item], target_user, k, weighted, normalize, user_avg, None, filter_minus)]
 
         else:
-            if normalize:
-                scores += [_predict(item_users, similar_coeff[target_user], target_item, k, weighted, normalize, user_avg, user_avg[target_user])]
+            if maintain_already_scored and item_users[target_item,target_user] != 0:
+                scores += [item_users[target_item,target_user]]
+            elif normalize:
+                scores += [_predict(item_users, similar_coeff[target_user], target_item, k, weighted, normalize, user_avg, user_avg[target_user], filter_minus)]
             else:
-                scores += [_predict(item_users, similar_coeff[target_user], target_item, k, weighted, normalize, user_avg, None)]
+                scores += [_predict(item_users, similar_coeff[target_user], target_item, k, weighted, normalize, user_avg, None, filter_minus)]
     best = sorted(enumerate(scores), key=lambda x: (x[1] is not None, x[1]), reverse=True)
     return list(itertools.islice((rec for rec in best if rec[0] not in liked), N))
 
@@ -101,7 +105,7 @@ def collaborative_filtering_train(table, group_by=None, **params):
         return _collaborative_filtering_train(table, **params)
 
 
-def _collaborative_filtering_train(table, user_col , item_col, rating_col, N=10, k=5, based = 'item', mode='train', method = 'cosine', weighted = True, centered = True, targets = None, normalize = True, workers = 1):
+def _collaborative_filtering_train(table, user_col , item_col, rating_col, N=10, filter=True, k=5, based = 'item', mode='train', method = 'cosine', weighted = True, centered = True, targets = None, normalize = True, workers = 1, filter_minus = False, maintain_already_scored = True):
     if based == 'item':
         normalize = False
     table_user_col = table[user_col]
@@ -199,13 +203,13 @@ def _collaborative_filtering_train(table, user_col , item_col, rating_col, N=10,
         Topn_result = []
         if workers == 1:
             for user in targets_en:
-                recommendations_corre = _recommend(user, item_users, similar_coeff, N, k, method, weighted, centered, based, normalize, user_avg)
+                recommendations_corre = _recommend(user, item_users, similar_coeff, N, k, method, weighted, centered, based, normalize, user_avg, filter, filter_minus, maintain_already_scored)
                 recommendations = []
                 for (item,rating) in recommendations_corre:
                     recommendations += [item_encoder.inverse_transform([item])[0],rating]
                 Topn_result += [recommendations]
         else:
-            Topn_result_tmp = apply_by_multiprocessing_list_to_list(targets_en, _recommend_multi, item_users = item_users, similar_coeff = similar_coeff, N = N, k = k, method = method, weighted = weighted, centered = centered, based = based, normalize = normalize, user_avg = user_avg, item_encoder = item_encoder, workers = workers)
+            Topn_result_tmp = apply_by_multiprocessing_list_to_list(targets_en, _recommend_multi, item_users = item_users, similar_coeff = similar_coeff, N = N, k = k, method = method, weighted = weighted, centered = centered, based = based, normalize = normalize, user_avg = user_avg, item_encoder = item_encoder, workers = workers, filter_minus = filter_minus, maintain_already_scored = maintain_already_scored)
             Topn_result=[]
             for i in range(workers):
                 Topn_result += Topn_result_tmp[i]
@@ -254,10 +258,10 @@ def _collaborative_filtering_train(table, user_col , item_col, rating_col, N=10,
     model['user_avg'] = user_avg
     return{'model' : model}
     
-def _recommend_multi(users, item_users, similar_coeff, N, k, method, weighted, centered, based, normalize, user_avg, item_encoder):
+def _recommend_multi(users, item_users, similar_coeff, N, k, method, weighted, centered, based, normalize, user_avg, item_encoder, filter_minus, maintain_already_scored):
     Topn_result = []
     for user in users:
-        recommendations_corre = _recommend(user, item_users, similar_coeff, N, k, method, weighted, centered, based, normalize, user_avg)
+        recommendations_corre = _recommend(user, item_users, similar_coeff, N, k, method, weighted, centered, based, normalize, user_avg, filter, filter_minus, maintain_already_scored)
         recommendations = []
         for (item,rating) in recommendations_corre:
             recommendations += [item_encoder.inverse_transform([item])[0],rating]
@@ -276,8 +280,8 @@ def collaborative_filtering_recommend(table, group_by=None, **params):
     else:
         return _collaborative_filtering_recommend(table, **params)
     
-def _collaborative_filtering_recommend(table, user_col , item_col, rating_col, N=10, k=5, based = 'item', mode='Topn', method = 'cosine', weighted = True, centered = True, targets = None, normalize = True, workers = 1):
-    return _collaborative_filtering_train(table, user_col , item_col, rating_col, N, k, based, mode, method, weighted, centered, targets, normalize, workers)
+def _collaborative_filtering_recommend(table, user_col , item_col, rating_col, N=10, filter=True, k=5, based = 'item', mode='Topn', method = 'cosine', weighted = True, centered = True, targets = None, normalize = True, workers = 1, filter_minus = False, maintain_already_scored = True):
+    return _collaborative_filtering_train(table, user_col , item_col, rating_col, N, filter, k, based, mode, method, weighted, centered, targets, normalize, workers, filter_minus, maintain_already_scored)
 
 def collaborative_filtering_predict(table, model, **params):
     check_required_parameters(_collaborative_filtering_predict, params, ['table', 'model'])
@@ -286,7 +290,7 @@ def collaborative_filtering_predict(table, model, **params):
     else:
         return _collaborative_filtering_predict(table, model, **params)  
     
-def _collaborative_filtering_predict(table, model, prediction_col ='prediction'):
+def _collaborative_filtering_predict(table, model, prediction_col ='prediction', filter_minus=False, maintain_already_scored=True):
     normalize = model['normalize'] 
     user_avg = model['user_avg']
     weighted = model['weighted']
@@ -295,7 +299,6 @@ def _collaborative_filtering_predict(table, model, prediction_col ='prediction')
     item_encoder = model['item_encoder']
     user_encoder = model['user_encoder']
     item_users = model['item_users']
-    array_item_users = item_users.toarray()
     user_items = item_users.transpose().tocsr()
     user_col = model['user_col']
     item_col = model['item_col']
@@ -310,15 +313,19 @@ def _collaborative_filtering_predict(table, model, prediction_col ='prediction')
     result = [None]*len(tmp_user)
     for i in range(len(valid_indices)):
         if based == 'item':
-            if array_item_users[encoded_item_col[i]][encoded_user_col[i]] != 0:
-                predict = array_item_users[encoded_item_col[i]][encoded_user_col[i]]
+            if maintain_already_scored and item_users[encoded_item_col[i],encoded_user_col[i]] != 0:
+                predict = item_users[encoded_item_col[i],encoded_user_col[i]]
             else:
-                predict = _predict(user_items, similar_coeff[encoded_item_col[i]], encoded_user_col[i], k, weighted, normalize, user_avg, None)
+                predict = _predict(user_items, similar_coeff[encoded_item_col[i]], encoded_user_col[i], k, weighted, normalize, user_avg, None, filter_minus)
         else:
-            if array_item_users[encoded_item_col[i]][encoded_user_col[i]] != 0:
-                predict = array_item_users[encoded_item_col[i]][encoded_user_col[i]]
+            if maintain_already_scored and item_users[encoded_item_col[i],encoded_user_col[i]] != 0:
+                predict = item_users[encoded_item_col[i],encoded_user_col[i]]
             else:
-                predict = _predict(item_users, similar_coeff[encoded_user_col[i]], encoded_user_col[i], k, weighted, normalize, user_avg, user_avg[encoded_user_col[i]])
+                if normalize:
+                    predict = _predict(item_users, similar_coeff[encoded_user_col[i]], encoded_user_col[i], k, weighted, normalize, user_avg, user_avg[encoded_user_col[i]], filter_minus)
+                else:
+                    predict = _predict(item_users, similar_coeff[encoded_user_col[i]], encoded_user_col[i], k, weighted, normalize, user_avg, None, filter_minus)
+
         result[valid_indices[i]] = predict
     result = pd.DataFrame(result,columns=[prediction_col])
     result = pd.concat([table[user_col],table[item_col],result],axis=1)

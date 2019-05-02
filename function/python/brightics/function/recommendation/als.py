@@ -62,9 +62,9 @@ class MatrixFactorizationBase():
         return score
     
     def recommend(self, userid, user_items,
-                  N=10, filter_already_liked_items=True, filter_items=None, recalculate_user=False):
+                  N=10, filter_already_liked_items=True, filter_items=None):
         user = self.user_factors[userid]
-
+    
 
         # calculate the top N items, removing the users own liked items from the results
         if filter_already_liked_items is True:
@@ -155,9 +155,9 @@ class AlternatingLeastSquares(MatrixFactorizationBase):
 
         # Initialize the variables randomly if they haven't already been set
         if self.user_factors is None:
-            np.random.seed(self.seed) ; self.user_factors =  np.random.rand(users, self.factors) 
+            np.random.seed(self.seed) ; self.user_factors =  np.random.rand(users, self.factors)*0.0001
         if self.item_factors is None:
-            np.random.seed(self.seed) ; self.item_factors = np.random.rand(items, self.factors) 
+            np.random.seed(self.seed) ; self.item_factors = np.random.rand(items, self.factors)*0.0001
         else:
             Rui_array = None
             Riu_array = None
@@ -228,7 +228,7 @@ def als_train(table, group_by=None, **params):
         return _als_train(table, **params)
 
 
-def _als_train(table, user_col, item_col, rating_col, mode = 'train', number=10, implicit = False, iterations = 10, reg_param = 0.1, rank = 10, alpha = 1.0, seed = None, targets = None, workers = 1):
+def _als_train(table, user_col, item_col, rating_col, mode = 'train', number=10, filter = True, implicit = False, iterations = 10, reg_param = 0.1, rank = 10, alpha = 1.0, seed = None, targets = None, workers = 1):
     table_user_col = table[user_col]
     table_item_col = table[item_col]
     rating_col = table[rating_col]
@@ -262,13 +262,13 @@ def _als_train(table, user_col, item_col, rating_col, mode = 'train', number=10,
         Topn_result = []
         if workers == 1:
             for user in targets_en:
-                recommendations_corre = als_model.recommend(user, user_items, number)
+                recommendations_corre = als_model.recommend(user, user_items, number, filter_already_liked_items= filter)
                 recommendations = []
                 for (item,rating) in recommendations_corre:
                     recommendations += [item_encoder.inverse_transform([item])[0],rating]
                 Topn_result += [recommendations]
         else:
-            Topn_result_tmp = apply_by_multiprocessing_list_to_list(targets_en, _recommend_multi, user_items = user_items, number = number, item_encoder = item_encoder, als_model = als_model, workers = workers)
+            Topn_result_tmp = apply_by_multiprocessing_list_to_list(targets_en, _recommend_multi, user_items = user_items, number = number, item_encoder = item_encoder, als_model = als_model, workers = workers, filter = filter)
             Topn_result=[]
             for i in range(workers):
                 Topn_result += Topn_result_tmp[i]
@@ -311,10 +311,10 @@ def _als_train(table, user_col, item_col, rating_col, mode = 'train', number=10,
     model['_repr_brtc_'] = rb.get()
     return{'model' : model}
     
-def _recommend_multi(users, user_items, number, item_encoder, als_model):
+def _recommend_multi(users, user_items, number, item_encoder, als_model, filter):
     Topn_result = []
     for user in users:
-        recommendations_corre = als_model.recommend(user, user_items, number)
+        recommendations_corre = als_model.recommend(user, user_items, number, filter_already_liked_items= filter)
         recommendations = []
         for (item,rating) in recommendations_corre:
             recommendations += [item_encoder.inverse_transform([item])[0],rating]
@@ -338,8 +338,8 @@ def als_recommend(table, group_by=None, **params):
         return _als_recommend(table, **params)
 
 
-def _als_recommend(table, user_col, item_col, rating_col, mode = 'Topn', number=10, implicit = False, iterations = 10, reg_param = 0.1, rank = 10, alpha = 1.0, seed = None, targets = None, workers = 1):
-    return _als_train(table, user_col, item_col, rating_col, mode, number, implicit, iterations, reg_param, rank, alpha, seed, targets, workers)
+def _als_recommend(table, user_col, item_col, rating_col, mode = 'Topn', number=10, filter=True, implicit = False, iterations = 10, reg_param = 0.1, rank = 10, alpha = 1.0, seed = None, targets = None, workers = 1):
+    return _als_train(table, user_col, item_col, rating_col, mode, number, filter, implicit, iterations, reg_param, rank, alpha, seed, targets, workers)
 
 def als_predict(table, model, **params):
     check_required_parameters(_als_predict, params, ['table', 'model'])
