@@ -155,9 +155,9 @@ class AlternatingLeastSquares(MatrixFactorizationBase):
 
         # Initialize the variables randomly if they haven't already been set
         if self.user_factors is None:
-            np.random.seed(self.seed) ; self.user_factors =  np.random.rand(users, self.factors)*0.0001
+            np.random.seed(self.seed) ; self.user_factors =  np.random.rand(users, self.factors)
         if self.item_factors is None:
-            np.random.seed(self.seed) ; self.item_factors = np.random.rand(items, self.factors)*0.0001
+            np.random.seed(self.seed) ; self.item_factors = np.random.rand(items, self.factors)
         else:
             Rui_array = None
             Riu_array = None
