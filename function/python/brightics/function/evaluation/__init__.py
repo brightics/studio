@@ -13,7 +13,6 @@ from brightics.common.utils import check_required_parameters
 from brightics.common.validation import validate, greater_than, greater_than_or_equal_to, less_than, \
     less_than_or_equal_to, raise_runtime_error
 from sklearn import preprocessing
-from scipy.sparse import csr_matrix
 from brightics.common.validation import raise_runtime_error
 
 def evaluate_regression(table, group_by=None, **params):
