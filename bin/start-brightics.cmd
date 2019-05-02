@@ -80,4 +80,8 @@ ECHO.
 ECHO Please open Chrome browser with http://127.0.0.1:3000
 ECHO. 
 
-START chrome http://127.0.0.1:3000
+CMD /C chrome http://127.0.0.1:3000 2> nul
+IF ERRORLEVEL 1 (
+    START http://127.0.0.1:3000
+)
+
