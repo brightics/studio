@@ -117,7 +117,7 @@ def _function_by_group_key(function, table, model, params, groups, res_keys, gro
     #print( '_function_by_group_key is running' )
     res_dict = dict()
     for res_key in res_keys:
-        res_dict[res_key] = {'_grouped_data': _grouped_data(group_by, dict())}
+        res_dict[res_key] = {'_grouped_data': _grouped_data(group_by, groups)}
     success_keys = []
     for group in groups:  # todo try except
         #print( '_function_by_group_key for group {} is running.'.format(group_key) )
@@ -126,7 +126,6 @@ def _function_by_group_key(function, table, model, params, groups, res_keys, gro
 
             for res_key in res_keys:
                 res_dict[res_key]['_grouped_data']['data'][tuple(group)] = res_group[res_key]
-                res_dict[res_key]['_grouped_data']['groups'] = groups
             success_keys.append(group)
         except Exception:
             #print( '_function_by_group_key got an exception while running for group {}.'.format(group_key) )

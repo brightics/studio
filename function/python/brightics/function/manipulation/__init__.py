@@ -30,7 +30,7 @@ def simple_filter(table, input_cols, operators, operands, main_operator='and'):
     second_filter_list = []
     for c, op, od in zip(_column, _operator, operands):
         if op in ['starts with', 'ends with', 'contain', 'not contain']:
-            second_filter_list.append([c, op, od])
+            second_filter_list.append([c, op, od.strip('\'')])
         else:
             first_filter_list.append([c, op, od])
     _query = main_operator.join(['''({input_cols} {operators} {operands})'''.format(input_cols=c, operators=op, operands=od) for c, op, od in first_filter_list])
