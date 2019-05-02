@@ -106,8 +106,10 @@ public class FunctionWork extends Work {
                 Thread.sleep(50L);
             }
             Object result = JobContextHolder.getBeanHolder().messageManager.taskManager().getAsyncTaskResult(taskId);
-            LOGGER.info("[TASK FINISHED]", result);
-            LOGGER.debug("[TASK RESULT] {}", result);
+            LOGGER.info("[TASK FINISHED]");
+            if(LOGGER.isDebugEnabled()) {
+                LOGGER.debug("[TASK RESULT] {}", result);
+            }
         } catch (InterruptedException e) {
             LOGGER.error("[TASK INTERRUPTED]", e);
             String context = functionInfo.has("context") ? functionInfo.get("context").getAsString() : "";

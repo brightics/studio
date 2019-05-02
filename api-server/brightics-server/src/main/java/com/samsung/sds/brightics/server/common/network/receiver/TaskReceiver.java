@@ -34,7 +34,10 @@ public class TaskReceiver extends TaskServiceGrpc.TaskServiceImplBase {
 	public void receiveTaskResult(ResultTaskMessage request, StreamObserver<ExecuteTaskMessage> responseObserver) {
 		logger.info(Thread.currentThread().getName());
 		String taskId = request.getTaskId();
-		logger.info("receive task result : " + request.toString());
+		logger.info("Finished task ID : "+taskId);
+		if(logger.isDebugEnabled()) {
+			logger.debug("Received task result : " + request.toString());
+		}
 		
 		TaskMessageRepository.saveMessageResult(taskId, request);
 		
