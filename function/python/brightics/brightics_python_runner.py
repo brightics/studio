@@ -174,7 +174,7 @@ if __name__ == '__main__':
                 brtc_java_gateway.logger.info("[Python] Python process finished. " +
                                               "Exception occurred [" + str(is_exception[0]) + "]" +
                                               (" Cause: " + is_exception[1] if is_exception[0] else is_exception[1]))
-                brtc_java_gateway.logger.info("[Python] Result: " + result + "\n")
+                brtc_java_gateway.logger.debug("[Python] Result: " + result + "\n")
 
                 brtc_java_gateway.notify_python_process_finished(result, is_exception[0], is_exception[1])
             except BrighticsFunctionException as bfe:
