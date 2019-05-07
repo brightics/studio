@@ -73,6 +73,8 @@ def _function_by_group2(function, table=None, model=None, columns=None, group_by
 
 @time_usage
 def _group(table, params, group_by):
+    if True in pd.isnull(table[group_by]).values:
+        table[group_by] = table[group_by].fillna('\u0002')
     groups = table[group_by].drop_duplicates().values
     res_dict = {
         '_grouped_data': _grouped_data(group_by=group_by, groups=groups)
@@ -92,6 +94,8 @@ def _flatten(grouped_table, groups, group_by, columns):
             for i in range(len(table)):
                 result2.append(key)
     result2 = pd.DataFrame(result2, columns = group_by)
+    if '\u0002' in result2.values:
+        result2 = result2.replace('\u0002',np.float64(None))
     result2 = result2.drop(common_columns, axis=1)
     return pd.concat([result2,result1],axis=1)
 
