@@ -17,12 +17,13 @@
 from brightics.common.validation import validate, greater_than_or_equal_to
 
 
-def delete_missing_data(table, input_cols, how='any', thresh=None):
+def delete_missing_data(table, input_cols, how='any', **params):
     
     _table = table.copy()
     
-    if thresh is not None:
-        validate(greater_than_or_equal_to(thresh, 1, 'thresh'))
+    if 'thresh' in params:
+        validate(greater_than_or_equal_to(params, 1, 'thresh'))
+        thresh = params['thresh']
         thresh = len(input_cols) - thresh + 1
     
     _out_table = _table.dropna(subset=input_cols, how=how, axis='index', thresh=thresh)
