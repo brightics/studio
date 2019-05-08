@@ -119,8 +119,19 @@ def logistic_regression_predict(table, model, **params):
 
 
 def _logistic_regression_predict(table, model, prediction_col='prediction', prob_prefix='probability',
-                                 output_log_prob=False, log_prob_prefix='log_probability', thresholds=None,
+                                 output_log_prob=False, log_prob_prefix='log_probability',
+                                 thresholds=None, probability_col='probability', log_probability_col='log_probability',
                                  suffix='index'):
+
+## migration for 3.6.0.3 <- studio
+    
+    if (probability_col != 'probability'):
+        prob_prefix = probability_col
+    if (log_probability_col != 'log_probability'):
+        log_prob_prefix = log_probability_col
+        
+## migration for 3.6.0.3 <- studio
+    
     feature_cols = model['features']
     feature_names, features = check_col_type(table,feature_cols)
     lr_model = model['lr_model']

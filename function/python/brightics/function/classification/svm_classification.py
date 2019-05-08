@@ -84,10 +84,20 @@ def svm_classification_predict(table, model, **params):
 
 
 def _svm_classification_predict(table, model, prediction_col='prediction', prob_prefix='probability',
-                                display_log_prob=False, log_prob_prefix='log_probability', thresholds=None,
+                                display_log_prob=False, log_prob_prefix='log_probability',
+                                thresholds=None, probability_col='probability', log_probability_col='log_probability',
                                 suffix='index'):
-    _table = table.copy()
     
+## migration for 3.6.0.3 <- studio
+    
+    if (probability_col != 'probability'):
+        prob_prefix = probability_col
+    if (log_probability_col != 'log_probability'):
+        log_prob_prefix = log_probability_col
+        
+## migration for 3.6.0.3 <- studio
+
+    _table = table.copy()    
     feature_cols = model['features']
     features = _table[feature_cols]
     svc_model = model['svc_model']
