@@ -23,3 +23,5 @@ from .arima import arima_train
 from .arima import arima_predict
 from .arima import auto_arima_train
 from .arima import auto_arima_predict
+from .spcrule import spcrule
+from .spcrule_summ import spcrule_summ
