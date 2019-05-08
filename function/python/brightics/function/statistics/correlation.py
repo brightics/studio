@@ -52,7 +52,7 @@ def _correlation(table, vars, method='pearson', height=2.5, corr_prec=2):
                 r, p = stats.pearsonr(table[vars[i]], table[vars[j]])
             elif method == 'spearman':
                 r, p = stats.spearmanr(table[vars[i]], table[vars[j]])
-            elif method == 'kendall':
+            else:
                 r, p = stats.kendalltau(table[vars[i]], table[vars[j]])
             
             result_arr.append([vars[i], vars[j], r, p])    
@@ -64,7 +64,7 @@ def _correlation(table, vars, method='pearson', height=2.5, corr_prec=2):
             r, p = stats.pearsonr(x, y)
         elif kwargs['method'] == 'spearman':
             r, p = stats.spearmanr(x, y)
-        elif kwargs['method'] == 'kendall':
+        else:
             r, p = stats.kendalltau(x, y)
         
         p_stars = ''
