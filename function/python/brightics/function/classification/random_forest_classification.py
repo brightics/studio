@@ -78,19 +78,24 @@ def _random_forest_classification_train(table, feature_cols, label_col,
     if(sklearn.utils.multiclass.type_of_target(y_train) == 'continuous'):
         raise_error('0718', 'label_col')
     
-    if max_features == "None":
+    if max_features == "n":
         max_features = None
-          
-    if class_weight is not None:
-        if y_train.dtype == str:
-            classes = sorted(list(set(y_train)), key=str.lower)
+        
+    class_labels = list(set(y_train)) 
+    if class_weight is not None: 
+        if len(class_weight) != len(class_labels):
+            raise ValueError("Number of class weights should match number of labels.")
         else:
-            classes = sorted(list(set(y_train)))
+            if y_train.dtype == str:
+                classes = sorted((class_labels), key=str.lower)
+            else:
+                classes = sorted(class_labels)
 
-        weights = class_weight
-        class_weight = {classes[0]: weights[0]}
-        for i in range(1, len(classes)):
-            class_weight[classes[i]] = weights[i]  
+                weights = class_weight
+                class_weight = {classes[0]: weights[0]}
+                
+                for i in range(1, len(classes)):
+                    class_weight[classes[i]] = weights[i]  
     
     classifier = RandomForestClassifier(n_estimators=n_estimators,
                                         criterion=criterion,
