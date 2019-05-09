@@ -14,23 +14,21 @@
     limitations under the License.
 """
 
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import sklearn.utils
 from sklearn.ensemble import RandomForestClassifier 
 from brightics.common.repr import BrtcReprBuilder
 from brightics.common.repr import strip_margin
 from brightics.common.repr import plt2MD
 from brightics.common.repr import dict2MD
-from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate
 from brightics.common.validation import greater_than_or_equal_to
 from brightics.common.validation import raise_error
-import sklearn.utils as sklearn_utils
-
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
 
 
 def random_forest_classification_train(table, group_by=None, **params):
@@ -72,17 +70,33 @@ def _plot_feature_importances(feature_cols, classifier):
 def _random_forest_classification_train(table, feature_cols, label_col,
                                  n_estimators=10, criterion="gini", max_depth=None, min_samples_split=2, min_samples_leaf=1,
                                  min_weight_fraction_leaf=0, max_features="sqrt",
-                                 max_leaf_nodes=None, min_impurity_decrease=0, random_state=None):   
+                                 max_leaf_nodes=None, min_impurity_decrease=0, class_weight=None, random_state=None):   
     
     X_train = table[feature_cols]
     y_train = table[label_col]   
 
-    if(sklearn_utils.multiclass.type_of_target(y_train) == 'continuous'):
+    if(sklearn.utils.multiclass.type_of_target(y_train) == 'continuous'):
         raise_error('0718', 'label_col')
     
-    if max_features == "None":
+    if max_features == "n":
         max_features = None
-            
+        
+    class_labels = list(set(y_train)) 
+    if class_weight is not None: 
+        if len(class_weight) != len(class_labels):
+            raise ValueError("Number of class weights should match number of labels.")
+        else:
+            if y_train.dtype == str:
+                classes = sorted((class_labels), key=str.lower)
+            else:
+                classes = sorted(class_labels)
+
+                weights = class_weight
+                class_weight = {classes[0]: weights[0]}
+                
+                for i in range(1, len(classes)):
+                    class_weight[classes[i]] = weights[i]  
+    
     classifier = RandomForestClassifier(n_estimators=n_estimators,
                                         criterion=criterion,
                                         max_depth=max_depth,
@@ -92,6 +106,7 @@ def _random_forest_classification_train(table, feature_cols, label_col,
                                         max_features=max_features,
                                         max_leaf_nodes=max_leaf_nodes,
                                         min_impurity_decrease=min_impurity_decrease,
+                                        class_weight=class_weight,
                                         random_state=random_state)
     classifier.fit(X_train, y_train) 
 
@@ -106,6 +121,7 @@ def _random_forest_classification_train(table, feature_cols, label_col,
              'max_features': max_features,
              'max_leaf_nodes': max_leaf_nodes,
              'min_impurity_decrease': min_impurity_decrease,
+             'class_weight': class_weight,
              'random_state': random_state}
     
     model = dict()
@@ -118,10 +134,13 @@ def _random_forest_classification_train(table, feature_cols, label_col,
     rb.addMD(strip_margin("""
     | ## Random Forest Classification Train Result
     |
+    | ### Parameters
+    | {params}
+    |
     | ### Feature Importance
     | {fig_feature_importances}
     |
-    """.format(fig_feature_importances=fig_feature_importances))) 
+    """.format(params=dict2MD(params), fig_feature_importances=fig_feature_importances)))
         
     model['_repr_brtc_'] = rb.get()   
                
