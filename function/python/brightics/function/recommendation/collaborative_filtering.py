@@ -84,7 +84,7 @@ def _recommend(target_user, item_users, similar_coeff, N, k, method, weighted, c
                 scores += [_predict(item_users, similar_coeff[target_user], target_item, k, weighted, normalize, user_avg, user_avg[target_user], filter_minus)]
             else:
                 scores += [_predict(item_users, similar_coeff[target_user], target_item, k, weighted, normalize, user_avg, None, filter_minus)]
-    best = sorted(enumerate(scores), key=lambda x: (x[1] is not None, x[1]), reverse=True)
+    best = sorted(enumerate(scores), key=lambda x: (~pd.isnull(x[1]), x[1]), reverse=True)
     return list(itertools.islice((rec for rec in best if rec[0] not in liked), N))
 
 def _nonzeros(m, row):    
