@@ -178,12 +178,8 @@ def transpose(table, group_by=None, **params):
 def _transpose(table, input_cols, label_col=None, label_col_name='label'):
 
     sort_table = pd.DataFrame()
-    feature_col_name = []
-    
-    for i in range(0, len(table.columns)):
-        if table.columns[i] in input_cols:
-            sort_table[table.columns[i]] = table[table.columns[i]]
-            feature_col_name.append(table.columns[i])
+    feature_col_name = [col for col in table.columns if col in input_cols]
+    sort_table = table[feature_col_name]
     
     out_table = sort_table.transpose()
     
