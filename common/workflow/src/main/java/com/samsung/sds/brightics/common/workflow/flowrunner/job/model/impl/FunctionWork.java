@@ -3,7 +3,6 @@ package com.samsung.sds.brightics.common.workflow.flowrunner.job.model.impl;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
@@ -89,8 +88,8 @@ public class FunctionWork extends Work {
             LOGGER.info("[FUNCTION PROCESSING] [{}] parameters : {}", label, params);
 
 			Object result = JobContextHolder.getJobRunnerAPI().executeTaskAndGetResult(taskId,
-					JobContextHolder.getJobRunner().getStatus().getUser(), functionName, params.toJsonString(),
-					buildAttributes().toString());
+					JobContextHolder.getJobStatusTracker().getJobStatus().getUser(), functionName,
+					params.toJsonString(), buildAttributes().toString());
             LOGGER.info("[TASK SUCCESS] {}", result);
         } catch (InterruptedException e) {
             LOGGER.error("[TASK INTERRUPTED]", e);
@@ -140,24 +139,9 @@ public class FunctionWork extends Work {
         complementDLPredictParam(pb);
         complementPyFunctionParam(pb);
         complementInOutDataParam(pb);
-        complementPreparedDataParam(pb);
 
         return pb.build();
     }
-
-    private void complementPreparedDataParam(ParametersBuilder pb) {
-		if (functionInfo.has("external") && functionInfo.get("external").getAsBoolean()) {
-			String mid = JobContextHolder.getJobStatusTracker().getCurrentModelMid();
-			String fid = JsonObjectUtil.getAsString(functionInfo, "fid");
-			if (JobContextHolder.getPreparedDataSet().hasPreparedData(mid, fid)) {
-				JsonObject preDataObj = JobContextHolder.getPreparedDataSet().getFunctionPreparedDataObject(mid, fid);
-				Set<Entry<String, JsonElement>> preDataSet = preDataObj.entrySet();
-				for (Entry<String, JsonElement> preData : preDataSet) {
-					pb.add(preData.getKey(), preData.getValue());
-				}
-			}
-		}
-	}
 
 	private void complementPyFunctionParam(ParametersBuilder pb) {
 		if (!"PyFunction".equals(functionName)) {

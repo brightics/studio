@@ -229,7 +229,7 @@ public abstract class OptWorkflow extends SequentialWorkflow {
 
 			// executeTask
 			Object result = JobContextHolder.getJobRunnerAPI().executeTaskAndGetResult(taskId,
-					JobContextHolder.getJobRunner().getStatus().getUser(), "Python", params.toJsonString(),
+					JobContextHolder.getJobStatusTracker().getJobStatus().getUser(), "Python", params.toJsonString(),
 					buildAttributes().toString());
 			LOGGER.info("[OPT TASK SUCCESS] {}", result);
 			return result;

@@ -1,3 +1,19 @@
+"""
+    Copyright 2019 Samsung SDS
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+        http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
+
 from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD, \
     pandasDF2MD, keyValues2MD
 from brightics.common.groupby import _function_by_group
@@ -75,7 +91,7 @@ def _oneway_anova(table, response_cols, factor_col):
     """))
     groups = table[factor_col].unique()
     groups.sort()
-    sum_len = np.sum([ len(str(group)) for group in groups ])
+    sum_len = np.sum([len(str(group)) for group in groups])
     
     result = dict()
     result['_grouped_data'] = dict()
@@ -92,10 +108,19 @@ def _oneway_anova(table, response_cols, factor_col):
             
         fig_box = plt2MD(plt)
         plt.clf()
-        
-        model = ols("""Q('{response_col}') ~ C(Q('{factor_col}'))""".format(response_col=response_col, factor_col=factor_col), table).fit()  # TODO factor_col = class => error
+
+        r = "Q('{r}')".format(r=response_col)
+        f = ["Q('{f}')".format(f=factor_col), "C(Q('{f}'))".format(f=factor_col)][table.dtypes[factor_col] == 'object']
+
+        model = ols("""{r} ~ {f}""".format(r=r, f=f), table).fit()  # TODO factor_col = class => error
         anova = anova_lm(model)
         
+        index_list = anova.index.tolist()
+        remove_list = ["C(Q('", "'))", "Q('", "')"]
+        for v in remove_list:
+            index_list = [i.replace(v, "") for i in index_list]
+        anova.insert(0, '', index_list)
+
         anova_df = pandasDF2MD(anova)
         
         p_value = anova["""PR(>F)"""][0]

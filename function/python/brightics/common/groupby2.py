@@ -1,3 +1,19 @@
+"""
+    Copyright 2019 Samsung SDS
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+        http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
+
 # -*- coding: utf-8 -*-
 import traceback
 
@@ -51,6 +67,8 @@ def _function_by_group2(function, table=None, model=None, columns=None, group_by
 
 @time_usage
 def _group(table, params, group_by):
+    if True in pd.isnull(table[group_by]).values:
+        table[group_by] = table[group_by].fillna('\u0002')
     groups = table[group_by].drop_duplicates().values
     res_dict = {
         '_grouped_data': _grouped_data(group_by=group_by, groups=groups)
@@ -70,6 +88,8 @@ def _flatten(grouped_table, groups, group_by, columns):
             for i in range(len(table)):
                 result2.append(key)
     result2 = pd.DataFrame(result2, columns = group_by)
+    if '\u0002' in result2.values:
+        result2 = result2.replace('\u0002',np.float64(None))
     result2 = result2.drop(common_columns, axis=1)
     return pd.concat([result2,result1],axis=1)
 
@@ -95,7 +115,7 @@ def _function_by_group_key(function, table, model, params, groups, res_keys, gro
     #print( '_function_by_group_key is running' )
     res_dict = dict()
     for res_key in res_keys:
-        res_dict[res_key] = {'_grouped_data': _grouped_data(group_by, dict())}
+        res_dict[res_key] = {'_grouped_data': _grouped_data(group_by, groups)}
     success_keys = []
     for group in groups:  # todo try except
         #print( '_function_by_group_key for group {} is running.'.format(group_key) )
@@ -104,7 +124,6 @@ def _function_by_group_key(function, table, model, params, groups, res_keys, gro
 
             for res_key in res_keys:
                 res_dict[res_key]['_grouped_data']['data'][tuple(group)] = res_group[res_key]
-                res_dict[res_key]['_grouped_data']['groups'] = groups
             success_keys.append(group)
         except Exception:
             #print( '_function_by_group_key got an exception while running for group {}.'.format(group_key) )

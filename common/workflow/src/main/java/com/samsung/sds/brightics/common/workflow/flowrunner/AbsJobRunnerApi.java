@@ -29,7 +29,6 @@ public abstract class AbsJobRunnerApi {
 	 * for asynchronous communication.
 	 * 
 	 * @param task Id : task id for stop task.
-	 * @param userName : execute user name
 	 * @param name : function or script name.
 	 * @param parameters : information for each function and script.
 	 * @param attributes : contain mid, persist, label.

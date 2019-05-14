@@ -20,7 +20,6 @@ import com.samsung.sds.brightics.common.core.util.LoggerUtil;
 import com.samsung.sds.brightics.common.variable.context.VariableContext;
 import com.samsung.sds.brightics.common.workflow.flowrunner.AbsJobRunnerApi;
 import com.samsung.sds.brightics.common.workflow.flowrunner.JobRunnerConfig;
-import com.samsung.sds.brightics.common.workflow.flowrunner.data.PreparedData;
 import com.samsung.sds.brightics.common.workflow.flowrunner.data.PreparedDataSet;
 import com.samsung.sds.brightics.common.workflow.flowrunner.holder.JobContextHolder;
 import com.samsung.sds.brightics.common.workflow.flowrunner.holder.VariableContextHolder;
@@ -28,6 +27,7 @@ import com.samsung.sds.brightics.common.workflow.flowrunner.status.Status;
 import com.samsung.sds.brightics.common.workflow.flowrunner.vo.JobErrorVO;
 import com.samsung.sds.brightics.common.workflow.flowrunner.vo.JobParam;
 import com.samsung.sds.brightics.common.workflow.flowrunner.vo.JobStatusVO;
+import com.samsung.sds.brightics.common.workflow.flowrunner.vo.PreparedDataVO;
 
 import lombok.Getter;
 
@@ -114,7 +114,7 @@ public class JobRunner implements IJobRunner {
 	private void initializePreparedDataset() {
 		PreparedDataSet preparedDataSet = new PreparedDataSet();
 		if(jobParam.getDatas() != null && !jobParam.getDatas().isEmpty()){
-			for(PreparedData data : jobParam.getDatas()){
+			for(PreparedDataVO data : jobParam.getDatas()){
 				preparedDataSet.addPreparedData(data);
 			}
 		}

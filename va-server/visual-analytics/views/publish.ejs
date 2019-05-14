@@ -12,7 +12,7 @@
         if (!window.Brightics.VA.Core) window.Brightics.VA.Core = {};
         if (!window.Brightics.VA.Core.Utils) window.Brightics.VA.Core.Utils = {};
         if (!window.Brightics.VA.Core.Functions) window.Brightics.VA.Core.Functions = {};
-        
+
         if (!window.Brightics.VA.Implementation) window.Brightics.VA.Implementation = {};
         if (!window.Brightics.VA.Implementation.Visual) window.Brightics.VA.Implementation.Visual = {};
 
@@ -34,7 +34,7 @@
 
     <!-- Handsontable css -->
     <link type="text/css" rel='stylesheet' href='/css/plugins/handsontable/handsontable.full.min.css'/>
-    
+
     <!-- brightics chart css -->
     <link type="text/css" rel="stylesheet" href="css/plugins/bcharts/bcharts-all.css">
 
@@ -64,7 +64,7 @@
 
     <!-- Handsontable -->
     <script src="/js/plugins/handsontable/handsontable.full.min.js"></script>
-    
+
     <!-- Bcharts -->
     <script src="js/plugins/bcharts/bcharts-all.js"></script>
     <script src="js/plugins/bcharts/bcharts-adonis-all.js"></script>
@@ -160,13 +160,13 @@
             columns: [],
             data: []
         };
-        
+
         const IN_DATA = 'inData';
         const OUT_DATA = 'outData';
 
         const spark = '<%- useSpark %>' === 'true' ? true : false;
 
-        var ChartContentUnit = spark ? (function () { 
+        var ChartContentUnit = spark ? (function () {
             function ChartContentUnit($parent, options) {
                 this.$parent = $parent;
                 this.options = options;
@@ -196,7 +196,7 @@
                 var _this = this;
                 var chartOptions = $.extend(true, {}, this.options.options),
                     dataSource = this.getDataSource();
-                
+
                 $.extend(true, chartOptions,{
                     plotOptions:{
                         map: {
@@ -208,7 +208,7 @@
                         }
                     }
                 });
-                
+
                 chartOptions.source = {
                     dataType: 'local',
                     localData: [{
@@ -533,7 +533,7 @@
                 DATA_SOURCE: 'dataSourceChanged'
             };
 
-                   function ChartContentUnit($parent, options) {
+            function ChartContentUnit($parent, options) {
                 this.$parent = $parent;
                 this.options = options;
                 this.init();
@@ -562,19 +562,19 @@
                 var _this = this;
                 var chartOptions = $.extend(true, {}, this.options.options),
                     dataSource = this.getDataSource();
-                
+
                 $.extend(true, chartOptions,{
                     plotOptions:{
                         map: {
                             geoData: {
                                 url: function(mapName){
                                     return 'api/va/v2/map/' + mapName
-                                    }
+                                }
                             }
                         }
                     }
                 });
-                
+
                 chartOptions.source = {
                     dataType: 'local',
                     localData: [{
@@ -738,11 +738,9 @@
                     return;
                 }
 
-                var fnUnit = this._createBigDataChartFnUnit();
                 var options = {
-                    fnUnit: fnUnit,
-                    mid: fnUnit.getModelId(),
-                    tid: prepare.options.chart.type == 'table' ? fnUnit[IN_DATA] : fnUnit[OUT_DATA][0],
+                    mid: dataSource.func === Brightics.VA.Implementation.Visual.DATASOURCE_TYPE.STAGING ? dataSource.param.modelId : _this.model.mid,
+                    tid: this._getTableIdFromDataSource(),
                     hideDialog: true,
                     publish: true,
                     offset: prepare.options.chart.type == 'table' ? (this.pageOptions.pageNum - 1) * this.pageOptions.pageSize : 0,
@@ -803,44 +801,26 @@
 
             ChartContentUnit.prototype._queryChartData = function (prepare, options) {
                 var _this = this;
-                Brightics.VA.Core.Utils.FullRenderingUtils.getRenderedData(options.fnUnit, _this.modelLauncher, {
-                    mid: options.mid,
-                    user: options.user,
-                    publish: true,
-                    hideDialog: options.hideDialog
-                }, function (data) {
+                Brightics.VA.Core.DataQueryTemplate.queryTable(options.mid, options.tid, function (data, table) {
                     try {
                         _this._done('chart', prepare, data);
                     } catch (e) {
                         _this._fail('chart', prepare, e.message);
                         Logger.error(e.stack, {category: 'Chart'});
                     }
-                }, function (data, tableId, err) {
+                }, function (data, table, err) {
                     _this._fail('chart', prepare, err);
-                }, function (jid) {
-                    prepare.jid = jid;
+                }, false, {
+                    offset: options.offset,
+                    limit: options.limit,
+                    user: options.user,
+                    publish: true
                 });
             };
 
             ChartContentUnit.prototype.setContentSize = function (size) {
                 // Brightics.VA.Implementation.Visual.Editors.Diagram.Figures.BaseContentUnit.prototype.setContentSize.call(this, size);
                 if (this.chart) this.chart.render();
-            };
-
-            ChartContentUnit.prototype._createBigDataChartFnUnit = function () {
-                var _this = this,
-                    fnUnit = Brightics.VA.Core.Utils.FullRenderingUtils.getFnUnit(this.getChartOption()),
-                    dataSource = this.getDataSource();
-
-                var inTable = this._getTableIdFromDataSource();
-                if (!fnUnit[IN_DATA]) fnUnit[IN_DATA] = [];
-                if (!fnUnit[OUT_DATA]) fnUnit[OUT_DATA] = [];
-                fnUnit[IN_DATA].push(inTable);
-                fnUnit[OUT_DATA].push(inTable + fnUnit.fid);
-                fnUnit.getModelId = function () {
-                    return dataSource.func.toLowerCase() === 'loadFromStaging'.toLowerCase() ? dataSource.param.modelId : dataSource.mid;
-                };
-                return fnUnit;
             };
 
             ChartContentUnit.prototype.adjustArrange = function () {
@@ -871,9 +851,9 @@
 
             return ChartContentUnit;
         }());
-    
+
     </script>
-    
+
     <style>
         *
         {
@@ -1043,7 +1023,7 @@
             color: #626fdb !important;
         }
 
-        .jqx-widget-content-office 
+        .jqx-widget-content-office
         {
             font-family: 'Arial', Dotum, Tahoma, sans-serif;
             color: rgba(0, 0, 0, .7);
@@ -1134,7 +1114,7 @@
 
             $.ajax(opt).done(function (result) {
                 console.log(result);
-                
+
                 var pages = result.reportContent.contents.report.pages;
                 var display = result.reportContent.contents.report.display;
                 var functions = result.reportContent.contents.functions;

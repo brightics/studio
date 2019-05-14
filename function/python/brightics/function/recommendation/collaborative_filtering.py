@@ -1,3 +1,19 @@
+"""
+    Copyright 2019 Samsung SDS
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+        http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
+
 import numpy as np
 import pandas as pd
 import itertools
@@ -321,7 +337,10 @@ def _collaborative_filtering_predict(table, model, prediction_col ='prediction')
                 if item_users[encoded_item_col[check_num_valid]][encoded_user_col[check_num_valid]] != 0:
                     predict = item_users[encoded_item_col[check_num_valid]][encoded_user_col[check_num_valid]]
                 else:
-                    predict = _predict(item_users, similar_coeff[encoded_user_col[check_num_valid]], encoded_item_col[check_num_valid], k, weighted, normalize, user_avg, user_avg[encoded_user_col[check_num_valid]])
+                    if normalize:
+                        predict = _predict(item_users, similar_coeff[encoded_user_col[check_num_valid]], encoded_item_col[check_num_valid], k, weighted, normalize, user_avg, user_avg[encoded_user_col[check_num_valid]])
+                    else:
+                        predict = _predict(item_users, similar_coeff[encoded_user_col[check_num_valid]], encoded_item_col[check_num_valid], k, weighted, normalize, user_avg, None)
             check_num_valid += 1
         result += [[tmp_user[check_num_total], tmp_item[check_num_total],predict]]
         check_num_total += 1

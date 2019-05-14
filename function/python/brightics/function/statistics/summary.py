@@ -1,3 +1,19 @@
+"""
+    Copyright 2019 Samsung SDS
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+        http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
+
 from brightics.common.groupby import _function_by_group
 from brightics.common.groupby2 import _function_by_group2
 from brightics.common.utils import check_required_parameters
@@ -16,21 +32,25 @@ def _amounts_colname(a): return str(a).replace('.', '_')
 def _unique_list(l): return np.unique(list(filter(lambda x: x is not None and not np.isnan(x), l)))
 
 def statistic_summary(table, group_by=None, **params):
+    check_required_parameters(_statistic_summary, params, ['table'])
+    column_indices = []
+    for i in params['input_cols']:
+        column_indices.append(table.columns.get_loc(i))
+    params['column_indices'] = column_indices
     columns = ['column_name'] + params['statistics'].copy()
     if 'percentile' in columns:
         columns.remove('percentile')
-        if params['percentile_amounts'] is not None:
+        if 'percentile_amounts' in params:
             for pa in _unique_list(params['percentile_amounts']):
                 columns.append('percentile_{}'.format(_amounts_colname(pa)))
     if 'trimmed_mean' in columns:
         columns.remove('trimmed_mean')
-        if params['trimmed_mean_amounts'] is not None:
+        if 'trimmed_mean_amounts' in params:
             for ta in _unique_list(params['trimmed_mean_amounts']):
                 columns.append('trimmed_mean_{}'.format(_amounts_colname(ta)))
     if 'mode' in columns:
         columns.remove('mode')
         columns.append('mode')
-    check_required_parameters(_statistic_summary, params, ['table'])
     if group_by is not None:
         return _function_by_group2(_statistic_summary, table, columns=columns, group_by=group_by, **params)
     else:
@@ -40,7 +60,7 @@ def statistic_summary(table, group_by=None, **params):
         return result
 
 
-def _statistic_summary(table, input_cols, statistics, percentile_amounts=None, trimmed_mean_amounts=None):
+def _statistic_summary(table, input_cols, statistics, column_indices=None, percentile_amounts=None, trimmed_mean_amounts=None):
     tmp_table=table.copy()
     tmp_table=list(map(list, zip(*tmp_table)))
     result=[]
@@ -48,46 +68,101 @@ def _statistic_summary(table, input_cols, statistics, percentile_amounts=None, t
         data = [input_cols[i]]
         for st in statistics:
             if 'max' == st:
-                data.append(brtc_stats.max(tmp_table[i]))
+                data.append(brtc_stats.max(tmp_table[column_indices[i]]))
             elif 'min' == st:
-                data.append(brtc_stats.min(tmp_table[i]))
+                data.append(brtc_stats.min(tmp_table[column_indices[i]]))
             elif 'range' == st:
-                data.append(brtc_stats.range(tmp_table[i]))
+                data.append(brtc_stats.range(tmp_table[column_indices[i]]))
             elif 'sum' == st:
-                data.append(brtc_stats.sum(tmp_table[i]))
+                data.append(brtc_stats.sum(tmp_table[column_indices[i]]))
             elif 'avg' == st:
-                data.append(brtc_stats.mean(tmp_table[i]))
+                data.append(brtc_stats.mean(tmp_table[column_indices[i]]))
             elif 'variance' == st:
-                data.append(brtc_stats.var_samp(tmp_table[i]))
+                data.append(brtc_stats.var_samp(tmp_table[column_indices[i]]))
             elif 'stddev' == st:
-                data.append(brtc_stats.std(tmp_table[i]))
+                data.append(brtc_stats.std(tmp_table[column_indices[i]]))
             elif 'skewness' == st:
-                data.append(brtc_stats.skewness(tmp_table[i]))
+                data.append(brtc_stats.skewness(tmp_table[column_indices[i]]))
             elif 'kurtosis' == st:
-                data.append(brtc_stats.kurtosis(tmp_table[i]))
+                data.append(brtc_stats.kurtosis(tmp_table[column_indices[i]]))
             elif 'nrow' == st:
-                data.append(brtc_stats.num_row(tmp_table[i]))
+                data.append(brtc_stats.num_row(tmp_table[column_indices[i]]))
             elif 'num_of_value' == st:
-                data.append(brtc_stats.num_value(tmp_table[i]))
+                data.append(brtc_stats.num_value(tmp_table[column_indices[i]]))
             elif 'null_count' == st:
-                data.append(brtc_stats.num_null(tmp_table[i]))
+                data.append(brtc_stats.num_null(tmp_table[column_indices[i]]))
             elif 'mode' == st:
-                data.append(brtc_stats.mode(tmp_table[i]))
+                data.append(brtc_stats.mode(tmp_table[column_indices[i]]))
             elif 'median' == st:
-                data.append(brtc_stats.median(tmp_table[i]))
+                data.append(brtc_stats.median(tmp_table[column_indices[i]]))
             elif 'q1' == st:
-                data.append(brtc_stats.q1(tmp_table[i]))
+                data.append(brtc_stats.q1(tmp_table[column_indices[i]]))
             elif 'q3' == st:
-                data.append(brtc_stats.q3(tmp_table[i]))
+                data.append(brtc_stats.q3(tmp_table[column_indices[i]]))
             elif 'iqr' == st:
-                data.append(brtc_stats.iqr(tmp_table[i]))
+                data.append(brtc_stats.iqr(tmp_table[column_indices[i]]))
             elif 'percentile' == st and percentile_amounts is not None:
                 for pa in _unique_list(percentile_amounts):
-                    data.append(brtc_stats.percentile(tmp_table[i],pa))
+                    data.append(brtc_stats.percentile(tmp_table[column_indices[i]],pa))
             elif 'trimmed_mean' == st and trimmed_mean_amounts is not None:
                 for ta in _unique_list(trimmed_mean_amounts):
-                    data.append(brtc_stats.trimmed_mean(tmp_table[i],ta))
+                    data.append(brtc_stats.trimmed_mean(tmp_table[column_indices[i]],ta))
         result.append(data)
+    return {'out_table' : result}
+
+
+#todo : erase _statistic_summary2 and update _statistic_derivation.
+
+def _statistic_summary2(table, input_cols, statistics, percentile_amounts=None, trimmed_mean_amounts=None):
+    
+    _table = table.copy()    
+    data = {'column_name':input_cols}
+    for st in statistics:
+        if 'max' == st:
+            data['max'] = [brtc_stats.max(_table[x]) for x in input_cols]
+        if 'min' == st:
+            data['min'] = [brtc_stats.min(_table[x]) for x in input_cols]
+        if 'range' == st:
+            data['range'] = [brtc_stats.range(_table[x]) for x in input_cols]
+        if 'sum' == st:
+            data['sum'] = [brtc_stats.sum(_table[x]) for x in input_cols]
+        if 'avg' == st:
+            data['avg'] = [brtc_stats.mean(_table[x]) for x in input_cols]
+        if 'variance' == st:
+            data['variance'] = [brtc_stats.var_samp(_table[x]) for x in input_cols]
+        if 'stddev' == st:
+            data['stddev'] = [brtc_stats.std(_table[x]) for x in input_cols]
+        if 'skewness' == st:
+            data['skewness'] = [brtc_stats.skewness(_table[x]) for x in input_cols]
+        if 'kurtosis' == st:
+            data['kurtosis'] = [brtc_stats.kurtosis(_table[x]) for x in input_cols]
+        if 'nrow' == st:
+            data['num_of_row'] = [brtc_stats.num_row(_table[x]) for x in input_cols]
+        if 'num_of_value' == st:
+            data['num_of_value'] = [brtc_stats.num_value(_table[x]) for x in input_cols]
+        if 'null_count' == st:
+            data['null_count'] = [brtc_stats.num_null(_table[x]) for x in input_cols]
+        if 'mode' == st:
+            data['mode'] = [brtc_stats.mode(_table[x]) for x in input_cols]
+        if 'median' == st:
+            data['median'] = [brtc_stats.median(_table[x]) for x in input_cols]
+        if 'q1' == st:
+            data['q1'] = [brtc_stats.q1(_table[x]) for x in input_cols]
+        if 'q3' == st:
+            data['q3'] = [brtc_stats.q3(_table[x]) for x in input_cols]
+        if 'iqr' == st:
+            data['iqr'] = [brtc_stats.iqr(_table[x]) for x in input_cols]
+        if 'percentile' == st and percentile_amounts is not None:
+            for pa in _unique_list(percentile_amounts):
+                pa_colname = 'percentile_{}'.format(_amounts_colname(pa))
+                data[pa_colname] = [brtc_stats.percentile(_table[x], pa) for x in input_cols]
+        if 'trimmed_mean' == st and trimmed_mean_amounts is not None:
+            for ta in _unique_list(trimmed_mean_amounts):
+                ta_colname = 'trimmed_mean_{}'.format(_amounts_colname(ta))
+                data[ta_colname] = [brtc_stats.trimmed_mean(_table[x], ta) for x in input_cols]
+            
+    result = pd.DataFrame(data)
+    
     return {'out_table' : result}
 
 
@@ -107,7 +182,7 @@ def _statistic_derivation(table, input_cols, statistics, percentile_amounts=[], 
     
     _table = table.copy()
     
-    _table_stat = _statistic_summary(_table, input_cols, statistics, percentile_amounts, trimmed_mean_amounts)['out_table']
+    _table_stat = _statistic_summary2(_table, input_cols, statistics, percentile_amounts, trimmed_mean_amounts)['out_table']
     
     _statistics = _table_stat.columns.tolist()
     _statistics.remove('column_name')

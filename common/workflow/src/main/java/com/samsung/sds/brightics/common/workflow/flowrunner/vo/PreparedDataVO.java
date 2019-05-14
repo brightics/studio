@@ -1,15 +1,15 @@
-package com.samsung.sds.brightics.common.workflow.flowrunner.data;
+package com.samsung.sds.brightics.common.workflow.flowrunner.vo;
 
 import java.util.Map;
 
 import lombok.Data;
 
 @Data
-public class PreparedData {
+public class PreparedDataVO {
 
 	private String mid;
 	private String fid;
-	private String tid; //optional
+	private String tid;
 	private Map<String, Object> data;
 
 }

@@ -15,7 +15,6 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.samsung.sds.brightics.common.core.util.JsonUtil;
-import com.samsung.sds.brightics.common.workflow.flowrunner.data.PreparedData;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -45,7 +44,7 @@ public class JobParam {
 
 	private boolean converted = false;
 
-	private List<PreparedData> datas = new ArrayList<>();
+	private List<PreparedDataVO> datas = new ArrayList<>();
 
 	public void overrideVariables(JsonObject variables) {
 		if (variables == null || variables.size() < 1) {
@@ -98,4 +97,6 @@ public class JobParam {
 		m.appendTail(sb);
 		return sb.toString();
 	}
+	
+	
 }

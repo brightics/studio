@@ -1,3 +1,19 @@
+"""
+    Copyright 2019 Samsung SDS
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+        http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
+
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -117,13 +133,13 @@ def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True,
     model['f_static'] = lr_model_fit.fvalue
     model['tvalues'] = lr_model_fit.tvalues
     model['pvalues'] = lr_model_fit.pvalues
-    model['lr_model'] = lr_model_fit
     model['_repr_brtc_'] = rb.get()
 
     model['summary0'] = summary0
     model['summary1'] = summary1
     model['summary2'] = summary2
-
+    lr_model_fit.remove_data()
+    model['lr_model'] = lr_model_fit
     return {'model' : model}
 
 
