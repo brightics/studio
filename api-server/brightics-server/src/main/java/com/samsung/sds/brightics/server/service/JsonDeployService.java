@@ -20,8 +20,8 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
 import com.samsung.sds.brightics.common.core.util.JsonUtil;
-import com.samsung.sds.brightics.common.workflow.flowrunner.data.PreparedData;
 import com.samsung.sds.brightics.common.workflow.flowrunner.vo.JobParam;
+import com.samsung.sds.brightics.common.workflow.flowrunner.vo.PreparedDataVO;
 import com.samsung.sds.brightics.server.common.util.AuthenticationUtil;
 import com.samsung.sds.brightics.server.common.util.ResultMapUtil;
 import com.samsung.sds.brightics.server.service.repository.JobRepository;
@@ -86,7 +86,7 @@ public class JsonDeployService {
 	}
     
 	public Map<String, Object> executeJsonDeployModel(String name, String user, String jid,
-			Map<String, Object> globalVariable, List<PreparedData> preparedDatas) { 
+			Map<String, Object> globalVariable, List<PreparedDataVO> preparedDatas) { 
         String path = JSON_FLOW_PATH + File.separator + name + ".json";
 		JobParam jobParam = getJobParamFromJsonFile(path);
         complementJobParam(user, jid, globalVariable, preparedDatas, jobParam);
@@ -95,7 +95,7 @@ public class JsonDeployService {
     }
 
 	private void complementJobParam(String user, String jid, Map<String, Object> globalVariable,
-			List<PreparedData> preparedDatas, JobParam jobParam) {
+			List<PreparedDataVO> preparedDatas, JobParam jobParam) {
 		if (StringUtils.isNotEmpty(jid)) {
             jobParam.setJid(jid);
         } else {
