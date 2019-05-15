@@ -11,7 +11,6 @@ PIDFILE=brightics-lightweight.pid
 export appdir
 export BRIGHTICS_SERVER_HOME=$appdir
 export FORCED_UNPERSIST=true
-export MODEL_FILE_PATH=./model
 export MODEL_CONCURRENT_COUNT=8
 
 export GC_OPTS="-XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+HeapDumpOnOutOfMemoryError"
