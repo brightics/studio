@@ -37,3 +37,11 @@ def create_table(col_names, data_array, type_array):
     out_table = pd.DataFrame(new_data_array, columns=col_names)
     
     return {'out_table': out_table}
+
+def set_data(data_set) :
+    result_data_set = {}
+    for table_id in data_set:
+        data_info = data_set[table_id]
+        create_table_result = create_table(data_info['col_names'], data_info['data_array'], data_info['type_array'])
+        result_data_set[table_id] = create_table_result['out_table']
+    return result_data_set
