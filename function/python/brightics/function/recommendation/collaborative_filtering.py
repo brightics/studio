@@ -58,7 +58,7 @@ def _predict(ratings, similar_coeff, target, k, weighted, normalize, user_avg, t
     else:
         modi_best = best
     if len(modi_best) < k:
-        return None
+        return np.nan
     top = modi_best[0:k]
     if weighted:
         multiple = 0
