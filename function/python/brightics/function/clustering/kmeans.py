@@ -15,16 +15,14 @@
 """
 
 from sklearn.cluster import KMeans as SKKMeans
-from brightics.common.repr import BrtcReprBuilder, strip_margin, dict2MD, plt2MD
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 import numpy as np
 import matplotlib.cm as cm
-from sklearn.metrics.cluster.unsupervised import silhouette_score, \
-    silhouette_samples
+from sklearn.metrics.cluster.unsupervised import silhouette_score, silhouette_samples
+from brightics.common.repr import BrtcReprBuilder, strip_margin, dict2MD, plt2MD
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
-from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate
@@ -73,11 +71,21 @@ def _kmeans_pca_plot(labels, cluster_centers, pca2_model, pca2):
     n_clusters = len(cluster_centers)
     colors = cm.nipy_spectral(np.arange(n_clusters).astype(float) / n_clusters)
 
-    for i, color in zip(range(n_clusters), colors):
-        plt.scatter(pca2[:, 0][labels == i], pca2[:, 1][labels == i], color=color)
-
     pca2_centers = pca2_model.transform(cluster_centers)
-    plt.scatter(pca2_centers[:, 0], pca2_centers[:, 1], marker='x', edgecolors=1, s=200, color=colors)
+    
+    if pca2.shape[1] == 1:
+        for i, color in zip(range(n_clusters), colors):
+            plt.scatter(pca2[:, 0][labels == i], pca2[:, 0][labels == i], color=color)
+        plt.scatter(pca2_centers[:, 0], pca2_centers[:, 0], marker='x', edgecolors=1, s=200, color=colors)
+        plt.xlabel("Feature space for the 1st feature")
+        plt.ylabel("Feature space for the 1st feature")
+    else:
+        for i, color in zip(range(n_clusters), colors):
+            plt.scatter(pca2[:, 0][labels == i], pca2[:, 1][labels == i], color=color)
+        plt.scatter(pca2_centers[:, 0], pca2_centers[:, 1], marker='x', edgecolors=1, s=200, color=colors)
+        plt.xlabel("Feature space for the 1st feature")
+        plt.ylabel("Feature space for the 2nd feature")
+            
     plt.tight_layout()
     fig_pca = plt2MD(plt)
     plt.clf()
@@ -117,12 +125,12 @@ def _kmeans_train_predict(table, input_cols, n_clusters=3, prediction_col='predi
     k_means.fit(inputarr)
     
     params = {'input_cols':input_cols, 'n_clusters':n_clusters, 'init':init, 'n_init':n_init, 'max_iter':max_iter, 'tol':tol,
-              'precompute_distances':precompute_distances, 'seed':seed, 'n_jobs':n_jobs, 'algorithm':algorithm}
+              'precompute_distances':precompute_distances, 'seed':seed, 'n_jobs':n_jobs, 'algorithm':algorithm, 'n_samples':n_samples}
     
     cluster_centers = k_means.cluster_centers_
     labels = k_means.labels_
     
-    pca2_model = PCA(n_components=2).fit(inputarr)
+    pca2_model = PCA(n_components=min(2, len(input_cols))).fit(inputarr)
     pca2 = pca2_model.transform(inputarr)
     
     fig_centers = _kmeans_centers_plot(input_cols, cluster_centers)
@@ -206,7 +214,7 @@ def _kmeans_silhouette_train_predict(table, input_cols, n_clusters_list=range(2,
         n_samples = len(table)
     inputarr = table[input_cols]
     
-    pca2_model = PCA(n_components=2).fit(inputarr)
+    pca2_model = PCA(n_components=min(2, len(input_cols))).fit(inputarr)
     pca2 = pca2_model.transform(inputarr)
     
     silhouette_list = []
@@ -227,7 +235,7 @@ def _kmeans_silhouette_train_predict(table, input_cols, n_clusters_list=range(2,
         score = silhouette_score(inputarr, predict)
         silhouette_list.append(score)
         samples = silhouette_samples(inputarr, predict)
-        silhouette_samples_list.append(samples)
+        # silhouette_samples_list.append(samples)
     
         pca2_centers = pca2_model.transform(centersk)
 
@@ -245,14 +253,33 @@ def _kmeans_silhouette_train_predict(table, input_cols, n_clusters_list=range(2,
             ax1.fill_betweenx(np.arange(y_lower, y_upper),
                               0, si,
                               facecolor=color, edgecolor=color, alpha=0.7)
+            
+            # cluster label
+            ax1.text(0.9, y_lower + 0.45 * sizei, str(i))
 
             y_lower = y_upper
-
-            ax2.scatter(pca2[:, 0][predict == i], pca2[:, 1][predict == i], color=color)
+            
+            if pca2.shape[1] == 1:
+                ax2.scatter(pca2[:, 0][predict == i], pca2[:, 0][predict == i], color=color)
+            else:
+                ax2.scatter(pca2[:, 0][predict == i], pca2[:, 1][predict == i], color=color)
 
         ax1.axvline(x=score, color="red")
-        ax2.scatter(pca2_centers[:, 0], pca2_centers[:, 1], marker='x', edgecolors=1, s=200, color=colors)
-
+        ax1.set_xlim(right=1.0)
+        ax1.set_yticks([])
+        ax1.set_xlabel("Silhouette coefficient values")
+        ax1.set_ylabel("Cluster label")
+        
+        if pca2.shape[1] == 1:
+            ax2.scatter(pca2_centers[:, 0], pca2_centers[:, 0], marker='x', edgecolors=1, s=200, color=colors)
+            ax2.set_xlabel("Feature space for the 1st feature")
+            ax2.set_ylabel("Feature space for the 1st feature")
+        else:
+            ax2.scatter(pca2_centers[:, 0], pca2_centers[:, 1], marker='x', edgecolors=1, s=200, color=colors)
+            ax2.set_xlabel("Feature space for the 1st feature")
+            ax2.set_ylabel("Feature space for the 2nd feature")   
+        
+        plt.tight_layout()
         imagek = plt2MD(plt)
         plt.clf()
         images.append(imagek)
@@ -271,6 +298,8 @@ def _kmeans_silhouette_train_predict(table, input_cols, n_clusters_list=range(2,
     x_clusters = range(len(n_clusters_list))
     plt.xticks(x_clusters, n_clusters_list)
     plt.plot(x_clusters, silhouette_list, '.-')
+    plt.xlabel("Number of Clusters k")
+    plt.tight_layout()
     fig_silhouette = plt2MD(plt)
     plt.clf()
     
@@ -304,5 +333,8 @@ def _kmeans_silhouette_train_predict(table, input_cols, n_clusters_list=range(2,
     
     out_table = table.copy()
     out_table[prediction_col] = predict
-    
+    # out_table['silhouette'] = silhouette_samples_list[best_k-2]
+    # out_table = out_table.sort_values(by=['prediction','silhouette'])  
+    # out_table = out_table.reset_index(drop=True)
+        
     return {'out_table': out_table, 'model': model}
