@@ -31,6 +31,7 @@ from brightics.common.utils import check_required_parameters
 from brightics.common.validation import validate
 from brightics.common.validation import greater_than_or_equal_to
 from brightics.common.utils import get_default_from_parameters_if_required
+from multiprocessing import Pool
 
 #--------------------------------------------------------------------------------------------------------
 """
@@ -77,9 +78,9 @@ class MatrixFactorizationBase():
         return score
     
     def recommend(self, userid, user_items,
-                  N=10, filter_already_liked_items=True, filter_items=None, recalculate_user=False):
+                  N=10, filter_already_liked_items=True, filter_items=None):
         user = self.user_factors[userid]
-
+    
 
         # calculate the top N items, removing the users own liked items from the results
         if filter_already_liked_items is True:
@@ -170,9 +171,9 @@ class AlternatingLeastSquares(MatrixFactorizationBase):
 
         # Initialize the variables randomly if they haven't already been set
         if self.user_factors is None:
-            np.random.seed(self.seed) ; self.user_factors =  np.random.rand(users, self.factors) 
+            np.random.seed(self.seed) ; self.user_factors =  np.random.rand(users, self.factors)
         if self.item_factors is None:
-            np.random.seed(self.seed) ; self.item_factors = np.random.rand(items, self.factors) 
+            np.random.seed(self.seed) ; self.item_factors = np.random.rand(items, self.factors)
         else:
             Rui_array = None
             Riu_array = None
@@ -212,6 +213,20 @@ def least_squares(implicit, alpha, Rui, X, Y, regularization):
 
 #------------------------------------------------------------------------------------------------
 
+def apply_list(args):
+    df, func, kwargs = args
+    kwargs['users']=df
+    return func(**kwargs)
+
+
+
+def apply_by_multiprocessing_list_to_list(df, func, **kwargs):
+    workers = kwargs.pop('workers')
+    pool = Pool(processes=workers)
+    result = pool.map(apply_list, [(d, func, kwargs) for d in np.array_split(df, workers)])
+    pool.close()
+    return result
+
 def als_train(table, group_by=None, **params):
     check_required_parameters(_als_train, params, ['table'])
     params = get_default_from_parameters_if_required(params,_als_train)
@@ -229,28 +244,18 @@ def als_train(table, group_by=None, **params):
         return _als_train(table, **params)
 
 
-def _als_train(table, user_col, item_col, rating_col, mode = 'train', number=10, implicit = False, iterations = 10, reg_param = 0.1, rank = 10, alpha = 1.0, seed = None, targets = None):
-
+def _als_train(table, user_col, item_col, rating_col, mode = 'train', number=10, filter = True, implicit = False, iterations = 10, reg_param = 0.1, rank = 10, alpha = 1.0, seed = None, targets = None, workers = 1):
     table_user_col = table[user_col]
     table_item_col = table[item_col]
     rating_col = table[rating_col]
+    rating_col = np.where(rating_col == 0, -1, rating_col)
     user_encoder = preprocessing.LabelEncoder()
     item_encoder = preprocessing.LabelEncoder()
     user_encoder.fit(table_user_col)
     item_encoder.fit(table_item_col)
     user_correspond = user_encoder.transform(table_user_col)
-    item_correspond = item_encoder.transform(table_item_col)
-    item_users = np.zeros((len(item_encoder.classes_),len(user_encoder.classes_)))
-    for i in range(len(table_user_col)):
-        if implicit:
-            item_users[item_correspond[i]][user_correspond[i]] = rating_col[i]
-        else:
-            if rating_col[i] == 0:
-                item_users[item_correspond[i]][user_correspond[i]] = -1
-            else:
-                item_users[item_correspond[i]][user_correspond[i]] = rating_col[i]
-        
-    item_users = csr_matrix(item_users)
+    item_correspond = item_encoder.transform(table_item_col)       
+    item_users = csr_matrix((rating_col,(item_correspond,user_correspond)))
     als_model = AlternatingLeastSquares(factors = rank,implicit = implicit,iterations = iterations, regularization = reg_param, alpha = alpha, seed = seed)
     als_model.fit(item_users)
     tmp_col = list(als_model.user_factors)
@@ -266,15 +271,23 @@ def _als_train(table, user_col, item_col, rating_col, mode = 'train', number=10,
     if mode == 'Topn':
         if targets is None:
             targets = user_encoder.classes_
+        if table_user_col.dtype in (np.floating,float,np.int,int,np.int64):
+            targets = [float(i) for i in targets]
         targets_en = user_encoder.transform(targets)
         user_items = item_users.T.tocsr()
         Topn_result = []
-        for user in targets_en:
-            recommendations_corre = als_model.recommend(user, user_items, number)
-            recommendations = []
-            for (item,rating) in recommendations_corre:
-                recommendations += [item_encoder.inverse_transform([item])[0],rating]
-            Topn_result += [recommendations]
+        if workers == 1:
+            for user in targets_en:
+                recommendations_corre = als_model.recommend(user, user_items, number, filter_already_liked_items= filter)
+                recommendations = []
+                for (item,rating) in recommendations_corre:
+                    recommendations += [item_encoder.inverse_transform([item])[0],rating]
+                Topn_result += [recommendations]
+        else:
+            Topn_result_tmp = apply_by_multiprocessing_list_to_list(targets_en, _recommend_multi, user_items = user_items, number = number, item_encoder = item_encoder, als_model = als_model, workers = workers, filter = filter)
+            Topn_result=[]
+            for i in range(workers):
+                Topn_result += Topn_result_tmp[i]
         Topn_result = pd.DataFrame(Topn_result)
         Topn_result = pd.concat([pd.DataFrame(targets), Topn_result], axis=1, ignore_index=True)
         column_names=['user']
@@ -301,7 +314,7 @@ def _als_train(table, user_col, item_col, rating_col, mode = 'train', number=10,
     | ### User Factors
     | {user_factors}
     |
-    """.format(item_factors=pandasDF2MD(item_factors, num_rows = item_users.shape[0]), user_factors=pandasDF2MD(user_factors, num_rows = item_users.shape[1]), parameters=dict2MD(parameters))))
+    """.format(item_factors=pandasDF2MD(item_factors, num_rows = 100), user_factors=pandasDF2MD(user_factors, num_rows = 100), parameters=dict2MD(parameters))))
 
     model = _model_dict('ALS')
     model['als_model'] = als_model
@@ -313,6 +326,16 @@ def _als_train(table, user_col, item_col, rating_col, mode = 'train', number=10,
     model['item_factors'] = item_factors
     model['_repr_brtc_'] = rb.get()
     return{'model' : model}
+    
+def _recommend_multi(users, user_items, number, item_encoder, als_model, filter):
+    Topn_result = []
+    for user in users:
+        recommendations_corre = als_model.recommend(user, user_items, number, filter_already_liked_items= filter)
+        recommendations = []
+        for (item,rating) in recommendations_corre:
+            recommendations += [item_encoder.inverse_transform([item])[0],rating]
+        Topn_result.append(recommendations)
+    return Topn_result
 
 def als_recommend(table, group_by=None, **params):
     check_required_parameters(_als_recommend, params, ['table'])
@@ -331,8 +354,8 @@ def als_recommend(table, group_by=None, **params):
         return _als_recommend(table, **params)
 
 
-def _als_recommend(table, user_col, item_col, rating_col, mode = 'Topn', number=10, implicit = False, iterations = 10, reg_param = 0.1, rank = 10, alpha = 1.0, seed = None, targets = None):
-    return _als_train(table, user_col, item_col, rating_col, mode, number, implicit, iterations, reg_param, rank, alpha, seed, targets)
+def _als_recommend(table, user_col, item_col, rating_col, mode = 'Topn', number=10, filter=True, implicit = False, iterations = 10, reg_param = 0.1, rank = 10, alpha = 1.0, seed = None, targets = None, workers = 1):
+    return _als_train(table, user_col, item_col, rating_col, mode, number, filter, implicit, iterations, reg_param, rank, alpha, seed, targets, workers)
 
 def als_predict(table, model, **params):
     check_required_parameters(_als_predict, params, ['table', 'model'])
@@ -347,12 +370,17 @@ def _als_predict(table, model, prediction_col = 'prediction'):
     user_encoder = model['user_encoder']
     user_col = model['user_col']
     item_col = model['item_col']
-    encoded_user_col = user_encoder.transform(table[user_col])
-    encoded_item_col = item_encoder.transform(table[item_col])
-    result = []
-    for i in range(len(table[user_col])):
+    tmp_user = np.array(table[user_col])
+    tmp_item = np.array(table[item_col])
+    valid_indices = [i for i in range(len(tmp_user)) if tmp_user[i] in user_encoder.classes_ and tmp_item[i] in item_encoder.classes_]
+    valid_user = [tmp_user[i] for i in valid_indices]
+    valid_item = [tmp_item[i] for i in valid_indices]
+    encoded_user_col = user_encoder.transform(valid_user)
+    encoded_item_col = item_encoder.transform(valid_item)
+    result = [None]*len(tmp_user)
+    for i in range(len(valid_indices)):
         predict = als_model.predict(encoded_user_col[i], encoded_item_col[i])
-        result += [[table[user_col][i],table[item_col][i],predict]]
-    result = pd.DataFrame(result)
-    result.columns = [user_col, item_col, prediction_col]
+        result[valid_indices[i]] = predict
+    result = pd.DataFrame(result,columns=[prediction_col])
+    result = pd.concat([table[user_col],table[item_col],result],axis=1)
     return {'out_table' : result}
