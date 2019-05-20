@@ -26,7 +26,8 @@ import brightics.common.statistics as brtc_stat
 
 def unpivot(table, value_vars, var_name=None, value_name='value', col_level=None, id_vars=None):
     # if delete this, it is not consistent with the previous version.
-    # id_vars = [column for column in table.columns if column not in value_vars] 
+    if id_vars is None:
+        id_vars = [column for column in table.columns if column not in value_vars] 
     out_table = pd.melt(table, id_vars=id_vars, value_vars=value_vars, var_name=var_name, value_name=value_name, col_level=col_level)
     return {'out_table': out_table}
 
