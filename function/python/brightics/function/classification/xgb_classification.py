@@ -148,7 +148,7 @@ def _xgb_classification_predict(table, model, prediction_col='prediction', proba
             thresholds = np.array(thresholds)
     
     prob = classifier.predict_proba(table[feature_cols], ntree_limit)
-    prediction = pd.DataFrame(prob).apply(lambda x: classes[np.argmax(x / thresholds)], axis=1)
+    prediction = [classes[np.argmax(x / thresholds)] for x in prob]
     
     if suffix == 'index':
         suffixes = [i for i, _ in enumerate(classes)]
