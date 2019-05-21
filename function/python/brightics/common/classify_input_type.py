@@ -36,6 +36,6 @@ def check_list(table):
 
 def check_all_numbers(table):
     for i in table.dtypes:
-        if(i!=float and i!= int):
+        if(i!=np.dtype(float) and i!= np.dtype(int)):
             return False
     return True        
