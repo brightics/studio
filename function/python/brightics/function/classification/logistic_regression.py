@@ -142,7 +142,7 @@ def _logistic_regression_predict(table, model, prediction_col='prediction', prob
         raise_error('0613', ['thresholds'])
     
     prob = lr_model.predict_proba(features)
-    prediction = pd.DataFrame(prob).apply(lambda x: classes[np.argmax(x / thresholds)], axis=1)
+    prediction = [classes[np.argmax(x / thresholds)] for x in prob]
         
     out_table = table.copy()
     out_table[prediction_col] = prediction
