@@ -27,6 +27,7 @@ import numpy as np
 from operator import itemgetter
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
 
 
 def tfidf(table, group_by=None, **params):
@@ -49,10 +50,10 @@ def _tfidf(table, input_col, max_df=None, min_df=1, num_voca=1000, idf_weighting
     tf_vectorizer = CountVectorizer(stop_words='english', max_df=max_df, min_df=min_df, max_features=num_voca)
     tf_vectorizer.fit(corpus)
     csr_matrix_tf = tf_vectorizer.transform(corpus)
-    tfidf_vectorizer = TfidfVectorizer(stop_words='english', max_df=max_df, min_df=min_df, max_features=num_voca, norm=norm, use_idf=True, smooth_idf=smooth_idf, sublinear_tf=sublinear_tf)   
-    csr_matrix_tfidf = tfidf_vectorizer.fit_transform(corpus)
-    
-    voca_dict = list(tf_vectorizer.vocabulary_.items())
+    tfidf_vectorizer = TfidfTransformer(norm=norm, use_idf=True, smooth_idf=smooth_idf, sublinear_tf=sublinear_tf)
+    csr_matrix_tfidf = tfidf_vectorizer.fit_transform(csr_matrix_tf)
+
+    voca_dict = sorted(tf_vectorizer.vocabulary_.items(), key=itemgetter(1))
     len_voca = len(voca_dict)
     
     # tf-idf table
@@ -67,8 +68,8 @@ def _tfidf(table, input_col, max_df=None, min_df=1, num_voca=1000, idf_weighting
         for doc in range(len(corpus)):
             docID_list += ['doc_{}'.format(doc + 1) for _ in range(len_voca)]
             document_list += [str(corpus[doc]) for _ in range(len_voca)]
-            vocabulary_list += [sorted(voca_dict, key=itemgetter(1))[j][0] for j in range(len_voca)]
-            index_list += [sorted(voca_dict, key=itemgetter(1))[j][1] for j in range(len_voca)]
+            vocabulary_list += [voca_dict[j][0] for j in range(len_voca)]
+            index_list += [voca_dict[j][1] for j in range(len_voca)]
         label_table['document_id'] = docID_list
         label_table[input_col] = document_list
         label_table['vocabulary'] = vocabulary_list
@@ -86,22 +87,25 @@ def _tfidf(table, input_col, max_df=None, min_df=1, num_voca=1000, idf_weighting
             document_list += [str(corpus[doc]) for _ in range(csr_matrix_tfidf.indptr[doc + 1] - csr_matrix_tfidf.indptr[doc])]
         tfidf_table['document_id'] = docID_list
         tfidf_table[input_col] = document_list
-        tfidf_table['vocabulary'] = [sorted(voca_dict, key=itemgetter(1))[i][0] for i in csr_matrix_tf.indices]
+        tfidf_table['vocabulary'] = [voca_dict[i][0] for i in csr_matrix_tf.indices]
         tfidf_table['index'] = csr_matrix_tf.indices
         tfidf_table['frequency'] = csr_matrix_tf.data
+        data_list = []
+        for doc in range(len(corpus)):
+            data_list += [csr_matrix_tfidf.data[i]  for i in range(csr_matrix_tfidf.indptr[doc + 1] - csr_matrix_tfidf.indptr[doc])][::-1]
         if idf_weighting_scheme == 'inverseDocumentFrequency':
-            tfidf_table['tfidf score'] = [x for x in np.ravel(csr_matrix_tfidf.todense()) if x != 0]
+            tfidf_table['tfidf score'] = data_list
         elif idf_weighting_scheme == 'unary':
             tfidf_table['tfidf score'] = list(map(float, np.array(tfidf_table['frequency'])))
 
     else:
         raise_runtime_error("Please check 'output_type'.")
-    
-    # idf table
+        
+        # idf table
     
     idf_table = pd.DataFrame()
     idf_table['vocabulary'] = [voca_dict[j][0] for j in range(len(voca_dict))]
-    idf_table['index'] = tf_vectorizer.vocabulary_.values()
+    idf_table['index'] = [voca_dict[j][1] for j in range(len(voca_dict))]
     if idf_weighting_scheme == 'inverseDocumentFrequency':
         idf_table['idf weight'] = tfidf_vectorizer.idf_.tolist()
     elif idf_weighting_scheme == 'unary':
