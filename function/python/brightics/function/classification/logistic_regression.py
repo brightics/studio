@@ -116,7 +116,7 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
         summary = pd.concat((summary, pd.DataFrame(std_err.T,columns=columns)), axis=1)
         arrange_col = ['features']
         for i in range(len(classes)):
-            arrange_col.append(str(classes[i]))
+            arrange_col.append(classes[i])
             arrange_col.append('standard_error_{}'.format(classes[i]))
         summary = summary[arrange_col]
     if is_binary:
