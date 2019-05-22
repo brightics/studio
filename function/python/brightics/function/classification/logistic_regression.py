@@ -16,6 +16,7 @@
 
 import numpy as np
 import pandas as pd
+from scipy.stats import chi2
 from sklearn.linear_model import LogisticRegression
 from brightics.common.repr import BrtcReprBuilder
 from brightics.common.repr import strip_margin
@@ -62,40 +63,116 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
     lr_model = LogisticRegression(penalty, dual, tol, C, fit_intercept, intercept_scaling, class_weight, random_state,
                                   solver, max_iter, multi_class, verbose, warm_start, n_jobs)
     lr_model.fit(features, label)
-
+    new_features = pd.DataFrame({"Constant":np.ones(len(features))}).join(pd.DataFrame(features))
     intercept = lr_model.intercept_
     coefficients = lr_model.coef_
     classes = lr_model.classes_
     is_binary = len(classes) == 2
+    prob = lr_model.predict_proba(features)
+    prob_trans = prob.T
+    classes_dict = dict()
+    for i in range(len(classes)):
+        classes_dict[classes[i]] = i
+    tmp_label = np.array([classes_dict[i] for i in label])
+    likelihood = 1
+    for i in range(len(table)):
+        likelihood*=prob_trans[tmp_label[i]][i]
+    if fit_intercept:
+        k = len(feature_cols)+1
+    else:
+        k = len(feature_cols)
+    aic = 2*k-2*np.log(likelihood)
+    bic = np.log(len(table))*k-2*np.log(likelihood)
+    if is_binary:
+        if fit_intercept:
+            x_design = np.hstack([np.ones((features.shape[0], 1)), features])
+        else:
+            x_design = features.values
+        v = np.product(prob, axis=1)
+        x_design_modi = np.array([x_design[i]*v[i] for i in range(len(x_design))])
+        cov_logit = np.linalg.inv(np.dot(x_design_modi.T, x_design))
+        std_err = np.sqrt(np.diag(cov_logit))
+        if fit_intercept:
+            logit_params = np.insert(coefficients, 0, intercept)
+        else:
+            logit_params = coefficients
+        wald = (logit_params / std_err) ** 2
+        p_values = 1-chi2.cdf(wald, 1)
+    else:
+        if fit_intercept:
+            x_design = np.hstack([np.ones((features.shape[0], 1)), features])
+        else:
+            x_design = features.values
+        std_err = []
+        for i in range(len(classes)):
+            v = prob.T[i]*(1 - prob.T[i])
+            x_design_modi = np.array([x_design[i]*v[i] for i in range(len(x_design))])
+            cov_logit = np.linalg.inv(np.dot(x_design_modi.T, x_design))
+            std_err.append(np.sqrt(np.diag(cov_logit)))
+        std_err = np.array(std_err)
+
+        #print(math.log(likelihood))
+
     if (fit_intercept == True):
-        summary = pd.DataFrame({'features': ['intercept'] + feature_names})
-        print(intercept)
-        print(coefficients)
-        
+        summary = pd.DataFrame({'features': ['intercept'] + feature_names})        
         coef_trans = np.concatenate(([intercept], np.transpose(coefficients)), axis=0)
-        if not is_binary:
-            summary = pd.concat((summary, pd.DataFrame(coef_trans, columns=classes)), axis=1)
-        elif is_binary:
-            summary = pd.concat((summary, pd.DataFrame(coef_trans, columns=[classes[0]])), axis=1)
             
     else:
         summary = pd.DataFrame({'features': feature_names})
         coef_trans = np.transpose(coefficients)
         
-        if not is_binary:
+    if not is_binary:
             summary = pd.concat((summary, pd.DataFrame(coef_trans, columns=classes)), axis=1)
-        elif is_binary:
+    else:
             summary = pd.concat((summary, pd.DataFrame(coef_trans, columns=[classes[0]])), axis=1)
-        
-    rb = BrtcReprBuilder()
-    rb.addMD(strip_margin("""
-    | ## Logistic Regression Result
-    | ### Summary
-    | {table1}
-    """.format(table1=pandasDF2MD(summary)
-               )))
+    if is_binary:
+        summary = pd.concat((summary,pd.DataFrame(std_err,columns=['standard_error']),pd.DataFrame(wald,columns=['wald_statistic']),pd.DataFrame(p_values,columns=['p_value'])),axis=1)
+    else:
+        columns = ['standard_error_{}'.format(classes[i]) for i in range(len(classes))]
+        summary = pd.concat((summary, pd.DataFrame(std_err.T,columns=columns)), axis=1)
+        arrange_col = ['features']
+        for i in range(len(classes)):
+            arrange_col.append(classes[i])
+            arrange_col.append('standard_error_{}'.format(classes[i]))
+        summary = summary[arrange_col]
+    if is_binary:
+        rb = BrtcReprBuilder()
+        rb.addMD(strip_margin("""
+        | ## Logistic Regression Result
+        | ### Summary
+        | {table1}
+        |
+        | ##### Column '{small}' is the coefficients under the assumption ({small} = 0, {big} = 1).
+        |
+        | #### AIC : {aic}
+        |
+        | #### BIC : {bic}
+        """.format(small = classes[0], big = classes[1], table1=pandasDF2MD(summary),aic=aic,bic=bic
+                   )))
+    else:
+        rb = BrtcReprBuilder()
+        rb.addMD(strip_margin("""
+        | ## Logistic Regression Result
+        | ### Summary
+        | {table1}
+        |
+        | ##### Each column whose name is one of classes of Label Column is the coefficients under the assumption it is 1 and others are 0.
+        |
+        | ##### For example, column '{small}' is the coefficients under the assumption ({small} = 1, others = 0).
+        |
+        | #### AIC : {aic}
+        |
+        | #### BIC : {bic}
+        """.format(small = classes[0], table1=pandasDF2MD(summary),aic=aic,bic=bic
+                   )))
 
     model = _model_dict('logistic_regression_model')
+    model['standard_errors'] = std_err
+    model['aic'] = aic
+    model['bic'] = bic
+    if is_binary:
+        model['wald_statistics'] = wald
+        model['p_values'] = p_values
     model['features'] = feature_cols
     model['label'] = label_col
     model['intercept'] = lr_model.intercept_
@@ -106,7 +183,6 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
     model['lr_model'] = lr_model
     model['_repr_brtc_'] = rb.get()
     model['summary'] = summary
-
     return {'model' : model}
 
 
