@@ -72,8 +72,9 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
             x_design = np.hstack([np.ones((features.shape[0], 1)), features])
         else:
             x_design = features.values
-        v = np.diagflat(np.product(prob, axis=1))
-        cov_logit = np.linalg.inv(np.dot(np.dot(x_design.T, v), x_design))
+        v = np.product(prob, axis=1)
+        x_design_modi = np.array([x_design[i]*v[i] for i in range(len(x_design))])
+        cov_logit = np.linalg.inv(np.dot(x_design_modi.T, x_design))
         std_err = np.sqrt(np.diag(cov_logit))
         if fit_intercept:
             logit_params = np.insert(coefficients, 0, intercept)
@@ -88,8 +89,9 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
             x_design = features.values
         std_err = []
         for i in range(len(classes)):
-            v = np.diagflat(prob.T[i]*(1 - prob.T[i]))
-            cov_logit = np.linalg.inv(np.dot(np.dot(x_design.T, v), x_design))
+            v = prob.T[i]*(1 - prob.T[i])
+            x_design_modi = np.array([x_design[i]*v[i] for i in range(len(x_design))])
+            cov_logit = np.linalg.inv(np.dot(x_design_modi.T, x_design))
             std_err.append(np.sqrt(np.diag(cov_logit)))
         std_err = np.array(std_err)
 
