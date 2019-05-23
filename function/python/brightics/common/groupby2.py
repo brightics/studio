@@ -98,7 +98,7 @@ def _group(table, params, group_by):
     temp_group_by_table = table[group_by].values
     temp_table = table.values
     for i in range(len(temp_table)):
-        res_dict['_grouped_data']['data'][tuple(temp_group_by_table[i])].append(temp_table[i])
+        res_dict['_grouped_data']['data'][tuple(temp_group_by_table[i])].append(list(temp_table[i]))
     return res_dict, groups
 
 def _flatten(grouped_table, groups, group_by, columns):
