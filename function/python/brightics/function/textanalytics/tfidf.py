@@ -43,7 +43,7 @@ def tfidf(table, group_by=None, **params):
 
 
 def _tfidf(table, input_col, max_df=None, min_df=1, num_voca=1000, idf_weighting_scheme='inverseDocumentFrequency', norm='l2', smooth_idf=True, sublinear_tf=False, output_type=False):
-    corpus = table[input_col]
+    corpus = np.array(table[input_col])
     if max_df == None:
         max_df = len(corpus)
     tf_vectorizer = CountVectorizer(stop_words='english', max_df=max_df, min_df=min_df, max_features=num_voca)
