@@ -111,7 +111,7 @@ def _flatten(grouped_table, groups, group_by, columns):
                 result2.append(key)
     result2 = pd.DataFrame(result2, columns = group_by)
     if '\u0002' in result2.values:
-        result2 = result2.replace('\u0002',np.float64(None))
+        result2 = result2.replace('\u0002',np.nan)
     result2 = result2.drop(common_columns, axis=1)
     return pd.concat([result2,result1],axis=1)
 
