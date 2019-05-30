@@ -17,6 +17,8 @@
 import sqlalchemy
 from sqlalchemy.pool import NullPool
 
+import os
+os.environ['NLS_LANG'] = '.UTF8'
 
 class DbEngine:
     dialect_dict = {
