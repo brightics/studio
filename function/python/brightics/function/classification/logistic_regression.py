@@ -147,7 +147,7 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
         | #### AIC : {aic}
         |
         | #### BIC : {bic}
-        """.format(small = classes[0], big = classes[1], table1=pandasDF2MD(summary),aic=aic,bic=bic
+        """.format(small = classes[0], big = classes[1], table1=pandasDF2MD(summary, num_rows=100),aic=aic,bic=bic
                    )))
     else:
         rb = BrtcReprBuilder()
@@ -163,7 +163,7 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
         | #### AIC : {aic}
         |
         | #### BIC : {bic}
-        """.format(small = classes[0], table1=pandasDF2MD(summary),aic=aic,bic=bic
+        """.format(small = classes[0], table1=pandasDF2MD(summary, num_rows=100),aic=aic,bic=bic
                    )))
 
     model = _model_dict('logistic_regression_model')
