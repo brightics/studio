@@ -21,6 +21,7 @@ from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import raise_runtime_error
 from brightics.common.validation import validate, greater_than_or_equal_to, less_than_or_equal_to, greater_than, from_to
+from brightics.common.classify_input_type import check_col_type
 
 import pandas as pd
 import numpy as np
@@ -50,7 +51,7 @@ def penalized_linear_regression_train(table, group_by=None, **params):
     
 def _penalized_linear_regression_train(table, feature_cols, label_col, regression_type='ridge', alpha=1.0, l1_ratio=0.5, fit_intercept=True, max_iter=1000, tol=0.0001, random_state=None):
     out_table = table.copy()
-    features = out_table[feature_cols]
+    feature_names, features = check_col_type(out_table, feature_cols)
     label = out_table[label_col]
     if regression_type == 'ridge':
         regression_model = Ridge(alpha=alpha, fit_intercept=fit_intercept, max_iter=None, tol=tol, solver='auto', random_state=random_state)
@@ -64,7 +65,7 @@ def _penalized_linear_regression_train(table, feature_cols, label_col, regressio
     regression_model.fit(features, label)
     
     out_table1 = pd.DataFrame([])
-    out_table1['x_variable_name'] = [variable for variable in feature_cols]
+    out_table1['x_variable_name'] = [variable for variable in feature_names]
     out_table1['coefficient'] = regression_model.fit(features, label).coef_
     intercept = pd.DataFrame([['intercept', regression_model.fit(features, label).intercept_]], columns=['x_variable_name', 'coefficient'])
     if fit_intercept == True:
@@ -79,7 +80,7 @@ def _penalized_linear_regression_train(table, feature_cols, label_col, regressio
     if regression_type == 'elastic_net':
         params = {
         
-        'Feature Columns' : feature_cols,
+        'Feature Columns' : feature_names,
         'Label Column' : label_col,
         'Regression Type': regression_type,
         'Regularization (Penalty Weight)' : alpha,
@@ -92,7 +93,7 @@ def _penalized_linear_regression_train(table, feature_cols, label_col, regressio
     else:
         params = {
         
-        'Feature Columns' : feature_cols,
+        'Feature Columns' : feature_names,
         'Label Column' : label_col,
         'Regression Type': regression_type,
         'Regularization (Penalty Weight)' : alpha,
@@ -141,7 +142,7 @@ def _penalized_linear_regression_train(table, feature_cols, label_col, regressio
     # checking the magnitude of coefficients
     
     plt.figure()
-    predictors = features.columns
+    predictors = feature_names
     coef = Series(regression_model.coef_, predictors).sort_values()
     coef.plot(kind='bar', title='Model Coefficients')
     plt.tight_layout()
@@ -209,8 +210,9 @@ def penalized_linear_regression_predict(table, model, **params):
 def _penalized_linear_regression_predict(table, model, prediction_col='prediction'):
     result = table.copy()
     feature_cols = model['feature_cols']
+    feature_names, features = check_col_type(result, feature_cols)
     regression_model = model['regression_model']
-    prediction = regression_model.predict(result[feature_cols])
+    prediction = regression_model.predict(features)
     
     result[prediction_col] = prediction
     
