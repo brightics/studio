@@ -29,6 +29,7 @@ from brightics.common.validation import validate
 from brightics.common.validation import greater_than_or_equal_to
 from brightics.common.validation import raise_error
 import sklearn.utils as sklearn_utils
+from brightics.common.classify_input_type import check_col_type
 
 
 def decision_tree_classification_train(table, group_by=None, **params):
@@ -60,6 +61,7 @@ def _decision_tree_classification_train(table, feature_cols, label_col,  # fig_s
                                         min_impurity_split=None, class_weight=None, presort=False, sample_weight=None,
                                         check_input=True, X_idx_sorted=None):
 
+    feature_names, features = check_col_type(table, feature_cols)
     y_train = table[label_col]
     
     if(sklearn_utils.multiclass.type_of_target(y_train) == 'continuous'):
@@ -68,7 +70,7 @@ def _decision_tree_classification_train(table, feature_cols, label_col,  # fig_s
     classifier = DecisionTreeClassifier(criterion, splitter, max_depth, min_samples_split, min_samples_leaf,
                                        min_weight_fraction_leaf, max_features, random_state, max_leaf_nodes,
                                        min_impurity_decrease, min_impurity_split, class_weight, presort)
-    classifier.fit(table[feature_cols], table[label_col],
+    classifier.fit(features, table[label_col],
                    sample_weight, check_input, X_idx_sorted)
 
     try:
@@ -77,7 +79,7 @@ def _decision_tree_classification_train(table, feature_cols, label_col,  # fig_s
         import pydotplus
         dot_data = StringIO()
         export_graphviz(classifier, out_file=dot_data,
-                        feature_names=feature_cols, class_names=table[label_col].astype('str').unique(),
+                        feature_names=feature_names, class_names=table[label_col].astype('str').unique(),
                         filled=True, rounded=True,
                         special_characters=True)
         graph = pydotplus.graph_from_dot_data(dot_data.getvalue())
@@ -88,7 +90,7 @@ def _decision_tree_classification_train(table, feature_cols, label_col,  # fig_s
 
     # json
     model = _model_dict('decision_tree_classification_model')
-    model['feature_cols'] = feature_cols
+    model['feature_cols'] = feature_names
     model['label_col'] = label_col
     model['classes'] = classifier.classes_
     feature_importance = classifier.feature_importances_
@@ -104,7 +106,7 @@ def _decision_tree_classification_train(table, feature_cols, label_col,  # fig_s
 
     # report
     indices = np.argsort(feature_importance)
-    sorted_feature_cols = np.array(feature_cols)[indices]
+    sorted_feature_cols = np.array(feature_names)[indices]
 
     plt.title('Feature Importances')
     plt.barh(range(len(indices)), feature_importance[indices], color='b', align='center')
