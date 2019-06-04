@@ -1,0 +1,191 @@
+"""
+    Copyright 2019 Samsung SDS
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+        http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
+
+from gensim.test.utils import common_texts
+from gensim.models import Word2Vec
+import matplotlib.pyplot as plt
+from sklearn.manifold import TSNE
+import pandas as pd
+import numpy as np
+
+from brightics.common.repr import BrtcReprBuilder 
+from brightics.common.repr import strip_margin
+from brightics.function.utils import _model_dict
+from brightics.common.repr import dict2MD
+from brightics.common.repr import plt2MD
+from brightics.common.repr import pandasDF2MD
+from brightics.common.utils import check_required_parameters
+from brightics.common.utils import get_default_from_parameters_if_required
+from brightics.common.validation import validate
+from brightics.common.validation import greater_than_or_equal_to
+
+
+def hash_brtc(astring):
+    return ord(astring[0])
+
+
+def word2vec(table, **params):
+    check_required_parameters(_word2vec, params, ['table'])
+    
+    params = get_default_from_parameters_if_required(params, _word2vec)
+    param_validation_check = [greater_than_or_equal_to(params, 1, 'size'),
+                              greater_than_or_equal_to(params, 1, 'window'),
+                              greater_than_or_equal_to(params, 1, 'min_count'),
+                              greater_than_or_equal_to(params, 1, 'workers'),
+                              greater_than_or_equal_to(params, 1, 'topn')]
+    validate(*param_validation_check) 
+    return _word2vec(table, **params)
+
+
+def _word2vec(table, input_col, size=100, window=5, min_count=1, workers=4, sg=1, topn=30): 
+
+    texts = table[input_col].apply(list).tolist()
+    w2v = Word2Vec(texts, size=size, window=window, min_count=min_count, workers=workers, sg=sg, hashfxn=hash_brtc)
+    w2v.init_sims(replace=True)
+    
+    vocab = w2v.wv.vocab
+    
+    length = len(vocab)
+    if length < topn:
+        topn = length
+        
+    topn_words = sorted(vocab, key=vocab.get, reverse=True)[:topn]
+
+    algo = 'Skip-gram'
+    if sg == '0':
+        algo = 'CBOW'  
+    
+    params = {'Word vector dimensionality': size,
+              'Context window size': window,
+              'Minimum word count': min_count,
+              'Worker threads': workers,
+              'Training algorithm': algo}
+    
+    # tsne visualization
+    vocab = list(w2v.wv.vocab)
+    X = w2v[vocab]
+    tsne = TSNE(n_components=2)
+    X_tsne = tsne.fit_transform(X[:topn, :])
+    df = pd.DataFrame(X_tsne, index=vocab[:topn], columns=['x', 'y'])
+    
+    fig = plt.figure()
+    fig.set_size_inches(50, 40)
+    ax = fig.add_subplot(1, 1, 1)
+    
+    ax.scatter(df['x'], df['y'], s=1000)
+    
+    for word, pos in df.iterrows():
+        ax.annotate(word, pos, fontsize=80)
+    plt.show()  
+    fig = plt2MD(plt)
+    plt.clf()
+    
+    rb = BrtcReprBuilder()
+    rb.addMD(strip_margin("""
+    | ## Word2Vec Result
+    |
+    | ### Total Number of words
+    | {length}
+    |
+    | ### Top {topn} Words
+    | {topn_words}
+    | {fig}
+    |
+    | ### Parameters
+    | {params}
+    """.format(length=length, topn=topn, topn_words=topn_words, params=dict2MD(params), fig=fig)))
+    
+    model = _model_dict('word2vec_model')
+    model['params'] = params
+    model['vocab'] = vocab
+    model['w2v'] = w2v
+    model['_repr_brtc_'] = rb.get()
+    
+    out_table = pd.DataFrame()
+    out_table['words'] = w2v.wv.index2word
+    out_table['vectorized_words'] = w2v.wv[vocab].tolist()
+    
+    '''
+    result_table = pd.DataFrame.from_items([ 
+            ['words', list(vocab)],
+            ['vectorized_words', list(w2v.wv[vocab])]
+        ])
+    
+    model['result'] = result_table
+    
+    
+    rb.addMD(strip_margin("""
+        | ### Word Vectors 
+        |
+        | {result_table}
+        """.format(result_table=pandasDF2MD(result_table))))  
+    '''
+    
+    return {'model': model, 'out_table': out_table}
+
+# def word2vec_update(table, model):
+
+
+def _feature_vec(words, model, num_features):
+    feature_vector = np.zeros(num_features, dtype="float32")
+    word_set = set(model.wv.index2word)    
+    num_words = 1.
+    for word in words:
+        if word in word_set:
+            feature_vector = np.divide(np.add(feature_vector, model[word]), num_words)
+            num_words = num_words + 1.
+    return feature_vector
+
+
+def _avg_feature_vecs(docs, model, num_features):
+    doc_feature_vectors = np.zeros((len(docs), num_features), dtype="float32")
+    counter = 0.
+    for doc in docs:
+        doc_feature_vectors[int(counter)] = _feature_vec(doc, model, num_features)   
+        counter = counter + 1.
+    return doc_feature_vectors
+
+
+def word2vec_model(model, table, **params):
+    check_required_parameters(_word2vec_model, params, ['model','table'])
+    return _word2vec_model(model, table, **params)
+
+
+def _word2vec_model(model, table, input_col):
+    out_table = table.copy()
+    doc = table[input_col]
+    word_vec_model = model['w2v']
+    num_features = model['params']['Word vector dimensionality']
+    out_table['feature_vectors'] = _avg_feature_vecs(doc, word_vec_model, num_features).tolist()
+    return {'out_table': out_table}
+
+
+def word2vec_similarity(model, **params):
+    check_required_parameters(_word2vec_similarity, params, ['model'])
+    
+    params = get_default_from_parameters_if_required(params, _word2vec_similarity)
+    param_validation_check = [greater_than_or_equal_to(params, 1, 'topn')]
+    validate(*param_validation_check) 
+    return _word2vec_similarity(table, **params)
+
+def _word2vec_similarity(model, positive=None, negative=None, topn=1):
+    out_table = pd.DataFrame()
+    result = model['w2v'].wv.most_similar(positive=positive, negative=negative, topn=topn)
+    length = len(result)
+    out_table['most_similar_words'] = [result[i][0] for i in range(length)]
+    out_table['similarity'] = [result[i][1] for i in range(length)]
+    
+    return {'out_table': out_table}
