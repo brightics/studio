@@ -41,12 +41,24 @@ def write_csv(table, path):
     table.to_csv(path, index=False)
 
 
-def unload_model(model, path):
+def unload_model(path, **params):
+    outputs = params['linked']['outputs']
+    model = outputs['model']
+
+    def getModelFromInputs():
+        for k,v in params.items():
+            if k is model:
+                return v
+        return {}
+
     dir_ = os.path.dirname(path)
     if not os.path.exists(dir_):
         os.makedirs(dir_)
     with open(path, 'wb') as fp:
-        json.dump(data_json.to_json(model, for_redis=True), codecs.getwriter('utf-8')(fp), ensure_ascii=False)
+        #json.dump(data_json.to_json(params["model_0"], for_redis=True), codecs.getwriter('utf-8')(fp), ensure_ascii=False)
+        json.dump(data_json.to_json(getModelFromInputs(), for_redis=True), codecs.getwriter('utf-8')(fp), ensure_ascii=False)
+
+    return {"model":model}
 
 
 def write_to_s3(table, datasource, object_key):
