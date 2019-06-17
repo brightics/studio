@@ -29,35 +29,35 @@ import com.samsung.sds.brightics.lightweight.job.thread.jobRunnerThread;
 
 public class Application {
 
-	private static final Logger logger = LoggerFactory.getLogger(Application.class);
+    private static final Logger logger = LoggerFactory.getLogger(Application.class);
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 
-		int port = 5351;
-		if (args.length > 0){
-			port = Integer.parseInt(args[0]);
-		}
-		
-		// create thread pool executor as max size.
-		int maxConcurrentJobs = Integer.parseInt(
-				SystemEnvUtil.getEnvOrPropOrElse("MODEL_CONCURRENT_COUNT", "brightics.lightweight.concurrent.count", "10"));
-		ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(getMaxPoolSizeBy(maxConcurrentJobs), getMaxPoolSizeBy(maxConcurrentJobs), 0L,
-				TimeUnit.MILLISECONDS, new  LinkedBlockingQueue<>());
+        int port = 5351;
+        if (args.length > 0) {
+            port = Integer.parseInt(args[0]);
+        }
 
-		try (ServerSocket listener = new ServerSocket(port)) {
-			listener.setSoTimeout(0);
-			logger.info("Brightics lightweight engine is listening on port " + port);
-			while (true) {
-				new jobRunnerThread(listener.accept(), threadPoolExecutor).start();
-			}
-		} catch (Throwable e) {
-			logger.error("", e);
-		}
-	}
+        // create thread pool executor as max size.
+        int maxConcurrentJobs = Integer.parseInt(
+                SystemEnvUtil.getEnvOrPropOrElse("MODEL_CONCURRENT_COUNT", "brightics.lightweight.concurrent.count", "10"));
+        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(getMaxPoolSizeBy(maxConcurrentJobs), getMaxPoolSizeBy(maxConcurrentJobs), 0L,
+                TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 
-	private static int getMaxPoolSizeBy(int maxConcurrentJobs) {
-		int numAvailableCores = Runtime.getRuntime().availableProcessors();
-		return maxConcurrentJobs == 0 ? numAvailableCores : Math.min(numAvailableCores, maxConcurrentJobs);
-	}
+        try (ServerSocket listener = new ServerSocket(port)) {
+            listener.setSoTimeout(0);
+            logger.info("Brightics lightweight engine is listening on port " + port);
+            while (true) {
+                new jobRunnerThread(listener.accept(), threadPoolExecutor).start();
+            }
+        } catch (Throwable e) {
+            logger.error("", e);
+        }
+    }
+
+    private static int getMaxPoolSizeBy(int maxConcurrentJobs) {
+        int numAvailableCores = Runtime.getRuntime().availableProcessors();
+        return maxConcurrentJobs == 0 ? numAvailableCores : Math.min(numAvailableCores, maxConcurrentJobs);
+    }
 
 }

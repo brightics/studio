@@ -28,79 +28,78 @@ import com.samsung.sds.brightics.common.workflow.flowrunner.status.Status;
 
 /**
  * The class re package JobRunner, and give required API.
- * 
- * @author hk.im
  *
+ * @author hk.im
  */
 public class JobRunnerWrapper {
 
-	private static final Logger logger = LoggerFactory.getLogger(JobRunnerWrapper.class);
-	private JobRunner jobRunner;
-	private int timeoutSecond = Integer.MAX_VALUE;
-	private String user = "brightics@samsung.com";
+    private static final Logger logger = LoggerFactory.getLogger(JobRunnerWrapper.class);
+    private JobRunner jobRunner;
+    private int timeoutSecond = Integer.MAX_VALUE;
+    private String user = "brightics@samsung.com";
 
-	public JobRunnerWrapper(JobRunner jobRunner) {
-		this.jobRunner = jobRunner;
-	}
+    public JobRunnerWrapper(JobRunner jobRunner) {
+        this.jobRunner = jobRunner;
+    }
 
-	/**
-	 * Set work flow model execute user. 
-	 * 
-	 * @param user : execute user
-	 */
-	protected JobRunnerWrapper setProcessName(String processName) {
-		this.user = processName;
-		return this;
-	}
-	
-	/**
-	 * (Optional) Set work flow model timeout second. 
-	 * if set 0 second. actual working is integer max. 
-	 * 
-	 * @param second : timeout second (default integer max)
-	 */
-	public JobRunnerWrapper setTimeout(int second) {
-		if (second == 0) {
-			return this;
-		}
-		timeoutSecond = second;
-		return this;
-	}
+    /**
+     * Set work flow model execute user.
+     *
+     * @param user : execute user
+     */
+    protected JobRunnerWrapper setProcessName(String processName) {
+        this.user = processName;
+        return this;
+    }
 
-	public String getStatus(){
-		return jobRunner.getStatus().getStatus();
-	}
-	
-	/**
-	 * Run work flow model and get finish status (SUCCESS, FAIL) .
-	 */
-	public void run() {
-		String jobId = jobRunner.getStatus().getJobId();
-		logger.info(String.format("Lightweight job(%s) start in python process(%s).", jobId, user));
-		try {
-			ThreadLocalContext.put("user", user);
-			// start model.
-			jobRunner.run();
-			// check model status. status contain SUCCESS, FAIL, PROCESS, WAIT.
-			// if status is SUCCESS or FAIL, model finished.
-			int processSecond = 0;
-			while (!(Status.SUCCESS.name().equals(jobRunner.getStatus().getStatus())
-					|| Status.FAIL.name().equals(jobRunner.getStatus().getStatus()))) {
-				if (processSecond > timeoutSecond) {
-					throw new TimeoutException("The working time of the workflow exceeded the standard.");
-				}
-				Thread.sleep(100);
-				processSecond++;
-			}
-		} catch (Exception e) {
-			logger.error("Cannot run work flow model.", e);
-			throw new RuntimeException(e);
-		} finally {
-			// remove userContext
-			UserContextSessionLoader.clearUserContextSession(user);
-			jobRunner.clear();
-			logger.info(String.format("Lightweight job(%s) finish in python process(%s).", jobId, user));
-		}
-	}
+    /**
+     * (Optional) Set work flow model timeout second.
+     * if set 0 second. actual working is integer max.
+     *
+     * @param second : timeout second (default integer max)
+     */
+    public JobRunnerWrapper setTimeout(int second) {
+        if (second == 0) {
+            return this;
+        }
+        timeoutSecond = second;
+        return this;
+    }
+
+    public String getStatus() {
+        return jobRunner.getStatus().getStatus();
+    }
+
+    /**
+     * Run work flow model and get finish status (SUCCESS, FAIL) .
+     */
+    public void run() {
+        String jobId = jobRunner.getStatus().getJobId();
+        logger.info(String.format("Lightweight job(%s) start in python process(%s).", jobId, user));
+        try {
+            ThreadLocalContext.put("user", user);
+            // start model.
+            jobRunner.run();
+            // check model status. status contain SUCCESS, FAIL, PROCESS, WAIT.
+            // if status is SUCCESS or FAIL, model finished.
+            int processSecond = 0;
+            while (!(Status.SUCCESS.name().equals(jobRunner.getStatus().getStatus())
+                    || Status.FAIL.name().equals(jobRunner.getStatus().getStatus()))) {
+                if (processSecond > timeoutSecond) {
+                    throw new TimeoutException("The working time of the workflow exceeded the standard.");
+                }
+                Thread.sleep(100);
+                processSecond++;
+            }
+        } catch (Exception e) {
+            logger.error("Cannot run work flow model.", e);
+            throw new RuntimeException(e);
+        } finally {
+            // remove userContext
+            UserContextSessionLoader.clearUserContextSession(user);
+            jobRunner.clear();
+            logger.info(String.format("Lightweight job(%s) finish in python process(%s).", jobId, user));
+        }
+    }
 
 }

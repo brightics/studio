@@ -31,64 +31,65 @@ import com.samsung.sds.brightics.lightweight.job.JobRunnerWrapper;
 
 public class jobRunnerThread extends Thread {
 
-	private static final Logger logger = LoggerFactory.getLogger(jobRunnerThread.class);
-	private final Socket socket;
-	private final ThreadPoolExecutor threadPoolExecutor;
+    private static final Logger logger = LoggerFactory.getLogger(jobRunnerThread.class);
+    private final Socket socket;
+    private final ThreadPoolExecutor threadPoolExecutor;
 
-	public jobRunnerThread(Socket socket, ThreadPoolExecutor threadPoolExecutor) {
-		String remoteAddress = socket.getRemoteSocketAddress().toString();
-		if (remoteAddress != null) {
-			setName(remoteAddress);
-		}
-		this.socket = socket;
-		this.threadPoolExecutor = threadPoolExecutor;
-	}
+    public jobRunnerThread(Socket socket, ThreadPoolExecutor threadPoolExecutor) {
+        String remoteAddress = socket.getRemoteSocketAddress().toString();
+        if (remoteAddress != null) {
+            setName(remoteAddress);
+        }
+        this.socket = socket;
+        this.threadPoolExecutor = threadPoolExecutor;
+    }
 
-	@Override
-	public void run() {
-		try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-			String input = in.readLine();
-			if (input != null) {
-				StringTokenizer st = new StringTokenizer(input);
-				String modelPath = st.nextToken();
-				try {
-					threadPoolExecutor.execute(new Runnable() {
-						@Override
-						public void run() {
-							try {
-								JobRunnerWrapper jobRunable = JobRunnerContext.getInstance().createJobRunner(Thread.currentThread().getName(), modelPath);
-								jobRunable.setTimeout(threadPoolExecutor.getCorePoolSize());
-								String threadName = Thread.currentThread().getName();
-								long startTime = System.currentTimeMillis();
-								logger.info(String.format(
-										"(%s)[LIGHTWEIGHT MODEL START] path : %s, active count: %s, run count :%s",
-										threadName, modelPath, threadPoolExecutor.getActiveCount() + "",
-										threadPoolExecutor.getTaskCount() + ""));
-								jobRunable.run();
-								logger.info(String.format(
-										"(%s)[LIGHTWEIGHT MODEL FINISH] path : %s, status : %s, elapsed time : %s",
-										threadName, modelPath, jobRunable.getStatus(),
-										(System.currentTimeMillis() - startTime) + ""));
-							} catch (Exception e) {
-								logger.error("Cannot run model.", e);
+    @Override
+    public void run() {
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+            String input = in.readLine();
+            if (input != null) {
+                StringTokenizer st = new StringTokenizer(input);
+                String modelPath = st.nextToken();
+                try {
+                    threadPoolExecutor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                JobRunnerContext instance = JobRunnerContext.getInstance();
+                                JobRunnerWrapper jobRunable = instance.createJobRunner(Thread.currentThread().getName(), modelPath);
+                                jobRunable.setTimeout(threadPoolExecutor.getCorePoolSize());
+                                String threadName = Thread.currentThread().getName();
+                                long startTime = System.currentTimeMillis();
+                                logger.info(String.format(
+                                        "(%s)[LIGHTWEIGHT MODEL START] path : %s, active count: %s, run count :%s",
+                                        threadName, modelPath, threadPoolExecutor.getActiveCount() + "",
+                                        threadPoolExecutor.getTaskCount() + ""));
+                                jobRunable.run();
+                                logger.info(String.format(
+                                        "(%s)[LIGHTWEIGHT MODEL FINISH] path : %s, status : %s, elapsed time : %s",
+                                        threadName, modelPath, jobRunable.getStatus(),
+                                        (System.currentTimeMillis() - startTime) + ""));
+                            } catch (Exception e) {
+                                logger.error("Cannot run model.", e);
 
-							}
-						}
-					});
-				} catch (Exception e) {
-					logger.error("Cannot run work flow model", e);
-				}
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    logger.error("Cannot run work flow model", e);
+                }
 
-			}
-		} catch (Exception e) {
-			logger.error("Cannt read inputstream.", e);
-		} finally {
-			try {
-				socket.close();
-			} catch (IOException e) {
-				logger.error("Cannot close socket.", e);
-			}
-		}
-	}
+            }
+        } catch (Exception e) {
+            logger.error("Cannt read inputstream.", e);
+        } finally {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                logger.error("Cannot close socket.", e);
+            }
+        }
+    }
 
 }

@@ -47,105 +47,105 @@ import com.samsung.sds.brightics.common.workflow.flowrunner.vo.MetaConvertVO;
 
 public class LightweightJobRunnerApi extends AbsJobRunnerApi {
 
-	private static ConcurrentHashMap<String, ResultTaskMessage> taskResultMap = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<String, ResultTaskMessage> taskResultMap = new ConcurrentHashMap<>();
 
-	@Override
-	public void executeTask(String taskId, String userName, String name, String parameters, String attributes) {
+    @Override
+    public void executeTask(String taskId, String userName, String name, String parameters, String attributes) {
 
-		Builder builder = ExecuteTaskMessage.newBuilder().setName(name).setTaskId(taskId)
-				.setUser(ThreadLocalContext.get("user").toString());
-		if (StringUtils.isNoneBlank(parameters)) {
-			builder.setParameters(parameters);
-		} else {
-			builder.setParameters("{}");
-		}
+        Builder builder = ExecuteTaskMessage.newBuilder().setName(name).setTaskId(taskId)
+                .setUser(ThreadLocalContext.get("user").toString());
+        if (StringUtils.isNoneBlank(parameters)) {
+            builder.setParameters(parameters);
+        } else {
+            builder.setParameters("{}");
+        }
 
-		if (StringUtils.isNoneBlank(attributes)) {
-			builder.setAttributes(attributes);
-		} else {
-			builder.setAttributes("{}");
-		}
+        if (StringUtils.isNoneBlank(attributes)) {
+            builder.setAttributes(attributes);
+        } else {
+            builder.setAttributes("{}");
+        }
 
-		ResultTaskMessage taskResult = TaskService.getTaskResult(builder.build());
-		taskResultMap.put(taskId, taskResult);
-	}
+        ResultTaskMessage taskResult = TaskService.getTaskResult(builder.build());
+        taskResultMap.put(taskId, taskResult);
+    }
 
-	@Override
-	public boolean isFinishTask(String taskId) {
-		return true;
-	}
+    @Override
+    public boolean isFinishTask(String taskId) {
+        return true;
+    }
 
-	@Override
-	public Object getTaskResult(String taskId) {
-		ResultTaskMessage message = taskResultMap.get(taskId);
-		MessageStatus status = message.getMessageStatus();
-		taskResultMap.remove(taskId);
-		try {
-			if (MessageStatus.SUCCESS == status) {
-				SuccessResult successResult = message.getResult().unpack(SuccessResult.class);
-				return successResult.getResult();
-			} else {
-				FailResult failResult = message.getResult().unpack(FailResult.class);
-				throw new BrighticsUncodedException(failResult.getMessage(), failResult.getDetailMessage());
-			}
-		} catch (InvalidProtocolBufferException e) {
-			throw new BrighticsCoreException("3001").addDetailMessage(ExceptionUtils.getStackTrace(e));
-		}
-	}
+    @Override
+    public Object getTaskResult(String taskId) {
+        ResultTaskMessage message = taskResultMap.get(taskId);
+        MessageStatus status = message.getMessageStatus();
+        taskResultMap.remove(taskId);
+        try {
+            if (MessageStatus.SUCCESS == status) {
+                SuccessResult successResult = message.getResult().unpack(SuccessResult.class);
+                return successResult.getResult();
+            } else {
+                FailResult failResult = message.getResult().unpack(FailResult.class);
+                throw new BrighticsUncodedException(failResult.getMessage(), failResult.getDetailMessage());
+            }
+        } catch (InvalidProtocolBufferException e) {
+            throw new BrighticsCoreException("3001").addDetailMessage(ExceptionUtils.getStackTrace(e));
+        }
+    }
 
-	@Override
-	public void stopTask(String taskId, String name, String context) {
-		//Do nothing.
-	}
+    @Override
+    public void stopTask(String taskId, String name, String context) {
+        //Do nothing.
+    }
 
 
-	@Override
-	public JsonElement convert(MetaConvertVO metaConvertVO) {
-		//TODO convert script for UDF or data sources for read from DB.
-		return null;
-	}
+    @Override
+    public JsonElement convert(MetaConvertVO metaConvertVO) {
+        //TODO convert script for UDF or data sources for read from DB.
+        return null;
+    }
 
-	@Override
-	public void updateJobStatus(JobParam jobParam, JobStatusVO jobStatusVO) {
-		//Do nothing.
-	}
+    @Override
+    public void updateJobStatus(JobParam jobParam, JobStatusVO jobStatusVO) {
+        //Do nothing.
+    }
 
-	@Override
-	public Object getData(String key, long min, long max) {
-		String user = ThreadLocalContext.get("user").toString();
-		String param = ParameterBuilder.newBuild().addProperty("min", min).addProperty("max", max).build();
-		ResultDataMessage result = MetaDataService.manipulateData(ExecuteDataMessage.newBuilder().setUser(user)
-				.setActionType(DataActionType.DATA).setKey(key).setParameters(param).build());
-		return dataResultParser(result);
-	}
+    @Override
+    public Object getData(String key, long min, long max) {
+        String user = ThreadLocalContext.get("user").toString();
+        String param = ParameterBuilder.newBuild().addProperty("min", min).addProperty("max", max).build();
+        ResultDataMessage result = MetaDataService.manipulateData(ExecuteDataMessage.newBuilder().setUser(user)
+                .setActionType(DataActionType.DATA).setKey(key).setParameters(param).build());
+        return dataResultParser(result);
+    }
 
-	private Object dataResultParser(ResultDataMessage result) {
-		try {
-			if (result.getMessageStatus() == MessageStatus.SUCCESS) {
-				return result.getResult().unpack(SuccessResult.class).getResult();
-			} else {
-				FailResult failResult = result.getResult().unpack(FailResult.class);
-				throw new BrighticsUncodedException(failResult.getMessage(), failResult.getDetailMessage());
-			}
-		} catch (InvalidProtocolBufferException e) {
-			throw new BrighticsCoreException("3001").addDetailMessage(ExceptionUtils.getStackTrace(e));
-		}
-	}
+    private Object dataResultParser(ResultDataMessage result) {
+        try {
+            if (result.getMessageStatus() == MessageStatus.SUCCESS) {
+                return result.getResult().unpack(SuccessResult.class).getResult();
+            } else {
+                FailResult failResult = result.getResult().unpack(FailResult.class);
+                throw new BrighticsUncodedException(failResult.getMessage(), failResult.getDetailMessage());
+            }
+        } catch (InvalidProtocolBufferException e) {
+            throw new BrighticsCoreException("3001").addDetailMessage(ExceptionUtils.getStackTrace(e));
+        }
+    }
 
-	@Override
-	public void addDataAlias(String source, String alias) {
-		String user = ThreadLocalContext.get("user").toString();
-		if (source.equals(alias)) {
-			return;
-		}
-		DataAliasByDataKeyMessage message = DataAliasByDataKeyMessage.newBuilder().setSourceDataKey(source)
-				.setAliasDataKey(alias).setUser(user).build();
-		MetaDataService.addDataAliasByDataKey(message);
-	}
+    @Override
+    public void addDataAlias(String source, String alias) {
+        String user = ThreadLocalContext.get("user").toString();
+        if (source.equals(alias)) {
+            return;
+        }
+        DataAliasByDataKeyMessage message = DataAliasByDataKeyMessage.newBuilder().setSourceDataKey(source)
+                .setAliasDataKey(alias).setUser(user).build();
+        MetaDataService.addDataAliasByDataKey(message);
+    }
 
-	@Override
-	public void executeDLScript(JsonObject model, String jid) {
-		//Do nothing.
-	}
+    @Override
+    public void executeDLScript(JsonObject model, String jid) {
+        //Do nothing.
+    }
 
 }
