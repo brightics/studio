@@ -26,6 +26,7 @@ public class JobRunnerConfig {
 	private String variableRepo = "./variables";
 	private String isPersistForcedFalse = "false";
 	private String isUserVariableBackup = "true";
+	private String isCallback = "false";
 
 	public JobRunnerConfig set(String key, String value) {
 		setting.put(key, value);
@@ -72,6 +73,20 @@ public class JobRunnerConfig {
 	
 	public Boolean getUserVariableBackup() {
 		return Boolean.valueOf(setting.getOrDefault("flowrunner.user.variable.backup", isUserVariableBackup));
+	}
+
+	/**
+	 * If true, execute call back function after job completed (default : false)
+	 * 
+	 * @param isCallBack
+	 */
+	public JobRunnerConfig setCallback(Boolean isCallBack) {
+		setting.put("flowrunner.user.variable.backup", String.valueOf(isCallBack));
+		return this;
+	}
+	
+	public Boolean getCallback() {
+		return Boolean.valueOf(setting.getOrDefault("flowrunner.user.variable.backup", isCallback));
 	}
 
 }

@@ -18,9 +18,13 @@ package com.samsung.sds.brightics.common.workflow.flowrunner.vo;
 
 import java.util.Map;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class PreparedDataVO {
 
 	private String mid;
