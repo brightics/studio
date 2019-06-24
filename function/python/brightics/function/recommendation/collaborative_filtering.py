@@ -338,9 +338,9 @@ def _collaborative_filtering_predict(table, model, prediction_col ='prediction',
                 predict = item_users[encoded_item_col[i],encoded_user_col[i]]
             else:
                 if normalize:
-                    predict = _predict(item_users, similar_coeff[encoded_user_col[i]], encoded_user_col[i], k, weighted, normalize, user_avg, user_avg[encoded_user_col[i]], filter_minus)
+                    predict = _predict(item_users, similar_coeff[encoded_user_col[i]], encoded_item_col[i], k, weighted, normalize, user_avg, user_avg[encoded_user_col[i]], filter_minus)
                 else:
-                    predict = _predict(item_users, similar_coeff[encoded_user_col[i]], encoded_user_col[i], k, weighted, normalize, user_avg, None, filter_minus)
+                    predict = _predict(item_users, similar_coeff[encoded_user_col[i]], encoded_item_col[i], k, weighted, normalize, user_avg, None, filter_minus)
 
         result[valid_indices[i]] = predict
     result = pd.DataFrame(result,columns=[prediction_col])
