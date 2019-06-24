@@ -20,7 +20,7 @@ from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 from brightics.common.validation import raise_runtime_error
-
+from brightics.common.classify_input_type import check_col_type
 
 def glm_train(table, group_by=None, **params):
     check_required_parameters(_glm_train, params, ['table'])
@@ -32,7 +32,7 @@ def glm_train(table, group_by=None, **params):
 
 
 def _glm_train(table, feature_cols, label_col, family="Gaussian", link="ident", fit_intercept=True):
-    features = table[feature_cols]
+    feature_names, features = check_col_type(table,feature_cols)
     label = table[label_col]
 
     if label_col in feature_cols:
@@ -109,7 +109,7 @@ def glm_predict(table, model, **params):
 
 def _glm_predict(table, model, prediction_col='prediction'):
     feature_cols = model['features']
-    features = table[feature_cols]
+    feature_names, features = check_col_type(table,feature_cols)
 
     fit_intercept = model['fit_intercept']
     glm_model = model['glm_model']
