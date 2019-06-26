@@ -94,6 +94,8 @@ def _pca(table, input_cols, new_column_name='projected_', n_components=None, cop
     table_explained_variance = pd.DataFrame(res_explained_variance, columns=['explained_variance'])
     table_explained_variance['explained_variance_ratio'] = res_explained_variance_ratio
     table_explained_variance['cum_explained_variance_ratio'] = res_explained_variance_ratio.cumsum()
+
+    model_table_explained_variance = table_explained_variance[:n_components]
                 
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
@@ -103,7 +105,7 @@ def _pca(table, input_cols, new_column_name='projected_', n_components=None, cop
     |
     | ### Explained Variance
     | {fig_scree}
-    | {table_explained_variance}    
+    | {model_table_explained_variance}    
     |
     | ### Components
     | {table2}
@@ -112,7 +114,7 @@ def _pca(table, input_cols, new_column_name='projected_', n_components=None, cop
     | {parameter1}
     """.format(image1=plt_two,
                fig_scree=fig_scree,
-               table_explained_variance=pandasDF2MD(table_explained_variance),
+               model_table_explained_variance=pandasDF2MD(model_table_explained_variance),
                parameter1=dict2MD(res_get_param),
                table2=pandasDF2MD(res_components_df)
                )))        
@@ -121,6 +123,7 @@ def _pca(table, input_cols, new_column_name='projected_', n_components=None, cop
     model['components'] = res_components
     model['explained_variance'] = res_explained_variance
     model['explained_variance_ratio'] = res_explained_variance_ratio
+    model['model_table_explained_variance'] = model_table_explained_variance
     model['singular_values'] = res_singular_values
     model['mean'] = res_mean
     model['n_components'] = res_n_components
