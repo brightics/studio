@@ -46,7 +46,7 @@ def _ngram(table, input_col, n=2):
             slice = "{}".format(' '.join(data[i][j:j + n]))            
             ngram_list.append(slice)
               
-        ngrams_list.append(ngram_list)
+        ngrams_list.append(str(ngram_list))
     
     out_table['{}-gram'.format(n)] = ngrams_list
     
