@@ -15,6 +15,7 @@
 """
 
 import numpy as np
+import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
@@ -32,6 +33,7 @@ from brightics.function.utils import _model_dict
 from brightics.common.validation import validate
 from brightics.common.validation import greater_than_or_equal_to
 from brightics.common.utils import get_default_from_parameters_if_required
+from brightics.common.classify_input_type import check_col_type
 
 
 def linear_regression_train(table, group_by=None, **params):
@@ -48,7 +50,7 @@ def linear_regression_train(table, group_by=None, **params):
 
     
 def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True, is_vif=False, vif_threshold=10):
-    features = table[feature_cols]
+    feature_names, features = check_col_type(table, feature_cols)
     label = table[label_col]
 
     if fit_intercept == True:
@@ -64,6 +66,10 @@ def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True,
     summary_tables = simple_tables2df_list(summary.tables, drop_index=True)
     summary0 = summary_tables[0]
     summary1 = summary_tables[1]
+    
+    if type(features) != type(table):
+        features = pd.DataFrame(features)
+    
     if is_vif:
         summary1['VIF'] = [variance_inflation_factor(features.values, i) for i in range(features.shape[1])]
         summary1['VIF>{}'.format(vif_threshold)] = summary1['VIF'].apply(lambda _: 'true' if _ > vif_threshold else 'false')
@@ -155,7 +161,7 @@ def _linear_regression_predict(table, model, prediction_col='prediction'):
 
     result = table.copy()
     feature_cols = model['features']
-    features = result[feature_cols]
+    feature_names, features = check_col_type(result, feature_cols)
     fit_intercept = model['fit_intercept']
 
     lr_model_fit = model['lr_model']
