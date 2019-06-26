@@ -21,6 +21,7 @@ from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import raise_runtime_error
 from brightics.common.validation import validate, greater_than, greater_than_or_equal_to
+from brightics.common.classify_input_type import check_col_type
 
 import matplotlib.pyplot as plt
 from scipy.cluster.hierarchy import dendrogram, linkage, fcluster, leaders
@@ -45,7 +46,7 @@ def hierarchical_clustering(table, group_by=None, **params):
 
 def _hierarchical_clustering(table, input_cols, input_mode='original', key_col=None, link='complete', met='euclidean', num_rows=20, figure_height=6.4, orient='right'):
     out_table = table.copy()
-    features = out_table[input_cols]
+    feature_names, features = check_col_type(out_table, input_cols)
     
     if input_mode == 'original':
         len_features = len(features)
@@ -53,7 +54,7 @@ def _hierarchical_clustering(table, input_cols, input_mode='original', key_col=N
             data_names = list(out_table[key_col])
         elif key_col == None:
             data_names = ['pt_' + str(i) for i in range(len_features)]
-        out_table['name']=data_names
+        out_table['name'] = data_names
         Z = linkage(ssd.pdist(features, metric=met), method=link, metric=met)
     elif input_mode == 'matrix':
         len_features = len(input_cols)
@@ -77,8 +78,8 @@ def _hierarchical_clustering(table, input_cols, input_mode='original', key_col=N
 
     range_len_Z = range(len(Z))
     linkage_matrix = pd.DataFrame([])
-    linkage_matrix['linkage step'] = ['%g' % (x+1) for x in reversed(range_len_Z)]
-    linkage_matrix['name of clusters'] = ['CL_%g' % (i+1) for i in reversed(range_len_Z)]
+    linkage_matrix['linkage step'] = ['%g' % (x + 1) for x in reversed(range_len_Z)]
+    linkage_matrix['name of clusters'] = ['CL_%g' % (i + 1) for i in reversed(range_len_Z)]
     joined_column1 = []
     for i in range_len_Z:
         if Z[:, 0][i] < len_features:
@@ -123,7 +124,7 @@ def _hierarchical_clustering(table, input_cols, input_mode='original', key_col=N
     plt.clf()
     
     params = { 
-        'Input Columns': input_cols,
+        'Input Columns': feature_names,
         'Input Mode': input_mode,
         'Linkage Method': link,
         'Metric': met,
@@ -145,12 +146,12 @@ def _hierarchical_clustering(table, input_cols, input_mode='original', key_col=N
     |
     |{out_table1}
     |
-    """.format(image=plt2, display_params=dict2MD(params), out_table1=pandasDF2MD(linkage_matrix.head(num_rows), num_rows=num_rows+1))))
+    """.format(image=plt2, display_params=dict2MD(params), out_table1=pandasDF2MD(linkage_matrix.head(num_rows), num_rows=num_rows + 1))))
 
     model = _model_dict('hierarchical_clustering')
     model['model'] = Z
     model['input_mode'] = input_mode
-    model['table']=out_table
+    model['table'] = out_table
     if input_mode == 'matrix':
         model['dist_matrix'] = dist_matrix
     model['parameters'] = params
@@ -182,8 +183,8 @@ def _hierarchical_clustering_post(model, num_clusters, cluster_col='cluster'):
         prediction_table = model['table']
     elif mode == 'matrix':
         prediction_table = model['dist_matrix'][['name']]
-    if num_clusters==1:
-        prediction_table[cluster_col]=[1 for _ in range(len(prediction_table.index))]
+    if num_clusters == 1:
+        prediction_table[cluster_col] = [1 for _ in range(len(prediction_table.index))]
     else:
         prediction_table[cluster_col] = predict
     
@@ -198,10 +199,10 @@ def _hierarchical_clustering_post(model, num_clusters, cluster_col='cluster'):
             which_cluster.append(out_table['joined column2'][select_indices])
     
     clusters_info_table = pd.DataFrame([])
-    if num_clusters==1:
-        clusters_info_table[cluster_col]=[1]
-        clusters_info_table['name of clusters']=[out_table['name of clusters'][len(Z)-1]]
-        clusters_info_table['number of entities']=[out_table['number of original'][len(Z)-1]]
+    if num_clusters == 1:
+        clusters_info_table[cluster_col] = [1]
+        clusters_info_table['name of clusters'] = [out_table['name of clusters'][len(Z) - 1]]
+        clusters_info_table['number of entities'] = [out_table['number of original'][len(Z) - 1]]
     else:
         clusters_info_table[cluster_col] = M
         clusters_info_table['name of clusters'] = which_cluster
@@ -221,7 +222,7 @@ def _hierarchical_clustering_post(model, num_clusters, cluster_col='cluster'):
     |
     |{clusters_info_table}
     |
-    """.format(display_params=dict2MD(model['parameters']), clusters_info_table=pandasDF2MD(clusters_info_table,num_rows=len(clusters_info_table.index)+1))))
+    """.format(display_params=dict2MD(model['parameters']), clusters_info_table=pandasDF2MD(clusters_info_table, num_rows=len(clusters_info_table.index) + 1))))
 
     model = _model_dict('hierarchical_clustering_post_process')
     model['clusters_info'] = clusters_info_table

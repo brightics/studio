@@ -32,10 +32,11 @@ from brightics.common.utils import check_required_parameters
 from brightics.common.validation import validate
 from brightics.common.validation import greater_than
 from brightics.common.utils import get_default_from_parameters_if_required
+from brightics.common.classify_input_type import check_col_type
 
 
 def naive_bayes_train(table, group_by=None, **params):
-    params = get_default_from_parameters_if_required(params,_naive_bayes_train)
+    params = get_default_from_parameters_if_required(params, _naive_bayes_train)
     param_validation_check = [greater_than(params, 0, 'alpha')]
         
     validate(*param_validation_check)
@@ -47,7 +48,7 @@ def naive_bayes_train(table, group_by=None, **params):
 
 
 def _naive_bayes_train(table, feature_cols, label_col, alpha=1.0, fit_prior=True, class_prior=None):
-    features = table[feature_cols]
+    feature_names, features = check_col_type(table, feature_cols)
     label = table[label_col]
     label_encoder = preprocessing.LabelEncoder()
     label_encoder.fit(label)
@@ -66,7 +67,7 @@ def _naive_bayes_train(table, feature_cols, label_col, alpha=1.0, fit_prior=True
     feature_log_prob_ = nb_model.feature_log_prob_
     tmp_result = np.hstack((list(map(list, zip(*[label_encoder.classes_] + [class_log_prior]))), (feature_log_prob_)))
     column_names = ['labels', 'pi']
-    for feature_col in feature_cols:
+    for feature_col in feature_names:
         column_names += ['theta_' + feature_col]
     result_table = pd.DataFrame.from_records(tmp_result, columns=column_names)
     prediction_correspond = nb_model.predict(features)
@@ -75,7 +76,7 @@ def _naive_bayes_train(table, feature_cols, label_col, alpha=1.0, fit_prior=True
     get_param['Lambda'] = alpha
     # get_param['Prior Probabilities of the Classes'] = class_prior
     get_param['Fit Class Prior Probability'] = fit_prior
-    get_param['Feature Columns'] = feature_cols
+    get_param['Feature Columns'] = feature_names
     get_param['Label Column'] = label_col
 
     cnf_matrix = confusion_matrix(label_correspond, prediction_correspond)
@@ -141,7 +142,7 @@ def naive_bayes_predict(table, model, **params):
 
 def _naive_bayes_predict(table, model, suffix, display_log_prob=False, prediction_col='prediction', prob_prefix='probability', log_prob_prefix='log_probability'):
     feature_cols = model['features']
-    features = table[feature_cols]
+    feature_names, features = check_col_type(table, feature_cols)
     nb_model = model['nb_model']
     label_encoder = model['label_encoder']
 
