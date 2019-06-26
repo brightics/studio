@@ -15,26 +15,57 @@
 """
 
 from brightics.common.groupby import _function_by_group
+from brightics.common.groupby2 import _function_by_group2
 from brightics.common.utils import check_required_parameters
+import numpy as np
+import pandas as pd
 
 
 def add_shift(table, group_by=None, **params):
     check_required_parameters(_add_shift, params, ['table'])
+    
+    columns = table.columns.tolist()
+
+    input_col = params.get('input_col')
+    shifted_col = params.get('shifted_col') if params.get('shifted_col') else input_col
+    shift_list = params.get('shift_list')
+    order_by = params.get('order_by')
+    params['input_col'] = table.columns.get_loc(input_col)
+    if order_by is not None:
+        params['order_by'] = [table.columns.get_loc(order_by) for order_by in order_by]  
+        
+    for shift in shift_list:
+        columns.append('{shifted_col}_{shift}'.format(shifted_col=shifted_col, shift=shift))
+    
     if group_by is not None:
-        return _function_by_group(_add_shift, table, group_by=group_by, **params)
+        return _function_by_group2(_add_shift, table, columns=columns, group_by=group_by, **params)
     else:
-        return _add_shift(table, **params)
+        tmp_table = table.values
+    
+        result = _add_shift(tmp_table, **params)
+        result['out_table'] = pd.DataFrame(result['out_table'],columns=columns)
+    return result
 
     
 def _add_shift(table, input_col, shift_list, shifted_col=None, order_by=None, ordering='asc'):
      
     # always doing descending sort if ordering is not asc
-    out_table = table.copy().sort_values(by=order_by, ascending=(ordering == 'asc')) if isinstance(order_by, list) and len(order_by) > 0 else table.copy() 
+    tmp_table = table.copy()
+    tmp_table = np.array(tmp_table).tolist()
     
+    if order_by is not None:
+        tmp_table = sorted(tmp_table, key=lambda x: tuple(x[order_by] for order_by in order_by), reverse=(ordering != 'asc'))
+    
+    result=[]
     if shifted_col is None:
         shifted_col = input_col
         
     for shift in shift_list:
-        out_table['{shifted_col}_{shift}'.format(shifted_col=shifted_col, shift=shift)] = out_table[input_col].shift(shift)
+        for i, v in  enumerate(range(len(tmp_table))):
+            if i >= shift and len(tmp_table) > i - shift:
+                tmp_table[i].append(tmp_table[i - shift][input_col])
+            else:
+                tmp_table[i].append(np.NaN)
         
-    return {'out_table':out_table}
+    result = tmp_table
+    return {'out_table': result}
