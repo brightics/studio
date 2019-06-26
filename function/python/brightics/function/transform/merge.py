@@ -24,7 +24,7 @@ def bind_row_column(first_table, second_table, **params):
 
 def _bind_row_column(first_table, second_table, row_or_col):
     if row_or_col == 'row':
-        table = pd.concat([first_table, second_table], ignore_index=True, sort=False)
+        table = pd.concat([first_table, second_table], ignore_index=True)
     else:  # col
         if list(set(first_table.columns).intersection(set(second_table.columns))) != []:
             col_name_first = []
