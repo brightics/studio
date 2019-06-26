@@ -46,12 +46,12 @@ def statistic_summary(table, group_by=None, **params):
     columns = ['column_name'] + params['statistics'].copy()
     if 'percentile' in columns:
         columns.remove('percentile')
-        if 'percentile_amounts' in params:
+        if params['percentile_amounts'] is not None:
             for pa in _unique_list(params['percentile_amounts']):
                 columns.append('percentile_{}'.format(_amounts_colname(pa)))
     if 'trimmed_mean' in columns:
         columns.remove('trimmed_mean')
-        if 'trimmed_mean_amounts' in params:
+        if params['trimmed_mean_amounts'] is not None:
             for ta in _unique_list(params['trimmed_mean_amounts']):
                 columns.append('trimmed_mean_{}'.format(_amounts_colname(ta)))
     if 'mode' in columns:
