@@ -32,7 +32,13 @@ def _amounts_colname(a): return str(a).replace('.', '_')
 def _unique_list(l): return np.unique(list(filter(lambda x: x is not None and not np.isnan(x), l)))
 
 def statistic_summary(table, group_by=None, **params):
+    
     check_required_parameters(_statistic_summary, params, ['table'])
+    params = get_default_from_parameters_if_required(params,_statistic_summary)
+    param_validation_check = [all_elements_from_to(params, 0, 100, 'percentile_amounts'),
+                              all_elements_from_under(params, 0, 0.5, 'trimmed_mean_amounts')]
+    validate(*param_validation_check)
+    
     column_indices = []
     for i in params['input_cols']:
         column_indices.append(table.columns.get_loc(i))
