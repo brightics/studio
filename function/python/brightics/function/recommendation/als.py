@@ -342,7 +342,7 @@ def als_recommend(table, group_by=None, **params):
     params = get_default_from_parameters_if_required(params,_als_recommend)
     param_validation_check = [greater_than_or_equal_to(params, 1, 'number'),
                               greater_than_or_equal_to(params, 1, 'iterations'),
-                              greater_than_or_equal_to(params, 0.1, 'reg_param'),
+                              greater_than_or_equal_to(params, 0, 'reg_param'),
                               greater_than_or_equal_to(params, 1, 'rank'),
                               greater_than_or_equal_to(params, 0, 'alpha'),
                               greater_than_or_equal_to(params, 0, 'seed')]
