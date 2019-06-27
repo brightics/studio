@@ -14,6 +14,7 @@
     limitations under the License.
 """
 
+import os
 import sqlalchemy
 from sqlalchemy.pool import NullPool
 
@@ -28,6 +29,7 @@ class DbEngine:
     required_keys = {'dbType', 'username', 'password', 'ip', 'port', 'dbName'}
 
     def __init__(self, **kwargs):
+        os.environ['NLS_LANG'] = '.UTF8'
         diff = self.required_keys - kwargs.keys()
         if diff:
             raise Exception(diff.pop() + ' is required parameter')
