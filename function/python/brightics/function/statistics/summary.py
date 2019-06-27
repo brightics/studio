@@ -44,6 +44,7 @@ def statistic_summary(table, group_by=None, **params):
         column_indices.append(table.columns.get_loc(i))
     params['column_indices'] = column_indices
     columns = ['column_name'] + params['statistics'].copy()
+    columns = ['num_of_row' if x=='nrow' else x for x in columns]
     if 'percentile' in columns:
         columns.remove('percentile')
         if params['percentile_amounts'] is not None:
