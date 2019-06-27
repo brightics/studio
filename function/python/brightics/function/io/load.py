@@ -15,6 +15,7 @@
 """
 
 import json
+import os
 
 import boto3
 import pandas as pd
@@ -27,6 +28,8 @@ from brightics.common.validation import raise_runtime_error
 
 
 def read_csv(path):
+    dir_data = os.getcwd()+'\\data'
+    path=os.path.join(dir_data,path)
     return {'table': table_reader.read_csv(path)}
 
 
