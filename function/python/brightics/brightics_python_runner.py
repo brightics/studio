@@ -25,6 +25,8 @@ import traceback
 import ast
 from contextlib import contextmanager
 import json
+import matplotlib
+matplotlib.use("agg")
 
 try:
     from StringIO import StringIO
