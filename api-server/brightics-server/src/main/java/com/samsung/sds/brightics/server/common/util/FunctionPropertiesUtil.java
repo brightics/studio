@@ -1,3 +1,19 @@
+/*
+    Copyright 2019 Samsung SDS
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+        http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
+
 package com.samsung.sds.brightics.server.common.util;
 
 import java.io.File;
@@ -64,10 +80,14 @@ public class FunctionPropertiesUtil {
 				FunctionMetaParam functionMetaParam = JsonUtil.fromJson(new FileInputStream(functionHelpFile),
 						FunctionMetaParam.class);
 				Map<String, Object> specJson = functionMetaParam.getSpecJson();
+				if (specJson == null || specJson.isEmpty()) {
+					logger.debug("It is not a json of the function meta spec. file name : " + filename);
+					return;
+				}
 				setFunctionLabelInfo(specJson);
 				functionMetaMap.put(String.valueOf(specJson.get(FUNC)), functionMetaParam);
 			} catch (Exception e) {
-				logger.error("Cannot initialize function meta json. file name : " + filename, e);
+				logger.warn("Cannot initialize function meta json. file name : " + filename);
 			}
 		} else {
 			try {
@@ -79,7 +99,7 @@ public class FunctionPropertiesUtil {
 					functionHelpMap.put(filename, contents);
 				}
 			} catch (Exception e) {
-				logger.error("Cannot initialize function help. file name : " + filename, e);
+				logger.warn("Cannot initialize function help. file name : " + filename);
 			}
 		}
 	}

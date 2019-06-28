@@ -1,3 +1,19 @@
+"""
+    Copyright 2019 Samsung SDS
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+        http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
+
 from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD, \
     pandasDF2MD, keyValues2MD
 from brightics.common.groupby import _function_by_group
@@ -59,6 +75,7 @@ def _bartletts_test(table, response_cols, factor_col):
         
     return {'result': result}
 
+
 def oneway_anova(table, group_by=None, **params):
     check_required_parameters(_oneway_anova, params, ['table'])
     
@@ -75,7 +92,7 @@ def _oneway_anova(table, response_cols, factor_col):
     """))
     groups = table[factor_col].unique()
     groups.sort()
-    sum_len = np.sum([ len(str(group)) for group in groups ])
+    sum_len = np.sum([len(str(group)) for group in groups])
     
     result = dict()
     result['_grouped_data'] = dict()
@@ -92,10 +109,16 @@ def _oneway_anova(table, response_cols, factor_col):
             
         fig_box = plt2MD(plt)
         plt.clf()
-        
+
         model = ols("""Q('{response_col}') ~ C(Q('{factor_col}'))""".format(response_col=response_col, factor_col=factor_col), table).fit()  # TODO factor_col = class => error
         anova = anova_lm(model)
         
+        index_list = anova.index.tolist()
+        remove_list = ["C(Q('", "'))", "Q('", "')"]
+        for v in remove_list:
+            index_list = [i.replace(v, "") for i in index_list]
+        anova.insert(0, '', index_list)
+
         anova_df = pandasDF2MD(anova)
         
         p_value = anova["""PR(>F)"""][0]
@@ -127,6 +150,92 @@ def _oneway_anova(table, response_cols, factor_col):
         
     result['_repr_brtc_'] = rb.get()
     return {'result': result}
+
+
+def twoway_anova(table, group_by=None, **params):
+    check_required_parameters(_twoway_anova, params, ['table'])
+
+    if group_by is not None:
+        return _function_by_group(_twoway_anova, table, group_by=group_by, **params)
+    else:
+        return _twoway_anova(table, **params)
+
+
+def _twoway_anova(table, response_cols, factor_cols):
+    rb = BrtcReprBuilder()
+    n = len(factor_cols)
+    rb.addMD(strip_margin("""
+    ## Two-way Analysis of Variance Result
+    """))
+
+    if n == 1:
+        groups = table[factor_cols].unique()
+        groups.sort()
+        sum_len = np.sum([len(str(group)) for group in groups])
+
+    result = dict()
+    result['_grouped_data'] = dict()
+
+    for response_col in response_cols:
+        data = table[response_col]
+        result['_grouped_data'][response_col] = dict()
+
+        if n == 1:
+            ax = sns.boxplot(x=factor_cols, y=response_col, data=table, order=groups)
+            if sum_len > 512:
+                ax.set_xticklabels(ax.get_xticklabels(), rotation=90)
+            elif sum_len > 64:
+                ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
+
+            fig_box = plt2MD(plt)
+            plt.clf()
+
+        r = "Q('{r}')".format(r=response_col)
+        factors = ["C(Q('{v}'))".format(v=v) for v in factor_cols]
+        factors_col = " * ".join(v for v in factors)
+        
+        model = ols("""{r} ~ {f}""".format(r=r, f=factors_col), table).fit()  #TODO: factor_col = class => error
+        anova = anova_lm(model)
+
+        index_list = anova.index.tolist()
+        remove_list = ["C(Q('", "'))", "Q('", "')"]
+        for v in remove_list:
+            index_list = [i.replace(v, "") for i in index_list]
+
+        anova.insert(0, '', index_list)
+        print(anova)
+        anova_df = pandasDF2MD(anova)
+        p_value = anova["""PR(>F)"""][0]
+
+        residual = model.resid
+
+        sns.distplot(residual)
+        distplot = plt2MD(plt)
+        plt.clf()
+
+        sm.qqplot(residual, line='s')
+        qqplot = plt2MD(plt)
+        plt.clf()
+
+        factor_col = ", ".join(v for v in factor_cols)
+
+        rb.addMD(strip_margin("""
+        | ## {response_col} by {factor_col}
+        |
+        | ### ANOVA
+        | {anova_df}
+        | 
+        | ### Diagnostics
+        | {distplot}
+        |
+        | {qqplot}
+        """.format(response_col=response_col, factor_col=factor_col, anova_df=anova_df, distplot=distplot, qqplot=qqplot)))
+
+        result['_grouped_data'][response_col]['p_value'] = p_value
+
+    result['_repr_brtc_'] = rb.get()
+    return {'result': result}
+
 
 def tukeys_range_test(table, group_by=None, **params):
     check_required_parameters(_tukeys_range_test, params, ['table'])

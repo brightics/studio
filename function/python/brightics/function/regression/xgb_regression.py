@@ -1,3 +1,19 @@
+"""
+    Copyright 2019 Samsung SDS
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+        http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
+
 import pandas as pd
 import matplotlib.pyplot as plt
 from xgboost import XGBRegressor
@@ -8,11 +24,11 @@ from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate, greater_than_or_equal_to
-
+from brightics.common.classify_input_type import check_col_type
 
 
 def xgb_regression_train(table, group_by=None, **params):
-    params = get_default_from_parameters_if_required(params,_xgb_regression_train)
+    params = get_default_from_parameters_if_required(params, _xgb_regression_train)
     param_validation_check = [greater_than_or_equal_to(params, 1, 'max_depth'),
                               greater_than_or_equal_to(params, 0.0, 'learning_rate'),
                               greater_than_or_equal_to(params, 1, 'n_estimators')]
@@ -32,14 +48,14 @@ def _xgb_regression_train(table, feature_cols, label_col, max_depth=3, learning_
             scale_pos_weight=1, base_score=0.5, random_state=0, seed=None, missing=None,
             sample_weight=None, eval_set=None, eval_metric=None, early_stopping_rounds=None, verbose=True,
             xgb_model=None, sample_weight_eval_set=None):
-
-
         
     regressor = XGBRegressor(max_depth, learning_rate, n_estimators,
                              silent, objectibe, booster, n_jobs, nthread, gamma, min_child_weight,
                              max_delta_step, subsample, colsample_bytree, colsample_bylevel, reg_alpha, reg_lambda,
                              scale_pos_weight, base_score, random_state, seed, missing)
-    regressor.fit(table[feature_cols], table[label_col],
+    feature_names, features = check_col_type(table, feature_cols)
+    label = table[label_col]
+    regressor.fit(features, label,
                   sample_weight, eval_set, eval_metric, early_stopping_rounds, verbose,
                   xgb_model, sample_weight_eval_set)
     
@@ -74,13 +90,13 @@ def _xgb_regression_train(table, feature_cols, label_col, max_depth=3, learning_
     
     # report
     get_param_list = []
-    get_param_list.append(['feature_cols', feature_cols])
+    get_param_list.append(['feature_cols', feature_names])
     get_param_list.append(['label_col', label_col])
     for key, value in get_param.items():
         temp = [key, value]
         get_param_list.append(temp)
     get_param_df = pd.DataFrame(data=get_param_list, columns=['parameter', 'value'])
-    feature_importance_df = pd.DataFrame(data=feature_importance, index=feature_cols).T
+    feature_importance_df = pd.DataFrame(data=feature_importance, index=feature_names).T
     
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
@@ -116,8 +132,9 @@ def _xgb_regression_predict(table, model, prediction_col='prediction',
             output_margin=False, ntree_limit=None):
         
     feature_cols = model['feature_cols']
+    feature_names, features = check_col_type(table, feature_cols)
     regressor = model['regressor']
-    prediction = regressor.predict(table[feature_cols], output_margin, ntree_limit)
+    prediction = regressor.predict(features, output_margin, ntree_limit)
 #         prediction_df = pd.DataFrame(data = prediction)
 #         
 #         out_df = pd.concat([table.reset_index(drop=True), prediction_df], axis=1)

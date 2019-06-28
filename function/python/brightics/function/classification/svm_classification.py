@@ -1,3 +1,19 @@
+"""
+    Copyright 2019 Samsung SDS
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+        http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
+
 import pandas as pd
 import numpy as np
 from sklearn import svm
@@ -9,6 +25,7 @@ from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate, greater_than, greater_than_or_equal_to, less_than, \
     over_to, less_than_or_equal_to, raise_runtime_error
 import sklearn.utils as sklearn_utils
+from brightics.common.classify_input_type import check_col_type
 
 
 def svm_classification_train(table, group_by=None, **params):
@@ -29,8 +46,8 @@ def svm_classification_train(table, group_by=None, **params):
 def _svm_classification_train(table, feature_cols, label_col, c=1.0, kernel='rbf', degree=3, gamma='auto', coef0=0.0,
                               shrinking=True, probability=True, tol=1e-3, max_iter=-1, random_state=None):
     _table = table.copy()
-    
-    _feature_cols = _table[feature_cols]
+
+    feature_names, features = check_col_type(table, feature_cols)
     _label_col = _table[label_col]
     
     if(sklearn_utils.multiclass.type_of_target(_label_col) == 'continuous'):
@@ -38,10 +55,10 @@ def _svm_classification_train(table, feature_cols, label_col, c=1.0, kernel='rbf
     
     _svc = svm.SVC(C=c, kernel=kernel, degree=degree, gamma=gamma, coef0=coef0, shrinking=shrinking,
               probability=probability, tol=tol, max_iter=max_iter, random_state=random_state)
-    _svc_model = _svc.fit(_feature_cols, _label_col)
+    _svc_model = _svc.fit(features, _label_col)
     
     get_param = _svc.get_params()
-    get_param['feature_cols'] = feature_cols
+    get_param['feature_cols'] = feature_names
     get_param['label_col'] = label_col
     
     rb = BrtcReprBuilder()
@@ -53,7 +70,7 @@ def _svm_classification_train(table, feature_cols, label_col, c=1.0, kernel='rbf
     
     _model = _model_dict('svc_model')
     _model['svc_model'] = _svc_model
-    _model['features'] = feature_cols
+    _model['features'] = feature_names
     _model['_repr_brtc_'] = rb.get()
     
     return {'model':_model}
@@ -68,10 +85,20 @@ def svm_classification_predict(table, model, **params):
 
 
 def _svm_classification_predict(table, model, prediction_col='prediction', prob_prefix='probability',
-                                display_log_prob=False, log_prob_prefix='log_probability', thresholds=None,
+                                display_log_prob=True, log_prob_prefix='log_probability',
+                                thresholds=None, probability_col='probability', log_probability_col='log_probability',
                                 suffix='index'):
-    _table = table.copy()
     
+## migration for 3.6.0.4 <- studio
+
+    if (probability_col != 'probability'):
+        prob_prefix = probability_col
+    if (log_probability_col != 'log_probability'):
+        log_prob_prefix = log_probability_col
+
+## migration for 3.6.0.4 <- studio
+    
+    _table = table.copy()    
     feature_cols = model['features']
     features = _table[feature_cols]
     svc_model = model['svc_model']
@@ -100,7 +127,7 @@ def _svm_classification_predict(table, model, prediction_col='prediction', prob_
     prob_cols = ['{probability_col}_{suffix}'.format(probability_col=prob_prefix, suffix=suffix) for suffix in suffixes]
     prob_df = pd.DataFrame(data=prob, columns=prob_cols)
     
-    prediction = pd.DataFrame(prob).apply(lambda x: classes[np.argmax(x / thresholds)], axis=1)
+    prediction = [classes[np.argmax(x / thresholds)] for x in prob]
     
     out_table = table.copy()
     out_table[prediction_col] = prediction

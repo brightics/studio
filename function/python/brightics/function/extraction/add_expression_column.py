@@ -1,3 +1,20 @@
+"""
+    Copyright 2019 Samsung SDS
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+        http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
+
+from brightics.common.utils import check_required_parameters
 from pandasql import sqldf
 from brightics.function.transform import sql_execute
 from brightics.common.repr import strip_margin
@@ -18,7 +35,12 @@ def add_expression_column(table, new_cols, formulas, expr_type='sqlite'):
     return {'out_table':_table}
 
 
-def add_expression_column_if(table, new_col, conditions, values, else_value, expr_type='sqlite'):
+def add_expression_column_if(table, **params):
+    check_required_parameters(_add_expression_column_if, params, ['table'])
+    return _add_expression_column_if(table, **params)
+
+
+def _add_expression_column_if(table, new_col, conditions, values, else_value, expr_type='sqlite'):
     _table = table.copy()
 
     _condition_size = min(len(conditions), len(values))

@@ -1,3 +1,19 @@
+"""
+    Copyright 2019 Samsung SDS
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+        http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
+
 import math
 import pandas as pd
 import scipy.stats
@@ -6,6 +22,7 @@ from brightics.common.repr import BrtcReprBuilder, strip_margin, \
     pandasDF2MD
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
+from brightics.common.validation import raise_error
 from brightics.common.validation import validate
 from brightics.common.validation import from_to
 from brightics.common.utils import get_default_from_parameters_if_required
@@ -52,17 +69,9 @@ def _ftest_for_stacked_data(table, response_cols, factor_col, alternatives, firs
                 else:
                     break
     if first is None or second is None:
-        tmp_factors = []
-        if first is not None:
-            tmp_factors += [first]
-        if second is not None:
-            tmp_factors += [second]
-        for i in range(len(table[factor_col])):
-            if table[factor_col][i] is not None and table[factor_col][i] not in tmp_factors:
-                if len(tmp_factors) == 2:
-                    raise Exception("There are more that 2 factors.")
-                else:
-                    tmp_factors += [table[factor_col][i]]
+        tmp_factors=np.unique(table[factor_col])
+        if len(tmp_factors) != 2:
+            raise_error('0719', 'factor_col')
     if first is None:
         if tmp_factors[0] != second:
             first = tmp_factors[0]

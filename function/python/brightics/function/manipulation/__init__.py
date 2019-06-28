@@ -1,3 +1,19 @@
+"""
+    Copyright 2019 Samsung SDS
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+        http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
+
 from .outlier_detection import outlier_detection_lof, outlier_detection_tukey_carling, outlier_detection_tukey_carling_model, outlier_detection_lof_model
 
 import pandas as pd
@@ -30,7 +46,7 @@ def simple_filter(table, input_cols, operators, operands, main_operator='and'):
     second_filter_list = []
     for c, op, od in zip(_column, _operator, operands):
         if op in ['starts with', 'ends with', 'contain', 'not contain']:
-            second_filter_list.append([c, op, od])
+            second_filter_list.append([c, op, od.strip('\'')])
         else:
             first_filter_list.append([c, op, od])
     _query = main_operator.join(['''({input_cols} {operators} {operands})'''.format(input_cols=c, operators=op, operands=od) for c, op, od in first_filter_list])

@@ -1,3 +1,19 @@
+"""
+    Copyright 2019 Samsung SDS
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+        http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
+
 from brightics.common.validation import raise_runtime_error
 from brightics.common.utils import check_required_parameters
 import pandas as pd
@@ -8,7 +24,7 @@ def bind_row_column(first_table, second_table, **params):
 
 def _bind_row_column(first_table, second_table, row_or_col):
     if row_or_col == 'row':
-        table = pd.concat([first_table, second_table], ignore_index=True, sort=False)
+        table = pd.concat([first_table, second_table], ignore_index=True)
     else:  # col
         if list(set(first_table.columns).intersection(set(second_table.columns))) != []:
             col_name_first = []

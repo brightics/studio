@@ -1,3 +1,19 @@
+"""
+    Copyright 2019 Samsung SDS
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+        http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
+
 from brightics.common.repr import BrtcReprBuilder
 from brightics.common.repr import strip_margin
 from brightics.common.repr import dict2MD
@@ -6,6 +22,7 @@ from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate
 from brightics.common.validation import from_to
+from brightics.common.validation import raise_error
 from brightics.common.groupby import _function_by_group
 import numpy as np
 import pandas as pd
@@ -218,17 +235,9 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
                 else:
                     break
     if first is None or second is None:
-        tmp_factors = []
-        if first is not None:
-            tmp_factors += [first]
-        if second is not None:
-            tmp_factors += [second]
-        for i in range(len(table[factor_col])):
-            if table[factor_col][i] is not None and table[factor_col][i] not in tmp_factors:
-                if len(tmp_factors) == 2:
-                    raise Exception("There are more that 2 factors.")
-                else:
-                    tmp_factors += [table[factor_col][i]]
+        tmp_factors=np.unique(table[factor_col])
+        if len(tmp_factors) != 2:
+            raise_error('0719', 'factor_col')
     if first is None:
         if tmp_factors[0] != second:
             first = tmp_factors[0]
@@ -281,10 +290,10 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
                 margin = t.ppf((confi_level) , df) * std_number1number2 * sqrt(1 / number1 + 1 / number2)
             if equal_vari == 'unequal':
                 margin = t.ppf((confi_level) , df) * sqrt(std1 ** 2 / (number1) + std2 ** 2 / (number2))
-            tmp_model += [['true difference in means > 0.0'] + 
+            tmp_model += [['true difference in means > {}'.format(hypo_diff)] + 
             [ttestresult[1]] + [(mean1 - mean2 - margin, math.inf)]]
             tmp_table += [['%s by %s(%s,%s)' % (response_col, factor_col, first, second)] + 
-            ['true difference in means > 0.0'] + 
+            ['true difference in means > {}'.format(hypo_diff)] + 
             ['t statistic, t distribution with %f degrees of freedom under the null hypothesis' % ttestresult[2]] + 
             [ttestresult[0]] + [ttestresult[1]] + [confi_level] + [mean1 - mean2 - margin] + [math.inf]]
 
@@ -296,10 +305,10 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
                 margin = t.ppf((confi_level) , df) * std_number1number2 * sqrt(1 / number1 + 1 / number2)
             if equal_vari == 'unequal':
                 margin = t.ppf((confi_level) , df) * sqrt(std1 ** 2 / (number1) + std2 ** 2 / (number2))
-            tmp_model += [['true difference in means < 0.0'] + 
+            tmp_model += [['true difference in means < {}'.format(hypo_diff)] + 
             [ttestresult[1]] + [(-math.inf, mean1 - mean2 + margin)]] 
             tmp_table += [['%s by %s(%s,%s)' % (response_col, factor_col, first, second)] + 
-            ['true difference in means < 0.0'] + 
+            ['true difference in means < {}'.format(hypo_diff)] + 
             ['t statistic, t distribution with %f degrees of freedom under the null hypothesis' % ttestresult[2]] + 
             [ttestresult[0]] + [ttestresult[1]] + [confi_level] + [-math.inf] + [mean1 - mean2 + margin]] 
 
@@ -311,10 +320,10 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
                 margin = t.ppf((confi_level + 1) / 2 , df) * std_number1number2 * sqrt(1 / number1 + 1 / number2)
             if equal_vari == 'unequal':
                 margin = t.ppf((confi_level + 1) / 2 , df) * sqrt(std1 ** 2 / (number1) + std2 ** 2 / (number2))
-            tmp_model += [['true difference in means != 0.0'] + 
+            tmp_model += [['true difference in means != {}'.format(hypo_diff)] + 
             [ttestresult[1]] + [(mean1 - mean2 - margin, mean1 - mean2 + margin)]]
             tmp_table += [['%s by %s(%s,%s)' % (response_col, factor_col, first, second)] + 
-            ['true difference in means != 0.0'] + 
+            ['true difference in means != {}'.format(hypo_diff)] + 
             ['t statistic, t distribution with %f degrees of freedom under the null hypothesis' % ttestresult[2]] + 
             [ttestresult[0]] + [ttestresult[1]] + [confi_level] + [mean1 - mean2 - margin] + [mean1 - mean2 + margin]]
 

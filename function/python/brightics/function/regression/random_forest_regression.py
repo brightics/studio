@@ -1,3 +1,19 @@
+"""
+    Copyright 2019 Samsung SDS
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+        http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestRegressor 
@@ -52,8 +68,7 @@ def _plot_feature_importances(feature_cols, regressor):
 def _random_forest_regression_train(table, feature_cols, label_col,
                                  n_estimators=10, criterion="mse", max_depth=None, min_samples_split=2, min_samples_leaf=1,
                                  min_weight_fraction_leaf=0, max_features="None",
-                                 max_leaf_nodes=None, min_impurity_decrease=0, bootstrap=True, oob_score=False,
-                                 n_jobs=None, random_state=None, verbose=0, warm_start=False):   
+                                 max_leaf_nodes=None, min_impurity_decrease=0, random_state=None):   
     
     X_train = table[feature_cols]
     y_train = table[label_col]   
@@ -61,29 +76,32 @@ def _random_forest_regression_train(table, feature_cols, label_col,
     if max_features == "None":
         max_features = None
             
-    regressor = RandomForestRegressor(n_estimators, criterion, max_depth, min_samples_split, min_samples_leaf, min_weight_fraction_leaf, max_features, max_leaf_nodes, min_impurity_decrease)  # , bootstrap, oob_score, n_jobs, random_state, verbose, warm_start)
+    regressor = RandomForestRegressor(n_estimators =n_estimators,
+                                      criterion = criterion, 
+                                      max_depth= max_depth, 
+                                      min_samples_split = min_samples_split, 
+                                      min_samples_leaf = min_samples_leaf, 
+                                      min_weight_fraction_leaf = min_weight_fraction_leaf, 
+                                      max_features = max_features, 
+                                      max_leaf_nodes = max_leaf_nodes, 
+                                      min_impurity_decrease = min_impurity_decrease, 
+                                      random_state=random_state)
     regressor.fit(X_train, y_train) 
 
     params = {'feature_cols': feature_cols,
-             'label_col': label_col,
-             'n_estimators': n_estimators,
-             'criterion': criterion,
-             'max_depth': max_depth,
-             'min_samples_split': min_samples_split,
-             'min_samples_leaf': min_samples_leaf,
-             'min_weight_fraction_leaf': min_weight_fraction_leaf,
-             'max_features': max_features,
-             'max_leaf_nodes': max_leaf_nodes,
-             'min_impurity_decrease': min_impurity_decrease,
-             'bootstrap': bootstrap,
-             'oob_score': oob_score,
-             'n_jobs': n_jobs,
-             'random_state': random_state,
-             'verbose': verbose,
-             'warm_start': warm_start}
+              'label_col': label_col,
+              'n_estimators': n_estimators,
+              'criterion': criterion,
+              'max_depth': max_depth,
+              'min_samples_split': min_samples_split,
+              'min_samples_leaf': min_samples_leaf,
+              'min_weight_fraction_leaf': min_weight_fraction_leaf,
+              'max_features': max_features,
+              'max_leaf_nodes': max_leaf_nodes,
+              'min_impurity_decrease': min_impurity_decrease,
+              'random_state': random_state}
     
     model = dict()
-    # get_param = regressor.get_params()
     model['regressor'] = regressor
     model['params'] = params
 

@@ -1,3 +1,19 @@
+"""
+    Copyright 2019 Samsung SDS
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+        http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
+
 from sklearn.decomposition import PCA
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -78,6 +94,8 @@ def _pca(table, input_cols, new_column_name='projected_', n_components=None, cop
     table_explained_variance = pd.DataFrame(res_explained_variance, columns=['explained_variance'])
     table_explained_variance['explained_variance_ratio'] = res_explained_variance_ratio
     table_explained_variance['cum_explained_variance_ratio'] = res_explained_variance_ratio.cumsum()
+
+    model_table_explained_variance = table_explained_variance[:n_components]
                 
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
@@ -87,7 +105,7 @@ def _pca(table, input_cols, new_column_name='projected_', n_components=None, cop
     |
     | ### Explained Variance
     | {fig_scree}
-    | {table_explained_variance}    
+    | {model_table_explained_variance}    
     |
     | ### Components
     | {table2}
@@ -96,7 +114,7 @@ def _pca(table, input_cols, new_column_name='projected_', n_components=None, cop
     | {parameter1}
     """.format(image1=plt_two,
                fig_scree=fig_scree,
-               table_explained_variance=pandasDF2MD(table_explained_variance),
+               model_table_explained_variance=pandasDF2MD(model_table_explained_variance),
                parameter1=dict2MD(res_get_param),
                table2=pandasDF2MD(res_components_df)
                )))        
@@ -105,6 +123,7 @@ def _pca(table, input_cols, new_column_name='projected_', n_components=None, cop
     model['components'] = res_components
     model['explained_variance'] = res_explained_variance
     model['explained_variance_ratio'] = res_explained_variance_ratio
+    model['model_table_explained_variance'] = model_table_explained_variance
     model['singular_values'] = res_singular_values
     model['mean'] = res_mean
     model['n_components'] = res_n_components

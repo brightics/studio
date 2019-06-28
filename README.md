@@ -61,6 +61,12 @@ Brightics Studio pops up on Chrome browser after launching start-brightics.cmd (
 Brightics Studio is now available from AWS Marketplace(https://aws.amazon.com/marketplace/pp/B07P4399PD).<br>
 It just takes only 1~2 minutes to setup EC2 and launch Brightics Studio.
 
+### Install additional packages
+This section explain how to install some python packages to Brightics Studio python environment.
+
+	/brightics-studio/lib/python/python get-pip.py : This step is only needed once.
+	/brightics-studio/lib/python/Scripts/pip install <ANY_PACKAGES>
+
 ## Development
 ### Prerequisite
  * JDK 1.8, 1.9 (64bit)

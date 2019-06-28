@@ -1,8 +1,26 @@
+"""
+    Copyright 2019 Samsung SDS
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+        http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
+
 from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, plt2MD, dict2MD
 from brightics.function.utils import _model_dict
+from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate, greater_than_or_equal_to, greater_than
+from brightics.common.classify_input_type import check_col_type
 
 import pandas as pd
 import numpy as np
@@ -40,7 +58,8 @@ def _decision_tree_regression_train(table, feature_cols, label_col,  # fig_size=
                                        min_samples_leaf, min_weight_fraction_leaf, max_features,
                                        random_state, max_leaf_nodes, min_impurity_decrease,
                                        min_impurity_split, presort)
-    regressor.fit(table[feature_cols], table[label_col],
+    feature_names, features = check_col_type(table,feature_cols)
+    regressor.fit(features, table[label_col],
                    sample_weight, check_input, X_idx_sorted)
     
     try:
@@ -49,7 +68,7 @@ def _decision_tree_regression_train(table, feature_cols, label_col,  # fig_size=
         import pydotplus
         dot_data = StringIO()
         export_graphviz(regressor, out_file=dot_data,
-                        feature_names=feature_cols,
+                        feature_names=feature_names,
                         filled=True, rounded=True,
                         special_characters=True)
         graph = pydotplus.graph_from_dot_data(dot_data.getvalue())  
@@ -76,7 +95,7 @@ def _decision_tree_regression_train(table, feature_cols, label_col,  # fig_size=
     # report    
     
     indices = np.argsort(feature_importance)
-    sorted_feature_cols = np.array(feature_cols)[indices]
+    sorted_feature_cols = np.array(feature_names)[indices]
     
     plt.title('Feature Importances')
     plt.barh(range(len(indices)), feature_importance[indices], color='b', align='center')
@@ -89,7 +108,7 @@ def _decision_tree_regression_train(table, feature_cols, label_col,  # fig_size=
     plt.clf()
     
     params = dict2MD(get_param)
-    feature_importance_df = pd.DataFrame(data=feature_importance, index=feature_cols).T
+    feature_importance_df = pd.DataFrame(data=feature_importance, index=feature_names).T
     
     # Add tree plot
         
@@ -126,8 +145,9 @@ def _decision_tree_regression_predict(table, model, prediction_col='prediction',
                                      check_input=True):
     out_table = table.copy()
     feature_cols = model['feature_cols']
+    feature_names, features = check_col_type(table,feature_cols)
     regressor = model['regressor']
-    prediction = regressor.predict(table[feature_cols], check_input)
+    prediction = regressor.predict(features, check_input)
     out_table[prediction_col] = prediction
     
     return {'out_table': out_table}

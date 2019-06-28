@@ -1,3 +1,19 @@
+"""
+    Copyright 2019 Samsung SDS
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+        http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.tree import DecisionTreeClassifier
@@ -11,6 +27,9 @@ from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate
 from brightics.common.validation import greater_than_or_equal_to
+from brightics.common.validation import raise_error
+import sklearn.utils as sklearn_utils
+from brightics.common.classify_input_type import check_col_type
 
 
 def decision_tree_classification_train(table, group_by=None, **params):
@@ -35,17 +54,23 @@ def decision_tree_classification_train(table, group_by=None, **params):
         return _decision_tree_classification_train(table, **params)
 
 
-def _decision_tree_classification_train(table, feature_cols, label_col, # fig_size=np.array([6.4, 4.8]),
+def _decision_tree_classification_train(table, feature_cols, label_col,  # fig_size=np.array([6.4, 4.8]),
                                         criterion='gini', splitter='best', max_depth=None, min_samples_split=2,
                                         min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_features=None,
                                         random_state=None, max_leaf_nodes=None, min_impurity_decrease=0.0,
                                         min_impurity_split=None, class_weight=None, presort=False, sample_weight=None,
                                         check_input=True, X_idx_sorted=None):
 
+    feature_names, features = check_col_type(table, feature_cols)
+    y_train = table[label_col]
+    
+    if(sklearn_utils.multiclass.type_of_target(y_train) == 'continuous'):
+        raise_error('0718', 'label_col')
+        
     classifier = DecisionTreeClassifier(criterion, splitter, max_depth, min_samples_split, min_samples_leaf,
                                        min_weight_fraction_leaf, max_features, random_state, max_leaf_nodes,
                                        min_impurity_decrease, min_impurity_split, class_weight, presort)
-    classifier.fit(table[feature_cols], table[label_col],
+    classifier.fit(features, table[label_col],
                    sample_weight, check_input, X_idx_sorted)
 
     try:
@@ -54,7 +79,7 @@ def _decision_tree_classification_train(table, feature_cols, label_col, # fig_si
         import pydotplus
         dot_data = StringIO()
         export_graphviz(classifier, out_file=dot_data,
-                        feature_names=feature_cols, class_names=table[label_col].astype('str').unique(),
+                        feature_names=feature_names, class_names=table[label_col].astype('str').unique(),
                         filled=True, rounded=True,
                         special_characters=True)
         graph = pydotplus.graph_from_dot_data(dot_data.getvalue())
@@ -65,7 +90,7 @@ def _decision_tree_classification_train(table, feature_cols, label_col, # fig_si
 
     # json
     model = _model_dict('decision_tree_classification_model')
-    model['feature_cols'] = feature_cols
+    model['feature_cols'] = feature_names
     model['label_col'] = label_col
     model['classes'] = classifier.classes_
     feature_importance = classifier.feature_importances_
@@ -81,7 +106,7 @@ def _decision_tree_classification_train(table, feature_cols, label_col, # fig_si
 
     # report
     indices = np.argsort(feature_importance)
-    sorted_feature_cols = np.array(feature_cols)[indices]
+    sorted_feature_cols = np.array(feature_names)[indices]
 
     plt.title('Feature Importances')
     plt.barh(range(len(indices)), feature_importance[indices], color='b', align='center')

@@ -1,3 +1,19 @@
+"""
+    Copyright 2019 Samsung SDS
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+        http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
+
 import io
 import json
 import os
@@ -25,12 +41,25 @@ def write_csv(table, path):
     table.to_csv(path, index=False)
 
 
-def unload_model(model, path):
+def unload_model(path, **params):
+    outputs = params['linked']['outputs']
+    model = outputs['model']
+
+    def getModelFromInputs():
+        for k,v in params.items():
+            if k is model:
+                return v
+        return {}
+
     dir_ = os.path.dirname(path)
     if not os.path.exists(dir_):
         os.makedirs(dir_)
     with open(path, 'wb') as fp:
-        json.dump(data_json.to_json(model, for_redis=True), codecs.getwriter('utf-8')(fp), ensure_ascii=False)
+        #json.dump(data_json.to_json(params["model_0"], for_redis=True), codecs.getwriter('utf-8')(fp), ensure_ascii=False)
+        json.dump(data_json.to_json(getModelFromInputs(), for_redis=True), codecs.getwriter('utf-8')(fp), ensure_ascii=False)
+
+    return {"model":model}
+
 
 
 def write_to_s3(table, datasource, object_key):
