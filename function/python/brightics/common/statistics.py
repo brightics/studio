@@ -21,34 +21,34 @@ import scipy.stats
 # NOTE: all parameter 'a' is assumed as array-like
 
 
-def max(a): return np.max(a)
+def max(a): return np.nanmax(a)
 
 
-def min(a): return np.min(a)
+def min(a): return np.nanmin(a)
 
 
-def range(a): return np.max(a) - np.min(a)
+def range(a): return np.nanmax(a) - np.nanmin(a)
 
 
-def sum(a): return np.sum(a)
+def sum(a): return np.nansum(a)
 
 
-def mean(a): return np.mean(a)
+def mean(a): return np.nanmean(a)
 
 
-def var(a): return np.var(a)
+def var(a): return np.nanvar(a)
 
 
-def var_samp(a): return np.var(a, ddof=1)
+def var_samp(a): return np.nanvar(a, ddof=1)
 
 
-def std(a): return np.std(a)
+def std(a): return np.nanstd(a)
 
 
-def skewness(a): return scipy.stats.skew(a)
+def skewness(a): return scipy.stats.skew(a, nan_policy = 'omit').tolist()
 
 
-def kurtosis(a): return scipy.stats.kurtosis(a)
+def kurtosis(a): return scipy.stats.kurtosis(a, nan_policy = 'omit')
 
 
 def median(a): return np.median(a)
@@ -69,7 +69,11 @@ def q1(a): return np.percentile(a, 25)
 def q3(a): return np.percentile(a, 75)
 
 
-def mode(a): return list(pd.Series(a).mode())
+def mode(a):
+    a = np.array(a)
+    a = a[np.where(~pd.isnull(a))]
+    vals, cnts = np.unique(a, return_counts=True)
+    return vals[cnts.argmax()]
 
 
 def num_row(a): return len(a)
@@ -88,4 +92,3 @@ def num_null(a): return np.count_nonzero(pd.isnull(a))
 
 
 def num_distinct(a): return np.count_nonzero(np.unique(a))
-
