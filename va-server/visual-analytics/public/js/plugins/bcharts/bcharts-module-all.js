@@ -60,30 +60,30 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 452);
+/******/ 	return __webpack_require__(__webpack_require__.s = 679);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 452:
+/***/ 679:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _bchartDecisiontreeForBrightics = __webpack_require__(453);
+var _bchartDecisiontreeForBrightics = __webpack_require__(680);
 
 var _bchartDecisiontreeForBrightics2 = _interopRequireDefault(_bchartDecisiontreeForBrightics);
 
-var _d3DecisiontreeForBrightics = __webpack_require__(454);
+var _d3DecisiontreeForBrightics = __webpack_require__(681);
 
 var _d3DecisiontreeForBrightics2 = _interopRequireDefault(_d3DecisiontreeForBrightics);
 
-var _chartValidatorDecisiontreeForBrightics = __webpack_require__(457);
+var _chartValidatorDecisiontreeForBrightics = __webpack_require__(684);
 
 var _chartValidatorDecisiontreeForBrightics2 = _interopRequireDefault(_chartValidatorDecisiontreeForBrightics);
 
-var _chartOptionDecisiontree = __webpack_require__(458);
+var _chartOptionDecisiontree = __webpack_require__(685);
 
 var _chartOptionDecisiontree2 = _interopRequireDefault(_chartOptionDecisiontree);
 
@@ -99,7 +99,7 @@ Brightics.Chart.Adonis.API.registerChartOption({ Key: _bchartDecisiontreeForBrig
 
 /***/ }),
 
-/***/ 453:
+/***/ 680:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -214,7 +214,7 @@ exports.default = BDecisionTreeForBrighticsCharts;
 
 /***/ }),
 
-/***/ 454:
+/***/ 681:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -224,7 +224,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _d3DecisiontreeForBrighticsOptionBuilder = __webpack_require__(455);
+var _d3DecisiontreeForBrighticsOptionBuilder = __webpack_require__(682);
 
 var _d3DecisiontreeForBrighticsOptionBuilder2 = _interopRequireDefault(_d3DecisiontreeForBrighticsOptionBuilder);
 
@@ -262,7 +262,7 @@ D3DecisionTreeForBrightics.prototype._chartInit = function ($parent) {
 
     this.svg = this.d3chart.svg.attr("width", width + this.margin.right + this.margin.left).attr("viewBox", "0 0 " + div_w + " " + div_h).attr("height", height + this.margin.top + this.margin.bottom);
 
-    this.g = this.svg.append("g").attr("transform", "translate(" + this.margin.top + "," + this.margin.left + ")").call(this.d3chart.nodeTooltip);
+    this.g = this.svg.append("g").attr("transform", "translate(" + this.margin.top + "," + this.margin.left + ")").call(this.d3chart.nodeTooltip).call(this.d3chart.linkTooltip);
 
     this.nodeFigure = {
         width: 180,
@@ -382,6 +382,7 @@ D3DecisionTreeForBrightics.prototype.update = function (options) {
     var linkColor = this.options.plotOptions.decisionTree.style.link.color;
     var linkOpacity = this.options.plotOptions.decisionTree.style.link.opacity;
     this.d3chart.nodeTooltip.html(options.tooltip.formatter.bind(this));
+    this.d3chart.linkTooltip.html(this.linkTooltipFormatter.bind(this));
 
     var source = options.series[0].data;
 
@@ -609,7 +610,7 @@ D3DecisionTreeForBrightics.prototype.update = function (options) {
         return d.id;
     });
 
-    linktext.enter().append("g").attr('class', 'linktext').attr("transform", function (d) {
+    var linkTTT = linktext.enter().append("g").attr('class', 'linktext').attr("transform", function (d) {
         var portion = d.x < d.parent.x ? 4 / 5 : 3 / 5;
 
         return "translate(" + d.x + "," + (d.y - 50) + ")";
@@ -630,7 +631,14 @@ D3DecisionTreeForBrightics.prototype.update = function (options) {
                 return '>' + d.parent.data.linkLabel;
             }
         }
-    });
+    }).call(_this._wrap.bind(this));
+
+    if (this.options.tooltip.triggerOn === 'mousemove') {
+        linkTTT.on('mouseover', this.d3chart.linkTooltip.show).on('click', null).on('mouseout', this.d3chart.linkTooltip.hide);
+    } else {
+        linkTTT.on('click', this.d3chart.linkTooltip.show).on('mouseover', null).on('mouseout', null);
+    }
+
     linktext.transition().attr('d', function (d) {
         var o = { y: d.y, x: d.x };
         if (d.depth == 1) {
@@ -665,6 +673,15 @@ D3DecisionTreeForBrightics.prototype.redraw = function () {
     this.g.attr("transform", currentTransform);
 };
 
+D3DecisionTreeForBrightics.prototype.linkTooltipFormatter = function (params) {
+    var toolItems = [];
+    if (params.parent.data.linkLabel) {
+        var linkLabel = params.parent.data.linkLabel();
+        if (linkLabel) toolItems.push(linkLabel);
+    }
+    return toolItems;
+};
+
 D3DecisionTreeForBrightics.prototype.render = function () {
     var opt = this.seriesHelper.buildOptions(this.options);
 
@@ -677,6 +694,7 @@ D3DecisionTreeForBrightics.prototype.render = function () {
         toolItems = toolItems.concat(params.data.nodeLabel());
         return toolItems.join('<br>');
     };
+
     this._bindInternalOptions(this.seriesHelper);
     this.update(opt);
 };
@@ -690,7 +708,7 @@ exports.default = D3DecisionTreeForBrightics;
 
 /***/ }),
 
-/***/ 455:
+/***/ 682:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -700,7 +718,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _decisiontreeForBrighticsExtractor = __webpack_require__(456);
+var _decisiontreeForBrighticsExtractor = __webpack_require__(683);
 
 var _decisiontreeForBrighticsExtractor2 = _interopRequireDefault(_decisiontreeForBrighticsExtractor);
 
@@ -851,7 +869,7 @@ exports.default = D3DecisionTreeForBrighticsOptionBuilder;
 
 /***/ }),
 
-/***/ 456:
+/***/ 683:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1053,7 +1071,7 @@ exports.default = DecisionTreeForBrighticsDataExtractor;
 
 /***/ }),
 
-/***/ 457:
+/***/ 684:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1116,7 +1134,7 @@ exports.default = DecisionTreeForBrighticsChartValidator;
 
 /***/ }),
 
-/***/ 458:
+/***/ 685:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

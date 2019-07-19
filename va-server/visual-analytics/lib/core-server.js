@@ -217,6 +217,10 @@ const
         'float32': {
             type: 'number',
             internalType: 'Double'
+        },
+        'image': {
+            type: 'image',
+            internalType: 'Image'
         }
     };
 
