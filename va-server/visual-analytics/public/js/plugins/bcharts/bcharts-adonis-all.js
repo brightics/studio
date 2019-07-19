@@ -60,13 +60,14 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 339);
+/******/ 	return __webpack_require__(__webpack_require__.s = 559);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */,
 /* 1 */,
-/* 2 */
+/* 2 */,
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -93,6 +94,7 @@ exports.createFontSizeSelectorWidget = createFontSizeSelectorWidget;
 exports.createFontStyleWidget = createFontStyleWidget;
 exports.createOpacitySelectorWidget = createOpacitySelectorWidget;
 exports.createMarkerSizeSelectorWidget = createMarkerSizeSelectorWidget;
+exports.createMarkerShowSelectorWidget = createMarkerShowSelectorWidget;
 exports.createMarkerLineSelectorWidget = createMarkerLineSelectorWidget;
 exports.createDashTypeSelectorWidget = createDashTypeSelectorWidget;
 exports.createLineWidthSelectorWidget = createLineWidthSelectorWidget;
@@ -100,6 +102,8 @@ exports.createLineStyleWidget = createLineStyleWidget;
 exports.createLineComponentWidget = createLineComponentWidget;
 exports.createHorizontalAlignRadioButtonWidget = createHorizontalAlignRadioButtonWidget;
 exports.createVerticalAlignRadioButtonWidget = createVerticalAlignRadioButtonWidget;
+exports.createCustomHorizontalAlignRadioButtonWidget = createCustomHorizontalAlignRadioButtonWidget;
+exports.createCustomVerticalAlignRadioButtonWidget = createCustomVerticalAlignRadioButtonWidget;
 exports.createFontStyleButtonWidget = createFontStyleButtonWidget;
 exports.createDirectionRadioButtonWidget = createDirectionRadioButtonWidget;
 exports.createToolTipBehaviorRadioButtonWidget = createToolTipBehaviorRadioButtonWidget;
@@ -117,8 +121,9 @@ exports.createCenterPositionWidget = createCenterPositionWidget;
 exports.createCenterPositionNumberWidget = createCenterPositionNumberWidget;
 exports.createToolTipTriggerRadioButtonWidget = createToolTipTriggerRadioButtonWidget;
 exports.createEdgeTypeSelectorWidget = createEdgeTypeSelectorWidget;
+exports.createLabelWidget = createLabelWidget;
 
-var _widgetIndex = __webpack_require__(344);
+var _widgetIndex = __webpack_require__(564);
 
 var Widgets = _interopRequireWildcard(_widgetIndex);
 
@@ -197,6 +202,10 @@ function createMarkerSizeSelectorWidget(parentId, options) {
     return new Widgets.MarkerSizeSelectorWidget(parentId, options);
 }
 
+function createMarkerShowSelectorWidget(parentId, options) {
+    return new Widgets.MarkerShowSelectorWidget(parentId, options);
+}
+
 function createMarkerLineSelectorWidget(parentId, options) {
     return new Widgets.MarkerLineSelectorWidget(parentId, options);
 }
@@ -223,6 +232,14 @@ function createHorizontalAlignRadioButtonWidget(parentId, options) {
 
 function createVerticalAlignRadioButtonWidget(parentId, options) {
     return new Widgets.VerticalAlignRadioButtonWidget(parentId, options);
+}
+
+function createCustomHorizontalAlignRadioButtonWidget(parentId, options) {
+    return new Widgets.CustomHorizontalAlignRadioButtonWidget(parentId, options);
+}
+
+function createCustomVerticalAlignRadioButtonWidget(parentId, options) {
+    return new Widgets.CustomVerticalAlignRadioButtonWidget(parentId, options);
 }
 
 function createFontStyleButtonWidget(parentId, options) {
@@ -293,8 +310,11 @@ function createEdgeTypeSelectorWidget(parentId, options) {
     return new Widgets.EdgeTypeSelectorWidget(parentId, options);
 }
 
+function createLabelWidget(parentId, options) {
+    return new Widgets.LabelWidget(parentId, options);
+}
+
 /***/ }),
-/* 3 */,
 /* 4 */,
 /* 5 */,
 /* 6 */
@@ -307,11 +327,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _controlContainerPreview = __webpack_require__(59);
+var _controlContainerPreview = __webpack_require__(119);
 
 var ControlContainerPreview = _interopRequireWildcard(_controlContainerPreview);
 
-var _controlContainerFactory = __webpack_require__(172);
+var _controlContainerFactory = __webpack_require__(272);
 
 var ControlContainerFactory = _interopRequireWildcard(_controlContainerFactory);
 
@@ -502,7 +522,8 @@ exports.default = ChartOptionBase;
 
 /***/ }),
 /* 7 */,
-/* 8 */
+/* 8 */,
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -512,11 +533,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
-var _controlContainerPreview = __webpack_require__(59);
+var _controlContainerPreview = __webpack_require__(119);
 
 var ControlContainerPreview = _interopRequireWildcard(_controlContainerPreview);
 
@@ -658,10 +679,14 @@ BaseControl.prototype.setExpanderPreview = function () {
 exports.default = BaseControl;
 
 /***/ }),
-/* 9 */,
 /* 10 */,
 /* 11 */,
-/* 12 */
+/* 12 */,
+/* 13 */,
+/* 14 */,
+/* 15 */,
+/* 16 */,
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -714,12 +739,12 @@ var ChartOptionConst = {
 exports.default = ChartOptionConst;
 
 /***/ }),
-/* 13 */,
-/* 14 */,
-/* 15 */,
-/* 16 */,
-/* 17 */,
-/* 18 */
+/* 18 */,
+/* 19 */,
+/* 20 */,
+/* 21 */,
+/* 22 */,
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -769,139 +794,13 @@ BaseWidget.prototype.close = function () {};
 exports.default = BaseWidget;
 
 /***/ }),
-/* 19 */,
-/* 20 */,
-/* 21 */,
-/* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _baseWidget = __webpack_require__(18);
-
-var _baseWidget2 = _interopRequireDefault(_baseWidget);
-
-var _chartOptionConst = __webpack_require__(12);
-
-var _chartOptionConst2 = _interopRequireDefault(_chartOptionConst);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * options = {
- *      original: {},
- *      key: '',
- *      width: % or px default 100%,
- *      height:% or px default 100%,
- *      value:
- *      onChanged: function(){]
- * }
- */
-/**
- * Created by mk90.kim on 2017-05-10.
- */
-
-function BaseSelectorWidget(parentId, options) {
-    _baseWidget2.default.call(this, parentId, options);
-}
-
-BaseSelectorWidget.prototype = Object.create(_baseWidget2.default.prototype);
-BaseSelectorWidget.prototype.constructor = BaseSelectorWidget;
-
-BaseSelectorWidget.prototype._createContents = function ($parent) {
-    this.$mainControl = $('' + '<div class="bos-widget-contents">' + '</div>');
-
-    this._createIconArea();
-    this._createSelectorArea(this.$mainControl);
-    $parent.append(this.$mainControl);
-};
-
-BaseSelectorWidget.prototype._createIconArea = function () {};
-
-BaseSelectorWidget.prototype._createSelectorArea = function ($parent) {
-    this.$selectorControl = $('<div class="bo-widget-selector bos-widget-selector"></div>'); //bos-border-only-bottom
-    $parent.append(this.$selectorControl);
-    var source = this._createListSource();
-    var option = {
-        width: this.options.width || '100%',
-        height: this.options.height || '30px',
-        scrollBarSize: 8,
-        source: source,
-        placeHolder: this.options.placeHolder || ' ',
-        animationType: 'none',
-        enableBrowserBoundsDetection: true,
-        autoDropDownHeight: true,
-        theme: _chartOptionConst2.default.Theme
-    };
-    var selectorOption = this._createSelectorOption();
-    $.extend(true, option, selectorOption);
-    this.$selectorControl.jqxDropDownList(option);
-
-    this._bindCallbackFunc();
-};
-
-BaseSelectorWidget.prototype._createListSource = function () {
-    return [];
-};
-
-BaseSelectorWidget.prototype._createSelectorOption = function () {
-    if (this.options.type && this.options.type === 'number') {
-        this.options.value = Number(this.options.value);
-    }
-    var selectedIdx = this._getItemIndexInSource(this.options.value);
-    return { selectedIndex: selectedIdx };
-};
-
-BaseSelectorWidget.prototype._getItemIndexInSource = function (item) {
-    return $.inArray(item, this._createListSource());
-};
-
-BaseSelectorWidget.prototype._bindCallbackFunc = function () {
-    if (typeof this.options.onChanged === 'function') {
-        var _this = this;
-        var callbackFunc = this.options.onChanged;
-        if (this.options.type && this.options.type === 'number') {
-            this.$selectorControl.on('change', function (event) {
-                callbackFunc.bind(_this)(Number(event.args.item.value));
-            });
-        } else {
-            this.$selectorControl.on('change', function (event) {
-                callbackFunc.bind(_this)(event.args.item.value);
-            });
-        }
-    }
-};
-
-BaseSelectorWidget.prototype.clearSelection = function () {
-    this.$selectorControl.jqxDropDownList('clearSelection');
-};
-
-BaseSelectorWidget.prototype.toggleDisable = function (disabled) {
-    this.$selectorControl.jqxDropDownList({ disabled: disabled });
-};
-
-BaseSelectorWidget.prototype.render = function (changedValue) {
-    var selectedIdx = this._getItemIndexInSource(changedValue);
-    this.$selectorControl.jqxDropDownList({ selectedIndex: selectedIdx });
-};
-
-BaseSelectorWidget.prototype.close = function () {
-    this.$selectorControl.jqxDropDownList('close');
-};
-
-BaseSelectorWidget.prototype.destroy = function () {
-    this.$selectorControl.jqxDropDownList('destroy');
-};
-
-exports.default = BaseSelectorWidget;
-
-/***/ }),
-/* 23 */
+/* 24 */,
+/* 25 */,
+/* 26 */,
+/* 27 */,
+/* 28 */,
+/* 29 */,
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -916,7 +815,7 @@ exports.getAllColumnList = getAllColumnList;
 exports.isEmpty = isEmpty;
 exports.mergeChartOption = mergeChartOption;
 
-var _chartOptionConst = __webpack_require__(12);
+var _chartOptionConst = __webpack_require__(17);
 
 var _chartOptionConst2 = _interopRequireDefault(_chartOptionConst);
 
@@ -984,7 +883,9 @@ function mergeChartOption(a, b) {
 }
 
 /***/ }),
-/* 24 */
+/* 31 */,
+/* 32 */,
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -994,7 +895,139 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseWidget = __webpack_require__(18);
+var _baseWidget = __webpack_require__(23);
+
+var _baseWidget2 = _interopRequireDefault(_baseWidget);
+
+var _chartOptionConst = __webpack_require__(17);
+
+var _chartOptionConst2 = _interopRequireDefault(_chartOptionConst);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * options = {
+ *      original: {},
+ *      key: '',
+ *      width: % or px default 100%,
+ *      height:% or px default 100%,
+ *      value:
+ *      onChanged: function(){]
+ * }
+ */
+/**
+ * Created by mk90.kim on 2017-05-10.
+ */
+
+function BaseSelectorWidget(parentId, options) {
+    _baseWidget2.default.call(this, parentId, options);
+}
+
+BaseSelectorWidget.prototype = Object.create(_baseWidget2.default.prototype);
+BaseSelectorWidget.prototype.constructor = BaseSelectorWidget;
+
+BaseSelectorWidget.prototype._createContents = function ($parent) {
+    this.$mainControl = $('' + '<div class="bos-widget-contents">' + '</div>');
+
+    this._createIconArea();
+    this._createSelectorArea(this.$mainControl);
+    $parent.append(this.$mainControl);
+};
+
+BaseSelectorWidget.prototype._createIconArea = function () {};
+
+BaseSelectorWidget.prototype._createSelectorArea = function ($parent) {
+    this.$selectorControl = $('<div class="bo-widget-selector bos-widget-selector"></div>'); //bos-border-only-bottom
+    $parent.append(this.$selectorControl);
+    var source = this._createListSource();
+    var option = {
+        width: this.options.width || '100%',
+        height: this.options.height || '30px',
+        scrollBarSize: 8,
+        source: source,
+        placeHolder: this.options.placeHolder || ' ',
+        animationType: 'none',
+        enableBrowserBoundsDetection: true,
+        autoDropDownHeight: true,
+        theme: _chartOptionConst2.default.Theme,
+        disabled: this.options.disabled || false
+    };
+    var selectorOption = this._createSelectorOption();
+    $.extend(true, option, selectorOption);
+    this.$selectorControl.jqxDropDownList(option);
+
+    this._bindCallbackFunc();
+};
+
+BaseSelectorWidget.prototype._createListSource = function () {
+    return [];
+};
+
+BaseSelectorWidget.prototype._createSelectorOption = function () {
+    if (this.options.type && this.options.type === 'number') {
+        this.options.value = Number(this.options.value);
+    }
+    var selectedIdx = this._getItemIndexInSource(this.options.value);
+    return { selectedIndex: selectedIdx };
+};
+
+BaseSelectorWidget.prototype._getItemIndexInSource = function (item) {
+    return $.inArray(item, this._createListSource());
+};
+
+BaseSelectorWidget.prototype._bindCallbackFunc = function () {
+    if (typeof this.options.onChanged === 'function') {
+        var _this = this;
+        var callbackFunc = this.options.onChanged;
+        if (this.options.type && this.options.type === 'number') {
+            this.$selectorControl.on('change', function (event) {
+                callbackFunc.bind(_this)(Number(event.args.item.value));
+            });
+        } else {
+            this.$selectorControl.on('change', function (event) {
+                callbackFunc.bind(_this)(event.args.item.value);
+            });
+        }
+    }
+};
+
+BaseSelectorWidget.prototype.clearSelection = function () {
+    this.$selectorControl.jqxDropDownList('clearSelection');
+};
+
+BaseSelectorWidget.prototype.toggleDisable = function (disabled) {
+    this.$selectorControl.jqxDropDownList({ disabled: disabled });
+};
+
+BaseSelectorWidget.prototype.render = function (changedValue) {
+    var selectedIdx = this._getItemIndexInSource(changedValue);
+    this.$selectorControl.jqxDropDownList({ selectedIndex: selectedIdx });
+};
+
+BaseSelectorWidget.prototype.close = function () {
+    this.$selectorControl.jqxDropDownList('close');
+};
+
+BaseSelectorWidget.prototype.destroy = function () {
+    this.$selectorControl.jqxDropDownList('destroy');
+};
+
+exports.default = BaseSelectorWidget;
+
+/***/ }),
+/* 34 */,
+/* 35 */,
+/* 36 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _baseWidget = __webpack_require__(23);
 
 var _baseWidget2 = _interopRequireDefault(_baseWidget);
 
@@ -1054,9 +1087,12 @@ BaseComplexWidget.prototype.destroy = function () {
 exports.default = BaseComplexWidget;
 
 /***/ }),
-/* 25 */,
-/* 26 */,
-/* 27 */
+/* 37 */,
+/* 38 */,
+/* 39 */,
+/* 40 */,
+/* 41 */,
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1230,9 +1266,22 @@ Dialog.prototype._createDialogContentsArea = function ($parent) {};
 exports.default = Dialog;
 
 /***/ }),
-/* 28 */,
-/* 29 */,
-/* 30 */
+/* 43 */,
+/* 44 */,
+/* 45 */,
+/* 46 */,
+/* 47 */,
+/* 48 */,
+/* 49 */,
+/* 50 */,
+/* 51 */,
+/* 52 */,
+/* 53 */,
+/* 54 */,
+/* 55 */,
+/* 56 */,
+/* 57 */,
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1242,15 +1291,15 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseWidget = __webpack_require__(18);
+var _baseWidget = __webpack_require__(23);
 
 var _baseWidget2 = _interopRequireDefault(_baseWidget);
 
-var _chartOptionUtil = __webpack_require__(23);
+var _chartOptionUtil = __webpack_require__(30);
 
 var ChartOptionUtil = _interopRequireWildcard(_chartOptionUtil);
 
-var _columnSelectorDialog = __webpack_require__(179);
+var _columnSelectorDialog = __webpack_require__(120);
 
 var _columnSelectorDialog2 = _interopRequireDefault(_columnSelectorDialog);
 
@@ -1539,7 +1588,7 @@ ColumnSelectorWidget.prototype.close = function () {
 exports.default = ColumnSelectorWidget;
 
 /***/ }),
-/* 31 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1549,15 +1598,15 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseWidget = __webpack_require__(18);
+var _baseWidget = __webpack_require__(23);
 
 var _baseWidget2 = _interopRequireDefault(_baseWidget);
 
-var _chartOptionConst = __webpack_require__(12);
+var _chartOptionConst = __webpack_require__(17);
 
 var _chartOptionConst2 = _interopRequireDefault(_chartOptionConst);
 
-var _chartOptionUtil = __webpack_require__(23);
+var _chartOptionUtil = __webpack_require__(30);
 
 var ChartOptionUtil = _interopRequireWildcard(_chartOptionUtil);
 
@@ -1610,7 +1659,13 @@ BaseRadioButtonGroupWidget.prototype._renderButtonSelected = function (selectedV
     var selectedBtn = this.$buttonObjList.find(function (btn) {
         return btn.attr('id') === selectedValue;
     });
-    if (selectedBtn) selectedBtn.jqxToggleButton('check');
+    if (selectedBtn) {
+        selectedBtn.jqxToggleButton('check');
+    } else {
+        this.$buttonObjList.forEach(function ($el) {
+            return $el.jqxToggleButton('unCheck');
+        });
+    }
 };
 
 BaseRadioButtonGroupWidget.prototype._createRadioBtnGrpUnits = function () {
@@ -1667,6 +1722,12 @@ BaseRadioButtonGroupWidget.prototype.toggleDisable = function (disabledVal) {
     });
 };
 
+BaseRadioButtonGroupWidget.prototype.unselect = function () {
+    this.options.value = null;
+    this._setPreValue(null);
+    this.render(null);
+};
+
 BaseRadioButtonGroupWidget.prototype.render = function (changedValue) {
     this._renderButtonSelected(changedValue);
 };
@@ -1674,13 +1735,22 @@ BaseRadioButtonGroupWidget.prototype.render = function (changedValue) {
 exports.default = BaseRadioButtonGroupWidget;
 
 /***/ }),
-/* 32 */,
-/* 33 */,
-/* 34 */,
-/* 35 */,
-/* 36 */,
-/* 37 */,
-/* 38 */
+/* 60 */,
+/* 61 */,
+/* 62 */,
+/* 63 */,
+/* 64 */,
+/* 65 */,
+/* 66 */,
+/* 67 */,
+/* 68 */,
+/* 69 */,
+/* 70 */,
+/* 71 */,
+/* 72 */,
+/* 73 */,
+/* 74 */,
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1690,7 +1760,100 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _filterControlFactory = __webpack_require__(61);
+var _dialog = __webpack_require__(42);
+
+var _dialog2 = _interopRequireDefault(_dialog);
+
+var _chartOptionConst = __webpack_require__(17);
+
+var _chartOptionConst2 = _interopRequireDefault(_chartOptionConst);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var ChartWidget = Brightics.Chart.Widget; /**
+                                           * Created by sds on 2018-04-09.
+                                           */
+
+/**
+ *  options = {
+ *      value: '',
+ *      chartTypeList: [],
+ *      onChanged: function(){]
+ *  }
+ *
+ */
+
+function FormatHelperDialog(parentId, options) {
+    _dialog2.default.call(this, parentId, options);
+}
+
+FormatHelperDialog.prototype = Object.create(_dialog2.default.prototype);
+FormatHelperDialog.prototype.constructor = FormatHelperDialog;
+
+FormatHelperDialog.prototype._init = function () {
+    ChartWidget.prototype._init.call(this);
+    this.options.showHeader = false;
+};
+
+// FormatHelperDialog.prototype._getTitle = function () {
+//     return 'Format Example';
+// };
+
+FormatHelperDialog.prototype._getDefaultWindowOption = function () {
+    var _this = this;
+
+    return {
+        theme: _chartOptionConst2.default.Theme,
+        width: '170px',
+        height: '110px',
+        maxWidth: '200px',
+        resizable: false,
+        initContent: function initContent() {
+            _this._configurePosition(_this.options.windowPosition);
+            _this._createDialogContentsArea(_this.$mainControl.find('.bo-dialogs-contents'));
+        }
+    };
+};
+
+FormatHelperDialog.prototype._createDialogContentsArea = function ($parent) {
+    var $exampleText = $('<div>' + '   <div class="bos-font-bold">All Types</div>' + '   <div class="bos-margin-left-5">${value}: 13.25 > $13.25<br></div>' + '   <div class="bos-font-bold">Number Type</div>' + '   <div class="bos-margin-left-5">' + '       {0,0}: 145000 > 145,000<br>' + '       {0.00}: 130.4721 > 130.47<br>' + '   </div>' + '</div>');
+
+    $exampleText.css('line-height', '1.6');
+    $parent.append($exampleText);
+};
+
+FormatHelperDialog.prototype._destroy = function () {
+    $(window).off('mousedown', this._closeHandler);
+    this.$mainControl.jqxWindow('destroy');
+    this.$mainControl.remove();
+};
+
+FormatHelperDialog.prototype._getItemList = function () {
+    if (this.options.itemList) {
+        return this.options.itemList;
+    } else {
+        return [];
+    }
+};
+
+FormatHelperDialog.prototype._getDialogResult = function () {
+    return this.$itemListContainer.find('.selected .bo-widget-item-selector-item').attr('item-value');
+};
+
+exports.default = FormatHelperDialog;
+
+/***/ }),
+/* 76 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _filterControlFactory = __webpack_require__(123);
 
 var FilterControlFactory = _interopRequireWildcard(_filterControlFactory);
 
@@ -1830,24 +1993,46 @@ FilterControl.prototype.destroy = function () {
 exports.default = FilterControl;
 
 /***/ }),
-/* 39 */,
-/* 40 */,
-/* 41 */,
-/* 42 */,
-/* 43 */,
-/* 44 */,
-/* 45 */,
-/* 46 */,
-/* 47 */,
-/* 48 */,
-/* 49 */,
-/* 50 */,
-/* 51 */,
-/* 52 */,
-/* 53 */,
-/* 54 */,
-/* 55 */,
-/* 56 */
+/* 77 */,
+/* 78 */,
+/* 79 */,
+/* 80 */,
+/* 81 */,
+/* 82 */,
+/* 83 */,
+/* 84 */,
+/* 85 */,
+/* 86 */,
+/* 87 */,
+/* 88 */,
+/* 89 */,
+/* 90 */,
+/* 91 */,
+/* 92 */,
+/* 93 */,
+/* 94 */,
+/* 95 */,
+/* 96 */,
+/* 97 */,
+/* 98 */,
+/* 99 */,
+/* 100 */,
+/* 101 */,
+/* 102 */,
+/* 103 */,
+/* 104 */,
+/* 105 */,
+/* 106 */,
+/* 107 */,
+/* 108 */,
+/* 109 */,
+/* 110 */,
+/* 111 */,
+/* 112 */,
+/* 113 */,
+/* 114 */,
+/* 115 */,
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1857,13 +2042,13 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _chartOptionRegister = __webpack_require__(57);
+var _chartOptionRegister = __webpack_require__(117);
 
 var ChartOptionRegistry = _interopRequireWildcard(_chartOptionRegister);
 
-var _chartOptionUtil = __webpack_require__(23);
+var _chartOptionUtil = __webpack_require__(30);
 
-var _autoOptionSelector = __webpack_require__(194);
+var _autoOptionSelector = __webpack_require__(295);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -2086,7 +2271,7 @@ ChartOption.prototype.getOptions = function () {
 exports.default = ChartOption;
 
 /***/ }),
-/* 57 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2100,7 +2285,7 @@ exports.getChartOptionControlList = getChartOptionControlList;
 exports.getChartOptionControl = getChartOptionControl;
 exports.createChartOptionControl = createChartOptionControl;
 
-var _chartOptionIndex = __webpack_require__(342);
+var _chartOptionIndex = __webpack_require__(562);
 
 var _chartOptionIndex2 = _interopRequireDefault(_chartOptionIndex);
 
@@ -2144,7 +2329,7 @@ function createChartOptionControl(chartType, parentId, options) {
 }
 
 /***/ }),
-/* 58 */
+/* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2158,7 +2343,7 @@ var _chartOptionBase = __webpack_require__(6);
 
 var _chartOptionBase2 = _interopRequireDefault(_chartOptionBase);
 
-var _chartOptionAreaStacked = __webpack_require__(190);
+var _chartOptionAreaStacked = __webpack_require__(291);
 
 var _chartOptionAreaStacked2 = _interopRequireDefault(_chartOptionAreaStacked);
 
@@ -2195,6 +2380,7 @@ AreaChartOption.prototype._init = function () {
     this.options.setting.marker = this.options.chartOption.plotOptions.area.marker;
     this.options.setting.stripLine = this.options.chartOption.plotOptions.area.stripLine;
     this.options.setting.tooltip = this.options.chartOption.plotOptions.area.tooltip;
+    this.options.setting.showSymbol = this.options.chartOption.plotOptions.area.showSymbol;
 };
 
 AreaChartOption.prototype.getDefaultControlContainerList = function () {
@@ -2204,7 +2390,7 @@ AreaChartOption.prototype.getDefaultControlContainerList = function () {
 exports.default = AreaChartOption;
 
 /***/ }),
-/* 59 */
+/* 119 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2216,11 +2402,14 @@ Object.defineProperty(exports, "__esModule", {
 exports.Data = Data;
 exports.ComplexData = ComplexData;
 exports.Format = Format;
+exports.FormatCard = FormatCard;
 exports.Title = Title;
 exports.Axis = Axis;
 exports.AxisR = AxisR;
 exports.AxisEach = AxisEach;
+exports.AxisRadar = AxisRadar;
 exports.Legend = Legend;
+exports.CustomLegend = CustomLegend;
 exports.VisualMap = VisualMap;
 exports.Marker = Marker;
 exports.MarkerLine = MarkerLine;
@@ -2237,6 +2426,7 @@ exports.MapData = MapData;
 exports.MapStyle = MapStyle;
 exports.Layers = Layers;
 exports.ToolTipTrigger = ToolTipTrigger;
+exports.Grid = Grid;
 /**
  * Source: control-container-preview.js
  * Created by SDS on 2018-05-30
@@ -2320,6 +2510,10 @@ function Format() {
     return '';
 }
 
+function FormatCard() {
+    return '';
+}
+
 function Title() {
     var preViewText = '';
     if (this.options.chartOption.title.show) {
@@ -2343,8 +2537,30 @@ function AxisEach() {
     return _axisTypePreview.call(this);
 }
 
+function AxisRadar() {
+    var preViewText = [];
+    var axisAttrUsed = false;
+    var min = this.options.chartOption.plotOptions.radar.min;
+    var max = this.options.chartOption.plotOptions.radar.max;
+    var show = this.options.chartOption.plotOptions.radar.name.show;
+
+    if (min || max) {
+        preViewText.push('Range');
+        axisAttrUsed = true;
+    }
+    if (show) {
+        preViewText.push('Label');
+        axisAttrUsed = true;
+    }
+    return axisAttrUsed ? preViewText.join(', ') + ' ON' : 'OFF';
+}
+
 function Legend() {
     return this.options.chartOption.legend.show ? 'ON' : 'OFF';
+}
+
+function CustomLegend() {
+    return Legend.call(this);
 }
 
 function VisualMap() {
@@ -2633,8 +2849,450 @@ function ToolTipTrigger() {
     return preViewText;
 }
 
+function Grid() {
+    return '';
+}
+
 /***/ }),
-/* 60 */
+/* 120 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _dialog = __webpack_require__(42);
+
+var _dialog2 = _interopRequireDefault(_dialog);
+
+var _chartOptionConst = __webpack_require__(17);
+
+var _chartOptionConst2 = _interopRequireDefault(_chartOptionConst);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * Created by mk90.kim on 2016-08-20.
+ */
+
+var selectableColumnType = Brightics.Chart.Validator.selectableColumnType;
+
+/**
+ * options = {
+ *      column : [
+            {name:'SepalLength','type':'number'},
+            {name:'SepalWidth','type':'number'},
+            {name:'PetalLength','type':'number'},
+            {name:'PetalWidth','type':'number'},
+            {name:'Species','type':'string'},
+            {name:'Class','type':'string'},
+        ],
+        selected: [{name: 'SepalLength', aggregation: 'none' }],
+        selectedIndex: 0,
+        unique: true, (default: false)
+        aggregation: true (default : false),
+        aggregationMandatory: false (aggregation이 true 일 경우만 사용 가능 default : false),
+        label: 'X-axis' (mandantory),
+        onChanged: function(){],
+        close: function(){}
+ * }
+ */
+var aggregationMap = _chartOptionConst2.default.AggregationMap;
+
+function ColumnSelectorDialog(parentId, options) {
+    _dialog2.default.call(this, parentId, options);
+}
+
+ColumnSelectorDialog.prototype = Object.create(_dialog2.default.prototype);
+ColumnSelectorDialog.prototype.constructor = ColumnSelectorDialog;
+
+ColumnSelectorDialog.prototype._getTitle = function () {
+    return 'Select Column' + (this.options.label ? '(' + this.options.label + ')' : '');
+};
+
+ColumnSelectorDialog.prototype._getDefaultWindowOption = function () {
+    var _this = this;
+    var defaultOption = {
+        theme: _chartOptionConst2.default.Theme,
+        width: '300px',
+        height: '400px',
+        maxWidth: '300px',
+        maxHeight: '400px',
+        resizable: false,
+        initContent: function initContent() {
+            _this._configurePosition();
+            _this._createDialogContentsArea(_this.$mainControl.find('.bo-dialogs-contents'));
+        }
+    };
+    if (this.options.aggregationEnabled === true) {
+        defaultOption.width = '600px';
+        defaultOption.maxWidth = '600px';
+    }
+    return defaultOption;
+};
+
+ColumnSelectorDialog.prototype._createDialogContentsArea = function ($parent) {
+    this.$mainContainer = $('<div class="bos-display-flex bos-full"></div>');
+    this.$columnArea = $('<div class="bos-display-flex bos-flex-1 bos-flex-direction-column"></div>');
+    $parent.append(this.$mainContainer);
+    this.$mainContainer.append(this.$columnArea);
+
+    this._createFilterContents(this.$columnArea);
+    this._createColumnListContents(this.$columnArea);
+    this._createAggregationListContents(this.$mainContainer);
+    this._render();
+};
+
+ColumnSelectorDialog.prototype._createFilterContents = function ($parent) {
+    var _this = this;
+    var $container = $('<div class="bos-dialog-filter-container"></div>');
+    $parent.append($container);
+
+    this.$filterControl = $('<input type="search" placeholder="Search Column" />');
+    $container.append(this.$filterControl);
+
+    this.$filterControl.jqxInput({
+        theme: _chartOptionConst2.default.Theme,
+        placeHolder: "Search Column",
+        height: 31,
+        minLength: 1
+    });
+
+    this.$filterControl.on('keyup search', function (event) {
+        var colList = _this.$columnListBox.find('.bo-dialog-column-item-wrapper');
+        var searchText = _this.$filterControl.val().toLowerCase();
+        for (var i = 0; i < colList.length; i++) {
+            var colName = $(colList[i]).attr('value').toLowerCase();
+            if (colName.indexOf(searchText) < 0) {
+                $(colList[i]).hide();
+            } else {
+                $(colList[i]).show();
+            }
+        }
+    });
+};
+
+ColumnSelectorDialog.prototype._createColumnListContents = function ($parent) {
+    var _this = this;
+    var $container = $('<div class="bos-widget-column-selector-container"></div>');
+    this.$columnListBox = $('<div class="bos-widget-column-selector-list"></div>');
+    $parent.append($container);
+    $container.append(this.$columnListBox);
+
+    var columns = this._getColumns() || [];
+
+    // this._createAxisTypeList(this.$columnListBox);
+
+    for (var i = 0; i < columns.length; i++) {
+        var columnType = this._getColumnType(columns, columns[i].name);
+        this._createColumnItem(columnType, columns[i]);
+    }
+    this.$columnListBox.perfectScrollbar();
+};
+
+ColumnSelectorDialog.prototype._createColumnItem = function (columnType, column) {
+    var _this = this;
+    var $column;
+
+    if (columnType === 'SCHEMA') {
+        $column = $('<div class="bos-dialog-column-item-wrapper bo-dialog-column-item-wrapper" value="' + column.name + '" type="' + columnType + '">' + '   <div class="bos-dialog-column-item-type bos-dialog-column-item-type-schema">' + columnType + '</div>' + '   <div class="bos-dialog-column-item-label bos-text-overflow-hidden has-type" title="' + column.name + '"></div>' + '</div>');
+    } else {
+        $column = $('<div class="bos-dialog-column-item-wrapper bo-dialog-column-item-wrapper" value="' + column.name + '" type="' + columnType + '">' + '   <div class="bos-dialog-column-item-type">' + columnType + '</div>' + '   <div class="bos-dialog-column-item-label bos-text-overflow-hidden has-type" title="' + column.name + '"></div>' + '</div>');
+    }
+
+    $column.find('.bos-dialog-column-item-label').text(column.name);
+    this.$columnListBox.append($column);
+
+    $column.click(function () {
+        var selected = _this.options.selected,
+            selectedIndex = _this.options.selectedIndex;
+        selected[selectedIndex] = selected[selectedIndex] || {};
+        selected[selectedIndex].value = column.name;
+        selected[selectedIndex].name = column.name; //$(this).attr('value');
+        selected[selectedIndex].type = $(this).attr('type');
+
+        _this._fillAggregationList();
+        _this._setAggregation();
+        _this._render();
+        _this._bindColumnSelectOnChanged();
+    });
+};
+
+ColumnSelectorDialog.prototype._getColumnType = function (columnList, columnName) {
+    var columnType = '';
+    columnList.forEach(function (column) {
+        if (columnName === column.name) {
+            columnType = column.internalType || column.type;
+        }
+    });
+    return columnType;
+};
+
+ColumnSelectorDialog.prototype._bindColumnSelectOnChanged = function () {
+    if (typeof this.options.onChanged === 'function') {
+        this.options.onChanged(this.options.selected[this.options.selectedIndex]);
+    }
+};
+
+ColumnSelectorDialog.prototype._createAggregationListContents = function ($parent) {
+    if (this.options.aggregationEnabled !== true) return;
+    this.$aggregationArea = $('<div class="bos-aggregation-list-box" selectable="false"></div>');
+    $parent.append(this.$aggregationArea);
+    this._fillAggregationList();
+};
+
+ColumnSelectorDialog.prototype._getCurrentColumnType = function () {
+    var selected = this.options.selected,
+        selectedIndex = this.options.selectedIndex;
+    var colName = selected[selectedIndex].name;
+    var columns = this._getColumns();
+
+    var foundCol = columns.find(function (columnObj) {
+        return columnObj.name === colName;
+    });
+
+    if (!foundCol || $.inArray(foundCol.type, selectableColumnType) < 0) {
+        return;
+    } else {
+        return foundCol.type;
+    }
+};
+
+ColumnSelectorDialog.prototype._getColumns = function () {
+    if (typeof this.options.getColumns === 'function') {
+        return this.options.getColumns();
+    } else {
+        return this.options.getColumns;
+    }
+};
+
+ColumnSelectorDialog.prototype._fillAggregationList = function () {
+    var _this = this;
+    if (!this.$aggregationArea) return;
+    var selected = this.options.selected,
+        selectedIndex = this.options.selectedIndex,
+        aggregationList = [];
+    this.$aggregationArea.empty();
+    if ($.isEmptyObject(selected[selectedIndex])) {
+        aggregationList = this.options.aggregationMap.number;
+        this.$aggregationArea.attr('selectable', 'false');
+    } else {
+
+        var colType = this._getCurrentColumnType();
+        if ($.isEmptyObject(colType)) {
+            this.$aggregationArea.attr('selectable', 'false');
+        } else {
+            aggregationList = this.options.aggregationMap[colType];
+            this.$aggregationArea.attr('selectable', 'true');
+        }
+    }
+    for (var i = 0; i < aggregationList.length; i++) {
+        var aggrObj = aggregationList[i];
+        var $column = $('<div class="bo-dialog-column-item-wrapper bos-dialog-column-item-wrapper" value="' + aggrObj.value + '">' + aggrObj.label + '</div>');
+        this.$aggregationArea.append($column);
+
+        $column.click(function () {
+            var selected = _this.options.selected,
+                selectedIndex = _this.options.selectedIndex;
+            selected[selectedIndex] = selected[selectedIndex] || {};
+            selected[selectedIndex].aggregation = $(this).attr('value');
+            _this._renderAggregationList();
+            _this._bindColumnSelectOnChanged();
+        });
+    }
+
+    this._setAggregation();
+};
+
+ColumnSelectorDialog.prototype._getCurrentAggregationList = function () {
+    if (!this.$aggregationArea) return;
+    var aggregationItemList = this.$aggregationArea.find('.bo-dialog-column-item-wrapper');
+    var currentAggregationList = [];
+    for (var i = 0; i < aggregationItemList.length; i++) {
+        currentAggregationList.push($(aggregationItemList[i]).attr('value'));
+    }
+    return currentAggregationList;
+};
+
+ColumnSelectorDialog.prototype._setAggregation = function () {
+    if (!this.$aggregationArea) return;
+    var selected = this.options.selected,
+        selectedIndex = this.options.selectedIndex;
+    if ($.isEmptyObject(selected[selectedIndex])) return;
+    var currentAggregationList = this._getCurrentAggregationList();
+    if ($.isEmptyObject(selected[selectedIndex].aggregation) || currentAggregationList.indexOf(selected[selectedIndex].aggregation) < 0) {
+        selected[selectedIndex].aggregation = currentAggregationList[0];
+    }
+};
+
+ColumnSelectorDialog.prototype._render = function () {
+    this._renderColumnList();
+    this._renderAggregationList();
+};
+
+ColumnSelectorDialog.prototype._renderColumnList = function () {
+    var selected = this.options.selected,
+        selectedIndex = this.options.selectedIndex;
+    if ($.isEmptyObject(selected[selectedIndex]) || $.isEmptyObject(selected[selectedIndex].name)) return;
+
+    this.$columnListBox.find('.selected').removeClass('selected');
+    this.$columnListBox.find('.bo-dialog-column-item-wrapper[value="' + selected[selectedIndex].name + '"]').addClass('selected');
+};
+ColumnSelectorDialog.prototype._renderAggregationList = function () {
+    var selected = this.options.selected,
+        selectedIndex = this.options.selectedIndex;
+    if (!this.$aggregationArea) return;
+    if ($.isEmptyObject(selected[selectedIndex]) || $.isEmptyObject(selected[selectedIndex].aggregation)) return;
+    this.$aggregationArea.find('.selected').removeClass('selected');
+    this.$aggregationArea.find('.bo-dialog-column-item-wrapper[value="' + selected[selectedIndex].aggregation + '"]').addClass('selected');
+};
+
+ColumnSelectorDialog.prototype._getDialogResult = function () {
+    return this.options.selected;
+};
+
+exports.default = ColumnSelectorDialog;
+
+/***/ }),
+/* 121 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _baseComplexWidget = __webpack_require__(36);
+
+var _baseComplexWidget2 = _interopRequireDefault(_baseComplexWidget);
+
+var _widgetFactory = __webpack_require__(3);
+
+var WidgetFactory = _interopRequireWildcard(_widgetFactory);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * options = {
+ *      width: % or px default 100%,
+ *      height:% or px default 100%,
+ *      value:
+ *          {
+ *              left: 'px',
+ *              right: 'px',
+ *              top: 'px',
+ *              bottom: 'px',
+ *          }, (all value is px)
+ *      position: ['left', 'top', 'right', 'bottom'],
+ *      onChanged: function(){]
+ * }
+ * @param parentId
+ * @param options
+ * @constructor
+ */
+/**
+ * Created by mk90 on 2017-05-27.
+ */
+
+function CenterPositionWidget(parentId, options) {
+    _baseComplexWidget2.default.call(this, parentId, options);
+    this.renderProblem();
+}
+
+CenterPositionWidget.prototype = Object.create(_baseComplexWidget2.default.prototype);
+CenterPositionWidget.prototype.constructor = CenterPositionWidget;
+
+CenterPositionWidget.prototype._init = function () {
+    _baseComplexWidget2.default.prototype._init.call(this);
+    this.baseIconAppended = false;
+    this.inputValue = {};
+    this.selectedUnit = {};
+    if (typeof this.options.getValue === 'function') {
+        for (var i in this.options.value) {
+            this.options.value[i] = this.options.getValue(this.options.value[i]);
+        }
+    }
+};
+
+CenterPositionWidget.prototype._createContents = function ($parent) {
+    this.$mainControl = $('' + '<div class="bo-component-frame-contents">' + '   <div class="bo-component-frame-center bos-display-flex">' + '   </div>' + '</div>');
+
+    $parent.append(this.$mainControl);
+
+    var _this = this;
+    this.options.position.forEach(function (position) {
+        _this._createPositionContent(position);
+    });
+};
+
+CenterPositionWidget.prototype._createPositionContent = function (position) {
+    var $targetArea, positionInputControl, defaultValue, tempDom;
+
+    tempDom = $('<div class="bo-component-frame-center-' + position + ' bos-flex-1 bos-row-multi-div"></div>');
+    this.$mainControl.find('.bo-component-frame-center').append(tempDom);
+    this._createPositionInputContent(tempDom, position);
+};
+
+CenterPositionWidget.prototype._createPositionInputContent = function ($parent, position) {
+    var value = this.options.value && this.options.value[position] ? this.options.value[position] + '' : '';
+
+    var postFix = value.indexOf('%') >= 0 ? '%' : 'px';
+    var numberValue = value.replace(postFix, '');
+
+    var _this = this;
+    this.inputValue[position] = numberValue;
+    this.selectedUnit[position] = postFix;
+    var numberInput = WidgetFactory.createNumberInputWidget($parent, {
+        labelPosition: 'row',
+        label: position.toLocaleString(),
+        labelWidth: '40px',
+        width: this.options.width || '50px',
+        height: this.options.height || '25px',
+        value: numberValue,
+        problemKeyList: this.options.problemKeyList,
+        onChanged: function onChanged(value) {
+            _this.inputValue[position] = value;
+            _this.options.onChanged[position](value || value === 0 ? value + _this.selectedUnit[position] : '');
+        }
+    });
+
+    var unitSwitchButton = WidgetFactory.createSwitchButtonWidget($parent, {
+        value: postFix,
+        width: '20px',
+        height: this.options.height || '25px',
+        margin: '2.5px 20px 2.5px 0px',
+        itemList: this.options.itemList || [{ value: 'px', label: 'Px' }, { value: '%', label: '%' }],
+        onChanged: function onChanged(changedUnit) {
+            _this.selectedUnit[position] = changedUnit;
+            _this.options.onChanged[position](_this.inputValue[position] ? _this.inputValue[position] + changedUnit : '');
+        }
+    });
+    unitSwitchButton.addCSSInMainControl({
+        'border-left': 'none'
+    });
+
+    this._widgetList.push(numberInput);
+    this._widgetList.push(unitSwitchButton);
+};
+
+CenterPositionWidget.prototype.renderProblem = function (problems) {
+    var _this = this;
+    this._widgetList.forEach(function (widget) {
+        widget.renderProblem(problems);
+    });
+};
+
+exports.default = CenterPositionWidget;
+
+/***/ }),
+/* 122 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2689,7 +3347,7 @@ ColumnChartOption.prototype.getDefaultControlContainerList = function () {
 exports.default = ColumnChartOption;
 
 /***/ }),
-/* 61 */
+/* 123 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2701,11 +3359,11 @@ Object.defineProperty(exports, "__esModule", {
 exports.createFilter = createFilter;
 exports.getFilterTypes = getFilterTypes;
 
-var _filterControlBase = __webpack_require__(38);
+var _filterControlBase = __webpack_require__(76);
 
 var _filterControlBase2 = _interopRequireDefault(_filterControlBase);
 
-var _filterControlIndex = __webpack_require__(197);
+var _filterControlIndex = __webpack_require__(298);
 
 var FilterControl = _interopRequireWildcard(_filterControlIndex);
 
@@ -2728,68 +3386,6 @@ function getFilterTypes() {
 }
 
 /***/ }),
-/* 62 */,
-/* 63 */,
-/* 64 */,
-/* 65 */,
-/* 66 */,
-/* 67 */,
-/* 68 */,
-/* 69 */,
-/* 70 */,
-/* 71 */,
-/* 72 */,
-/* 73 */,
-/* 74 */,
-/* 75 */,
-/* 76 */,
-/* 77 */,
-/* 78 */,
-/* 79 */,
-/* 80 */,
-/* 81 */,
-/* 82 */,
-/* 83 */,
-/* 84 */,
-/* 85 */,
-/* 86 */,
-/* 87 */,
-/* 88 */,
-/* 89 */,
-/* 90 */,
-/* 91 */,
-/* 92 */,
-/* 93 */,
-/* 94 */,
-/* 95 */,
-/* 96 */,
-/* 97 */,
-/* 98 */,
-/* 99 */,
-/* 100 */,
-/* 101 */,
-/* 102 */,
-/* 103 */,
-/* 104 */,
-/* 105 */,
-/* 106 */,
-/* 107 */,
-/* 108 */,
-/* 109 */,
-/* 110 */,
-/* 111 */,
-/* 112 */,
-/* 113 */,
-/* 114 */,
-/* 115 */,
-/* 116 */,
-/* 117 */,
-/* 118 */,
-/* 119 */,
-/* 120 */,
-/* 121 */,
-/* 122 */,
-/* 123 */,
 /* 124 */,
 /* 125 */,
 /* 126 */,
@@ -2838,7 +3434,107 @@ function getFilterTypes() {
 /* 169 */,
 /* 170 */,
 /* 171 */,
-/* 172 */
+/* 172 */,
+/* 173 */,
+/* 174 */,
+/* 175 */,
+/* 176 */,
+/* 177 */,
+/* 178 */,
+/* 179 */,
+/* 180 */,
+/* 181 */,
+/* 182 */,
+/* 183 */,
+/* 184 */,
+/* 185 */,
+/* 186 */,
+/* 187 */,
+/* 188 */,
+/* 189 */,
+/* 190 */,
+/* 191 */,
+/* 192 */,
+/* 193 */,
+/* 194 */,
+/* 195 */,
+/* 196 */,
+/* 197 */,
+/* 198 */,
+/* 199 */,
+/* 200 */,
+/* 201 */,
+/* 202 */,
+/* 203 */,
+/* 204 */,
+/* 205 */,
+/* 206 */,
+/* 207 */,
+/* 208 */,
+/* 209 */,
+/* 210 */,
+/* 211 */,
+/* 212 */,
+/* 213 */,
+/* 214 */,
+/* 215 */,
+/* 216 */,
+/* 217 */,
+/* 218 */,
+/* 219 */,
+/* 220 */,
+/* 221 */,
+/* 222 */,
+/* 223 */,
+/* 224 */,
+/* 225 */,
+/* 226 */,
+/* 227 */,
+/* 228 */,
+/* 229 */,
+/* 230 */,
+/* 231 */,
+/* 232 */,
+/* 233 */,
+/* 234 */,
+/* 235 */,
+/* 236 */,
+/* 237 */,
+/* 238 */,
+/* 239 */,
+/* 240 */,
+/* 241 */,
+/* 242 */,
+/* 243 */,
+/* 244 */,
+/* 245 */,
+/* 246 */,
+/* 247 */,
+/* 248 */,
+/* 249 */,
+/* 250 */,
+/* 251 */,
+/* 252 */,
+/* 253 */,
+/* 254 */,
+/* 255 */,
+/* 256 */,
+/* 257 */,
+/* 258 */,
+/* 259 */,
+/* 260 */,
+/* 261 */,
+/* 262 */,
+/* 263 */,
+/* 264 */,
+/* 265 */,
+/* 266 */,
+/* 267 */,
+/* 268 */,
+/* 269 */,
+/* 270 */,
+/* 271 */,
+/* 272 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2850,10 +3546,12 @@ Object.defineProperty(exports, "__esModule", {
 exports.Data = Data;
 exports.ComplexData = ComplexData;
 exports.Format = Format;
+exports.FormatCard = FormatCard;
 exports.Title = Title;
 exports.Axis = Axis;
 exports.AxisR = AxisR;
 exports.AxisEach = AxisEach;
+exports.AxisRadar = AxisRadar;
 exports.Legend = Legend;
 exports.VisualMap = VisualMap;
 exports.Marker = Marker;
@@ -2871,12 +3569,13 @@ exports.MapData = MapData;
 exports.Layers = Layers;
 exports.MapStyle = MapStyle;
 exports.ToolTipTrigger = ToolTipTrigger;
+exports.Grid = Grid;
 
-var _controlContainer = __webpack_require__(173);
+var _controlContainer = __webpack_require__(273);
 
 var _controlContainer2 = _interopRequireDefault(_controlContainer);
 
-var _controlFactory = __webpack_require__(343);
+var _controlFactory = __webpack_require__(563);
 
 var ControlFactory = _interopRequireWildcard(_controlFactory);
 
@@ -2926,6 +3625,20 @@ function Format(previewText) {
         $parent: this.$parent,
         contentInit: function contentInit($contentsArea, headerKey, option, controlList) {
             controlList.push(ControlFactory.createFormatControl($contentsArea, option, headerKey));
+        },
+        optionRef: this.options,
+        expanderStatus: expanderStatus
+    });
+}
+
+function FormatCard(previewText) {
+    return new _controlContainer2.default({
+        headerKey: 'FormatCard',
+        headerLabel: 'Formatter',
+        headerPreviewText: previewText,
+        $parent: this.$parent,
+        contentInit: function contentInit($contentsArea, headerKey, option, controlList) {
+            controlList.push(ControlFactory.createFormatCardControl($contentsArea, option, headerKey));
         },
         optionRef: this.options,
         expanderStatus: expanderStatus
@@ -3002,6 +3715,21 @@ function AxisEach(previewText) {
     });
 }
 
+function AxisRadar(previewText) {
+    return new _controlContainer2.default({
+        headerKey: 'AxisRadar',
+        headerLabel: 'Axis Label',
+        headerPreviewText: previewText,
+        $parent: this.$parent,
+        contentInit: function contentInit($contentsArea, headerKey, option, controlList) {
+            controlList.push(ControlFactory.createAxisRadarViewRangeControl($contentsArea, option, headerKey));
+            controlList.push(ControlFactory.createAxisRadarLabelControl($contentsArea, option, headerKey));
+        },
+        optionRef: this.options,
+        expanderStatus: expanderStatus
+    });
+}
+
 function Legend(previewText) {
     return new _controlContainer2.default({
         headerKey: 'Legend',
@@ -3009,7 +3737,7 @@ function Legend(previewText) {
         headerPreviewText: previewText,
         $parent: this.$parent,
         contentInit: function contentInit($contentsArea, headerKey, option, controlList) {
-            controlList.push(ControlFactory.createLegendControl($contentsArea, option, headerKey));
+            controlList.push(ControlFactory.createCustomLegendControl($contentsArea, option, headerKey));
         },
         optionRef: this.options,
         expanderStatus: expanderStatus
@@ -3097,7 +3825,6 @@ function Frame(previewText) {
         $parent: this.$parent,
         contentInit: function contentInit($contentsArea, headerKey, option, controlList) {
             controlList.push(ControlFactory.createFrameControl($contentsArea, option, headerKey));
-            // controlList.push(ControlFactory.createViewOptionControl($contentsArea, option, headerKey));
         },
         optionRef: this.options,
         expanderStatus: expanderStatus
@@ -3246,8 +3973,22 @@ function ToolTipTrigger(previewText) {
     });
 }
 
+function Grid(previewText) {
+    return new _controlContainer2.default({
+        headerKey: 'Grid',
+        headerLabel: 'Grid',
+        headerPreviewTExt: previewText,
+        $parent: this.$parent,
+        contentInit: function contentInit($contentsArea, headerKey, option, controlList) {
+            controlList.push(ControlFactory.createGridControl($contentsArea, option, headerKey));
+        },
+        optionRef: this.options,
+        expanderStatus: expanderStatus
+    });
+}
+
 /***/ }),
-/* 173 */
+/* 273 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3257,7 +3998,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _chartOptionConst = __webpack_require__(12);
+var _chartOptionConst = __webpack_require__(17);
 
 var _chartOptionConst2 = _interopRequireDefault(_chartOptionConst);
 
@@ -3392,7 +4133,7 @@ ControlContainer.prototype.destroy = function () {
 exports.default = ControlContainer;
 
 /***/ }),
-/* 174 */
+/* 274 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3402,23 +4143,23 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseControl = __webpack_require__(8);
+var _baseControl = __webpack_require__(9);
 
 var _baseControl2 = _interopRequireDefault(_baseControl);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
-var _chartOptionConst = __webpack_require__(12);
+var _chartOptionConst = __webpack_require__(17);
 
 var _chartOptionConst2 = _interopRequireDefault(_chartOptionConst);
 
-var _chartOptionUtil = __webpack_require__(23);
+var _chartOptionUtil = __webpack_require__(30);
 
 var ChartOptionUtil = _interopRequireWildcard(_chartOptionUtil);
 
-var _columnSelectorWidget = __webpack_require__(30);
+var _columnSelectorWidget = __webpack_require__(58);
 
 var _columnSelectorWidget2 = _interopRequireDefault(_columnSelectorWidget);
 
@@ -3731,7 +4472,7 @@ ColumnSelectControl.prototype.renderProblem = function (problems) {
 exports.default = ColumnSelectControl;
 
 /***/ }),
-/* 175 */
+/* 275 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3741,11 +4482,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _chartOptionConst = __webpack_require__(12);
+var _chartOptionConst = __webpack_require__(17);
 
 var _chartOptionConst2 = _interopRequireDefault(_chartOptionConst);
 
-var _baseWidget = __webpack_require__(18);
+var _baseWidget = __webpack_require__(23);
 
 var _baseWidget2 = _interopRequireDefault(_baseWidget);
 
@@ -3806,7 +4547,7 @@ InputWidget.prototype._createInputBox = function ($parent) {
     $parent.append(this.$inputControl);
     var options = {
         theme: _chartOptionConst2.default.Theme,
-        height: '25px',
+        height: this.options.height || '25px',
         placeHolder: this.options.placeHolder || '',
         value: this.options.value || this.options.value == 0 ? this.options.value : ''
     };
@@ -3878,7 +4619,7 @@ InputWidget.prototype._renderProblem = function () {
 exports.default = InputWidget;
 
 /***/ }),
-/* 176 */
+/* 276 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3888,11 +4629,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseWidget = __webpack_require__(18);
+var _baseWidget = __webpack_require__(23);
 
 var _baseWidget2 = _interopRequireDefault(_baseWidget);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -4010,7 +4751,7 @@ MultiInputWidget.prototype._renderProblem = function () {
 exports.default = MultiInputWidget;
 
 /***/ }),
-/* 177 */
+/* 277 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4020,11 +4761,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _dialog = __webpack_require__(27);
+var _dialog = __webpack_require__(42);
 
 var _dialog2 = _interopRequireDefault(_dialog);
 
-var _chartOptionConst = __webpack_require__(12);
+var _chartOptionConst = __webpack_require__(17);
 
 var _chartOptionConst2 = _interopRequireDefault(_chartOptionConst);
 
@@ -4112,7 +4853,7 @@ ColorPickerDialog.prototype._getDialogResult = function () {
 exports.default = ColorPickerDialog;
 
 /***/ }),
-/* 178 */
+/* 278 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4123,7 +4864,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getColorPalette = exports.setColorPalette = undefined;
 
-var _defaultPreference = __webpack_require__(354);
+var _defaultPreference = __webpack_require__(574);
 
 var _defaultPreference2 = _interopRequireDefault(_defaultPreference);
 
@@ -4149,7 +4890,7 @@ exports.setColorPalette = setColorPalette;
 exports.getColorPalette = getColorPalette;
 
 /***/ }),
-/* 179 */
+/* 279 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4159,300 +4900,38 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _dialog = __webpack_require__(27);
+var _baseRadioButtonGroupWidget = __webpack_require__(59);
 
-var _dialog2 = _interopRequireDefault(_dialog);
-
-var _chartOptionConst = __webpack_require__(12);
-
-var _chartOptionConst2 = _interopRequireDefault(_chartOptionConst);
+var _baseRadioButtonGroupWidget2 = _interopRequireDefault(_baseRadioButtonGroupWidget);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/**
- * Created by mk90.kim on 2016-08-20.
- */
+function HorizontalAlignRadioButtonWidget(parentId, options) {
+    _baseRadioButtonGroupWidget2.default.call(this, parentId, options);
+} /**
+   * Created by mk90.kim on 2017-05-10.
+   */
 
-var selectableColumnType = Brightics.Chart.Validator.selectableColumnType;
+HorizontalAlignRadioButtonWidget.prototype = Object.create(_baseRadioButtonGroupWidget2.default.prototype);
+HorizontalAlignRadioButtonWidget.prototype.constructor = HorizontalAlignRadioButtonWidget;
 
-/**
- * options = {
- *      column : [
-            {name:'SepalLength','type':'number'},
-            {name:'SepalWidth','type':'number'},
-            {name:'PetalLength','type':'number'},
-            {name:'PetalWidth','type':'number'},
-            {name:'Species','type':'string'},
-            {name:'Class','type':'string'},
-        ],
-        selected: [{name: 'SepalLength', aggregation: 'none' }],
-        selectedIndex: 0,
-        unique: true, (default: false)
-        aggregation: true (default : false),
-        aggregationMandatory: false (aggregation이 true 일 경우만 사용 가능 default : false),
-        label: 'X-axis' (mandantory),
-        onChanged: function(){],
-        close: function(){}
- * }
- */
-var aggregationMap = _chartOptionConst2.default.AggregationMap;
-
-function ColumnSelectorDialog(parentId, options) {
-    _dialog2.default.call(this, parentId, options);
-}
-
-ColumnSelectorDialog.prototype = Object.create(_dialog2.default.prototype);
-ColumnSelectorDialog.prototype.constructor = ColumnSelectorDialog;
-
-ColumnSelectorDialog.prototype._getTitle = function () {
-    return 'Select Column' + (this.options.label ? '(' + this.options.label + ')' : '');
+HorizontalAlignRadioButtonWidget.prototype._setRadioButtonList = function () {
+    this._buttonList = [{
+        imageClass: 'bos-horizontal-align-left',
+        value: 'left'
+    }, {
+        imageClass: 'bos-horizontal-align-center',
+        value: 'center'
+    }, {
+        imageClass: 'bos-horizontal-align-right',
+        value: 'right'
+    }];
 };
 
-ColumnSelectorDialog.prototype._getDefaultWindowOption = function () {
-    var _this = this;
-    var defaultOption = {
-        theme: _chartOptionConst2.default.Theme,
-        width: '300px',
-        height: '400px',
-        maxWidth: '300px',
-        maxHeight: '400px',
-        resizable: false,
-        initContent: function initContent() {
-            _this._configurePosition();
-            _this._createDialogContentsArea(_this.$mainControl.find('.bo-dialogs-contents'));
-        }
-    };
-    if (this.options.aggregationEnabled === true) {
-        defaultOption.width = '600px';
-        defaultOption.maxWidth = '600px';
-    }
-    return defaultOption;
-};
-
-ColumnSelectorDialog.prototype._createDialogContentsArea = function ($parent) {
-    this.$mainContainer = $('<div class="bos-display-flex bos-full"></div>');
-    this.$columnArea = $('<div class="bos-display-flex bos-flex-1 bos-flex-direction-column"></div>');
-    $parent.append(this.$mainContainer);
-    this.$mainContainer.append(this.$columnArea);
-
-    this._createFilterContents(this.$columnArea);
-    this._createColumnListContents(this.$columnArea);
-    this._createAggregationListContents(this.$mainContainer);
-    this._render();
-};
-
-ColumnSelectorDialog.prototype._createFilterContents = function ($parent) {
-    var _this = this;
-    var $container = $('<div class="bos-dialog-filter-container"></div>');
-    $parent.append($container);
-
-    this.$filterControl = $('<input type="search" placeholder="Search Column" />');
-    $container.append(this.$filterControl);
-
-    this.$filterControl.jqxInput({
-        theme: _chartOptionConst2.default.Theme,
-        placeHolder: "Search Column",
-        height: 31,
-        minLength: 1
-    });
-
-    this.$filterControl.on('keyup search', function (event) {
-        var colList = _this.$columnListBox.find('.bo-dialog-column-item-wrapper');
-        var searchText = _this.$filterControl.val().toLowerCase();
-        for (var i = 0; i < colList.length; i++) {
-            var colName = $(colList[i]).attr('value').toLowerCase();
-            if (colName.indexOf(searchText) < 0) {
-                $(colList[i]).hide();
-            } else {
-                $(colList[i]).show();
-            }
-        }
-    });
-};
-
-ColumnSelectorDialog.prototype._createColumnListContents = function ($parent) {
-    var _this = this;
-    var $container = $('<div class="bos-widget-column-selector-container"></div>');
-    this.$columnListBox = $('<div class="bos-widget-column-selector-list"></div>');
-    $parent.append($container);
-    $container.append(this.$columnListBox);
-
-    var columns = this._getColumns() || [];
-
-    // this._createAxisTypeList(this.$columnListBox);
-
-    for (var i = 0; i < columns.length; i++) {
-        var columnType = this._getColumnType(columns, columns[i].name);
-        this._createColumnItem(columnType, columns[i]);
-    }
-    this.$columnListBox.perfectScrollbar();
-};
-
-ColumnSelectorDialog.prototype._createColumnItem = function (columnType, column) {
-    var _this = this;
-    var $column;
-
-    if (columnType === 'SCHEMA') {
-        $column = $('<div class="bos-dialog-column-item-wrapper bo-dialog-column-item-wrapper" value="' + column.name + '" type="' + columnType + '">' + '   <div class="bos-dialog-column-item-type bos-dialog-column-item-type-schema">' + columnType + '</div>' + '   <div class="bos-dialog-column-item-label bos-text-overflow-hidden has-type" title="' + column.name + '"></div>' + '</div>');
-    } else {
-        $column = $('<div class="bos-dialog-column-item-wrapper bo-dialog-column-item-wrapper" value="' + column.name + '" type="' + columnType + '">' + '   <div class="bos-dialog-column-item-type">' + columnType + '</div>' + '   <div class="bos-dialog-column-item-label bos-text-overflow-hidden has-type" title="' + column.name + '"></div>' + '</div>');
-    }
-
-    $column.find('.bos-dialog-column-item-label').text(column.name);
-    this.$columnListBox.append($column);
-
-    $column.click(function () {
-        var selected = _this.options.selected,
-            selectedIndex = _this.options.selectedIndex;
-        selected[selectedIndex] = selected[selectedIndex] || {};
-        selected[selectedIndex].value = column.name;
-        selected[selectedIndex].name = column.name; //$(this).attr('value');
-        selected[selectedIndex].type = $(this).attr('type');
-
-        _this._fillAggregationList();
-        _this._setAggregation();
-        _this._render();
-        _this._bindColumnSelectOnChanged();
-    });
-};
-
-ColumnSelectorDialog.prototype._getColumnType = function (columnList, columnName) {
-    var columnType = '';
-    columnList.forEach(function (column) {
-        if (columnName === column.name) {
-            columnType = column.internalType || column.type;
-        }
-    });
-    return columnType;
-};
-
-ColumnSelectorDialog.prototype._bindColumnSelectOnChanged = function () {
-    if (typeof this.options.onChanged === 'function') {
-        this.options.onChanged(this.options.selected[this.options.selectedIndex]);
-    }
-};
-
-ColumnSelectorDialog.prototype._createAggregationListContents = function ($parent) {
-    if (this.options.aggregationEnabled !== true) return;
-    this.$aggregationArea = $('<div class="bos-aggregation-list-box" selectable="false"></div>');
-    $parent.append(this.$aggregationArea);
-    this._fillAggregationList();
-};
-
-ColumnSelectorDialog.prototype._getCurrentColumnType = function () {
-    var selected = this.options.selected,
-        selectedIndex = this.options.selectedIndex;
-    var colName = selected[selectedIndex].name;
-    var columns = this._getColumns();
-
-    var foundCol = columns.find(function (columnObj) {
-        return columnObj.name === colName;
-    });
-
-    if (!foundCol || $.inArray(foundCol.type, selectableColumnType) < 0) {
-        return;
-    } else {
-        return foundCol.type;
-    }
-};
-
-ColumnSelectorDialog.prototype._getColumns = function () {
-    if (typeof this.options.getColumns === 'function') {
-        return this.options.getColumns();
-    } else {
-        return this.options.getColumns;
-    }
-};
-
-ColumnSelectorDialog.prototype._fillAggregationList = function () {
-    var _this = this;
-    if (!this.$aggregationArea) return;
-    var selected = this.options.selected,
-        selectedIndex = this.options.selectedIndex,
-        aggregationList = [];
-    this.$aggregationArea.empty();
-    if ($.isEmptyObject(selected[selectedIndex])) {
-        aggregationList = this.options.aggregationMap.number;
-        this.$aggregationArea.attr('selectable', 'false');
-    } else {
-
-        var colType = this._getCurrentColumnType();
-        if ($.isEmptyObject(colType)) {
-            this.$aggregationArea.attr('selectable', 'false');
-        } else {
-            aggregationList = this.options.aggregationMap[colType];
-            this.$aggregationArea.attr('selectable', 'true');
-        }
-    }
-    for (var i = 0; i < aggregationList.length; i++) {
-        var aggrObj = aggregationList[i];
-        var $column = $('<div class="bo-dialog-column-item-wrapper bos-dialog-column-item-wrapper" value="' + aggrObj.value + '">' + aggrObj.label + '</div>');
-        this.$aggregationArea.append($column);
-
-        $column.click(function () {
-            var selected = _this.options.selected,
-                selectedIndex = _this.options.selectedIndex;
-            selected[selectedIndex] = selected[selectedIndex] || {};
-            selected[selectedIndex].aggregation = $(this).attr('value');
-            _this._renderAggregationList();
-            _this._bindColumnSelectOnChanged();
-        });
-    }
-
-    this._setAggregation();
-};
-
-ColumnSelectorDialog.prototype._getCurrentAggregationList = function () {
-    if (!this.$aggregationArea) return;
-    var aggregationItemList = this.$aggregationArea.find('.bo-dialog-column-item-wrapper');
-    var currentAggregationList = [];
-    for (var i = 0; i < aggregationItemList.length; i++) {
-        currentAggregationList.push($(aggregationItemList[i]).attr('value'));
-    }
-    return currentAggregationList;
-};
-
-ColumnSelectorDialog.prototype._setAggregation = function () {
-    if (!this.$aggregationArea) return;
-    var selected = this.options.selected,
-        selectedIndex = this.options.selectedIndex;
-    if ($.isEmptyObject(selected[selectedIndex])) return;
-    var currentAggregationList = this._getCurrentAggregationList();
-    if ($.isEmptyObject(selected[selectedIndex].aggregation) || currentAggregationList.indexOf(selected[selectedIndex].aggregation) < 0) {
-        selected[selectedIndex].aggregation = currentAggregationList[0];
-    }
-};
-
-ColumnSelectorDialog.prototype._render = function () {
-    this._renderColumnList();
-    this._renderAggregationList();
-};
-
-ColumnSelectorDialog.prototype._renderColumnList = function () {
-    var selected = this.options.selected,
-        selectedIndex = this.options.selectedIndex;
-    if ($.isEmptyObject(selected[selectedIndex]) || $.isEmptyObject(selected[selectedIndex].name)) return;
-
-    this.$columnListBox.find('.selected').removeClass('selected');
-    this.$columnListBox.find('.bo-dialog-column-item-wrapper[value="' + selected[selectedIndex].name + '"]').addClass('selected');
-};
-ColumnSelectorDialog.prototype._renderAggregationList = function () {
-    var selected = this.options.selected,
-        selectedIndex = this.options.selectedIndex;
-    if (!this.$aggregationArea) return;
-    if ($.isEmptyObject(selected[selectedIndex]) || $.isEmptyObject(selected[selectedIndex].aggregation)) return;
-    this.$aggregationArea.find('.selected').removeClass('selected');
-    this.$aggregationArea.find('.bo-dialog-column-item-wrapper[value="' + selected[selectedIndex].aggregation + '"]').addClass('selected');
-};
-
-ColumnSelectorDialog.prototype._getDialogResult = function () {
-    return this.options.selected;
-};
-
-exports.default = ColumnSelectorDialog;
+exports.default = HorizontalAlignRadioButtonWidget;
 
 /***/ }),
-/* 180 */
+/* 280 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4462,15 +4941,56 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseWidget = __webpack_require__(18);
+var _baseRadioButtonGroupWidget = __webpack_require__(59);
+
+var _baseRadioButtonGroupWidget2 = _interopRequireDefault(_baseRadioButtonGroupWidget);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function VerticalAlignRadioButtonWidget(parentId, options) {
+    _baseRadioButtonGroupWidget2.default.call(this, parentId, options);
+} /**
+   * Created by mk90.kim on 2017-05-10.
+   */
+
+VerticalAlignRadioButtonWidget.prototype = Object.create(_baseRadioButtonGroupWidget2.default.prototype);
+VerticalAlignRadioButtonWidget.prototype.constructor = VerticalAlignRadioButtonWidget;
+
+VerticalAlignRadioButtonWidget.prototype._setRadioButtonList = function () {
+    this._buttonList = [{
+        imageClass: 'bos-vertical-align-up',
+        value: 'top'
+    }, {
+        imageClass: 'bos-vertical-align-middle',
+        value: 'center'
+    }, {
+        imageClass: 'bos-vertical-align-down',
+        value: 'bottom'
+    }];
+};
+
+exports.default = VerticalAlignRadioButtonWidget;
+
+/***/ }),
+/* 281 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _baseWidget = __webpack_require__(23);
 
 var _baseWidget2 = _interopRequireDefault(_baseWidget);
 
-var _chartOptionConst = __webpack_require__(12);
+var _chartOptionConst = __webpack_require__(17);
 
 var _chartOptionConst2 = _interopRequireDefault(_chartOptionConst);
 
-var _chartOptionUtil = __webpack_require__(23);
+var _chartOptionUtil = __webpack_require__(30);
 
 var ChartOptionUtil = _interopRequireWildcard(_chartOptionUtil);
 
@@ -4588,7 +5108,7 @@ BaseCheckButtonGroupWidget.prototype.render = function (changedValue) {
 exports.default = BaseCheckButtonGroupWidget;
 
 /***/ }),
-/* 181 */
+/* 282 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4598,11 +5118,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _dialog = __webpack_require__(27);
+var _dialog = __webpack_require__(42);
 
 var _dialog2 = _interopRequireDefault(_dialog);
 
-var _chartOptionConst = __webpack_require__(12);
+var _chartOptionConst = __webpack_require__(17);
 
 var _chartOptionConst2 = _interopRequireDefault(_chartOptionConst);
 
@@ -4692,7 +5212,7 @@ DataSourceSelectorDialog.prototype._createColumnListContents = function ($parent
 exports.default = DataSourceSelectorDialog;
 
 /***/ }),
-/* 182 */
+/* 283 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4702,11 +5222,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _dialog = __webpack_require__(27);
+var _dialog = __webpack_require__(42);
 
 var _dialog2 = _interopRequireDefault(_dialog);
 
-var _chartOptionConst = __webpack_require__(12);
+var _chartOptionConst = __webpack_require__(17);
 
 var _chartOptionConst2 = _interopRequireDefault(_chartOptionConst);
 
@@ -4826,7 +5346,7 @@ ChartTypeSelectorDialog.prototype._getDialogResult = function () {
 exports.default = ChartTypeSelectorDialog;
 
 /***/ }),
-/* 183 */
+/* 284 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4836,11 +5356,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseComplexWidget = __webpack_require__(24);
+var _baseComplexWidget = __webpack_require__(36);
 
 var _baseComplexWidget2 = _interopRequireDefault(_baseComplexWidget);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -4989,7 +5509,7 @@ PositionWidget.prototype.renderProblem = function (problems) {
 exports.default = PositionWidget;
 
 /***/ }),
-/* 184 */
+/* 285 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4999,11 +5519,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _dialog = __webpack_require__(27);
+var _dialog = __webpack_require__(42);
 
 var _dialog2 = _interopRequireDefault(_dialog);
 
-var _chartOptionConst = __webpack_require__(12);
+var _chartOptionConst = __webpack_require__(17);
 
 var _chartOptionConst2 = _interopRequireDefault(_chartOptionConst);
 
@@ -5173,7 +5693,7 @@ ItemSelectorDialog.prototype._getDialogResult = function () {
 exports.default = ItemSelectorDialog;
 
 /***/ }),
-/* 185 */
+/* 286 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5183,11 +5703,146 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseControl = __webpack_require__(8);
+var _baseWidget = __webpack_require__(23);
+
+var _baseWidget2 = _interopRequireDefault(_baseWidget);
+
+var _centerPositionWidget = __webpack_require__(121);
+
+var _centerPositionWidget2 = _interopRequireDefault(_centerPositionWidget);
+
+var _chartOptionConst = __webpack_require__(17);
+
+var _chartOptionConst2 = _interopRequireDefault(_chartOptionConst);
+
+var _chartOptionUtil = __webpack_require__(30);
+
+var ChartOptionUtil = _interopRequireWildcard(_chartOptionUtil);
+
+var _customAlignInputWidget = __webpack_require__(602);
+
+var _customAlignInputWidget2 = _interopRequireDefault(_customAlignInputWidget);
+
+var _columnSelectorDialog = __webpack_require__(120);
+
+var _columnSelectorDialog2 = _interopRequireDefault(_columnSelectorDialog);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * options = {
+ *      width: % or px default 100%,
+ *      height:% or px default 30px,
+ *      value: ''
+ *      onChanged: function(){]
+ * }
+ * @param parentId
+ * @param options
+ * @constructor
+ */
+/**
+ * Created by mk90.kim on 2017-05-10.
+ */
+
+function CustomAlignRadioButtonWidget(parentId, options) {
+    _baseWidget2.default.call(this, parentId, options);
+}
+
+CustomAlignRadioButtonWidget.prototype = Object.create(_baseWidget2.default.prototype);
+CustomAlignRadioButtonWidget.prototype.constructor = CustomAlignRadioButtonWidget;
+
+CustomAlignRadioButtonWidget.prototype._init = function () {
+    _baseWidget2.default.prototype._init.call(this);
+};
+
+CustomAlignRadioButtonWidget.prototype._createAlignWidget = function ($el, options) {
+    throw new Error('not implemented');
+};
+
+CustomAlignRadioButtonWidget.prototype._createContents = function ($parent) {
+    this._isRendered = false;
+    this.$widgetWrapper = $('\n        <div style="flex-direction: column;" class="bos-display-flex bos-widget-button-group-container-wrapper">\n            <div class="bos-widget-button-group-container__row" id="1"/>\n            <div class="bos-display-flex bos-widget-button-group-container__row" id="2"/>\n        </div>\n    ');
+
+    $parent.append(this.$widgetWrapper);
+
+    this.widgets = [];
+    this._createWidgetGrpUnits();
+    this.render(this.options.value);
+    this._setPreValue(this.options.value);
+    this._isRendered = true;
+};
+
+CustomAlignRadioButtonWidget.prototype.toggleDisable = function (disabledVal) {
+    this.align.toggleDisable(disabledVal);
+    this.input.toggleDisable(disabledVal);
+};
+
+CustomAlignRadioButtonWidget.prototype._createWidgetGrpUnits = function () {
+    var _this = this;
+
+    var $alignComponent = this.$widgetWrapper.find('.bos-widget-button-group-container__row[id="1"]');
+    var $inputComponent = this.$widgetWrapper.find('.bos-widget-button-group-container__row[id="2"]');
+
+    this.$alignComponent = $alignComponent;
+    this.$inputComponent = $inputComponent;
+
+    this.align = this._createAlignWidget($alignComponent, {
+        // value: !this.options.value.custom && this.options.value.align,
+        value: this.options.value.align,
+        onChanged: function onChanged(selectedValue) {
+            _this.options.value.align = selectedValue;
+            _this.render(_this.options.value);
+            _this._triggerChangeEvent(_this.options.value);
+        }
+    });
+
+    this.input = new _customAlignInputWidget2.default($inputComponent, {
+        value: {
+            custom: !!this.options.value.custom,
+            value: this.options.value.value
+        },
+        label: this._getLabel(),
+        onChanged: function onChanged(value) {
+            _this.options.value.value = value.value;
+            _this._triggerChangeEvent(_this.options.value);
+        }
+    });
+};
+
+CustomAlignRadioButtonWidget.prototype._triggerChangeEvent = function (value) {
+    if (typeof this.options.onChanged === 'function') {
+        this.options.onChanged(value);
+    } else {
+        console.warn('CustomAlignRadioButtonWidget: onChanged is not specified');
+    }
+};
+
+CustomAlignRadioButtonWidget.prototype.render = function (value) {
+    this.align.render(value.align);
+    this.input.render({ value: value.value });
+    this.input.toggleDisable(value.align === 'center');
+};
+
+exports.default = CustomAlignRadioButtonWidget;
+
+/***/ }),
+/* 287 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _baseControl = __webpack_require__(9);
 
 var _baseControl2 = _interopRequireDefault(_baseControl);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -5357,7 +6012,7 @@ AxisTitleControl.prototype._createStyleComponent = function () {
 exports.default = AxisTitleControl;
 
 /***/ }),
-/* 186 */
+/* 288 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5367,15 +6022,15 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseControl = __webpack_require__(8);
+var _baseControl = __webpack_require__(9);
 
 var _baseControl2 = _interopRequireDefault(_baseControl);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
-var _formatHelperDialog = __webpack_require__(187);
+var _formatHelperDialog = __webpack_require__(75);
 
 var _formatHelperDialog2 = _interopRequireDefault(_formatHelperDialog);
 
@@ -5549,7 +6204,7 @@ AxisLabelControl.prototype._createFontStyleComponent = function () {
 exports.default = AxisLabelControl;
 
 /***/ }),
-/* 187 */
+/* 289 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5559,104 +6214,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _dialog = __webpack_require__(27);
-
-var _dialog2 = _interopRequireDefault(_dialog);
-
-var _chartOptionConst = __webpack_require__(12);
-
-var _chartOptionConst2 = _interopRequireDefault(_chartOptionConst);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var ChartWidget = Brightics.Chart.Widget; /**
-                                           * Created by sds on 2018-04-09.
-                                           */
-
-/**
- *  options = {
- *      value: '',
- *      chartTypeList: [],
- *      onChanged: function(){]
- *  }
- *
- */
-
-function FormatHelperDialog(parentId, options) {
-    _dialog2.default.call(this, parentId, options);
-}
-
-FormatHelperDialog.prototype = Object.create(_dialog2.default.prototype);
-FormatHelperDialog.prototype.constructor = FormatHelperDialog;
-
-FormatHelperDialog.prototype._init = function () {
-    ChartWidget.prototype._init.call(this);
-    this.options.showHeader = false;
-};
-
-// FormatHelperDialog.prototype._getTitle = function () {
-//     return 'Format Example';
-// };
-
-FormatHelperDialog.prototype._getDefaultWindowOption = function () {
-    var _this = this;
-
-    return {
-        theme: _chartOptionConst2.default.Theme,
-        width: '170px',
-        height: '110px',
-        maxWidth: '200px',
-        resizable: false,
-        initContent: function initContent() {
-            _this._configurePosition(_this.options.windowPosition);
-            _this._createDialogContentsArea(_this.$mainControl.find('.bo-dialogs-contents'));
-        }
-    };
-};
-
-FormatHelperDialog.prototype._createDialogContentsArea = function ($parent) {
-    var $exampleText = $('<div>' + '   <div class="bos-font-bold">All Types</div>' + '   <div class="bos-margin-left-5">${value}: 13.25 > $13.25<br></div>' + '   <div class="bos-font-bold">Number Type</div>' + '   <div class="bos-margin-left-5">' + '       {0,0}: 145000 > 145,000<br>' + '       {0.00}: 130.4721 > 130.47<br>' + '   </div>' + '</div>');
-
-    $exampleText.css('line-height', '1.6');
-    $parent.append($exampleText);
-};
-
-FormatHelperDialog.prototype._destroy = function () {
-    $(window).off('mousedown', this._closeHandler);
-    this.$mainControl.jqxWindow('destroy');
-    this.$mainControl.remove();
-};
-
-FormatHelperDialog.prototype._getItemList = function () {
-    if (this.options.itemList) {
-        return this.options.itemList;
-    } else {
-        return [];
-    }
-};
-
-FormatHelperDialog.prototype._getDialogResult = function () {
-    return this.$itemListContainer.find('.selected .bo-widget-item-selector-item').attr('item-value');
-};
-
-exports.default = FormatHelperDialog;
-
-/***/ }),
-/* 188 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _baseControl = __webpack_require__(8);
+var _baseControl = __webpack_require__(9);
 
 var _baseControl2 = _interopRequireDefault(_baseControl);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -5678,6 +6240,7 @@ MarkerControl.prototype.constructor = MarkerControl;
 MarkerControl.prototype._init = function () {
     _baseControl2.default.prototype._init.call(this);
     this.markerOption = this.options.setting.marker;
+    this.showSymbol = this.options.setting.showSymbol;
 };
 
 MarkerControl.prototype._createContents = function ($parent) {
@@ -5694,7 +6257,12 @@ MarkerControl.prototype.createComponentContents = function (contentsOption) {
 MarkerControl.prototype._createSizeOpacityComponent = function () {
     if (!this.markerOption) return;
 
-    var $sizeOpacityComponent = $('' + '<div class="bos-widget-row-separator">' + '   <div class="bo-component-header">Size / Opacity</div>' + '   <div class="bo-component-marker-contents bos-display-flex">' + '       <div class="bo-component-marker-size bos-flex-1"></div>' + '       <div class="bo-component-marker-opacity bos-flex-1"></div>' + '   </div>' + '</div>');
+    var $sizeOpacityComponent;
+    if (this.showSymbol) {
+        $sizeOpacityComponent = $('' + '<div class="bos-widget-row-separator">' + '   <div class="bo-component-header">Size / Opacity / Show All</div>' + '   <div class="bo-component-marker-contents bos-display-flex">' + '       <div class="bo-component-marker-size bos-flex-1"></div>' + '       <div class="bo-component-marker-opacity bos-flex-1"></div>' + '       <div class="bo-component-marker-show bos-flex-1"></div>' + '   </div>' + '</div>');
+    } else {
+        $sizeOpacityComponent = $('' + '<div class="bos-widget-row-separator">' + '   <div class="bo-component-header">Size / Opacity</div>' + '   <div class="bo-component-marker-contents bos-display-flex">' + '       <div class="bo-component-marker-size bos-flex-1"></div>' + '       <div class="bo-component-marker-opacity bos-flex-1"></div>' + '   </div>' + '</div>');
+    }
 
     this.$controlContents.append($sizeOpacityComponent);
     var $sizeOpacityComponentContents = $sizeOpacityComponent.find('.bo-component-marker-contents');
@@ -5718,6 +6286,17 @@ MarkerControl.prototype._createSizeOpacityComponent = function () {
         }
     });
     this._widgetList.push(opacitySelectorWidget);
+
+    if (this.showSymbol) {
+        var showAllSelectorWidget = WidgetFactory.createMarkerShowSelectorWidget($sizeOpacityComponentContents.find('.bo-component-marker-show'), {
+            value: this.showSymbol.all,
+            onChanged: function onChanged(inputVal) {
+                _this.showSymbol.all = inputVal;
+                _this.options.onChanged('onChartOptionChanged', { plotOptions: _this.options.chartOption.plotOptions });
+            }
+        });
+        this._widgetList.push(showAllSelectorWidget);
+    }
 };
 
 MarkerControl.prototype._createColorPaletteComponent = function () {
@@ -5740,7 +6319,7 @@ MarkerControl.prototype._createColorPaletteComponent = function () {
 exports.default = MarkerControl;
 
 /***/ }),
-/* 189 */
+/* 290 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5750,11 +6329,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseControl = __webpack_require__(8);
+var _baseControl = __webpack_require__(9);
 
 var _baseControl2 = _interopRequireDefault(_baseControl);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -5964,7 +6543,7 @@ FramePieControl.prototype.renderProblem = function () {
 exports.default = FramePieControl;
 
 /***/ }),
-/* 190 */
+/* 291 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5978,7 +6557,7 @@ var _chartOptionBase = __webpack_require__(6);
 
 var _chartOptionBase2 = _interopRequireDefault(_chartOptionBase);
 
-var _chartOptionAreaStacked = __webpack_require__(191);
+var _chartOptionAreaStacked = __webpack_require__(292);
 
 var _chartOptionAreaStacked2 = _interopRequireDefault(_chartOptionAreaStacked);
 
@@ -6022,6 +6601,7 @@ AreaStacked100ChartOption.prototype._init = function () {
     this.options.setting.marker = this.options.chartOption.plotOptions.area.marker;
     this.options.setting.stripLine = this.options.chartOption.plotOptions.area.stripLine;
     this.options.setting.tooltip = this.options.chartOption.plotOptions.area.tooltip;
+    this.options.setting.showSymbol = this.options.chartOption.plotOptions.area.showSymbol;
 };
 
 AreaStacked100ChartOption.prototype.getDefaultControlContainerList = function () {
@@ -6031,7 +6611,7 @@ AreaStacked100ChartOption.prototype.getDefaultControlContainerList = function ()
 exports.default = AreaStacked100ChartOption;
 
 /***/ }),
-/* 191 */
+/* 292 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6084,6 +6664,7 @@ AreaStackedChartOption.prototype._init = function () {
     this.options.setting.marker = this.options.chartOption.plotOptions.area.marker;
     this.options.setting.stripLine = this.options.chartOption.plotOptions.area.stripLine;
     this.options.setting.tooltip = this.options.chartOption.plotOptions.area.tooltip;
+    this.options.setting.showSymbol = this.options.chartOption.plotOptions.area.showSymbol;
 };
 
 AreaStackedChartOption.prototype.getDefaultControlContainerList = function () {
@@ -6093,7 +6674,7 @@ AreaStackedChartOption.prototype.getDefaultControlContainerList = function () {
 exports.default = AreaStackedChartOption;
 
 /***/ }),
-/* 192 */
+/* 293 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6107,7 +6688,7 @@ var _chartOptionBase = __webpack_require__(6);
 
 var _chartOptionBase2 = _interopRequireDefault(_chartOptionBase);
 
-var _chartOptionArea = __webpack_require__(58);
+var _chartOptionArea = __webpack_require__(118);
 
 var _chartOptionArea2 = _interopRequireDefault(_chartOptionArea);
 
@@ -6159,7 +6740,7 @@ BarStacked100ChartOption.prototype.getDefaultControlContainerList = function () 
 exports.default = BarStacked100ChartOption;
 
 /***/ }),
-/* 193 */
+/* 294 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6184,7 +6765,7 @@ function get(key) {
 exports.default = setupReg;
 
 /***/ }),
-/* 194 */
+/* 295 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6195,7 +6776,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.buildAutoOptionSelector = buildAutoOptionSelector;
 
-var _resolvers = __webpack_require__(436);
+var _resolvers = __webpack_require__(663);
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
@@ -6246,7 +6827,8 @@ function buildAutoOptionSelector(_config) {
         'qqplot': [],
         'pairwise-scatter': [],
         'complex': [],
-        'card': []
+        'card': [],
+        'image-grid': [(0, _resolvers.imageColumnResolver)()]
     });
     // --------------------------------------------------------------------------------------------
 
@@ -6299,7 +6881,7 @@ function buildAutoOptionSelector(_config) {
 }
 
 /***/ }),
-/* 195 */
+/* 296 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6309,7 +6891,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _typeutils = __webpack_require__(437);
+var _typeutils = __webpack_require__(664);
 
 var TypeUtils = _interopRequireWildcard(_typeutils);
 
@@ -6734,7 +7316,7 @@ DataSource.prototype.fillContents = function () {
 exports.default = DataSource;
 
 /***/ }),
-/* 196 */
+/* 297 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6744,7 +7326,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -7008,7 +7590,7 @@ ChartPanel.prototype._renderChartSelector = function (type) {
 exports.default = ChartPanel;
 
 /***/ }),
-/* 197 */
+/* 298 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7019,15 +7601,15 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.RangeSlider = exports.ListBox = exports.CheckBox = undefined;
 
-var _filterControlCheckbox = __webpack_require__(447);
+var _filterControlCheckbox = __webpack_require__(674);
 
 var _filterControlCheckbox2 = _interopRequireDefault(_filterControlCheckbox);
 
-var _filterControlListbox = __webpack_require__(448);
+var _filterControlListbox = __webpack_require__(675);
 
 var _filterControlListbox2 = _interopRequireDefault(_filterControlListbox);
 
-var _filterControlRangeslider = __webpack_require__(449);
+var _filterControlRangeslider = __webpack_require__(676);
 
 var _filterControlRangeslider2 = _interopRequireDefault(_filterControlRangeslider);
 
@@ -7041,107 +7623,6 @@ exports.RangeSlider = _filterControlRangeslider2.default; /**
                                                            */
 
 /***/ }),
-/* 198 */,
-/* 199 */,
-/* 200 */,
-/* 201 */,
-/* 202 */,
-/* 203 */,
-/* 204 */,
-/* 205 */,
-/* 206 */,
-/* 207 */,
-/* 208 */,
-/* 209 */,
-/* 210 */,
-/* 211 */,
-/* 212 */,
-/* 213 */,
-/* 214 */,
-/* 215 */,
-/* 216 */,
-/* 217 */,
-/* 218 */,
-/* 219 */,
-/* 220 */,
-/* 221 */,
-/* 222 */,
-/* 223 */,
-/* 224 */,
-/* 225 */,
-/* 226 */,
-/* 227 */,
-/* 228 */,
-/* 229 */,
-/* 230 */,
-/* 231 */,
-/* 232 */,
-/* 233 */,
-/* 234 */,
-/* 235 */,
-/* 236 */,
-/* 237 */,
-/* 238 */,
-/* 239 */,
-/* 240 */,
-/* 241 */,
-/* 242 */,
-/* 243 */,
-/* 244 */,
-/* 245 */,
-/* 246 */,
-/* 247 */,
-/* 248 */,
-/* 249 */,
-/* 250 */,
-/* 251 */,
-/* 252 */,
-/* 253 */,
-/* 254 */,
-/* 255 */,
-/* 256 */,
-/* 257 */,
-/* 258 */,
-/* 259 */,
-/* 260 */,
-/* 261 */,
-/* 262 */,
-/* 263 */,
-/* 264 */,
-/* 265 */,
-/* 266 */,
-/* 267 */,
-/* 268 */,
-/* 269 */,
-/* 270 */,
-/* 271 */,
-/* 272 */,
-/* 273 */,
-/* 274 */,
-/* 275 */,
-/* 276 */,
-/* 277 */,
-/* 278 */,
-/* 279 */,
-/* 280 */,
-/* 281 */,
-/* 282 */,
-/* 283 */,
-/* 284 */,
-/* 285 */,
-/* 286 */,
-/* 287 */,
-/* 288 */,
-/* 289 */,
-/* 290 */,
-/* 291 */,
-/* 292 */,
-/* 293 */,
-/* 294 */,
-/* 295 */,
-/* 296 */,
-/* 297 */,
-/* 298 */,
 /* 299 */,
 /* 300 */,
 /* 301 */,
@@ -7182,19 +7663,239 @@ exports.RangeSlider = _filterControlRangeslider2.default; /**
 /* 336 */,
 /* 337 */,
 /* 338 */,
-/* 339 */
+/* 339 */,
+/* 340 */,
+/* 341 */,
+/* 342 */,
+/* 343 */,
+/* 344 */,
+/* 345 */,
+/* 346 */,
+/* 347 */,
+/* 348 */,
+/* 349 */,
+/* 350 */,
+/* 351 */,
+/* 352 */,
+/* 353 */,
+/* 354 */,
+/* 355 */,
+/* 356 */,
+/* 357 */,
+/* 358 */,
+/* 359 */,
+/* 360 */,
+/* 361 */,
+/* 362 */,
+/* 363 */,
+/* 364 */,
+/* 365 */,
+/* 366 */,
+/* 367 */,
+/* 368 */,
+/* 369 */,
+/* 370 */,
+/* 371 */,
+/* 372 */,
+/* 373 */,
+/* 374 */,
+/* 375 */,
+/* 376 */,
+/* 377 */,
+/* 378 */,
+/* 379 */,
+/* 380 */,
+/* 381 */,
+/* 382 */,
+/* 383 */,
+/* 384 */,
+/* 385 */,
+/* 386 */,
+/* 387 */,
+/* 388 */,
+/* 389 */,
+/* 390 */,
+/* 391 */,
+/* 392 */,
+/* 393 */,
+/* 394 */,
+/* 395 */,
+/* 396 */,
+/* 397 */,
+/* 398 */,
+/* 399 */,
+/* 400 */,
+/* 401 */,
+/* 402 */,
+/* 403 */,
+/* 404 */,
+/* 405 */,
+/* 406 */,
+/* 407 */,
+/* 408 */,
+/* 409 */,
+/* 410 */,
+/* 411 */,
+/* 412 */,
+/* 413 */,
+/* 414 */,
+/* 415 */,
+/* 416 */,
+/* 417 */,
+/* 418 */,
+/* 419 */,
+/* 420 */,
+/* 421 */,
+/* 422 */,
+/* 423 */,
+/* 424 */,
+/* 425 */,
+/* 426 */,
+/* 427 */,
+/* 428 */,
+/* 429 */,
+/* 430 */,
+/* 431 */,
+/* 432 */,
+/* 433 */,
+/* 434 */,
+/* 435 */,
+/* 436 */,
+/* 437 */,
+/* 438 */,
+/* 439 */,
+/* 440 */,
+/* 441 */,
+/* 442 */,
+/* 443 */,
+/* 444 */,
+/* 445 */,
+/* 446 */,
+/* 447 */,
+/* 448 */,
+/* 449 */,
+/* 450 */,
+/* 451 */,
+/* 452 */,
+/* 453 */,
+/* 454 */,
+/* 455 */,
+/* 456 */,
+/* 457 */,
+/* 458 */,
+/* 459 */,
+/* 460 */,
+/* 461 */,
+/* 462 */,
+/* 463 */,
+/* 464 */,
+/* 465 */,
+/* 466 */,
+/* 467 */,
+/* 468 */,
+/* 469 */,
+/* 470 */,
+/* 471 */,
+/* 472 */,
+/* 473 */,
+/* 474 */,
+/* 475 */,
+/* 476 */,
+/* 477 */,
+/* 478 */,
+/* 479 */,
+/* 480 */,
+/* 481 */,
+/* 482 */,
+/* 483 */,
+/* 484 */,
+/* 485 */,
+/* 486 */,
+/* 487 */,
+/* 488 */,
+/* 489 */,
+/* 490 */,
+/* 491 */,
+/* 492 */,
+/* 493 */,
+/* 494 */,
+/* 495 */,
+/* 496 */,
+/* 497 */,
+/* 498 */,
+/* 499 */,
+/* 500 */,
+/* 501 */,
+/* 502 */,
+/* 503 */,
+/* 504 */,
+/* 505 */,
+/* 506 */,
+/* 507 */,
+/* 508 */,
+/* 509 */,
+/* 510 */,
+/* 511 */,
+/* 512 */,
+/* 513 */,
+/* 514 */,
+/* 515 */,
+/* 516 */,
+/* 517 */,
+/* 518 */,
+/* 519 */,
+/* 520 */,
+/* 521 */,
+/* 522 */,
+/* 523 */,
+/* 524 */,
+/* 525 */,
+/* 526 */,
+/* 527 */,
+/* 528 */,
+/* 529 */,
+/* 530 */,
+/* 531 */,
+/* 532 */,
+/* 533 */,
+/* 534 */,
+/* 535 */,
+/* 536 */,
+/* 537 */,
+/* 538 */,
+/* 539 */,
+/* 540 */,
+/* 541 */,
+/* 542 */,
+/* 543 */,
+/* 544 */,
+/* 545 */,
+/* 546 */,
+/* 547 */,
+/* 548 */,
+/* 549 */,
+/* 550 */,
+/* 551 */,
+/* 552 */,
+/* 553 */,
+/* 554 */,
+/* 555 */,
+/* 556 */,
+/* 557 */,
+/* 558 */,
+/* 559 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-__webpack_require__(340);
+__webpack_require__(560);
 
-var _bchartsAdonis = __webpack_require__(439);
+var _bchartsAdonis = __webpack_require__(666);
 
 var _bchartsAdonis2 = _interopRequireDefault(_bchartsAdonis);
 
-var _chartOption = __webpack_require__(56);
+var _chartOption = __webpack_require__(116);
 
 var _chartOption2 = _interopRequireDefault(_chartOption);
 
@@ -7241,17 +7942,17 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
                                */
 
 /***/ }),
-/* 340 */
+/* 560 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _package = __webpack_require__(341);
+var _package = __webpack_require__(561);
 
 var _package2 = _interopRequireDefault(_package);
 
-var _chartOption = __webpack_require__(56);
+var _chartOption = __webpack_require__(116);
 
 var _chartOption2 = _interopRequireDefault(_chartOption);
 
@@ -7259,39 +7960,39 @@ var _chartOptionBase = __webpack_require__(6);
 
 var _chartOptionBase2 = _interopRequireDefault(_chartOptionBase);
 
-var _chartOptionRegister = __webpack_require__(57);
+var _chartOptionRegister = __webpack_require__(117);
 
 var ChartOptionRegistry = _interopRequireWildcard(_chartOptionRegister);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
-var _datasource = __webpack_require__(195);
+var _datasource = __webpack_require__(296);
 
 var _datasource2 = _interopRequireDefault(_datasource);
 
-var _controlContainer = __webpack_require__(173);
+var _controlContainer = __webpack_require__(273);
 
 var _controlContainer2 = _interopRequireDefault(_controlContainer);
 
-var _controlContainerFactory = __webpack_require__(172);
+var _controlContainerFactory = __webpack_require__(272);
 
 var ControlContainerFactory = _interopRequireWildcard(_controlContainerFactory);
 
-var _controlContainerPreview = __webpack_require__(59);
+var _controlContainerPreview = __webpack_require__(119);
 
 var ControlContainerPreview = _interopRequireWildcard(_controlContainerPreview);
 
-var _baseControl = __webpack_require__(8);
+var _baseControl = __webpack_require__(9);
 
 var _baseControl2 = _interopRequireDefault(_baseControl);
 
-var _index = __webpack_require__(438);
+var _index = __webpack_require__(665);
 
 var Dialogs = _interopRequireWildcard(_index);
 
-var _preference = __webpack_require__(178);
+var _preference = __webpack_require__(278);
 
 var Preference = _interopRequireWildcard(_preference);
 
@@ -7319,7 +8020,7 @@ _package2.default.Chart.Adonis.Preference = Preference;
 _package2.default.Chart.Adonis.API.registerChartOption = ChartOptionRegistry.registerChartOptionControl;
 
 /***/ }),
-/* 341 */
+/* 561 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7361,7 +8062,7 @@ exports.default = root.Brightics;
 window.Brightics = root.Brightics;
 
 /***/ }),
-/* 342 */
+/* 562 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7371,140 +8072,139 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _chartOptionArea = __webpack_require__(58);
+var _chartOptionArea = __webpack_require__(118);
 
 var _chartOptionArea2 = _interopRequireDefault(_chartOptionArea);
 
-var _chartOptionAreaStacked = __webpack_require__(191);
+var _chartOptionAreaStacked = __webpack_require__(292);
 
 var _chartOptionAreaStacked2 = _interopRequireDefault(_chartOptionAreaStacked);
 
-var _chartOptionAreaStacked3 = __webpack_require__(190);
+var _chartOptionAreaStacked3 = __webpack_require__(291);
 
 var _chartOptionAreaStacked4 = _interopRequireDefault(_chartOptionAreaStacked3);
 
-var _chartOptionBar = __webpack_require__(409);
+var _chartOptionBar = __webpack_require__(635);
 
 var _chartOptionBar2 = _interopRequireDefault(_chartOptionBar);
 
-var _chartOptionBarStacked = __webpack_require__(410);
+var _chartOptionBarStacked = __webpack_require__(636);
 
 var _chartOptionBarStacked2 = _interopRequireDefault(_chartOptionBarStacked);
 
-var _chartOptionBarStacked3 = __webpack_require__(192);
+var _chartOptionBarStacked3 = __webpack_require__(293);
 
 var _chartOptionBarStacked4 = _interopRequireDefault(_chartOptionBarStacked3);
 
-var _chartOptionBiplot = __webpack_require__(411);
+var _chartOptionBiplot = __webpack_require__(637);
 
 var _chartOptionBiplot2 = _interopRequireDefault(_chartOptionBiplot);
 
-var _chartOptionBoxplot = __webpack_require__(412);
+var _chartOptionBoxplot = __webpack_require__(638);
 
 var _chartOptionBoxplot2 = _interopRequireDefault(_chartOptionBoxplot);
 
-var _chartOptionBubble = __webpack_require__(413);
+var _chartOptionBubble = __webpack_require__(639);
 
 var _chartOptionBubble2 = _interopRequireDefault(_chartOptionBubble);
 
-var _chartOptionCard = __webpack_require__(414);
+var _chartOptionCard = __webpack_require__(640);
 
 var _chartOptionCard2 = _interopRequireDefault(_chartOptionCard);
 
-var _chartOptionColumn = __webpack_require__(60);
+var _chartOptionColumn = __webpack_require__(122);
 
 var _chartOptionColumn2 = _interopRequireDefault(_chartOptionColumn);
 
-var _chartOptionColumnStacked = __webpack_require__(415);
+var _chartOptionColumnStacked = __webpack_require__(641);
 
 var _chartOptionColumnStacked2 = _interopRequireDefault(_chartOptionColumnStacked);
 
-var _chartOptionColumnStacked3 = __webpack_require__(416);
+var _chartOptionColumnStacked3 = __webpack_require__(642);
 
 var _chartOptionColumnStacked4 = _interopRequireDefault(_chartOptionColumnStacked3);
 
-var _chartOptionComplex = __webpack_require__(417);
+var _chartOptionComplex = __webpack_require__(643);
 
 var _chartOptionComplex2 = _interopRequireDefault(_chartOptionComplex);
 
-var _chartOptionDecisiontree = __webpack_require__(418);
+var _chartOptionDecisiontree = __webpack_require__(644);
 
 var _chartOptionDecisiontree2 = _interopRequireDefault(_chartOptionDecisiontree);
 
-var _chartOptionDendrogram = __webpack_require__(419);
+var _chartOptionDendrogram = __webpack_require__(645);
 
 var _chartOptionDendrogram2 = _interopRequireDefault(_chartOptionDendrogram);
 
-var _chartOptionHeatmap = __webpack_require__(420);
+var _chartOptionHeatmap = __webpack_require__(646);
 
 var _chartOptionHeatmap2 = _interopRequireDefault(_chartOptionHeatmap);
 
-var _chartOptionHeatmapMatrix = __webpack_require__(421);
+var _chartOptionHeatmapMatrix = __webpack_require__(647);
 
 var _chartOptionHeatmapMatrix2 = _interopRequireDefault(_chartOptionHeatmapMatrix);
 
-var _chartOptionHistogram = __webpack_require__(422);
+var _chartOptionHistogram = __webpack_require__(648);
 
 var _chartOptionHistogram2 = _interopRequireDefault(_chartOptionHistogram);
 
-var _chartOptionLine = __webpack_require__(423);
+var _chartOptionLine = __webpack_require__(649);
 
 var _chartOptionLine2 = _interopRequireDefault(_chartOptionLine);
 
-var _chartOptionNetwork = __webpack_require__(424);
+var _chartOptionNetwork = __webpack_require__(650);
 
 var _chartOptionNetwork2 = _interopRequireDefault(_chartOptionNetwork);
 
-var _chartOptionPairwiseScatter = __webpack_require__(425);
+var _chartOptionPairwiseScatter = __webpack_require__(651);
 
 var _chartOptionPairwiseScatter2 = _interopRequireDefault(_chartOptionPairwiseScatter);
 
-var _chartOptionPie = __webpack_require__(426);
+var _chartOptionPie = __webpack_require__(652);
 
 var _chartOptionPie2 = _interopRequireDefault(_chartOptionPie);
 
-var _chartOptionQqplot = __webpack_require__(427);
+var _chartOptionQqplot = __webpack_require__(653);
 
 var _chartOptionQqplot2 = _interopRequireDefault(_chartOptionQqplot);
 
-var _chartOptionRadar = __webpack_require__(428);
+var _chartOptionRadar = __webpack_require__(654);
 
 var _chartOptionRadar2 = _interopRequireDefault(_chartOptionRadar);
 
-var _chartOptionRoccurve = __webpack_require__(429);
+var _chartOptionRoccurve = __webpack_require__(655);
 
 var _chartOptionRoccurve2 = _interopRequireDefault(_chartOptionRoccurve);
 
-var _chartOptionScatter = __webpack_require__(430);
+var _chartOptionScatter = __webpack_require__(656);
 
 var _chartOptionScatter2 = _interopRequireDefault(_chartOptionScatter);
 
-var _chartOptionScattermap = __webpack_require__(431);
+var _chartOptionScattermap = __webpack_require__(657);
 
 var _chartOptionScattermap2 = _interopRequireDefault(_chartOptionScattermap);
 
-var _chartOptionTable = __webpack_require__(432);
+var _chartOptionTable = __webpack_require__(658);
 
 var _chartOptionTable2 = _interopRequireDefault(_chartOptionTable);
 
-var _chartOptionTreemap = __webpack_require__(433);
+var _chartOptionTreemap = __webpack_require__(659);
 
 var _chartOptionTreemap2 = _interopRequireDefault(_chartOptionTreemap);
 
-var _chartOptionMap = __webpack_require__(434);
+var _chartOptionMap = __webpack_require__(660);
 
 var _chartOptionMap2 = _interopRequireDefault(_chartOptionMap);
 
-var _chartOptionDonut = __webpack_require__(435);
+var _chartOptionDonut = __webpack_require__(661);
 
 var _chartOptionDonut2 = _interopRequireDefault(_chartOptionDonut);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _chartOptionImageGrid = __webpack_require__(662);
 
-/**
- * Source: chart-option-index.js
- * Created by ji_sung.park on 2018-05-30
- */
+var _chartOptionImageGrid2 = _interopRequireDefault(_chartOptionImageGrid);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var index = {
     'area': _chartOptionArea2.default,
@@ -7536,16 +8236,20 @@ var index = {
     'table': _chartOptionTable2.default,
     'treemap': _chartOptionTreemap2.default,
     'map': _chartOptionMap2.default,
-    'donut': _chartOptionDonut2.default
+    'donut': _chartOptionDonut2.default,
+    'image-grid': _chartOptionImageGrid2.default,
     //개발 완료되면 주석 해제할것
-    //'radar': radar,
+    'radar': _chartOptionRadar2.default
     //'scatter-map': scattermap
-};
+}; /**
+    * Source: chart-option-index.js
+    * Created by ji_sung.park on 2018-05-30
+    */
 
 exports.default = index;
 
 /***/ }),
-/* 343 */
+/* 563 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7558,13 +8262,17 @@ exports.createColumnSelectControl = createColumnSelectControl;
 exports.createMapSelectControl = createMapSelectControl;
 exports.createComplexColumnSelectControl = createComplexColumnSelectControl;
 exports.createFormatControl = createFormatControl;
+exports.createFormatCardControl = createFormatCardControl;
 exports.createTitleControl = createTitleControl;
 exports.createAxisViewRangeControl = createAxisViewRangeControl;
+exports.createAxisRadarViewRangeControl = createAxisRadarViewRangeControl;
 exports.createAxisTitleControl = createAxisTitleControl;
 exports.createAxisTitleSeparatedControl = createAxisTitleSeparatedControl;
 exports.createAxisLabelControl = createAxisLabelControl;
+exports.createAxisRadarLabelControl = createAxisRadarLabelControl;
 exports.createAxisLabelSeparatedControl = createAxisLabelSeparatedControl;
 exports.createLegendControl = createLegendControl;
+exports.createCustomLegendControl = createCustomLegendControl;
 exports.createVisualMapValueControl = createVisualMapValueControl;
 exports.createVisualMapAlignControl = createVisualMapAlignControl;
 exports.createMarkerControl = createMarkerControl;
@@ -7579,131 +8287,147 @@ exports.createFrameDonutControl = createFrameDonutControl;
 exports.createToolTipControl = createToolTipControl;
 exports.createLabelControl = createLabelControl;
 exports.createFigureControl = createFigureControl;
-exports.createViewOptionControl = createViewOptionControl;
 exports.createAreaControl = createAreaControl;
 exports.createLayersControl = createLayersControl;
 exports.createAxisScaleControl = createAxisScaleControl;
 exports.createToolTipTriggerControl = createToolTipTriggerControl;
+exports.createGridControl = createGridControl;
 
-var _columnSelectControl = __webpack_require__(174);
+var _columnSelectControl = __webpack_require__(274);
 
 var _columnSelectControl2 = _interopRequireDefault(_columnSelectControl);
 
-var _complexColumnSelectControl = __webpack_require__(384);
+var _complexColumnSelectControl = __webpack_require__(606);
 
 var _complexColumnSelectControl2 = _interopRequireDefault(_complexColumnSelectControl);
 
-var _formatControl = __webpack_require__(385);
+var _formatControl = __webpack_require__(607);
 
 var _formatControl2 = _interopRequireDefault(_formatControl);
 
-var _axisViewRangeControl = __webpack_require__(386);
+var _formatCardControl = __webpack_require__(608);
+
+var _formatCardControl2 = _interopRequireDefault(_formatCardControl);
+
+var _axisViewRangeControl = __webpack_require__(609);
 
 var _axisViewRangeControl2 = _interopRequireDefault(_axisViewRangeControl);
 
-var _axisTitleSeparatedControl = __webpack_require__(387);
+var _axisTitleSeparatedControl = __webpack_require__(610);
 
 var _axisTitleSeparatedControl2 = _interopRequireDefault(_axisTitleSeparatedControl);
 
-var _axisLabelSeparatedControl = __webpack_require__(388);
+var _axisLabelSeparatedControl = __webpack_require__(611);
 
 var _axisLabelSeparatedControl2 = _interopRequireDefault(_axisLabelSeparatedControl);
 
-var _legendControl = __webpack_require__(389);
+var _legendControl = __webpack_require__(612);
 
 var _legendControl2 = _interopRequireDefault(_legendControl);
 
-var _visualmapValueControl = __webpack_require__(390);
+var _visualmapValueControl = __webpack_require__(613);
 
 var _visualmapValueControl2 = _interopRequireDefault(_visualmapValueControl);
 
-var _visualmapAlignControl = __webpack_require__(391);
+var _visualmapAlignControl = __webpack_require__(614);
 
 var _visualmapAlignControl2 = _interopRequireDefault(_visualmapAlignControl);
 
-var _markerControl = __webpack_require__(188);
+var _markerControl = __webpack_require__(289);
 
 var _markerControl2 = _interopRequireDefault(_markerControl);
 
-var _markerLineControl = __webpack_require__(392);
+var _markerLineControl = __webpack_require__(615);
 
 var _markerLineControl2 = _interopRequireDefault(_markerLineControl);
 
-var _striplineControl = __webpack_require__(393);
+var _striplineControl = __webpack_require__(616);
 
 var _striplineControl2 = _interopRequireDefault(_striplineControl);
 
-var _trendlineControl = __webpack_require__(394);
+var _trendlineControl = __webpack_require__(617);
 
 var _trendlineControl2 = _interopRequireDefault(_trendlineControl);
 
-var _frameStyleControl = __webpack_require__(395);
+var _frameStyleControl = __webpack_require__(618);
 
 var _frameStyleControl2 = _interopRequireDefault(_frameStyleControl);
 
-var _frameControl = __webpack_require__(396);
+var _frameControl = __webpack_require__(619);
 
 var _frameControl2 = _interopRequireDefault(_frameControl);
 
-var _framePieControl = __webpack_require__(189);
+var _framePieControl = __webpack_require__(290);
 
 var _framePieControl2 = _interopRequireDefault(_framePieControl);
 
-var _frameMapControl = __webpack_require__(397);
+var _frameMapControl = __webpack_require__(620);
 
 var _frameMapControl2 = _interopRequireDefault(_frameMapControl);
 
-var _frameDonutControl = __webpack_require__(398);
+var _frameDonutControl = __webpack_require__(621);
 
 var _frameDonutControl2 = _interopRequireDefault(_frameDonutControl);
 
-var _tooltipControl = __webpack_require__(399);
+var _tooltipControl = __webpack_require__(622);
 
 var _tooltipControl2 = _interopRequireDefault(_tooltipControl);
 
-var _figureControl = __webpack_require__(400);
+var _figureControl = __webpack_require__(623);
 
 var _figureControl2 = _interopRequireDefault(_figureControl);
 
-var _testViewOptionControl = __webpack_require__(401);
-
-var _testViewOptionControl2 = _interopRequireDefault(_testViewOptionControl);
-
-var _titleControl = __webpack_require__(402);
+var _titleControl = __webpack_require__(624);
 
 var _titleControl2 = _interopRequireDefault(_titleControl);
 
-var _axisTitleControl = __webpack_require__(185);
+var _axisTitleControl = __webpack_require__(287);
 
 var _axisTitleControl2 = _interopRequireDefault(_axisTitleControl);
 
-var _axisLabelControl = __webpack_require__(186);
+var _axisLabelControl = __webpack_require__(288);
 
 var _axisLabelControl2 = _interopRequireDefault(_axisLabelControl);
 
-var _mapSelectControl = __webpack_require__(403);
+var _mapSelectControl = __webpack_require__(625);
 
 var _mapSelectControl2 = _interopRequireDefault(_mapSelectControl);
 
-var _areaControl = __webpack_require__(404);
+var _areaControl = __webpack_require__(626);
 
 var _areaControl2 = _interopRequireDefault(_areaControl);
 
-var _layersControl = __webpack_require__(405);
+var _layersControl = __webpack_require__(627);
 
 var _layersControl2 = _interopRequireDefault(_layersControl);
 
-var _labelControl = __webpack_require__(406);
+var _labelControl = __webpack_require__(628);
 
 var _labelControl2 = _interopRequireDefault(_labelControl);
 
-var _axisScaleControl = __webpack_require__(407);
+var _axisScaleControl = __webpack_require__(629);
 
 var _axisScaleControl2 = _interopRequireDefault(_axisScaleControl);
 
-var _tooltipTriggerControl = __webpack_require__(408);
+var _tooltipTriggerControl = __webpack_require__(630);
 
 var _tooltipTriggerControl2 = _interopRequireDefault(_tooltipTriggerControl);
+
+var _gridControl = __webpack_require__(631);
+
+var _gridControl2 = _interopRequireDefault(_gridControl);
+
+var _customLegendControl = __webpack_require__(632);
+
+var _customLegendControl2 = _interopRequireDefault(_customLegendControl);
+
+var _axisRadarViewRangeControl = __webpack_require__(633);
+
+var _axisRadarViewRangeControl2 = _interopRequireDefault(_axisRadarViewRangeControl);
+
+var _axisRadarLabelControl = __webpack_require__(634);
+
+var _axisRadarLabelControl2 = _interopRequireDefault(_axisRadarLabelControl);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -7726,12 +8450,20 @@ function createFormatControl(parentId, options, headerKey) {
     return new _formatControl2.default(parentId, options, headerKey);
 }
 
+function createFormatCardControl(parentId, options, headerKey) {
+    return new _formatCardControl2.default(parentId, options, headerKey);
+}
+
 function createTitleControl(parentId, options, headerKey) {
     return new _titleControl2.default(parentId, options, headerKey);
 }
 
 function createAxisViewRangeControl(parentId, options, headerKey) {
     return new _axisViewRangeControl2.default(parentId, options, headerKey);
+}
+
+function createAxisRadarViewRangeControl(parentId, options, headerKey) {
+    return new _axisRadarViewRangeControl2.default(parentId, options, headerKey);
 }
 
 function createAxisTitleControl(parentId, options, headerKey) {
@@ -7746,12 +8478,20 @@ function createAxisLabelControl(parentId, options, headerKey) {
     return new _axisLabelControl2.default(parentId, options, headerKey);
 }
 
+function createAxisRadarLabelControl(parentId, options, headerKey) {
+    return new _axisRadarLabelControl2.default(parentId, options, headerKey);
+}
+
 function createAxisLabelSeparatedControl(parentId, options, headerKey) {
     return new _axisLabelSeparatedControl2.default(parentId, options, headerKey);
 }
 
 function createLegendControl(parentId, options, headerKey) {
     return new _legendControl2.default(parentId, options, headerKey);
+}
+
+function createCustomLegendControl(parentId, options, headerKey) {
+    return new _customLegendControl2.default(parentId, options, headerKey);
 }
 
 function createVisualMapValueControl(parentId, options, headerKey) {
@@ -7810,10 +8550,6 @@ function createFigureControl(parentId, options, headerKey) {
     return new _figureControl2.default(parentId, options, headerKey);
 }
 
-function createViewOptionControl(parentId, options, headerKey) {
-    return new _testViewOptionControl2.default(parentId, options, headerKey);
-}
-
 function createAreaControl(parentId, options, headerKey) {
     return new _areaControl2.default(parentId, options, headerKey);
 }
@@ -7830,8 +8566,12 @@ function createToolTipTriggerControl(parentId, options, headerKey) {
     return new _tooltipTriggerControl2.default(parentId, options, headerKey);
 }
 
+function createGridControl(parentId, options, headerKey) {
+    return new _gridControl2.default(parentId, options, headerKey);
+}
+
 /***/ }),
-/* 344 */
+/* 564 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7840,175 +8580,191 @@ function createToolTipTriggerControl(parentId, options, headerKey) {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.EdgeTypeSelectorWidget = exports.ToolTipTriggerRadioButtonWidget = exports.CenterPositionNumberWidget = exports.CenterPositionWidget = exports.AxisToggleButtonWidget = exports.OnOffSwitchWidget = exports.ItemSelectorWidget = exports.FormatDigitSelectorWidget = exports.FormatTypeSelectorWidget = exports.ColumnFormatterWidget = exports.PositionWidget = exports.SwitchButtonWidget = exports.ChartTypeSelectorWidget = exports.DataSourceSelectorWidget = exports.ToolTipBehaviorRadioButtonWidget = exports.DirectionRadioButtonWidget = exports.FontStyleButtonWidget = exports.VerticalAlignRadioButtonWidget = exports.HorizontalAlignRadioButtonWidget = exports.LineComponentWidget = exports.LineStyleWidget = exports.LineWidthSelectorWidget = exports.DashTypeSelectorWidget = exports.MarkerLineSelectorWidget = exports.MarkerSizeSelectorWidget = exports.OpacitySelectorWidget = exports.FontStyleWidget = exports.FontSizeSelectorWidget = exports.FontSelectorWidget = exports.ColumnSelectorWidgetDroppable = exports.ColumnSelectorWidget = exports.ColorPaletteWidget = exports.ColorThemesSelectorWidget = exports.ColorInputWidget = exports.ColorPickerWidget = exports.MultiColorWidget = exports.CheckedMultiInputWidget = exports.MultiLabelWidget = exports.MultiInputWidget = exports.NumberInputWidget = exports.InputWidget = exports.ShowButtonWidget = undefined;
+exports.LabelWidget = exports.MarkerShowSelectorWidget = exports.EdgeTypeSelectorWidget = exports.ToolTipTriggerRadioButtonWidget = exports.CustomVerticalAlignRadioButtonWidget = exports.CustomHorizontalAlignRadioButtonWidget = exports.CenterPositionNumberWidget = exports.CenterPositionWidget = exports.AxisToggleButtonWidget = exports.OnOffSwitchWidget = exports.ItemSelectorWidget = exports.FormatDigitSelectorWidget = exports.FormatTypeSelectorWidget = exports.ColumnFormatterWidget = exports.PositionWidget = exports.SwitchButtonWidget = exports.ChartTypeSelectorWidget = exports.DataSourceSelectorWidget = exports.ToolTipBehaviorRadioButtonWidget = exports.DirectionRadioButtonWidget = exports.FontStyleButtonWidget = exports.VerticalAlignRadioButtonWidget = exports.HorizontalAlignRadioButtonWidget = exports.LineComponentWidget = exports.LineStyleWidget = exports.LineWidthSelectorWidget = exports.DashTypeSelectorWidget = exports.MarkerLineSelectorWidget = exports.MarkerSizeSelectorWidget = exports.OpacitySelectorWidget = exports.FontStyleWidget = exports.FontSizeSelectorWidget = exports.FontSelectorWidget = exports.ColumnSelectorWidgetDroppable = exports.ColumnSelectorWidget = exports.ColorPaletteWidget = exports.ColorThemesSelectorWidget = exports.ColorInputWidget = exports.ColorPickerWidget = exports.MultiColorWidget = exports.CheckedMultiInputWidget = exports.MultiLabelWidget = exports.MultiInputWidget = exports.NumberInputWidget = exports.InputWidget = exports.ShowButtonWidget = undefined;
 
-var _showButtonWidget = __webpack_require__(345);
+var _showButtonWidget = __webpack_require__(565);
 
 var _showButtonWidget2 = _interopRequireDefault(_showButtonWidget);
 
-var _inputWidget = __webpack_require__(175);
+var _inputWidget = __webpack_require__(275);
 
 var _inputWidget2 = _interopRequireDefault(_inputWidget);
 
-var _numberInputWidget = __webpack_require__(346);
+var _numberInputWidget = __webpack_require__(566);
 
 var _numberInputWidget2 = _interopRequireDefault(_numberInputWidget);
 
-var _multiInputWidget = __webpack_require__(176);
+var _multiInputWidget = __webpack_require__(276);
 
 var _multiInputWidget2 = _interopRequireDefault(_multiInputWidget);
 
-var _multiLabelWidget = __webpack_require__(347);
+var _multiLabelWidget = __webpack_require__(567);
 
 var _multiLabelWidget2 = _interopRequireDefault(_multiLabelWidget);
 
-var _checkedMultiInputWidget = __webpack_require__(348);
+var _checkedMultiInputWidget = __webpack_require__(568);
 
 var _checkedMultiInputWidget2 = _interopRequireDefault(_checkedMultiInputWidget);
 
-var _multiColorWidget = __webpack_require__(349);
+var _multiColorWidget = __webpack_require__(569);
 
 var _multiColorWidget2 = _interopRequireDefault(_multiColorWidget);
 
-var _colorPickerWidget = __webpack_require__(350);
+var _colorPickerWidget = __webpack_require__(570);
 
 var _colorPickerWidget2 = _interopRequireDefault(_colorPickerWidget);
 
-var _colorInputWidget = __webpack_require__(351);
+var _colorInputWidget = __webpack_require__(571);
 
 var _colorInputWidget2 = _interopRequireDefault(_colorInputWidget);
 
-var _colorThemesSelectorWidget = __webpack_require__(352);
+var _colorThemesSelectorWidget = __webpack_require__(572);
 
 var _colorThemesSelectorWidget2 = _interopRequireDefault(_colorThemesSelectorWidget);
 
-var _colorPaletteWidget = __webpack_require__(353);
+var _colorPaletteWidget = __webpack_require__(573);
 
 var _colorPaletteWidget2 = _interopRequireDefault(_colorPaletteWidget);
 
-var _columnSelectorWidget = __webpack_require__(30);
+var _columnSelectorWidget = __webpack_require__(58);
 
 var _columnSelectorWidget2 = _interopRequireDefault(_columnSelectorWidget);
 
-var _columnSelectorWidgetDroppable = __webpack_require__(355);
+var _columnSelectorWidgetDroppable = __webpack_require__(575);
 
 var _columnSelectorWidgetDroppable2 = _interopRequireDefault(_columnSelectorWidgetDroppable);
 
-var _fontSelectorWidget = __webpack_require__(356);
+var _fontSelectorWidget = __webpack_require__(576);
 
 var _fontSelectorWidget2 = _interopRequireDefault(_fontSelectorWidget);
 
-var _fontSizeSelectorWidget = __webpack_require__(357);
+var _fontSizeSelectorWidget = __webpack_require__(577);
 
 var _fontSizeSelectorWidget2 = _interopRequireDefault(_fontSizeSelectorWidget);
 
-var _fontStyleWidget = __webpack_require__(358);
+var _fontStyleWidget = __webpack_require__(578);
 
 var _fontStyleWidget2 = _interopRequireDefault(_fontStyleWidget);
 
-var _opacitySelectorWidget = __webpack_require__(359);
+var _opacitySelectorWidget = __webpack_require__(579);
 
 var _opacitySelectorWidget2 = _interopRequireDefault(_opacitySelectorWidget);
 
-var _markerSizeSelectorWidget = __webpack_require__(360);
+var _markerSizeSelectorWidget = __webpack_require__(580);
 
 var _markerSizeSelectorWidget2 = _interopRequireDefault(_markerSizeSelectorWidget);
 
-var _markerLineSelectorWidget = __webpack_require__(361);
+var _markerLineSelectorWidget = __webpack_require__(581);
 
 var _markerLineSelectorWidget2 = _interopRequireDefault(_markerLineSelectorWidget);
 
-var _dashTypeSelectorWidget = __webpack_require__(362);
+var _dashTypeSelectorWidget = __webpack_require__(582);
 
 var _dashTypeSelectorWidget2 = _interopRequireDefault(_dashTypeSelectorWidget);
 
-var _lineWidthSelectorWidget = __webpack_require__(363);
+var _lineWidthSelectorWidget = __webpack_require__(583);
 
 var _lineWidthSelectorWidget2 = _interopRequireDefault(_lineWidthSelectorWidget);
 
-var _lineStyleWidget = __webpack_require__(364);
+var _lineStyleWidget = __webpack_require__(584);
 
 var _lineStyleWidget2 = _interopRequireDefault(_lineStyleWidget);
 
-var _lineComponentWidget = __webpack_require__(365);
+var _lineComponentWidget = __webpack_require__(585);
 
 var _lineComponentWidget2 = _interopRequireDefault(_lineComponentWidget);
 
-var _horizontalAlignRadioButtonWidget = __webpack_require__(366);
+var _horizontalAlignRadioButtonWidget = __webpack_require__(279);
 
 var _horizontalAlignRadioButtonWidget2 = _interopRequireDefault(_horizontalAlignRadioButtonWidget);
 
-var _verticalAlignRadioButtonWidget = __webpack_require__(367);
+var _verticalAlignRadioButtonWidget = __webpack_require__(280);
 
 var _verticalAlignRadioButtonWidget2 = _interopRequireDefault(_verticalAlignRadioButtonWidget);
 
-var _fontStyleButtonWidget = __webpack_require__(368);
+var _fontStyleButtonWidget = __webpack_require__(586);
 
 var _fontStyleButtonWidget2 = _interopRequireDefault(_fontStyleButtonWidget);
 
-var _directionRadioButtonWidget = __webpack_require__(369);
+var _directionRadioButtonWidget = __webpack_require__(587);
 
 var _directionRadioButtonWidget2 = _interopRequireDefault(_directionRadioButtonWidget);
 
-var _tooltipBehaviorRadioButtonWidget = __webpack_require__(370);
+var _tooltipBehaviorRadioButtonWidget = __webpack_require__(588);
 
 var _tooltipBehaviorRadioButtonWidget2 = _interopRequireDefault(_tooltipBehaviorRadioButtonWidget);
 
-var _datasourceSelectorWidget = __webpack_require__(371);
+var _datasourceSelectorWidget = __webpack_require__(589);
 
 var _datasourceSelectorWidget2 = _interopRequireDefault(_datasourceSelectorWidget);
 
-var _chartTypeSelectorWidget = __webpack_require__(372);
+var _chartTypeSelectorWidget = __webpack_require__(590);
 
 var _chartTypeSelectorWidget2 = _interopRequireDefault(_chartTypeSelectorWidget);
 
-var _switchButtonWidget = __webpack_require__(373);
+var _switchButtonWidget = __webpack_require__(591);
 
 var _switchButtonWidget2 = _interopRequireDefault(_switchButtonWidget);
 
-var _positionWidget = __webpack_require__(183);
+var _positionWidget = __webpack_require__(284);
 
 var _positionWidget2 = _interopRequireDefault(_positionWidget);
 
-var _columnFormatterWidget = __webpack_require__(374);
+var _columnFormatterWidget = __webpack_require__(592);
 
 var _columnFormatterWidget2 = _interopRequireDefault(_columnFormatterWidget);
 
-var _formatTypeWidget = __webpack_require__(375);
+var _formatTypeWidget = __webpack_require__(593);
 
 var _formatTypeWidget2 = _interopRequireDefault(_formatTypeWidget);
 
-var _formatDigitWidget = __webpack_require__(376);
+var _formatDigitWidget = __webpack_require__(594);
 
 var _formatDigitWidget2 = _interopRequireDefault(_formatDigitWidget);
 
-var _itemSelectorWidget = __webpack_require__(377);
+var _itemSelectorWidget = __webpack_require__(595);
 
 var _itemSelectorWidget2 = _interopRequireDefault(_itemSelectorWidget);
 
-var _onoffSwitchWidget = __webpack_require__(378);
+var _onoffSwitchWidget = __webpack_require__(596);
 
 var _onoffSwitchWidget2 = _interopRequireDefault(_onoffSwitchWidget);
 
-var _axisToggleButtonWidget = __webpack_require__(379);
+var _axisToggleButtonWidget = __webpack_require__(597);
 
 var _axisToggleButtonWidget2 = _interopRequireDefault(_axisToggleButtonWidget);
 
-var _centerPositionWidget = __webpack_require__(380);
+var _centerPositionWidget = __webpack_require__(121);
 
 var _centerPositionWidget2 = _interopRequireDefault(_centerPositionWidget);
 
-var _centerPositionNumberWidget = __webpack_require__(381);
+var _centerPositionNumberWidget = __webpack_require__(598);
 
 var _centerPositionNumberWidget2 = _interopRequireDefault(_centerPositionNumberWidget);
 
-var _tooltipTriggerRadioButtonWidget = __webpack_require__(382);
+var _tooltipTriggerRadioButtonWidget = __webpack_require__(599);
 
 var _tooltipTriggerRadioButtonWidget2 = _interopRequireDefault(_tooltipTriggerRadioButtonWidget);
 
-var _edgeTypeWidget = __webpack_require__(383);
+var _edgeTypeWidget = __webpack_require__(600);
 
 var _edgeTypeWidget2 = _interopRequireDefault(_edgeTypeWidget);
+
+var _customHorizontalAlignRadioButtonWidget = __webpack_require__(601);
+
+var _customHorizontalAlignRadioButtonWidget2 = _interopRequireDefault(_customHorizontalAlignRadioButtonWidget);
+
+var _customVerticalAlignRadioButtonWidget = __webpack_require__(603);
+
+var _customVerticalAlignRadioButtonWidget2 = _interopRequireDefault(_customVerticalAlignRadioButtonWidget);
+
+var _markerShowSelectorWidget = __webpack_require__(604);
+
+var _markerShowSelectorWidget2 = _interopRequireDefault(_markerShowSelectorWidget);
+
+var _labelWidget = __webpack_require__(605);
+
+var _labelWidget2 = _interopRequireDefault(_labelWidget);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -8057,11 +8813,15 @@ exports.OnOffSwitchWidget = _onoffSwitchWidget2.default;
 exports.AxisToggleButtonWidget = _axisToggleButtonWidget2.default;
 exports.CenterPositionWidget = _centerPositionWidget2.default;
 exports.CenterPositionNumberWidget = _centerPositionNumberWidget2.default;
+exports.CustomHorizontalAlignRadioButtonWidget = _customHorizontalAlignRadioButtonWidget2.default;
+exports.CustomVerticalAlignRadioButtonWidget = _customVerticalAlignRadioButtonWidget2.default;
 exports.ToolTipTriggerRadioButtonWidget = _tooltipTriggerRadioButtonWidget2.default;
 exports.EdgeTypeSelectorWidget = _edgeTypeWidget2.default;
+exports.MarkerShowSelectorWidget = _markerShowSelectorWidget2.default;
+exports.LabelWidget = _labelWidget2.default;
 
 /***/ }),
-/* 345 */
+/* 565 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8071,11 +8831,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseWidget = __webpack_require__(18);
+var _baseWidget = __webpack_require__(23);
 
 var _baseWidget2 = _interopRequireDefault(_baseWidget);
 
-var _chartOptionConst = __webpack_require__(12);
+var _chartOptionConst = __webpack_require__(17);
 
 var _chartOptionConst2 = _interopRequireDefault(_chartOptionConst);
 
@@ -8101,7 +8861,8 @@ ShowButtonWidget.prototype.constructor = ShowButtonWidget;
 
 ShowButtonWidget.prototype._createContents = function ($parent) {
 
-    this.$showBtn = $('<div class="bo-control-header-show-button">Show</div>');
+    this.$showBtn = $('<div class="bo-control-header-show-button"></div>');
+    this.$showBtn.text(this.options.defaultLabel ? this.options.defaultLabel : 'Show');
     this.$showBtn.jqxCheckBox({
         boxSize: '15px',
         theme: _chartOptionConst2.default.Theme,
@@ -8131,7 +8892,7 @@ ShowButtonWidget.prototype.render = function (changedValue) {
 exports.default = ShowButtonWidget;
 
 /***/ }),
-/* 346 */
+/* 566 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8141,7 +8902,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _inputWidget = __webpack_require__(175);
+var _inputWidget = __webpack_require__(275);
 
 var _inputWidget2 = _interopRequireDefault(_inputWidget);
 
@@ -8185,6 +8946,8 @@ NumberInputWidget.prototype._createContents = function ($parent) {
     this._addKeyEventListener();
 
     this.$inputControl.addClass('bos-widget-number-input');
+    if (this.options.width) this.$inputControl.css('width', this.options.width);
+    if (this.options.height) this.$inputControl.css('height', this.options.height);
 };
 
 NumberInputWidget.prototype._bindOnChangedFunc = function ($parent) {
@@ -8316,7 +9079,7 @@ NumberInputWidget.prototype._addKeyEventListener = function () {
 exports.default = NumberInputWidget;
 
 /***/ }),
-/* 347 */
+/* 567 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8326,7 +9089,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseWidget = __webpack_require__(18);
+var _baseWidget = __webpack_require__(23);
 
 var _baseWidget2 = _interopRequireDefault(_baseWidget);
 
@@ -8394,7 +9157,7 @@ MultiLabelWidget.prototype._createLabel = function ($parent, inputBoxIdx) {
 exports.default = MultiLabelWidget;
 
 /***/ }),
-/* 348 */
+/* 568 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8404,11 +9167,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _multiInputWidget = __webpack_require__(176);
+var _multiInputWidget = __webpack_require__(276);
 
 var _multiInputWidget2 = _interopRequireDefault(_multiInputWidget);
 
-var _chartOptionConst = __webpack_require__(12);
+var _chartOptionConst = __webpack_require__(17);
 
 var _chartOptionConst2 = _interopRequireDefault(_chartOptionConst);
 
@@ -8494,7 +9257,7 @@ CheckedMultiInputWidget.prototype.toggleDisable = function (disabled, exceptChec
 exports.default = CheckedMultiInputWidget;
 
 /***/ }),
-/* 349 */
+/* 569 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8504,11 +9267,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseComplexWidget = __webpack_require__(24);
+var _baseComplexWidget = __webpack_require__(36);
 
 var _baseComplexWidget2 = _interopRequireDefault(_baseComplexWidget);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -8571,7 +9334,7 @@ MultiColorWidget.prototype._createMultiColor = function ($parent, idx) {
 exports.default = MultiColorWidget;
 
 /***/ }),
-/* 350 */
+/* 570 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8581,11 +9344,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseWidget = __webpack_require__(18);
+var _baseWidget = __webpack_require__(23);
 
 var _baseWidget2 = _interopRequireDefault(_baseWidget);
 
-var _colorPickerDialog = __webpack_require__(177);
+var _colorPickerDialog = __webpack_require__(277);
 
 var _colorPickerDialog2 = _interopRequireDefault(_colorPickerDialog);
 
@@ -8756,7 +9519,7 @@ ColorPickerWidget.prototype.close = function () {
 exports.default = ColorPickerWidget;
 
 /***/ }),
-/* 351 */
+/* 571 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8766,11 +9529,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseComplexWidget = __webpack_require__(24);
+var _baseComplexWidget = __webpack_require__(36);
 
 var _baseComplexWidget2 = _interopRequireDefault(_baseComplexWidget);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -8836,7 +9599,7 @@ ColorInputWidget.prototype._createColorPickerComponent = function ($component, l
 exports.default = ColorInputWidget;
 
 /***/ }),
-/* 352 */
+/* 572 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8846,7 +9609,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseSelectorWidget = __webpack_require__(22);
+var _baseSelectorWidget = __webpack_require__(33);
 
 var _baseSelectorWidget2 = _interopRequireDefault(_baseSelectorWidget);
 
@@ -8868,7 +9631,7 @@ ColorThemesSelectorWidget.prototype._createListSource = function () {
 exports.default = ColorThemesSelectorWidget;
 
 /***/ }),
-/* 353 */
+/* 573 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8878,19 +9641,19 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
-var _baseComplexWidget = __webpack_require__(24);
+var _baseComplexWidget = __webpack_require__(36);
 
 var _baseComplexWidget2 = _interopRequireDefault(_baseComplexWidget);
 
-var _chartOptionConst = __webpack_require__(12);
+var _chartOptionConst = __webpack_require__(17);
 
 var _chartOptionConst2 = _interopRequireDefault(_chartOptionConst);
 
-var _preference = __webpack_require__(178);
+var _preference = __webpack_require__(278);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -8941,10 +9704,10 @@ ColorPaletteWidget.prototype._createColorThemesSelectorWidget = function () {
 
     var colorPalette = (0, _preference.getColorPalette)();
     var names = colorPalette.map(function (c) {
-        return c.name;
+        return _.escape(c.name);
     });
     var paletteMap = colorPalette.map(function (c) {
-        return _defineProperty({}, c.name, c.colors);
+        return _defineProperty({}, _.escape(c.name), c.colors);
     }).reduce(Object.assign, {});
     this.themesSelector = WidgetFactory.createColorThemesSelectorWidget(this.$mainControl.find('.bo-widget-color-themes-selector'), {
         placeHolder: 'Select a Color Palette Theme',
@@ -8978,7 +9741,7 @@ ColorPaletteWidget.prototype._createColorPickers = function (colorSet) {
 exports.default = ColorPaletteWidget;
 
 /***/ }),
-/* 354 */
+/* 574 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9005,7 +9768,7 @@ var DefaultPreference = {
 exports.default = DefaultPreference;
 
 /***/ }),
-/* 355 */
+/* 575 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9015,7 +9778,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _columnSelectorWidget = __webpack_require__(30);
+var _columnSelectorWidget = __webpack_require__(58);
 
 var _columnSelectorWidget2 = _interopRequireDefault(_columnSelectorWidget);
 
@@ -9099,7 +9862,7 @@ ColumnSelectorWidgetDroppable.prototype._renderColumnControlUnit = function () {
 exports.default = ColumnSelectorWidgetDroppable;
 
 /***/ }),
-/* 356 */
+/* 576 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9109,11 +9872,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseSelectorWidget = __webpack_require__(22);
+var _baseSelectorWidget = __webpack_require__(33);
 
 var _baseSelectorWidget2 = _interopRequireDefault(_baseSelectorWidget);
 
-var _chartOptionConst = __webpack_require__(12);
+var _chartOptionConst = __webpack_require__(17);
 
 var _chartOptionConst2 = _interopRequireDefault(_chartOptionConst);
 
@@ -9182,7 +9945,7 @@ FontSelectorWidget.prototype._renderer = function (index, label, value) {
 exports.default = FontSelectorWidget;
 
 /***/ }),
-/* 357 */
+/* 577 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9192,7 +9955,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseSelectorWidget = __webpack_require__(22);
+var _baseSelectorWidget = __webpack_require__(33);
 
 var _baseSelectorWidget2 = _interopRequireDefault(_baseSelectorWidget);
 
@@ -9219,7 +9982,7 @@ FontSizeSelectorWidget.prototype._createListSource = function () {
 exports.default = FontSizeSelectorWidget;
 
 /***/ }),
-/* 358 */
+/* 578 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9229,11 +9992,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseComplexWidget = __webpack_require__(24);
+var _baseComplexWidget = __webpack_require__(36);
 
 var _baseComplexWidget2 = _interopRequireDefault(_baseComplexWidget);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -9305,7 +10068,7 @@ FontStyleWidget.prototype._createContents = function ($parent) {
 exports.default = FontStyleWidget;
 
 /***/ }),
-/* 359 */
+/* 579 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9315,11 +10078,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseSelectorWidget = __webpack_require__(22);
+var _baseSelectorWidget = __webpack_require__(33);
 
 var _baseSelectorWidget2 = _interopRequireDefault(_baseSelectorWidget);
 
-var _chartOptionConst = __webpack_require__(12);
+var _chartOptionConst = __webpack_require__(17);
 
 var _chartOptionConst2 = _interopRequireDefault(_chartOptionConst);
 
@@ -9354,7 +10117,7 @@ OpacitySelectorWidget.prototype._getItemIndexInSource = function (item) {
 exports.default = OpacitySelectorWidget;
 
 /***/ }),
-/* 360 */
+/* 580 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9364,7 +10127,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseSelectorWidget = __webpack_require__(22);
+var _baseSelectorWidget = __webpack_require__(33);
 
 var _baseSelectorWidget2 = _interopRequireDefault(_baseSelectorWidget);
 
@@ -9400,7 +10163,7 @@ MarkerSizeSelectorWidget.prototype._createListSource = function () {
 exports.default = MarkerSizeSelectorWidget;
 
 /***/ }),
-/* 361 */
+/* 581 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9410,7 +10173,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseSelectorWidget = __webpack_require__(22);
+var _baseSelectorWidget = __webpack_require__(33);
 
 var _baseSelectorWidget2 = _interopRequireDefault(_baseSelectorWidget);
 
@@ -9432,7 +10195,7 @@ MarkerLineSelectorWidget.prototype._createListSource = function () {
 exports.default = MarkerLineSelectorWidget;
 
 /***/ }),
-/* 362 */
+/* 582 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9442,11 +10205,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseSelectorWidget = __webpack_require__(22);
+var _baseSelectorWidget = __webpack_require__(33);
 
 var _baseSelectorWidget2 = _interopRequireDefault(_baseSelectorWidget);
 
-var _chartOptionConst = __webpack_require__(12);
+var _chartOptionConst = __webpack_require__(17);
 
 var _chartOptionConst2 = _interopRequireDefault(_chartOptionConst);
 
@@ -9498,7 +10261,7 @@ DashTypeSelectorWidget.prototype._renderer = function (index, label, value) {
 exports.default = DashTypeSelectorWidget;
 
 /***/ }),
-/* 363 */
+/* 583 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9508,7 +10271,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseSelectorWidget = __webpack_require__(22);
+var _baseSelectorWidget = __webpack_require__(33);
 
 var _baseSelectorWidget2 = _interopRequireDefault(_baseSelectorWidget);
 
@@ -9536,7 +10299,7 @@ LineWidthSelectorWidget.prototype._createListSource = function () {
 exports.default = LineWidthSelectorWidget;
 
 /***/ }),
-/* 364 */
+/* 584 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9546,11 +10309,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseComplexWidget = __webpack_require__(24);
+var _baseComplexWidget = __webpack_require__(36);
 
 var _baseComplexWidget2 = _interopRequireDefault(_baseComplexWidget);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -9612,7 +10375,7 @@ LineStyleWidget.prototype._createComponent = function ($styleComponentContents) 
 exports.default = LineStyleWidget;
 
 /***/ }),
-/* 365 */
+/* 585 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9622,11 +10385,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseComplexWidget = __webpack_require__(24);
+var _baseComplexWidget = __webpack_require__(36);
 
 var _baseComplexWidget2 = _interopRequireDefault(_baseComplexWidget);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -9684,7 +10447,7 @@ LineComponentWidget.prototype._createStyleComponent = function ($component) {
 exports.default = LineComponentWidget;
 
 /***/ }),
-/* 366 */
+/* 586 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9694,89 +10457,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseRadioButtonGroupWidget = __webpack_require__(31);
-
-var _baseRadioButtonGroupWidget2 = _interopRequireDefault(_baseRadioButtonGroupWidget);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function HorizontalAlignRadioButtonWidget(parentId, options) {
-    _baseRadioButtonGroupWidget2.default.call(this, parentId, options);
-} /**
-   * Created by mk90.kim on 2017-05-10.
-   */
-
-HorizontalAlignRadioButtonWidget.prototype = Object.create(_baseRadioButtonGroupWidget2.default.prototype);
-HorizontalAlignRadioButtonWidget.prototype.constructor = HorizontalAlignRadioButtonWidget;
-
-HorizontalAlignRadioButtonWidget.prototype._setRadioButtonList = function () {
-    this._buttonList = [{
-        imageClass: 'bos-horizontal-align-left',
-        value: 'left'
-    }, {
-        imageClass: 'bos-horizontal-align-center',
-        value: 'center'
-    }, {
-        imageClass: 'bos-horizontal-align-right',
-        value: 'right'
-    }];
-};
-
-exports.default = HorizontalAlignRadioButtonWidget;
-
-/***/ }),
-/* 367 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _baseRadioButtonGroupWidget = __webpack_require__(31);
-
-var _baseRadioButtonGroupWidget2 = _interopRequireDefault(_baseRadioButtonGroupWidget);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function VerticalAlignRadioButtonWidget(parentId, options) {
-    _baseRadioButtonGroupWidget2.default.call(this, parentId, options);
-} /**
-   * Created by mk90.kim on 2017-05-10.
-   */
-
-VerticalAlignRadioButtonWidget.prototype = Object.create(_baseRadioButtonGroupWidget2.default.prototype);
-VerticalAlignRadioButtonWidget.prototype.constructor = VerticalAlignRadioButtonWidget;
-
-VerticalAlignRadioButtonWidget.prototype._setRadioButtonList = function () {
-    this._buttonList = [{
-        imageClass: 'bos-vertical-align-up',
-        value: 'top'
-    }, {
-        imageClass: 'bos-vertical-align-middle',
-        value: 'center'
-    }, {
-        imageClass: 'bos-vertical-align-down',
-        value: 'bottom'
-    }];
-};
-
-exports.default = VerticalAlignRadioButtonWidget;
-
-/***/ }),
-/* 368 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _baseCheckButtonGroupWidget = __webpack_require__(180);
+var _baseCheckButtonGroupWidget = __webpack_require__(281);
 
 var _baseCheckButtonGroupWidget2 = _interopRequireDefault(_baseCheckButtonGroupWidget);
 
@@ -9829,7 +10510,7 @@ FontStyleButtonWidget.prototype._setCheckBtnList = function () {
 exports.default = FontStyleButtonWidget;
 
 /***/ }),
-/* 369 */
+/* 587 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9839,7 +10520,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseRadioButtonGroupWidget = __webpack_require__(31);
+var _baseRadioButtonGroupWidget = __webpack_require__(59);
 
 var _baseRadioButtonGroupWidget2 = _interopRequireDefault(_baseRadioButtonGroupWidget);
 
@@ -9867,7 +10548,7 @@ DirectionRadioButtonWidget.prototype._setRadioButtonList = function () {
 exports.default = DirectionRadioButtonWidget;
 
 /***/ }),
-/* 370 */
+/* 588 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9877,7 +10558,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseRadioButtonGroupWidget = __webpack_require__(31);
+var _baseRadioButtonGroupWidget = __webpack_require__(59);
 
 var _baseRadioButtonGroupWidget2 = _interopRequireDefault(_baseRadioButtonGroupWidget);
 
@@ -9905,7 +10586,7 @@ ToolTipBehaviorRadioButtonWidget.prototype._setRadioButtonList = function () {
 exports.default = ToolTipBehaviorRadioButtonWidget;
 
 /***/ }),
-/* 371 */
+/* 589 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9915,11 +10596,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseWidget = __webpack_require__(18);
+var _baseWidget = __webpack_require__(23);
 
 var _baseWidget2 = _interopRequireDefault(_baseWidget);
 
-var _datasourceSelectorDialog = __webpack_require__(181);
+var _datasourceSelectorDialog = __webpack_require__(282);
 
 var _datasourceSelectorDialog2 = _interopRequireDefault(_datasourceSelectorDialog);
 
@@ -10019,7 +10700,7 @@ DataSourceSelectorWidget.prototype._renderProblem = function (color) {
 exports.default = DataSourceSelectorWidget;
 
 /***/ }),
-/* 372 */
+/* 590 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10029,11 +10710,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseWidget = __webpack_require__(18);
+var _baseWidget = __webpack_require__(23);
 
 var _baseWidget2 = _interopRequireDefault(_baseWidget);
 
-var _chartTypeSelectorDialog = __webpack_require__(182);
+var _chartTypeSelectorDialog = __webpack_require__(283);
 
 var _chartTypeSelectorDialog2 = _interopRequireDefault(_chartTypeSelectorDialog);
 
@@ -10138,7 +10819,7 @@ ChartTypeSelectorWidget.prototype.close = function () {
 exports.default = ChartTypeSelectorWidget;
 
 /***/ }),
-/* 373 */
+/* 591 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10148,7 +10829,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseWidget = __webpack_require__(18);
+var _baseWidget = __webpack_require__(23);
 
 var _baseWidget2 = _interopRequireDefault(_baseWidget);
 
@@ -10239,6 +10920,10 @@ SwitchButtonWidget.prototype._getNextItemByValue = function (value) {
     }
 };
 
+SwitchButtonWidget.prototype.toggleDisable = function (disabledValue) {
+    this.$mainControl.toggleClass('bos-widget-button-disable', disabledValue);
+};
+
 SwitchButtonWidget.prototype._configureSize = function () {
     if (this.options.width) this.$mainControl.css('width', this.options.width);
     if (this.options.height) this.$mainControl.css('height', this.options.height);
@@ -10247,7 +10932,7 @@ SwitchButtonWidget.prototype._configureSize = function () {
 exports.default = SwitchButtonWidget;
 
 /***/ }),
-/* 374 */
+/* 592 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10257,15 +10942,15 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseComplexWidget = __webpack_require__(24);
+var _baseComplexWidget = __webpack_require__(36);
 
 var _baseComplexWidget2 = _interopRequireDefault(_baseComplexWidget);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
-var _columnSelectorWidget = __webpack_require__(30);
+var _columnSelectorWidget = __webpack_require__(58);
 
 var _columnSelectorWidget2 = _interopRequireDefault(_columnSelectorWidget);
 
@@ -10372,7 +11057,7 @@ ColumnFormatterWidget.prototype.renderProblem = function (problems) {
 exports.default = ColumnFormatterWidget;
 
 /***/ }),
-/* 375 */
+/* 593 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10382,11 +11067,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _chartOptionConst = __webpack_require__(12);
+var _chartOptionConst = __webpack_require__(17);
 
 var _chartOptionConst2 = _interopRequireDefault(_chartOptionConst);
 
-var _baseSelectorWidget = __webpack_require__(22);
+var _baseSelectorWidget = __webpack_require__(33);
 
 var _baseSelectorWidget2 = _interopRequireDefault(_baseSelectorWidget);
 
@@ -10416,7 +11101,7 @@ FormatTypeSelectorWidget.prototype._getItemIndexInSource = function (item) {
 exports.default = FormatTypeSelectorWidget;
 
 /***/ }),
-/* 376 */
+/* 594 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10426,7 +11111,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseSelectorWidget = __webpack_require__(22);
+var _baseSelectorWidget = __webpack_require__(33);
 
 var _baseSelectorWidget2 = _interopRequireDefault(_baseSelectorWidget);
 
@@ -10453,7 +11138,7 @@ FormatDigitSelectorWidget.prototype._createListSource = function () {
 exports.default = FormatDigitSelectorWidget;
 
 /***/ }),
-/* 377 */
+/* 595 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10463,15 +11148,15 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseWidget = __webpack_require__(18);
+var _baseWidget = __webpack_require__(23);
 
 var _baseWidget2 = _interopRequireDefault(_baseWidget);
 
-var _chartOptionUtil = __webpack_require__(23);
+var _chartOptionUtil = __webpack_require__(30);
 
 var ChartOptionUtil = _interopRequireWildcard(_chartOptionUtil);
 
-var _itemSelectorDialog = __webpack_require__(184);
+var _itemSelectorDialog = __webpack_require__(285);
 
 var _itemSelectorDialog2 = _interopRequireDefault(_itemSelectorDialog);
 
@@ -10614,7 +11299,7 @@ ItemSelectorWidget.prototype.destroy = function () {
 exports.default = ItemSelectorWidget;
 
 /***/ }),
-/* 378 */
+/* 596 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10624,7 +11309,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseWidget = __webpack_require__(18);
+var _baseWidget = __webpack_require__(23);
 
 var _baseWidget2 = _interopRequireDefault(_baseWidget);
 
@@ -10686,7 +11371,7 @@ OnOffSwitchWidget.prototype._createToggleSwitchEvent = function () {
 exports.default = OnOffSwitchWidget;
 
 /***/ }),
-/* 379 */
+/* 597 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10696,7 +11381,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseCheckButtonGroupWidget = __webpack_require__(180);
+var _baseCheckButtonGroupWidget = __webpack_require__(281);
 
 var _baseCheckButtonGroupWidget2 = _interopRequireDefault(_baseCheckButtonGroupWidget);
 
@@ -10782,7 +11467,7 @@ AxisToggleButtonWidget.prototype.renderWarning = function (warnings) {
 exports.default = AxisToggleButtonWidget;
 
 /***/ }),
-/* 380 */
+/* 598 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10792,149 +11477,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseComplexWidget = __webpack_require__(24);
+var _baseComplexWidget = __webpack_require__(36);
 
 var _baseComplexWidget2 = _interopRequireDefault(_baseComplexWidget);
 
-var _widgetFactory = __webpack_require__(2);
-
-var WidgetFactory = _interopRequireWildcard(_widgetFactory);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * options = {
- *      width: % or px default 100%,
- *      height:% or px default 100%,
- *      value:
- *          {
- *              left: 'px',
- *              right: 'px',
- *              top: 'px',
- *              bottom: 'px',
- *          }, (all value is px)
- *      position: ['left', 'top', 'right', 'bottom'],
- *      onChanged: function(){]
- * }
- * @param parentId
- * @param options
- * @constructor
- */
-/**
- * Created by mk90 on 2017-05-27.
- */
-
-function CenterPositionWidget(parentId, options) {
-    _baseComplexWidget2.default.call(this, parentId, options);
-    this.renderProblem();
-}
-
-CenterPositionWidget.prototype = Object.create(_baseComplexWidget2.default.prototype);
-CenterPositionWidget.prototype.constructor = CenterPositionWidget;
-
-CenterPositionWidget.prototype._init = function () {
-    _baseComplexWidget2.default.prototype._init.call(this);
-    this.baseIconAppended = false;
-    this.inputValue = {};
-    this.selectedUnit = {};
-    if (typeof this.options.getValue === 'function') {
-        for (var i in this.options.value) {
-            this.options.value[i] = this.options.getValue(this.options.value[i]);
-        }
-    }
-};
-
-CenterPositionWidget.prototype._createContents = function ($parent) {
-    this.$mainControl = $('' + '<div class="bo-component-frame-contents">' + '   <div class="bo-component-frame-center bos-display-flex">' +
-    //        '       <div class="bo-component-frame-center-left bos-flex-1 bos-row-multi-div"></div>' +
-    //        '       <div class="bo-component-frame-center-top bos-flex-1 bos-row-multi-div"></div>' +
-    //        '       <div class="bo-component-frame-center-size bos-flex-1 bos-row-multi-div"></div>' +
-    '   </div>' + '</div>');
-
-    $parent.append(this.$mainControl);
-
-    var _this = this;
-    this.options.position.forEach(function (position) {
-        _this._createPositionContent(position);
-    });
-};
-
-CenterPositionWidget.prototype._createPositionContent = function (position) {
-    var $targetArea, positionInputControl, defaultValue, tempDom;
-
-    tempDom = $('<div class="bo-component-frame-center-' + position + ' bos-flex-1 bos-row-multi-div"></div>');
-    this.$mainControl.find('.bo-component-frame-center').append(tempDom);
-    this._createPositionInputContent(tempDom, position);
-};
-
-CenterPositionWidget.prototype._createPositionInputContent = function ($parent, position) {
-    var value = this.options.value && this.options.value[position] ? this.options.value[position] + '' : '';
-
-    var postFix = value.indexOf('%') >= 0 ? '%' : 'px';
-    var numberValue = value.replace(postFix, '');
-
-    var _this = this;
-    this.inputValue[position] = numberValue;
-    this.selectedUnit[position] = postFix;
-    var numberInput = WidgetFactory.createNumberInputWidget($parent, {
-        labelPosition: 'row',
-        label: position.toLocaleString(),
-        labelWidth: '40px',
-        width: '50px',
-        value: numberValue,
-        problemKeyList: this.options.problemKeyList,
-        onChanged: function onChanged(value) {
-            _this.inputValue[position] = value;
-            _this.options.onChanged[position](value || value === 0 ? value + _this.selectedUnit[position] : '');
-        }
-    });
-
-    var unitSwitchButton = WidgetFactory.createSwitchButtonWidget($parent, {
-        value: postFix,
-        width: '20px',
-        height: '25px',
-        margin: '2.5px 20px 2.5px 0px',
-        itemList: this.options.itemList || [{ value: 'px', label: 'Px' }, { value: '%', label: '%' }],
-        onChanged: function onChanged(changedUnit) {
-            _this.selectedUnit[position] = changedUnit;
-            _this.options.onChanged[position](_this.inputValue[position] ? _this.inputValue[position] + changedUnit : '');
-        }
-    });
-    unitSwitchButton.addCSSInMainControl({
-        'border-left': 'none'
-    });
-
-    this._widgetList.push(numberInput);
-    this._widgetList.push(unitSwitchButton);
-};
-
-CenterPositionWidget.prototype.renderProblem = function (problems) {
-    var _this = this;
-    this._widgetList.forEach(function (widget) {
-        widget.renderProblem(problems);
-    });
-};
-
-exports.default = CenterPositionWidget;
-
-/***/ }),
-/* 381 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _baseComplexWidget = __webpack_require__(24);
-
-var _baseComplexWidget2 = _interopRequireDefault(_baseComplexWidget);
-
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -11034,7 +11581,7 @@ CenterPositionWidget.prototype.renderProblem = function (problems) {
 exports.default = CenterPositionWidget;
 
 /***/ }),
-/* 382 */
+/* 599 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11044,7 +11591,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseRadioButtonGroupWidget = __webpack_require__(31);
+var _baseRadioButtonGroupWidget = __webpack_require__(59);
 
 var _baseRadioButtonGroupWidget2 = _interopRequireDefault(_baseRadioButtonGroupWidget);
 
@@ -11072,7 +11619,7 @@ ToolTipTriggerRadioButtonWidget.prototype._setRadioButtonList = function () {
 exports.default = ToolTipTriggerRadioButtonWidget;
 
 /***/ }),
-/* 383 */
+/* 600 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11082,11 +11629,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _chartOptionConst = __webpack_require__(12);
+var _chartOptionConst = __webpack_require__(17);
 
 var _chartOptionConst2 = _interopRequireDefault(_chartOptionConst);
 
-var _baseSelectorWidget = __webpack_require__(22);
+var _baseSelectorWidget = __webpack_require__(33);
 
 var _baseSelectorWidget2 = _interopRequireDefault(_baseSelectorWidget);
 
@@ -11116,7 +11663,7 @@ EdgeTypeSelectorWidget.prototype._getItemIndexInSource = function (item) {
 exports.default = EdgeTypeSelectorWidget;
 
 /***/ }),
-/* 384 */
+/* 601 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11126,23 +11673,311 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseControl = __webpack_require__(8);
+var _customAlignRadioButtonWidget = __webpack_require__(286);
+
+var _customAlignRadioButtonWidget2 = _interopRequireDefault(_customAlignRadioButtonWidget);
+
+var _horizontalAlignRadioButtonWidget = __webpack_require__(279);
+
+var _horizontalAlignRadioButtonWidget2 = _interopRequireDefault(_horizontalAlignRadioButtonWidget);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * Created by mk90.kim on 2017-05-10.
+ */
+
+function CustomHorizontalAlignRadioButtonWidget(parentId, options) {
+    _customAlignRadioButtonWidget2.default.call(this, parentId, options);
+}
+
+CustomHorizontalAlignRadioButtonWidget.prototype = Object.create(_customAlignRadioButtonWidget2.default.prototype);
+CustomHorizontalAlignRadioButtonWidget.prototype.constructor = _customAlignRadioButtonWidget2.default;
+
+CustomHorizontalAlignRadioButtonWidget.prototype._createAlignWidget = function ($el, options) {
+    return new _horizontalAlignRadioButtonWidget2.default($el, options);
+};
+
+CustomHorizontalAlignRadioButtonWidget.prototype._getLabel = function () {
+    return 'Horizontal Margin';
+};
+
+exports.default = CustomHorizontalAlignRadioButtonWidget;
+
+/***/ }),
+/* 602 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _baseWidget = __webpack_require__(23);
+
+var _baseWidget2 = _interopRequireDefault(_baseWidget);
+
+var _centerPositionWidget = __webpack_require__(121);
+
+var _centerPositionWidget2 = _interopRequireDefault(_centerPositionWidget);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * options = {
+ *      width: % or px default 100%,
+ *      height:% or px default 100%,
+ *      value:
+ *          {
+ *              left: 'px',
+ *              right: 'px',
+ *              top: 'px',
+ *              bottom: 'px',
+ *          }, (all value is px)
+ *      position: ['left', 'top', 'right', 'bottom'],
+ *      onChanged: function(){]
+ * }
+ * @param parentId
+ * @param options
+ * @constructor
+ */
+/**
+ * Created by mk90 on 2017-05-27.
+ */
+
+function CustomAlignInputWidget(parentId, options) {
+    _baseWidget2.default.call(this, parentId, options);
+}
+
+CustomAlignInputWidget.prototype = Object.create(_baseWidget2.default.prototype);
+CustomAlignInputWidget.prototype.constructor = CustomAlignInputWidget;
+
+CustomAlignInputWidget.prototype._init = function () {
+    _baseWidget2.default.prototype._init.call(this);
+    this.baseIconAppended = false;
+    this.inputValue = {};
+    this.selectedUnit = {};
+    if (typeof this.options.getValue === 'function') {
+        for (var i in this.options.value) {
+            this.options.value[i] = this.options.getValue(this.options.value[i]);
+        }
+    }
+};
+
+CustomAlignInputWidget.prototype._getLabel = function () {
+    return null;
+};
+
+CustomAlignInputWidget.prototype._createContents = function ($parent) {
+    var _this = this;
+
+    this.$control = $('\n    <div class="bos-display-flex bcharts-adonis-flex-1-1-auto bo-custom-align-input-widget">\n        <div\n            style="height: 30px; width: 80px;"\n            class="bo-custom-align-input__toggle-widget">' + this.options.label + '</div>\n        <div class="bo-custom-align-input__position-input-widget bcharts-adonis-flex-1-1-auto"/>\n    </div>\n    ');
+    $parent.append(this.$control);
+
+    var $input = this.$control.find('.bo-custom-align-input__position-input-widget');
+
+    this.positionInput = new _centerPositionWidget2.default($input, {
+        height: '30px',
+        width: '60px',
+        value: {
+            '': this.options.value.value
+        },
+        position: [''],
+        onChanged: {
+            '': function _(value) {
+                _this.options.value.value = value;
+                _this._triggerChangeEvent(_this.options.value);
+            }
+        }
+    });
+};
+
+CustomAlignInputWidget.prototype.toggleDisable = function (disabledVal) {
+    this.positionInput.toggleDisable(disabledVal);
+};
+
+CustomAlignInputWidget.prototype._triggerChangeEvent = function (value) {
+    this.options.onChanged(value);
+};
+
+CustomAlignInputWidget.prototype.unselect = function () {
+    this._triggerChangeEvent(this.options.value);
+};
+
+CustomAlignInputWidget.prototype.render = function (value) {
+    // this.toggleButton.render(value && value.custom ? 'custom' : null);
+};
+
+CustomAlignInputWidget.prototype.toggleAlignMode = function (value) {
+    this.render(this.options.value);
+};
+
+exports.default = CustomAlignInputWidget;
+
+/***/ }),
+/* 603 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _customAlignRadioButtonWidget = __webpack_require__(286);
+
+var _customAlignRadioButtonWidget2 = _interopRequireDefault(_customAlignRadioButtonWidget);
+
+var _verticalAlignRadioButtonWidget = __webpack_require__(280);
+
+var _verticalAlignRadioButtonWidget2 = _interopRequireDefault(_verticalAlignRadioButtonWidget);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * Created by mk90.kim on 2017-05-10.
+ */
+
+function CustomVerticalAlignRadioButtonWidget(parentId, options) {
+    _customAlignRadioButtonWidget2.default.call(this, parentId, options);
+}
+
+CustomVerticalAlignRadioButtonWidget.prototype = Object.create(_customAlignRadioButtonWidget2.default.prototype);
+CustomVerticalAlignRadioButtonWidget.prototype.constructor = CustomVerticalAlignRadioButtonWidget;
+
+CustomVerticalAlignRadioButtonWidget.prototype._createAlignWidget = function ($el, options) {
+    return new _verticalAlignRadioButtonWidget2.default($el, options);
+};
+
+CustomVerticalAlignRadioButtonWidget.prototype._getLabel = function () {
+    return 'Verticial Margin';
+};
+
+exports.default = CustomVerticalAlignRadioButtonWidget;
+
+/***/ }),
+/* 604 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _baseSelectorWidget = __webpack_require__(33);
+
+var _baseSelectorWidget2 = _interopRequireDefault(_baseSelectorWidget);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function MarkerShowSelectorWidget(parentId, options) {
+    _baseSelectorWidget2.default.call(this, parentId, options);
+} /**
+   * Created by mk90.kim on 2017-05-10.
+   */
+
+MarkerShowSelectorWidget.prototype = Object.create(_baseSelectorWidget2.default.prototype);
+MarkerShowSelectorWidget.prototype.constructor = MarkerShowSelectorWidget;
+
+MarkerShowSelectorWidget.prototype._createListSource = function () {
+    return ['auto', 'true', 'false'];
+};
+
+exports.default = MarkerShowSelectorWidget;
+
+/***/ }),
+/* 605 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _baseWidget = __webpack_require__(23);
+
+var _baseWidget2 = _interopRequireDefault(_baseWidget);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * options = {
+ *      label : String ( default: Value )
+ *      labelPosition : row or column
+ *      inputStyle : line or box,
+ *      value: ''   // default value
+ *      onChanged: function(){]
+ * }
+ * @param parentId
+ * @param options
+ * @constructor
+ */
+function LabelWidget(parentId, options) {
+    _baseWidget2.default.call(this, parentId, options);
+} /**
+   * Created by mk90.kim on 2017-05-10.
+   */
+
+LabelWidget.prototype = Object.create(_baseWidget2.default.prototype);
+LabelWidget.prototype.constructor = LabelWidget;
+
+LabelWidget.prototype._createContents = function ($parent) {
+    var $label = $('<div class="bos-widget-header bo-widget-header">' + this.options.value + '</div>');
+    $parent.append($label);
+    if (this.options.helper) {
+        var _this = this;
+        var $iconDiv = $('<div class="bos-icon-help"></div>');
+        $iconDiv.hover(function () {
+            _this.helperDialog = new _this.options.helper($iconDiv, {
+                windowPosition: 'bottom-left',
+                switchPosition: 'top-left'
+            });
+        }, function () {
+            _this.helperDialog._closeHandler();
+        });
+        $label.append($iconDiv);
+    }
+    $label.css('width', '100%');
+    $label.css('height', '100%');
+};
+
+exports.default = LabelWidget;
+
+/***/ }),
+/* 606 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _baseControl = __webpack_require__(9);
 
 var _baseControl2 = _interopRequireDefault(_baseControl);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
-var _chartOptionConst = __webpack_require__(12);
+var _chartOptionConst = __webpack_require__(17);
 
 var _chartOptionConst2 = _interopRequireDefault(_chartOptionConst);
 
-var _columnSelectorWidget = __webpack_require__(30);
+var _columnSelectorWidget = __webpack_require__(58);
 
 var _columnSelectorWidget2 = _interopRequireDefault(_columnSelectorWidget);
 
-var _chartOptionUtil = __webpack_require__(23);
+var _chartOptionUtil = __webpack_require__(30);
 
 var ChartOptionUtil = _interopRequireWildcard(_chartOptionUtil);
 
@@ -11294,7 +12129,7 @@ ComplexColumnSelectControl.prototype.renderProblem = function (problems) {
 exports.default = ComplexColumnSelectControl;
 
 /***/ }),
-/* 385 */
+/* 607 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11304,15 +12139,15 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseControl = __webpack_require__(8);
+var _baseControl = __webpack_require__(9);
 
 var _baseControl2 = _interopRequireDefault(_baseControl);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
-var _chartOptionUtil = __webpack_require__(23);
+var _chartOptionUtil = __webpack_require__(30);
 
 var ChartOptionUtil = _interopRequireWildcard(_chartOptionUtil);
 
@@ -11435,7 +12270,7 @@ FormatControl.prototype.renderProblem = function () {
 exports.default = FormatControl;
 
 /***/ }),
-/* 386 */
+/* 608 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11445,11 +12280,123 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseControl = __webpack_require__(8);
+var _baseControl = __webpack_require__(9);
 
 var _baseControl2 = _interopRequireDefault(_baseControl);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
+
+var WidgetFactory = _interopRequireWildcard(_widgetFactory);
+
+var _formatHelperDialog = __webpack_require__(75);
+
+var _formatHelperDialog2 = _interopRequireDefault(_formatHelperDialog);
+
+var _chartOptionUtil = __webpack_require__(30);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * Created by mk90.kim on 2017-05-10.
+ */
+
+function FormatCardControl(parentId, options, headerKey) {
+    _baseControl2.default.call(this, parentId, options, headerKey);
+}
+
+FormatCardControl.prototype = Object.create(_baseControl2.default.prototype);
+FormatCardControl.prototype.constructor = FormatCardControl;
+
+FormatCardControl.prototype._init = function () {
+    _baseControl2.default.prototype._init.call(this);
+    this.numberLength = this.options.setting.numberLength[0];
+    this.numberFormart = this.options.setting.numberFormat;
+};
+
+FormatCardControl.prototype._createContents = function ($parent) {
+    _baseControl2.default.prototype._createContents.call(this, $parent);
+
+    this.createComponentContents();
+};
+
+FormatCardControl.prototype.createComponentContents = function (contentsOption) {
+    _baseControl2.default.prototype.createComponentContents.call(this, contentsOption);
+    this._createNumberFormatComponent(this.$controlContents);
+};
+
+FormatCardControl.prototype._createNumberFormatComponent = function ($component) {
+    var $numberFormatComponent = $('' + '<div class="bos-widget-row-separator">' + '   <div class="bo-component-header"></div>' + '   <div class="bo-component-number-format-length bos-display-flex">' + '       <div class="bo-component-number-format-length-header bos-flex-2"></div>' + '       <div class="bo-component-number-format-length-contents bos-flex-3"></div>' + '   </div>' + '   <div class="bo-component-number-format-value bos-display-flex">' + '       <div class="bo-component-number-format-value-header bos-flex-2"></div>' + '       <div class="bo-component-number-format-value-contents bos-flex-3"></div>' + '   </div>' + '</div>');
+
+    this.$controlContents.append($numberFormatComponent);
+
+    var _this = this;
+
+    var $numberFormatLengthComponent = $numberFormatComponent.find('.bo-component-number-format-length');
+    var numberFormatLengthHeader = WidgetFactory.createLabelWidget($numberFormatLengthComponent.find('.bo-component-number-format-length-header'), {
+        value: 'Decimal places'
+    });
+    var numberFormatLengthSelector = WidgetFactory.createFormatDigitSelectorWidget($numberFormatComponent.find('.bo-component-number-format-length-contents'), {
+        width: '100%',
+        height: '25px',
+        value: _this.numberLength.ref.selected,
+        disabled: !(0, _chartOptionUtil.isEmpty)(_this.numberFormart.use) && _this.numberFormart.use !== '',
+        onChanged: function onChanged(changedDetail) {
+            _this.numberLength.ref.selected = changedDetail;
+            _this.options.onChanged('onChartOptionChanged', _this.numberLength.getLengthChangedOption(_this.numberLength.ref.selected));
+        }
+    });
+    this._widgetList.push(numberFormatLengthHeader);
+    this._widgetList.push(numberFormatLengthSelector);
+
+    var $numberFormatValueComponent = $numberFormatComponent.find('.bo-component-number-format-value');
+    var numberFormatValueHeader = WidgetFactory.createLabelWidget($numberFormatValueComponent.find('.bo-component-number-format-value-header'), {
+        value: 'Formatter',
+        helper: _formatHelperDialog2.default
+    });
+    var numberFormatValueSelector = WidgetFactory.createInputWidget($numberFormatValueComponent.find('.bo-component-number-format-value-contents'), {
+        value: _this.numberFormart.use,
+        placeHolder: '{value}',
+        onChanged: function onChanged(inputVal) {
+            if (inputVal === null || inputVal === undefined || inputVal === '') {
+                numberFormatLengthSelector.toggleDisable(false);
+            } else {
+                numberFormatLengthSelector.toggleDisable(true);
+            }
+            _this.numberFormart.use = inputVal;
+            _this.options.onChanged('onChartOptionChanged', { plotOptions: _this.options.chartOption.plotOptions });
+        }
+    });
+    this._widgetList.push(numberFormatValueHeader);
+    this._widgetList.push(numberFormatValueSelector);
+};
+
+FormatCardControl.prototype.renderProblem = function () {
+    var _this = this;
+    this._widgetList.forEach(function (widget) {
+        widget.renderProblem(_this.options.problemList);
+    });
+};
+
+exports.default = FormatCardControl;
+
+/***/ }),
+/* 609 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _baseControl = __webpack_require__(9);
+
+var _baseControl2 = _interopRequireDefault(_baseControl);
+
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -11547,7 +12494,7 @@ AxisViewRangeControl.prototype.renderProblem = function () {
 exports.default = AxisViewRangeControl;
 
 /***/ }),
-/* 387 */
+/* 610 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11557,11 +12504,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _axisTitleControl = __webpack_require__(185);
+var _axisTitleControl = __webpack_require__(287);
 
 var _axisTitleControl2 = _interopRequireDefault(_axisTitleControl);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -11646,7 +12593,7 @@ AxisTitleSeparatedControl.prototype._createStyleComponent = function () {
 exports.default = AxisTitleSeparatedControl;
 
 /***/ }),
-/* 388 */
+/* 611 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11656,11 +12603,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _axisLabelControl = __webpack_require__(186);
+var _axisLabelControl = __webpack_require__(288);
 
 var _axisLabelControl2 = _interopRequireDefault(_axisLabelControl);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -11745,7 +12692,7 @@ AxisLabelSeparatedControl.prototype._createFontStyleComponent = function () {
 exports.default = AxisLabelSeparatedControl;
 
 /***/ }),
-/* 389 */
+/* 612 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11755,11 +12702,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseControl = __webpack_require__(8);
+var _baseControl = __webpack_require__(9);
 
 var _baseControl2 = _interopRequireDefault(_baseControl);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -11936,7 +12883,7 @@ LegendControl.prototype.toggleDisableComponent = function (checkedVal) {
 exports.default = LegendControl;
 
 /***/ }),
-/* 390 */
+/* 613 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11946,11 +12893,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseControl = __webpack_require__(8);
+var _baseControl = __webpack_require__(9);
 
 var _baseControl2 = _interopRequireDefault(_baseControl);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -12094,7 +13041,7 @@ VisualMapValueControl.prototype._createDeleteButton = function ($component) {
 exports.default = VisualMapValueControl;
 
 /***/ }),
-/* 391 */
+/* 614 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12104,11 +13051,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseControl = __webpack_require__(8);
+var _baseControl = __webpack_require__(9);
 
 var _baseControl2 = _interopRequireDefault(_baseControl);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -12259,7 +13206,7 @@ VisualMapAlignControl.prototype._createFontStyleComponent = function () {
 exports.default = VisualMapAlignControl;
 
 /***/ }),
-/* 392 */
+/* 615 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12269,15 +13216,15 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseControl = __webpack_require__(8);
+var _baseControl = __webpack_require__(9);
 
 var _baseControl2 = _interopRequireDefault(_baseControl);
 
-var _markerControl = __webpack_require__(188);
+var _markerControl = __webpack_require__(289);
 
 var _markerControl2 = _interopRequireDefault(_markerControl);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -12329,7 +13276,7 @@ MarkerLineControl.prototype._createLineStyleComponent = function () {
 exports.default = MarkerLineControl;
 
 /***/ }),
-/* 393 */
+/* 616 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12339,11 +13286,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseControl = __webpack_require__(8);
+var _baseControl = __webpack_require__(9);
 
 var _baseControl2 = _interopRequireDefault(_baseControl);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -12524,7 +13471,7 @@ StripLineControl.prototype.renderWarning = function () {
 exports.default = StripLineControl;
 
 /***/ }),
-/* 394 */
+/* 617 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12534,11 +13481,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseControl = __webpack_require__(8);
+var _baseControl = __webpack_require__(9);
 
 var _baseControl2 = _interopRequireDefault(_baseControl);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -12714,7 +13661,7 @@ TrendLineControl.prototype._createLineComponent = function ($component, layoutKe
 exports.default = TrendLineControl;
 
 /***/ }),
-/* 395 */
+/* 618 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12724,11 +13671,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseControl = __webpack_require__(8);
+var _baseControl = __webpack_require__(9);
 
 var _baseControl2 = _interopRequireDefault(_baseControl);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -12863,7 +13810,7 @@ FrameStyleControl.prototype.renderProblem = function () {
 exports.default = FrameStyleControl;
 
 /***/ }),
-/* 396 */
+/* 619 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12873,15 +13820,15 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseControl = __webpack_require__(8);
+var _baseControl = __webpack_require__(9);
 
 var _baseControl2 = _interopRequireDefault(_baseControl);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
-var _framePieControl = __webpack_require__(189);
+var _framePieControl = __webpack_require__(290);
 
 var _framePieControl2 = _interopRequireDefault(_framePieControl);
 
@@ -13104,7 +14051,7 @@ FrameControl.prototype.renderProblem = function () {
 exports.default = FrameControl;
 
 /***/ }),
-/* 397 */
+/* 620 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13114,15 +14061,15 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseControl = __webpack_require__(8);
+var _baseControl = __webpack_require__(9);
 
 var _baseControl2 = _interopRequireDefault(_baseControl);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
-var _positionWidget = __webpack_require__(183);
+var _positionWidget = __webpack_require__(284);
 
 var _positionWidget2 = _interopRequireDefault(_positionWidget);
 
@@ -13330,7 +14277,7 @@ FrameMapControl.prototype.renderProblem = function () {
 exports.default = FrameMapControl;
 
 /***/ }),
-/* 398 */
+/* 621 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13340,11 +14287,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseControl = __webpack_require__(8);
+var _baseControl = __webpack_require__(9);
 
 var _baseControl2 = _interopRequireDefault(_baseControl);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -13559,7 +14506,7 @@ FrameDonutControl.prototype.renderProblem = function () {
 exports.default = FrameDonutControl;
 
 /***/ }),
-/* 399 */
+/* 622 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13569,11 +14516,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseControl = __webpack_require__(8);
+var _baseControl = __webpack_require__(9);
 
 var _baseControl2 = _interopRequireDefault(_baseControl);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -13635,7 +14582,7 @@ ToolTipControl.prototype.render = function () {
 exports.default = ToolTipControl;
 
 /***/ }),
-/* 400 */
+/* 623 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13645,11 +14592,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseControl = __webpack_require__(8);
+var _baseControl = __webpack_require__(9);
 
 var _baseControl2 = _interopRequireDefault(_baseControl);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -13809,7 +14756,7 @@ FigureControl.prototype._createEdgeFigureComponent = function () {
 exports.default = FigureControl;
 
 /***/ }),
-/* 401 */
+/* 624 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13819,67 +14766,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseControl = __webpack_require__(8);
+var _baseControl = __webpack_require__(9);
 
 var _baseControl2 = _interopRequireDefault(_baseControl);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function ViewOptionControl(parentId, options, headerKey) {
-    _baseControl2.default.call(this, parentId, options, headerKey);
-} /**
-   * Created by mk90.kim on 2017-05-10.
-   */
-
-ViewOptionControl.prototype = Object.create(_baseControl2.default.prototype);
-ViewOptionControl.prototype.constructor = ViewOptionControl;
-
-ViewOptionControl.prototype._init = function () {
-    _baseControl2.default.prototype._init.call(this);
-    $.extend(true, this.options, {});
-};
-
-ViewOptionControl.prototype._createContents = function ($parent) {
-    _baseControl2.default.prototype._createContents.call(this, $parent);
-
-    this.createComponentContents();
-};
-
-ViewOptionControl.prototype.createComponentContents = function (contentsOption) {
-
-    var viewOption = $('<div style = "width: 200px; height: 20px ">GET OPTION NOW</div>');
-    this.$controlMain.append(viewOption);
-
-    _baseControl2.default.prototype.createComponentContents.call(this, contentsOption);
-    var _this = this;
-    viewOption.on('click', function () {
-        console.log(_this.options);
-        // _this.options.expanderCallBack('WWWW');
-        _this.options.onChanged('onChartOptionChanged', { plotOptions: _this.options.chartOption.plotOptions });
-        // var tempOpt = $.extend(true, {}, _this.options);
-        // delete tempOpt.source;
-        // _this.$controlContents.text(JSON.stringify(tempOpt, null, '\t'));
-    });
-};
-
-exports.default = ViewOptionControl;
-
-/***/ }),
-/* 402 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _baseControl = __webpack_require__(8);
-
-var _baseControl2 = _interopRequireDefault(_baseControl);
-
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -14081,7 +14972,7 @@ TitleControl.prototype.render = function () {
 exports.default = TitleControl;
 
 /***/ }),
-/* 403 */
+/* 625 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14091,11 +14982,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _columnSelectControl = __webpack_require__(174);
+var _columnSelectControl = __webpack_require__(274);
 
 var _columnSelectControl2 = _interopRequireDefault(_columnSelectControl);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -14140,7 +15031,7 @@ MapSelectControl.prototype._createMapTypeSelectorContent = function () {
 exports.default = MapSelectControl;
 
 /***/ }),
-/* 404 */
+/* 626 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14150,11 +15041,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseControl = __webpack_require__(8);
+var _baseControl = __webpack_require__(9);
 
 var _baseControl2 = _interopRequireDefault(_baseControl);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -14257,7 +15148,7 @@ AreaControl.prototype._createBorderComponent = function () {
 exports.default = AreaControl;
 
 /***/ }),
-/* 405 */
+/* 627 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14267,19 +15158,19 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseControl = __webpack_require__(8);
+var _baseControl = __webpack_require__(9);
 
 var _baseControl2 = _interopRequireDefault(_baseControl);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
-var _chartOptionUtil = __webpack_require__(23);
+var _chartOptionUtil = __webpack_require__(30);
 
 var ChartOptionUtil = _interopRequireWildcard(_chartOptionUtil);
 
-var _chartOptionConst = __webpack_require__(12);
+var _chartOptionConst = __webpack_require__(17);
 
 var _chartOptionConst2 = _interopRequireDefault(_chartOptionConst);
 
@@ -14496,7 +15387,7 @@ LayersControl.prototype.renderWarning = function () {
 exports.default = LayersControl;
 
 /***/ }),
-/* 406 */
+/* 628 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14506,11 +15397,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseControl = __webpack_require__(8);
+var _baseControl = __webpack_require__(9);
 
 var _baseControl2 = _interopRequireDefault(_baseControl);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -14611,7 +15502,7 @@ LabelControl.prototype.toggleDisableComponent = function (checkedVal, labelSetti
 exports.default = LabelControl;
 
 /***/ }),
-/* 407 */
+/* 629 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14621,11 +15512,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseControl = __webpack_require__(8);
+var _baseControl = __webpack_require__(9);
 
 var _baseControl2 = _interopRequireDefault(_baseControl);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -14764,7 +15655,7 @@ AxisScaleControl.prototype.renderWarning = function () {
 exports.default = AxisScaleControl;
 
 /***/ }),
-/* 408 */
+/* 630 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14774,11 +15665,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseControl = __webpack_require__(8);
+var _baseControl = __webpack_require__(9);
 
 var _baseControl2 = _interopRequireDefault(_baseControl);
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
@@ -14859,7 +15750,596 @@ ToolTipTriggerControl.prototype.render = function () {
 exports.default = ToolTipTriggerControl;
 
 /***/ }),
-/* 409 */
+/* 631 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _baseControl = __webpack_require__(9);
+
+var _baseControl2 = _interopRequireDefault(_baseControl);
+
+var _widgetFactory = __webpack_require__(3);
+
+var WidgetFactory = _interopRequireWildcard(_widgetFactory);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Created by mk90.kim on 2017-05-10.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+
+var GridControl = function (_BaseControl) {
+    _inherits(GridControl, _BaseControl);
+
+    function GridControl(parentId, options, headerKey) {
+        _classCallCheck(this, GridControl);
+
+        return _possibleConstructorReturn(this, (GridControl.__proto__ || Object.getPrototypeOf(GridControl)).call(this, parentId, options, headerKey));
+    }
+
+    _createClass(GridControl, [{
+        key: '_init',
+        value: function _init() {
+            _get(GridControl.prototype.__proto__ || Object.getPrototypeOf(GridControl.prototype), '_init', this).call(this, this);
+            this.gridOption = this.options.chartOption.grid;
+        }
+    }, {
+        key: '_createContents',
+        value: function _createContents($parent) {
+            _get(GridControl.prototype.__proto__ || Object.getPrototypeOf(GridControl.prototype), '_createContents', this).call(this, $parent);
+            // this.createComponentHeader(headerOption);
+            this.createComponentContents();
+        }
+    }, {
+        key: 'createComponentContents',
+        value: function createComponentContents(contentsOption) {
+            _get(GridControl.prototype.__proto__ || Object.getPrototypeOf(GridControl.prototype), 'createComponentContents', this).call(this, contentsOption);
+            this._createRowColumnComponents(contentsOption);
+            this._createCellComponents(contentsOption);
+        }
+    }, {
+        key: '_createRowColumnComponents',
+        value: function _createRowColumnComponents(contentsOption) {
+            var _this2 = this;
+
+            var $valueComponent = $('<div class="bos-widget-row-separator"></div>');
+            var self = this;
+            this.$controlContents.append($valueComponent);
+            this._widgetList = this._widgetList.concat([WidgetFactory.createMultiLabelWidget($valueComponent, {
+                label: ' ',
+                numOfComponent: 1,
+                value: ['Value'],
+                helper: [false]
+            }), WidgetFactory.createNumberInputWidget($valueComponent, {
+                label: 'Row',
+                value: this.gridOption.row,
+                onChanged: function onChanged(value) {
+                    self.gridOption.row = value;
+                    self.options.onChanged('onChartOptionChanged', {
+                        grid: _this2.gridOption
+                    });
+                }
+            }), WidgetFactory.createNumberInputWidget($valueComponent, {
+                label: 'Column',
+                value: this.gridOption.column,
+                onChanged: function onChanged(value) {
+                    self.gridOption.column = value;
+                    self.options.onChanged('onChartOptionChanged', {
+                        grid: _this2.gridOption
+                    });
+                }
+            })]);
+        }
+    }, {
+        key: '_createCellComponents',
+        value: function _createCellComponents(contentsOption) {
+            var _this3 = this;
+
+            var $valueComponent = $('<div class="bos-widget-row-separator"></div>');
+            var self = this;
+            this.$controlContents.append($valueComponent);
+            this._widgetList = this._widgetList.concat([WidgetFactory.createMultiLabelWidget($valueComponent, {
+                label: ' ',
+                numOfComponent: 1,
+                value: ['Value'],
+                helper: [false]
+            })]);
+
+            this.useCellWidth = WidgetFactory.createCheckedMultiInputWidget($valueComponent, {
+                label: 'Width',
+                labelPosition: 'row',
+                labelWidth: '40px',
+                inputStyle: 'box',
+                numOfComponent: 1,
+                placeHolder: [''],
+                value: [this.gridOption.cellWidth],
+                inputType: ['number'],
+                onChanged: [function (val) {
+                    self.gridOption.cellWidth = val;
+                    self.options.onChanged('onChartOptionChanged', {
+                        grid: _this3.gridOption
+                    });
+                }],
+                showBtn: {
+                    defaultVal: this.gridOption.useCellWidth,
+                    clickfunc: function clickfunc(e) {
+                        var checkedVal = e.args.checked;
+                        self.gridOption.useCellWidth = checkedVal;
+                        self.useCellWidth.toggleDisable(!checkedVal, true);
+                        self.options.onChanged('onChartOptionChanged', {
+                            grid: self.gridOption
+                        });
+                    }
+                }
+            });
+
+            this.useCellHeight = WidgetFactory.createCheckedMultiInputWidget($valueComponent, {
+                label: 'Heigh',
+                labelPosition: 'row',
+                labelWidth: '40px',
+                inputStyle: 'box',
+                numOfComponent: 1,
+                placeHolder: [''],
+                value: [this.gridOption.cellWidth],
+                inputType: ['number'],
+                onChanged: [function (val) {
+                    self.gridOption.cellHeight = val;
+                    self.options.onChanged('onChartOptionChanged', {
+                        grid: _this3.gridOption
+                    });
+                }],
+                showBtn: {
+                    defaultVal: this.gridOption.useCellHeight,
+                    clickfunc: function clickfunc(e) {
+                        var checkedVal = e.args.checked;
+                        self.gridOption.useCellHeight = checkedVal;
+                        self.useCellHeight.toggleDisable(!checkedVal, true);
+                        self.options.onChanged('onChartOptionChanged', {
+                            grid: self.gridOption
+                        });
+                    }
+                }
+            });
+
+            this.gridShow = WidgetFactory.createOnOffSwitchWidget($valueComponent, {
+                label: 'Show Grid',
+                value: self.gridOption.showImageGrid,
+                onChanged: function onChanged(val) {
+                    self.gridOption.showImageGrid = val;
+                    self.options.onChanged('onChartOptionChanged', {
+                        grid: self.gridOption
+                    });
+                }
+            });
+
+            this._widgetList = this._widgetList.concat(this.useCellWidth, this.useCellHeight, this.gridShow);
+        }
+    }]);
+
+    return GridControl;
+}(_baseControl2.default);
+
+exports.default = GridControl;
+
+/***/ }),
+/* 632 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _baseControl = __webpack_require__(9);
+
+var _baseControl2 = _interopRequireDefault(_baseControl);
+
+var _widgetFactory = __webpack_require__(3);
+
+var WidgetFactory = _interopRequireWildcard(_widgetFactory);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * Created by mk90.kim on 2017-05-10.
+ */
+
+function CustomLegendControl(parentId, options, headerKey) {
+    _baseControl2.default.call(this, parentId, options, headerKey);
+}
+
+CustomLegendControl.prototype = Object.create(_baseControl2.default.prototype);
+CustomLegendControl.prototype.constructor = CustomLegendControl;
+
+CustomLegendControl.prototype._init = function () {
+    _baseControl2.default.prototype._init.call(this);
+    this.legendOption = this.options.chartOption.legend;
+};
+
+CustomLegendControl.prototype._createContents = function ($parent) {
+    _baseControl2.default.prototype._createContents.call(this, $parent);
+
+    var _this = this;
+    var headerOption = {
+        showBtn: {
+            defaultVal: this.legendOption.show,
+            clickfunc: function clickfunc(event) {
+                var checkedVal = event.args.checked;
+                _this.toggleDisableComponent(checkedVal);
+                _this.legendOption.show = checkedVal;
+                _this.setExpanderPreview.call(_this);
+                _this.options.onChanged('onChartOptionChanged', { legend: _this.legendOption });
+            }
+        }
+    };
+    this.createComponentHeader(headerOption);
+    this.createComponentContents();
+    this.setComponentShow();
+};
+
+CustomLegendControl.prototype.createComponentContents = function (contentsOption) {
+    _baseControl2.default.prototype.createComponentContents.call(this, contentsOption);
+
+    this._createAlignComponent();
+    this._createDirectionComponent();
+    this._createFontStyleComponent();
+};
+
+CustomLegendControl.prototype._createAlignComponent = function () {
+    var _this = this;
+
+    var $alignComponent = $('\n        <div class="bos-widget-row-separator">\n          <div class="bo-component-header">\n            Align\n          </div>\n          <div class="bo-component-legend-contents">\n          </div>\n        </div>\n    ');
+
+    this.$controlContents.append($alignComponent);
+    var $alignComponentContents = $alignComponent.find('.bo-component-legend-contents');
+
+    //POLICY: left가 right보다 우선순위가 높다.
+    //POLICY: top이 bottom보다 우선순위가 높다.
+    var horizontalAlignValue = function () {
+        if (_this.legendOption.left == 0 || _this.legendOption.left === '0px') {
+            return 'left';
+        } else if (_this.legendOption.left === '50%') {
+            return 'center';
+        } else if (_this.legendOption.right == 0 || _this.legendOption.right === '0px') {
+            return 'right';
+        } else {
+            _this.legendOption.left = 0;
+            return 'center';
+        }
+    }();
+    var verticalAlignValue = function () {
+        if (_this.legendOption.top == 10 || _this.legendOption.top === '10px') {
+            return 'top';
+        } else if (_this.legendOption.top === '50%') {
+            return 'center';
+        } else if (_this.legendOption.bottom == 0 || _this.legendOption.bottom === '0px') {
+            return 'bottom';
+        } else {
+            _this.legendOption.top = 10;
+            return 'top';
+        }
+    }();
+
+    this.horizontalAlign = WidgetFactory.createCustomHorizontalAlignRadioButtonWidget($alignComponentContents, {
+        value: {
+            align: horizontalAlignValue,
+            value: this.legendOption.horizontalMargin !== 'auto' && this.legendOption.horizontalMargin || '0'
+        },
+        onChanged: function onChanged(val) {
+            var selectedValue = val.align;
+            _this.legendOption.horizontalMargin = val.value;
+            if (selectedValue === 'left') {
+                _this.legendOption.left = 0;
+                _this.legendOption.right = 'auto';
+            } else if (selectedValue === 'center') {
+                _this.legendOption.left = '50%';
+                _this.legendOption.right = 'auto';
+            } else if (selectedValue === 'right') {
+                _this.legendOption.left = 'auto';
+                _this.legendOption.right = 0;
+            }
+            _this.options.onChanged('onChartOptionChanged', { legend: _this.legendOption });
+        }
+    });
+    this._widgetList.push(this.horizontalAlign);
+
+    this.verticalAlign = WidgetFactory.createCustomVerticalAlignRadioButtonWidget($alignComponentContents, {
+        value: {
+            align: verticalAlignValue,
+            value: this.legendOption.verticalMargin !== 'auto' && this.legendOption.verticalMargin || '0'
+        },
+        onChanged: function onChanged(val) {
+            var selectedValue = val.align;
+            _this.legendOption.verticalMargin = val.value;
+            if (selectedValue === 'top') {
+                _this.legendOption.top = 10;
+                _this.legendOption.bottom = 'auto';
+            } else if (selectedValue === 'center') {
+                _this.legendOption.top = '50%';
+                _this.legendOption.bottom = 'auto';
+            } else if (selectedValue === 'bottom') {
+                _this.legendOption.top = 'auto';
+                _this.legendOption.bottom = 0;
+            }
+            _this.options.onChanged('onChartOptionChanged', { legend: _this.legendOption });
+        }
+    });
+    this._widgetList.push(this.verticalAlign);
+};
+
+CustomLegendControl.prototype._createDirectionComponent = function () {
+    var _this = this;
+
+    var $directionComponent = $('' + '<div class="bos-widget-row-separator">' + '   <div class="bo-component-header">Direction</div>' + '   <div class="bo-component-legend-contents">' + '   </div>' + '</div>');
+
+    this.$controlContents.append($directionComponent);
+    var $directionComponentContents = $directionComponent.find('.bo-component-legend-contents');
+
+    this.direction = WidgetFactory.createDirectionRadioButtonWidget($directionComponentContents, {
+        value: this.legendOption.orientation,
+        onChanged: function onChanged(inptValue) {
+            _this.legendOption.orientation = inptValue;
+            _this.options.onChanged('onChartOptionChanged', { legend: _this.legendOption });
+        }
+    });
+    this._widgetList.push(this.direction);
+};
+
+CustomLegendControl.prototype._createFontStyleComponent = function () {
+    var _this = this;
+    this.$controlContents.append($('<div class="bos-widget-row-separator"/>'));
+    this.fontStyle = WidgetFactory.createFontStyleWidget(this.$controlContents, {
+        value: [this.legendOption.textStyle.fontFamily, this.legendOption.textStyle.fontSize, this.legendOption.textStyle.color, [this.legendOption.textStyle.fontWeight, this.legendOption.textStyle.fontStyle, this.legendOption.textStyle.textDecoration]],
+        onChanged: [function (inputVal) {
+            _this.legendOption.textStyle.fontFamily = inputVal;
+            _this.options.onChanged('onChartOptionChanged', { legend: _this.legendOption });
+        }, function (inputVal) {
+            _this.legendOption.textStyle.fontSize = inputVal;
+            _this.options.onChanged('onChartOptionChanged', { legend: _this.legendOption });
+        }, function (inputVal) {
+            _this.legendOption.textStyle.color = inputVal;
+            _this.options.onChanged('onChartOptionChanged', { legend: _this.legendOption });
+        }, function (selectedVals) {
+            _this.legendOption.textStyle.fontWeight = $.inArray('bold', selectedVals) > -1 ? 'bold' : 'normal';
+            _this.legendOption.textStyle.fontStyle = $.inArray('italic', selectedVals) > -1 ? 'italic' : 'normal';
+            _this.legendOption.textStyle.textDecoration = $.inArray('underline', selectedVals) > -1 ? 'underline' : 'none';
+            _this.options.onChanged('onChartOptionChanged', { legend: _this.legendOption });
+        }]
+    });
+    this._widgetList.push(this.fontStyle);
+};
+
+CustomLegendControl.prototype.toggleDisableComponent = function (checkedVal) {
+    this.horizontalAlign.toggleDisable(!checkedVal);
+    this.verticalAlign.toggleDisable(!checkedVal);
+    this.direction.toggleDisable(!checkedVal);
+    this.fontStyle.toggleDisable(!checkedVal);
+};
+
+exports.default = CustomLegendControl;
+
+/***/ }),
+/* 633 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _baseControl = __webpack_require__(9);
+
+var _baseControl2 = _interopRequireDefault(_baseControl);
+
+var _widgetFactory = __webpack_require__(3);
+
+var WidgetFactory = _interopRequireWildcard(_widgetFactory);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function AxisRadarViewRangeControl(parentId, options, headerKey) {
+    _baseControl2.default.call(this, parentId, options, headerKey);
+}
+
+AxisRadarViewRangeControl.prototype = Object.create(_baseControl2.default.prototype);
+AxisRadarViewRangeControl.prototype.constructor = AxisRadarViewRangeControl;
+
+AxisRadarViewRangeControl.prototype._init = function () {
+    _baseControl2.default.prototype._init.call(this);
+    this.range = this.options.chartOption.plotOptions.radar;
+};
+
+AxisRadarViewRangeControl.prototype._createContents = function ($parent) {
+    _baseControl2.default.prototype._createContents.call(this, $parent);
+
+    var headerOption = {
+        label: 'View Range'
+    };
+    this.createComponentHeader(headerOption);
+    this.createComponentContents($parent);
+};
+
+AxisRadarViewRangeControl.prototype.createComponentContents = function (contentsOption) {
+    _baseControl2.default.prototype.createComponentContents.call(this, contentsOption);
+
+    var multiLabelWidget = WidgetFactory.createMultiLabelWidget(this.$controlContents, {
+        label: ' ',
+        numOfComponent: 1,
+        value: ['Value']
+    });
+
+    this._widgetList.push(multiLabelWidget);
+
+    var _this = this;
+    var viewRangeInputMin = WidgetFactory.createMultiInputWidget(this.$controlContents, {
+        label: 'Min',
+        labelPosition: 'row',
+        inputStyle: 'box',
+        numOfComponent: 1,
+        value: [this.range.min],
+        inputType: ['number'],
+        problemKeyList: ['value-001'],
+        onChanged: [function (inputVal) {
+            _this.range.min = inputVal || inputVal === 0 ? inputVal : null;
+            _this.setExpanderPreview.call(_this);
+            _this.options.onChanged('onChartOptionChanged', { plotOptions: {
+                    radar: _this.range
+                } });
+        }]
+    });
+    this._widgetList.push(viewRangeInputMin);
+
+    var viewRangeInputMax = WidgetFactory.createMultiInputWidget(this.$controlContents, {
+        label: 'Max',
+        labelPosition: 'row',
+        inputStyle: 'box',
+        numOfComponent: 1,
+        value: [this.range.max],
+        inputType: ['number'],
+        problemKeyList: ['value-001'],
+        onChanged: [function (inputVal) {
+            _this.range.max = inputVal || inputVal === 0 ? inputVal : null;
+            _this.setExpanderPreview.call(_this);
+            _this.options.onChanged('onChartOptionChanged', { plotOptions: {
+                    radar: _this.range
+                } });
+        }]
+    });
+    this._widgetList.push(viewRangeInputMax);
+};
+
+AxisRadarViewRangeControl.prototype.renderProblem = function () {
+    var _this = this;
+    this._widgetList.forEach(function (widget) {
+        widget.renderProblem(_this.options.problemList);
+    });
+};
+
+exports.default = AxisRadarViewRangeControl;
+
+/***/ }),
+/* 634 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _baseControl = __webpack_require__(9);
+
+var _baseControl2 = _interopRequireDefault(_baseControl);
+
+var _widgetFactory = __webpack_require__(3);
+
+var WidgetFactory = _interopRequireWildcard(_widgetFactory);
+
+var _formatHelperDialog = __webpack_require__(75);
+
+var _formatHelperDialog2 = _interopRequireDefault(_formatHelperDialog);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function AxisRadarLabelControl(parentId, options, headerKey) {
+    _baseControl2.default.call(this, parentId, options, headerKey);
+} /**
+   * Created by mk90.kim on 2017-05-10.
+   */
+
+AxisRadarLabelControl.prototype = Object.create(_baseControl2.default.prototype);
+AxisRadarLabelControl.prototype.constructor = AxisRadarLabelControl;
+
+AxisRadarLabelControl.prototype._init = function () {
+    _baseControl2.default.prototype._init.call(this);
+    this.name = this.options.chartOption.plotOptions.radar.name;
+};
+
+AxisRadarLabelControl.prototype._createContents = function ($parent) {
+    _baseControl2.default.prototype._createContents.call(this, $parent);
+
+    var _this = this;
+    var headerOption = {
+        label: 'Label'
+    };
+    this.createComponentHeader(headerOption);
+    this.createComponentContents();
+    this.setComponentShow();
+};
+
+AxisRadarLabelControl.prototype.createComponentContents = function (contentsOption) {
+    _baseControl2.default.prototype.createComponentContents.call(this, contentsOption);
+
+    this._createFontStyleComponent();
+};
+
+AxisRadarLabelControl.prototype._triggerChartOptionChanged = function () {
+    this.options.onChanged('onChartOptionChanged', {
+        plotOptions: {
+            radar: {
+                name: this.name
+            }
+        }
+    });
+};
+
+AxisRadarLabelControl.prototype._createFontStyleComponent = function () {
+    var _this = this;
+    this.fontStyle = WidgetFactory.createFontStyleWidget(this.$controlContents, {
+        fontStyleBtnList: ['bold', 'italic'],
+        value: [this.name.textStyle.fontFamily, this.name.textStyle.fontSize, this.name.textStyle.color, [this.name.textStyle.fontWeight, this.name.textStyle.fontStyle]],
+        onChanged: [function (inputVal) {
+            _this.name.textStyle.fontFamily = inputVal;
+            _this._triggerChartOptionChanged();
+        }, function (inputVal) {
+            _this.name.textStyle.fontSize = inputVal;
+            _this._triggerChartOptionChanged();
+        }, function (inputVal) {
+            _this.name.textStyle.color = inputVal;
+            _this._triggerChartOptionChanged();
+        }, function (selectedVals) {
+            _this.name.textStyle.fontWeight = $.inArray('bold', selectedVals) > -1 ? 'bold' : 'normal';
+            _this.name.textStyle.fontStyle = $.inArray('italic', selectedVals) > -1 ? 'italic' : 'normal';
+            _this.name.textStyle.fontWeight = $.inArray('bold', selectedVals) > -1 ? 'bold' : 'normal';
+            _this.name.textStyle.fontStyle = $.inArray('italic', selectedVals) > -1 ? 'italic' : 'normal';
+            _this._triggerChartOptionChanged();
+        }]
+    });
+
+    this._widgetList.push(this.fontStyle);
+};
+
+exports.default = AxisRadarLabelControl;
+
+/***/ }),
+/* 635 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14911,7 +16391,7 @@ BarChartOption.prototype.getDefaultControlContainerList = function () {
 exports.default = BarChartOption;
 
 /***/ }),
-/* 410 */
+/* 636 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14925,7 +16405,7 @@ var _chartOptionBase = __webpack_require__(6);
 
 var _chartOptionBase2 = _interopRequireDefault(_chartOptionBase);
 
-var _chartOptionArea = __webpack_require__(58);
+var _chartOptionArea = __webpack_require__(118);
 
 var _chartOptionArea2 = _interopRequireDefault(_chartOptionArea);
 
@@ -14977,7 +16457,7 @@ BarStackedChartOption.prototype.getDefaultControlContainerList = function () {
 exports.default = BarStackedChartOption;
 
 /***/ }),
-/* 411 */
+/* 637 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15104,7 +16584,7 @@ BiplotChartOption.prototype.getDefaultControlContainerList = function () {
 exports.default = BiplotChartOption;
 
 /***/ }),
-/* 412 */
+/* 638 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15175,7 +16655,7 @@ BoxPlotChartOption.prototype.getDefaultControlContainerList = function () {
 exports.default = BoxPlotChartOption;
 
 /***/ }),
-/* 413 */
+/* 639 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15249,7 +16729,7 @@ BubbleChartOption.prototype._getColumnSelectorSetting = function () {
 exports.default = BubbleChartOption;
 
 /***/ }),
-/* 414 */
+/* 640 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15307,39 +16787,36 @@ CardChartOption.prototype._init = function () {
     columnSelectorSetting = this._configureColumnConf(columnSelectorSetting);
     this.options.setting.columnSelector = columnSelectorSetting;
     this.options.setting.labelSettings = labelSettings;
-    this.options.setting.itemSelector = this._getItemSelectorSetting();
+    this.options.setting.numberLength = this._getNumberLengthSetting();
+    this.options.setting.numberFormat = this.options.chartOption.plotOptions.card.numberFormat;
 };
 
-CardChartOption.prototype._getItemSelectorSetting = function () {
+CardChartOption.prototype._getNumberLengthSetting = function () {
     var _this = this;
-    var itemSelectorSetting = [[{
-        key: 'leng',
+    var numberLengthSettings = [{
         ref: this.options.chartOption.plotOptions.card.leng[0],
-        label: 'Length',
-        getItemChangedOption: function getItemChangedOption(value) {
+        getLengthChangedOption: function getLengthChangedOption(value) {
+            var cardOpt = $.extend(true, {}, _this.options.chartOption.plotOptions.card);
+            cardOpt.leng = [{ selected: value }];
             return {
                 plotOptions: {
-                    card: $.extend(true, {}, _this.options.chartOption.plotOptions.card, {
-                        leng: [{ selected: value }]
-                    })
+                    card: cardOpt
                 }
             };
         }
-    }]];
+    }];
 
-    itemSelectorSetting = this._configureItemConf(itemSelectorSetting);
-
-    return itemSelectorSetting;
+    return numberLengthSettings;
 };
 
 CardChartOption.prototype.getDefaultControlContainerList = function () {
-    return ['Data', 'Title', 'Label', 'Frame'];
+    return ['Data', 'FormatCard', 'Title', 'Label', 'Frame'];
 };
 
 exports.default = CardChartOption;
 
 /***/ }),
-/* 415 */
+/* 641 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15353,7 +16830,7 @@ var _chartOptionBase = __webpack_require__(6);
 
 var _chartOptionBase2 = _interopRequireDefault(_chartOptionBase);
 
-var _chartOptionColumn = __webpack_require__(60);
+var _chartOptionColumn = __webpack_require__(122);
 
 var _chartOptionColumn2 = _interopRequireDefault(_chartOptionColumn);
 
@@ -15405,7 +16882,7 @@ ColumnStackedChartOption.prototype.getDefaultControlContainerList = function () 
 exports.default = ColumnStackedChartOption;
 
 /***/ }),
-/* 416 */
+/* 642 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15419,7 +16896,7 @@ var _chartOptionBase = __webpack_require__(6);
 
 var _chartOptionBase2 = _interopRequireDefault(_chartOptionBase);
 
-var _chartOptionColumn = __webpack_require__(60);
+var _chartOptionColumn = __webpack_require__(122);
 
 var _chartOptionColumn2 = _interopRequireDefault(_chartOptionColumn);
 
@@ -15476,7 +16953,7 @@ ColumnStacked100ChartOption.prototype.getDefaultControlContainerList = function 
 exports.default = ColumnStacked100ChartOption;
 
 /***/ }),
-/* 417 */
+/* 643 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15490,7 +16967,7 @@ var _chartOptionBase = __webpack_require__(6);
 
 var _chartOptionBase2 = _interopRequireDefault(_chartOptionBase);
 
-var _chartOptionRegister = __webpack_require__(57);
+var _chartOptionRegister = __webpack_require__(117);
 
 var ChartOptionRegistry = _interopRequireWildcard(_chartOptionRegister);
 
@@ -15565,7 +17042,8 @@ ComplexChartOption.prototype._initChildOption = function () {
                 }
             }
         };
-        childOption.chartTypeList = ['column', 'line', 'scatter'];
+
+        childOption.chartTypeList = ['column', 'column-stacked', 'column-stacked-100', 'line', 'area', 'area-stacked', 'area-stacked-100', 'scatter', 'bubble'];
 
         childOption.getControlContainerList = function () {
             return ['Data', 'ToolTip', 'Title', 'AxisEach', 'Legend', 'Marker', 'Frame'];
@@ -15678,7 +17156,7 @@ ComplexChartOption.prototype.getDefaultControlContainerList = function () {
 exports.default = ComplexChartOption;
 
 /***/ }),
-/* 418 */
+/* 644 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15809,7 +17287,7 @@ DecisionTreeChartOption.prototype.getDefaultControlContainerList = function () {
 exports.default = DecisionTreeChartOption;
 
 /***/ }),
-/* 419 */
+/* 645 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15885,7 +17363,7 @@ DendrogramChartOption.prototype.getDefaultControlContainerList = function () {
 exports.default = DendrogramChartOption;
 
 /***/ }),
-/* 420 */
+/* 646 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15944,7 +17422,7 @@ HeatmapChartOption.prototype.getDefaultControlContainerList = function () {
 exports.default = HeatmapChartOption;
 
 /***/ }),
-/* 421 */
+/* 647 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15991,7 +17469,7 @@ HeatmapMatrixChartOption.prototype.getDefaultControlContainerList = function () 
 exports.default = HeatmapMatrixChartOption;
 
 /***/ }),
-/* 422 */
+/* 648 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16039,7 +17517,7 @@ HistogramChartOption.prototype.getDefaultControlContainerList = function () {
 exports.default = HistogramChartOption;
 
 /***/ }),
-/* 423 */
+/* 649 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16073,6 +17551,7 @@ LineChartOption.prototype._init = function () {
     this.options.setting.scaleOpt = ['xaxis', 'yaxis'];
     this.options.setting.onZeroOpt = ['xaxis', 'yaxis'];
     this.options.setting.tooltip = this.options.chartOption.plotOptions.line.tooltip;
+    this.options.setting.showSymbol = this.options.chartOption.plotOptions.line.showSymbol;
 };
 
 LineChartOption.prototype._getColumnSelectorSetting = function () {
@@ -16114,7 +17593,7 @@ LineChartOption.prototype.getDefaultControlContainerList = function () {
 exports.default = LineChartOption;
 
 /***/ }),
-/* 424 */
+/* 650 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16208,7 +17687,7 @@ NetworkChartOption.prototype.getDefaultControlContainerList = function () {
 exports.default = NetworkChartOption;
 
 /***/ }),
-/* 425 */
+/* 651 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16269,7 +17748,7 @@ PairwiseScatterChartOption.prototype.getDefaultControlContainerList = function (
 exports.default = PairwiseScatterChartOption;
 
 /***/ }),
-/* 426 */
+/* 652 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16325,7 +17804,7 @@ PieChartOption.prototype.getDefaultControlContainerList = function () {
 exports.default = PieChartOption;
 
 /***/ }),
-/* 427 */
+/* 653 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16424,36 +17903,7 @@ QQPlotOption.prototype.getDefaultControlContainerList = function () {
 exports.default = QQPlotOption;
 
 /***/ }),
-/* 428 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-// /**
-//  * Created by SDS on 2017-05-10.
-//  */
-//
-// import BaseChart from '../chart-option-base';
-//
-// function RadarChartOption(parentId, options) {
-//     BaseChart.call(this, parentId, options);
-// }
-//
-// RadarChartOption.prototype = Object.create(BaseChart.prototype);
-// RadarChartOption.prototype.constructor = RadarChartOption;
-//
-// RadarChartOption.prototype._init = function () {
-//
-// };
-//
-// RadarChartOption.prototype._createContents = function ($parent) {
-//
-// };
-//
-// export default RadarChartOption;
-
-
-/***/ }),
-/* 429 */
+/* 654 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16467,7 +17917,55 @@ var _chartOptionBase = __webpack_require__(6);
 
 var _chartOptionBase2 = _interopRequireDefault(_chartOptionBase);
 
-var _chartOptionBarStacked = __webpack_require__(192);
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function RadarChartOption(parentId, options) {
+    _chartOptionBase2.default.call(this, parentId, options);
+} // /**
+//  * Created by SDS on 2017-05-10.
+//  */
+//
+
+
+RadarChartOption.prototype = Object.create(_chartOptionBase2.default.prototype);
+RadarChartOption.prototype.constructor = RadarChartOption;
+
+RadarChartOption.prototype._init = function () {
+    _chartOptionBase2.default.prototype._init.call(this);
+    var columnSelectorSetting = [[{
+        key: 'yAxis',
+        ref: this.options.chartOption.yAxis[0]
+    }, {
+        key: 'colorBy',
+        ref: this.options.chartOption.colorBy[0]
+    }]];
+    columnSelectorSetting = this._configureColumnConf(columnSelectorSetting);
+    this.options.setting.columnSelector = columnSelectorSetting;
+    this.options.setting.display = this.options.chartOption.plotOptions.radar;
+};
+
+RadarChartOption.prototype.getDefaultControlContainerList = function () {
+    return ['Data', 'ToolTip', 'Title', 'Legend', 'Marker', 'AxisRadar', 'FramePie'];
+};
+
+exports.default = RadarChartOption;
+
+/***/ }),
+/* 655 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _chartOptionBase = __webpack_require__(6);
+
+var _chartOptionBase2 = _interopRequireDefault(_chartOptionBase);
+
+var _chartOptionBarStacked = __webpack_require__(293);
 
 var _chartOptionBarStacked2 = _interopRequireDefault(_chartOptionBarStacked);
 
@@ -16512,7 +18010,7 @@ ROCCurveChartOption.prototype.getDefaultControlContainerList = function () {
 exports.default = ROCCurveChartOption;
 
 /***/ }),
-/* 430 */
+/* 656 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16573,7 +18071,7 @@ ScatterChartOption.prototype.getDefaultControlContainerList = function () {
 exports.default = ScatterChartOption;
 
 /***/ }),
-/* 431 */
+/* 657 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16600,7 +18098,7 @@ exports.default = ScatterChartOption;
 
 
 /***/ }),
-/* 432 */
+/* 658 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16643,7 +18141,7 @@ TableChartOption.prototype.getDefaultControlContainerList = function () {
 exports.default = TableChartOption;
 
 /***/ }),
-/* 433 */
+/* 659 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16711,7 +18209,7 @@ TreeMapChartOption.prototype.getDefaultControlContainerList = function () {
 exports.default = TreeMapChartOption;
 
 /***/ }),
-/* 434 */
+/* 660 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16729,7 +18227,7 @@ var _chartOptionBase = __webpack_require__(6);
 
 var _chartOptionBase2 = _interopRequireDefault(_chartOptionBase);
 
-var _setup = __webpack_require__(193);
+var _setup = __webpack_require__(294);
 
 var setup = _interopRequireWildcard(_setup);
 
@@ -16867,7 +18365,7 @@ MapChartOption.prototype._configureColumnConf = function (layerType, columnSelec
 exports.default = MapChartOption;
 
 /***/ }),
-/* 435 */
+/* 661 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16923,7 +18421,84 @@ DonutChartOption.prototype.getDefaultControlContainerList = function () {
 exports.default = DonutChartOption;
 
 /***/ }),
-/* 436 */
+/* 662 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _chartOptionBase = __webpack_require__(6);
+
+var _chartOptionBase2 = _interopRequireDefault(_chartOptionBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Created by SDS on 2017-05-10.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+
+var ImageGridChartOption = function (_BaseChart) {
+    _inherits(ImageGridChartOption, _BaseChart);
+
+    function ImageGridChartOption(parentId, options) {
+        _classCallCheck(this, ImageGridChartOption);
+
+        return _possibleConstructorReturn(this, (ImageGridChartOption.__proto__ || Object.getPrototypeOf(ImageGridChartOption)).call(this, parentId, options));
+    }
+
+    _createClass(ImageGridChartOption, [{
+        key: '_init',
+        value: function _init() {
+            _get(ImageGridChartOption.prototype.__proto__ || Object.getPrototypeOf(ImageGridChartOption.prototype), '_init', this).call(this);
+            this.options.setting.columnSelector = this._getColumnSelectorSetting();
+        }
+    }, {
+        key: '_createColumnSelectorSetting',
+        value: function _createColumnSelectorSetting() {
+            return [[{
+                key: 'imageColumn',
+                ref: this.options.chartOption.imageColumn[0]
+            }, {
+                key: 'labelColumn',
+                ref: this.options.chartOption.labelColumn[0]
+            }, {
+                key: 'sortBy',
+                ref: this.options.chartOption.sortBy[0]
+            }]];
+        }
+    }, {
+        key: '_getColumnSelectorSetting',
+        value: function _getColumnSelectorSetting() {
+            var columnSelectorSetting = this._createColumnSelectorSetting();
+            columnSelectorSetting = this._configureColumnConf(columnSelectorSetting);
+            return columnSelectorSetting;
+        }
+    }, {
+        key: 'getDefaultControlContainerList',
+        value: function getDefaultControlContainerList() {
+            return ['Data', 'Title', 'Grid', 'Frame'];
+        }
+    }]);
+
+    return ImageGridChartOption;
+}(_chartOptionBase2.default);
+
+exports.default = ImageGridChartOption;
+
+/***/ }),
+/* 663 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16942,7 +18517,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 var COL_TYPE = exports.COL_TYPE = {
     NUMERIC: ['number'],
-    CATEGORICAL: ['string', 'date']
+    CATEGORICAL: ['string', 'date'],
+    IMAGE: ['image']
 };
 
 var categorical = function categorical(col) {
@@ -17024,6 +18600,25 @@ var createAxisResolver = function createAxisResolver(axis) {
 var xResolver = exports.xResolver = createAxisResolver('xAxis');
 var yResolver = exports.yResolver = createAxisResolver('yAxis');
 
+var imageColumnResolver = exports.imageColumnResolver = function imageColumnResolver(config) {
+    return {
+        resolve: function resolve(chtOpt, cols) {
+            var idx = cols.findIndex(function (col) {
+                return COL_TYPE.IMAGE.indexOf(col.type) >= 0;
+            });
+            if (idx >= 0) {
+                var copy = Object.assign({}, chtOpt);
+                copy.imageColumn[0].selected.push({ name: cols[idx].name });
+                return [copy, cols.slice(0, idx).concat(cols.slice(idx + 1))];
+            }
+            return [chtOpt, cols];
+        },
+        pre: function pre(chtOpt, cols) {
+            return chtOpt.imageColumn[0].selected.length === 0;
+        }
+    };
+};
+
 var colorByResolver = exports.colorByResolver = function colorByResolver(config) {
     return {
         resolve: function resolve(chtOpt, cols) {
@@ -17060,7 +18655,7 @@ var stackByResolver = exports.stackByResolver = function stackByResolver(config)
 };
 
 /***/ }),
-/* 437 */
+/* 664 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17195,7 +18790,7 @@ function getTypes() {
 }
 
 /***/ }),
-/* 438 */
+/* 665 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17206,31 +18801,31 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Dialog = exports.FormatHelperDialog = exports.ItemSelectorDialog = exports.DataSourceSelectorDialog = exports.ColumnSelectorDialog = exports.ColorPickerDialog = exports.ChartTypeSelectorDialog = undefined;
 
-var _chartTypeSelectorDialog = __webpack_require__(182);
+var _chartTypeSelectorDialog = __webpack_require__(283);
 
 var _chartTypeSelectorDialog2 = _interopRequireDefault(_chartTypeSelectorDialog);
 
-var _colorPickerDialog = __webpack_require__(177);
+var _colorPickerDialog = __webpack_require__(277);
 
 var _colorPickerDialog2 = _interopRequireDefault(_colorPickerDialog);
 
-var _columnSelectorDialog = __webpack_require__(179);
+var _columnSelectorDialog = __webpack_require__(120);
 
 var _columnSelectorDialog2 = _interopRequireDefault(_columnSelectorDialog);
 
-var _datasourceSelectorDialog = __webpack_require__(181);
+var _datasourceSelectorDialog = __webpack_require__(282);
 
 var _datasourceSelectorDialog2 = _interopRequireDefault(_datasourceSelectorDialog);
 
-var _itemSelectorDialog = __webpack_require__(184);
+var _itemSelectorDialog = __webpack_require__(285);
 
 var _itemSelectorDialog2 = _interopRequireDefault(_itemSelectorDialog);
 
-var _formatHelperDialog = __webpack_require__(187);
+var _formatHelperDialog = __webpack_require__(75);
 
 var _formatHelperDialog2 = _interopRequireDefault(_formatHelperDialog);
 
-var _dialog = __webpack_require__(27);
+var _dialog = __webpack_require__(42);
 
 var _dialog2 = _interopRequireDefault(_dialog);
 
@@ -17245,7 +18840,7 @@ exports.FormatHelperDialog = _formatHelperDialog2.default;
 exports.Dialog = _dialog2.default;
 
 /***/ }),
-/* 439 */
+/* 666 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17255,33 +18850,33 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _chartOptionUtil = __webpack_require__(23);
+var _chartOptionUtil = __webpack_require__(30);
 
-var _datasourcePanel = __webpack_require__(441);
+var _datasourcePanel = __webpack_require__(668);
 
 var _datasourcePanel2 = _interopRequireDefault(_datasourcePanel);
 
-var _chartWorksheet = __webpack_require__(442);
+var _chartWorksheet = __webpack_require__(669);
 
 var _chartWorksheet2 = _interopRequireDefault(_chartWorksheet);
 
-var _chartOptionPanel = __webpack_require__(445);
+var _chartOptionPanel = __webpack_require__(672);
 
 var _chartOptionPanel2 = _interopRequireDefault(_chartOptionPanel);
 
-var _filterPanel = __webpack_require__(446);
+var _filterPanel = __webpack_require__(673);
 
 var _filterPanel2 = _interopRequireDefault(_filterPanel);
 
-var _datasource = __webpack_require__(195);
+var _datasource = __webpack_require__(296);
 
 var _datasource2 = _interopRequireDefault(_datasource);
 
-var _setup = __webpack_require__(193);
+var _setup = __webpack_require__(294);
 
 var setup = _interopRequireWildcard(_setup);
 
-var _autoOptionSelector = __webpack_require__(194);
+var _autoOptionSelector = __webpack_require__(295);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -17576,10 +19171,10 @@ global.bchartsAdonis = BChartsAdonis;
 Brightics.Chart.Adonis.BChartsAdonis = BChartsAdonis;
 
 exports.default = BChartsAdonis;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(440)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(667)))
 
 /***/ }),
-/* 440 */
+/* 667 */
 /***/ (function(module, exports) {
 
 var g;
@@ -17606,7 +19201,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 441 */
+/* 668 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17650,7 +19245,7 @@ DataSourcePanel.prototype.addControl = function (callback) {
 exports.default = DataSourcePanel;
 
 /***/ }),
-/* 442 */
+/* 669 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17660,15 +19255,15 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _chartLayout = __webpack_require__(443);
+var _chartLayout = __webpack_require__(670);
 
 var _chartLayout2 = _interopRequireDefault(_chartLayout);
 
-var _chartPanel = __webpack_require__(196);
+var _chartPanel = __webpack_require__(297);
 
 var _chartPanel2 = _interopRequireDefault(_chartPanel);
 
-var _detailChartPanel = __webpack_require__(444);
+var _detailChartPanel = __webpack_require__(671);
 
 var _detailChartPanel2 = _interopRequireDefault(_detailChartPanel);
 
@@ -18035,7 +19630,7 @@ ChartWorksheet.prototype.layout = function (direction) {
 exports.default = ChartWorksheet;
 
 /***/ }),
-/* 443 */
+/* 670 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18361,7 +19956,7 @@ ChartLayout.prototype.refreshSplitter = function () {
 exports.default = ChartLayout;
 
 /***/ }),
-/* 444 */
+/* 671 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18371,7 +19966,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _chartPanel = __webpack_require__(196);
+var _chartPanel = __webpack_require__(297);
 
 var _chartPanel2 = _interopRequireDefault(_chartPanel);
 
@@ -18413,7 +20008,7 @@ DetailChartPanel.prototype._configureChartOptions = function () {
 exports.default = DetailChartPanel;
 
 /***/ }),
-/* 445 */
+/* 672 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18423,7 +20018,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _chartOption = __webpack_require__(56);
+var _chartOption = __webpack_require__(116);
 
 var _chartOption2 = _interopRequireDefault(_chartOption);
 
@@ -18560,7 +20155,7 @@ ChartOptionPanel.prototype.getChartId = function () {
 exports.default = ChartOptionPanel;
 
 /***/ }),
-/* 446 */
+/* 673 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18570,11 +20165,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _filterControlFactory = __webpack_require__(61);
+var _filterControlFactory = __webpack_require__(123);
 
 var FilterControlFactory = _interopRequireWildcard(_filterControlFactory);
 
-var _filter = __webpack_require__(450);
+var _filter = __webpack_require__(677);
 
 var _filter2 = _interopRequireDefault(_filter);
 
@@ -18725,7 +20320,7 @@ FilterPanel.prototype.setChartType = function (chartId, chartType) {
 exports.default = FilterPanel;
 
 /***/ }),
-/* 447 */
+/* 674 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18735,11 +20330,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _filterControlBase = __webpack_require__(38);
+var _filterControlBase = __webpack_require__(76);
 
 var _filterControlBase2 = _interopRequireDefault(_filterControlBase);
 
-var _filterControlIndex = __webpack_require__(197);
+var _filterControlIndex = __webpack_require__(298);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -18815,7 +20410,7 @@ CheckBoxFilter.prototype.setSelected = function (values) {
 exports.default = CheckBoxFilter;
 
 /***/ }),
-/* 448 */
+/* 675 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18825,7 +20420,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _filterControlBase = __webpack_require__(38);
+var _filterControlBase = __webpack_require__(76);
 
 var _filterControlBase2 = _interopRequireDefault(_filterControlBase);
 
@@ -19018,7 +20613,7 @@ ListBoxFilter.prototype.setSelected = function (values) {
 exports.default = ListBoxFilter;
 
 /***/ }),
-/* 449 */
+/* 676 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19028,7 +20623,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _filterControlBase = __webpack_require__(38);
+var _filterControlBase = __webpack_require__(76);
 
 var _filterControlBase2 = _interopRequireDefault(_filterControlBase);
 
@@ -19124,7 +20719,7 @@ RangeSliderFilter.prototype.setSelected = function (values) {
 exports.default = RangeSliderFilter;
 
 /***/ }),
-/* 450 */
+/* 677 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19134,7 +20729,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _filterControlContainer = __webpack_require__(451);
+var _filterControlContainer = __webpack_require__(678);
 
 var _filterControlContainer2 = _interopRequireDefault(_filterControlContainer);
 
@@ -19298,7 +20893,7 @@ Filter.prototype.destroy = function () {
 exports.default = Filter;
 
 /***/ }),
-/* 451 */
+/* 678 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19308,15 +20903,15 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _widgetFactory = __webpack_require__(2);
+var _widgetFactory = __webpack_require__(3);
 
 var WidgetFactory = _interopRequireWildcard(_widgetFactory);
 
-var _chartOptionUtil = __webpack_require__(23);
+var _chartOptionUtil = __webpack_require__(30);
 
 var ChartOptionUtil = _interopRequireWildcard(_chartOptionUtil);
 
-var _filterControlFactory = __webpack_require__(61);
+var _filterControlFactory = __webpack_require__(123);
 
 var FilterControlFactory = _interopRequireWildcard(_filterControlFactory);
 
@@ -19428,7 +21023,7 @@ FilterControlContainer.prototype.createColumnSelectorControl = function ($parent
         aggregationEnabled: false,
         aggregationMap: {},
         label: 'Column',
-        getColumns: _this._getAllColumnList.bind(_this, 0),
+        getColumns: _this._getColumnList.bind(_this, 0),
         getAllColumns: _this._getAllColumnList.bind(_this, 0),
         problemKeyList: ['axis-001', 'axis-002', 'axis-003', 'axis-004', 'axis-005'],
         chartOption: this.options.chartOption,
@@ -19449,6 +21044,13 @@ FilterControlContainer.prototype.createColumnSelectorControl = function ($parent
 
 FilterControlContainer.prototype._getAllColumnList = function (sourceIndex) {
     return ChartOptionUtil.getAllColumnList(this.options.chartOption, sourceIndex);
+};
+
+FilterControlContainer.prototype._getColumnList = function (sourceIndex) {
+    var columnList = ChartOptionUtil.getAllColumnList(this.options.chartOption, sourceIndex);
+    return columnList.filter(function (value) {
+        return value.type !== 'image';
+    });
 };
 
 FilterControlContainer.prototype._getColumnInfo = function (column) {

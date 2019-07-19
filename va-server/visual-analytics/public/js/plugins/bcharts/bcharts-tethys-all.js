@@ -60,12 +60,12 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 459);
+/******/ 	return __webpack_require__(__webpack_require__.s = 686);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 198:
+/***/ 299:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -75,7 +75,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseLayout = __webpack_require__(199);
+var _baseLayout = __webpack_require__(300);
 
 var _baseLayout2 = _interopRequireDefault(_baseLayout);
 
@@ -98,12 +98,36 @@ FlexLayout.prototype.createContents = function () {
 
 FlexLayout.prototype.createLayout = function () {
     var $parent = this.$mainControl.children('.bcharts-tethys-layout');
-    this._createFlexLayout($parent, this.options.keys(), this.options.layout.flexData);
+    var hCnt, vCnt, chartCnt;
+    if (this.options.pagination.enable) {
+        if (this.options.layout.flexData.width.indexOf('px') != -1) {
+            hCnt = Math.floor(this.$mainControl.innerWidth() / parseInt(this.options.layout.flexData.width.replace('px', '')));
+        } else {
+            hCnt = Math.floor(this.$mainControl.innerWidth() / (this.$mainControl.innerWidth() * parseInt(this.options.layout.flexData.width.replace('%', '')) / 100));
+        }
+        if (this.options.layout.flexData.height.indexOf('px') != -1) {
+            vCnt = Math.floor(parseInt(this.options.pagination.height.replace('px', '')) / parseInt(this.options.layout.flexData.height.replace('px', '')));
+        } else {
+            vCnt = Math.floor(parseInt(this.options.pagination.height.replace('px', '')) / (parseInt(this.options.pagination.height.replace('px', '')) * parseInt(this.options.layout.flexData.height.replace('%', '')) / 100));
+        }
+        chartCnt = hCnt * vCnt;
+        console.log("ChartCount ", chartCnt);
+        console.log("PageIndex ", this.options.pagination.pageIndex);
+        this._createFlexLayout($parent, this.options.keys(), this.options.layout.flexData, chartCnt, this.options.pagination.pageIndex);
+    } else {
+        this._createFlexLayout($parent, this.options.keys(), this.options.layout.flexData, this.options.keys().length, 0);
+    }
     this._perfectScrollbar($parent);
 };
 
-FlexLayout.prototype._createFlexLayout = function ($parent, items, flexData) {
-    for (var i in items) {
+FlexLayout.prototype._createFlexLayout = function ($parent, items, flexData, chartCnt, startIndex) {
+    var maxLength = 0;
+    if ((startIndex + 1) * chartCnt >= items.length) {
+        maxLength = items.length;
+    } else {
+        maxLength = (startIndex + 1) * chartCnt;
+    }
+    for (var i = startIndex * chartCnt; i < maxLength; i++) {
         var chartUid = this._uuid + i;
 
         var $el = $('' + '<div class="' + ITEM_CLASS + '" status="ready" id="' + chartUid + '">' + '   <div class="bcharts-tethys-loading"></div>' + '</div>');
@@ -153,7 +177,7 @@ exports.default = FlexLayout;
 
 /***/ }),
 
-/***/ 199:
+/***/ 300:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -209,13 +233,13 @@ exports.default = Layout;
 
 /***/ }),
 
-/***/ 459:
+/***/ 686:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _bchartsTethys = __webpack_require__(460);
+var _bchartsTethys = __webpack_require__(687);
 
 var _bchartsTethys2 = _interopRequireDefault(_bchartsTethys);
 
@@ -243,7 +267,7 @@ $.fn.bchartsTethys = function (options, propertyName, propertyValue) {
 
 /***/ }),
 
-/***/ 460:
+/***/ 687:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -253,15 +277,15 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _flexLayout = __webpack_require__(198);
+var _flexLayout = __webpack_require__(299);
 
 var _flexLayout2 = _interopRequireDefault(_flexLayout);
 
-var _chartCache = __webpack_require__(461);
+var _chartCache = __webpack_require__(688);
 
 var _chartCache2 = _interopRequireDefault(_chartCache);
 
-var _layoutRegister = __webpack_require__(462);
+var _layoutRegister = __webpack_require__(689);
 
 var LayoutRegistry = _interopRequireWildcard(_layoutRegister);
 
@@ -461,7 +485,7 @@ exports.default = BChartsTethys;
 
 /***/ }),
 
-/***/ 461:
+/***/ 688:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -552,7 +576,7 @@ exports.default = ChartCache;
 
 /***/ }),
 
-/***/ 462:
+/***/ 689:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -564,7 +588,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.registerLayout = registerLayout;
 exports.createLayout = createLayout;
 
-var _layoutIndex = __webpack_require__(463);
+var _layoutIndex = __webpack_require__(690);
 
 var Layout = _interopRequireWildcard(_layoutIndex);
 
@@ -601,7 +625,7 @@ function createLayout(layoutType, parentId, options) {
 
 /***/ }),
 
-/***/ 463:
+/***/ 690:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -612,11 +636,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.each = exports.flex = undefined;
 
-var _flexLayout = __webpack_require__(198);
+var _flexLayout = __webpack_require__(299);
 
 var _flexLayout2 = _interopRequireDefault(_flexLayout);
 
-var _eachLayout = __webpack_require__(464);
+var _eachLayout = __webpack_require__(691);
 
 var _eachLayout2 = _interopRequireDefault(_eachLayout);
 
@@ -632,7 +656,7 @@ exports.each = _eachLayout2.default;
 
 /***/ }),
 
-/***/ 464:
+/***/ 691:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -642,7 +666,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseLayout = __webpack_require__(199);
+var _baseLayout = __webpack_require__(300);
 
 var _baseLayout2 = _interopRequireDefault(_baseLayout);
 
