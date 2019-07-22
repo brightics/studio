@@ -90,14 +90,14 @@ def from_under(params, from_v, under_v, var_name):
 
 def over_to(params, over_v, to_v, var_name):
     if params[var_name] is not None:
-        return get_error(over_v < params[var_name] <= to_v, '0006', [var_name, over_v, to_v])
+        return get_error(over_v < params[var_name] <= to_v, '0016', [var_name, over_v, to_v])
     else:
         return None
 
 
 def over_under(params, over_v, under_v, var_name):
     if params[var_name] is not None:
-        return get_error(over_v < params[var_name] < under_v, '0006', [var_name, over_v, under_v])
+        return get_error(over_v < params[var_name] < under_v, '0018', [var_name, over_v, under_v])
     else:
         return None
 
