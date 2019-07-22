@@ -581,6 +581,7 @@ const downloadFile = function (req, res) {
     });
     let options = __BRTC_CORE_SERVER.createRequestOptions('GET', url);
     __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
+    res.write(Buffer.from('EFBBBF', 'hex'));
     request(options).pipe(res);
 };
 /**
