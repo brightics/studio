@@ -54,7 +54,9 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
                                solver='liblinear', max_iter=100, multi_class='ovr', verbose=0, warm_start=False,
                                n_jobs=1):
 
-    feature_names, features = check_col_type(table,feature_cols)
+    feature_names, features = check_col_type(table, feature_cols)
+    features = pd.DataFrame(features, columns=feature_names)
+    
     label = table[label_col]
 
     if(sklearn_utils.multiclass.type_of_target(label) == 'continuous'):
