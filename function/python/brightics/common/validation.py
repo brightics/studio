@@ -60,6 +60,13 @@ def greater_than_or_equal_to(params, criteria, var_name):
         return None
 
 
+def greater_than_or_equal_to_or_equal_to(params, criteria, equal_to_v, var_name):
+    if params[var_name] is not None:
+        return get_error(params[var_name] >= criteria or params[var_name] == equal_to_v, '0060', [var_name, criteria, equal_to_v])
+    else:
+        return None
+
+
 def less_than(params, criteria, var_name):
     if params[var_name] is not None:
         return get_error(params[var_name] < criteria, '0012', [var_name, criteria])
