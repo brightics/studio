@@ -23,7 +23,7 @@ from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate, greater_than, greater_than_or_equal_to, less_than, \
-    over_to, less_than_or_equal_to, raise_runtime_error
+    over_to, less_than_or_equal_to, raise_runtime_error, greater_than_or_equal_to_or_equal_to
 import sklearn.utils as sklearn_utils
 from brightics.common.classify_input_type import check_col_type
 
@@ -33,7 +33,8 @@ def svm_classification_train(table, group_by=None, **params):
     params = get_default_from_parameters_if_required(params, _svm_classification_train)
     param_validation_check = [over_to(params, 0.0, 1.0, 'c'),
                               greater_than_or_equal_to(params, 0, 'degree'),
-                              greater_than(params, 0.0, 'tol')]
+                              greater_than(params, 0.0, 'tol'),
+                              greater_than_or_equal_to_or_equal_to(params, 1, -1, 'max_iter')]
     validate(*param_validation_check)
 
     if group_by is not None:
