@@ -71,7 +71,7 @@ def _svm_classification_train(table, feature_cols, label_col, c=1.0, kernel='rbf
     
     _model = _model_dict('svc_model')
     _model['svc_model'] = _svc_model
-    _model['features'] = feature_names
+    _model['features'] = feature_cols
     _model['_repr_brtc_'] = rb.get()
     
     return {'model':_model}
@@ -101,7 +101,7 @@ def _svm_classification_predict(table, model, prediction_col='prediction', prob_
     
     _table = table.copy()    
     feature_cols = model['features']
-    features = _table[feature_cols]
+    feature_names, features = check_col_type(table, feature_cols)
     svc_model = model['svc_model']
     
     classes = svc_model.classes_
