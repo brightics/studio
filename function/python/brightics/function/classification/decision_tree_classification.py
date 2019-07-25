@@ -26,7 +26,7 @@ from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate
-from brightics.common.validation import greater_than_or_equal_to
+from brightics.common.validation import greater_than_or_equal_to, greater_than
 from brightics.common.validation import raise_error
 import sklearn.utils as sklearn_utils
 from brightics.common.classify_input_type import check_col_type
@@ -43,7 +43,7 @@ def decision_tree_classification_train(table, group_by=None, **params):
                               greater_than_or_equal_to(params, 0.0, 'min_impurity_decrease'),
                               greater_than_or_equal_to(params, 1, 'max_depth'),
                               greater_than_or_equal_to(params, 1, 'max_features'),
-                              greater_than_or_equal_to(params, 1, 'max_leaf_nodes')]
+                              greater_than(params, 1, 'max_leaf_nodes')]
 
     validate(*param_validation_check)
 
