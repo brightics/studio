@@ -90,7 +90,7 @@ def _decision_tree_classification_train(table, feature_cols, label_col,  # fig_s
 
     # json
     model = _model_dict('decision_tree_classification_model')
-    model['feature_cols'] = feature_names
+    model['feature_cols'] = feature_cols
     model['label_col'] = label_col
     model['classes'] = classifier.classes_
     feature_importance = classifier.feature_importances_
@@ -153,5 +153,7 @@ def decision_tree_classification_predict(table, model, **params):
 
 def _decision_tree_classification_predict(table, model, prediction_col='prediction', check_input=True):
     out_table = table.copy()
-    out_table[prediction_col] = model['classifier'].predict(table[model['feature_cols']], check_input)
+    feature_cols = model['feature_cols']
+    feature_names, features = check_col_type(table, feature_cols)
+    out_table[prediction_col] = model['classifier'].predict(features, check_input)
     return {'out_table': out_table}
