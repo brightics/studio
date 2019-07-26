@@ -187,10 +187,12 @@ from {function_package} import {function_name}
     script_function_package_name = func_jsonspec['name'].split('$')
     script_function_params = ','.join(
         [x['id'] + ' = ' for x in func_jsonspec['params']])
+    script_function_inputs = ''.join(['{v} = ,'.format(v=v) for v in func_jsonspec['inputs']])
     script_function_call = \
-        '''{var} = {function_name}({parameters})'''.format(
+        '''{var} = {function_name}({inputs}{parameters})'''.format(
             var=script_output_var_name,
             function_name=script_function_package_name[1],
+            inputs=script_function_inputs,
             parameters=script_function_params)
 
     script_function_outs = ''
