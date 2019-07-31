@@ -9,20 +9,28 @@
         "name": "brightics.function.textanalytics$doc2vec",
         "context": "python",
         "label": "Doc2Vec",
-        "description": "",
+        "description": "\"Doc2Vec is an extension of word2vec to construct embeddings from entire documents (rather than the individual words).\"\n\nReference:\n+ <https://en.wikipedia.org/wiki/Word2vec>",
         "tags": [],
         "version": "3.6",
         "inputs": {
             "table": ""
         },
         "outputs": {
-            "out_table": ""
+            "model": "",
+            "doc_table": "",
+            "word_table": ""
         },
         "meta": {
             "table": {
                 "type": "table"
             },
-            "out_table": {
+            "model": {
+                "type": "model"
+            },
+            "doc_table": {
+                "type": "table"
+            },
+            "word_table": {
                 "type": "table"
             }
         },
@@ -42,9 +50,31 @@
                 "multiple": false
             },
             {
+                "id": "dm",
+                "label": "Training Algorithm",
+                "description": "Training algorithm: PV-DM, PV-DBOW.",
+                "mandatory": false,
+                "items": [
+                    {
+                        "label": "PV-DM",
+                        "value": "1",
+                        "default": true
+                    },
+                    {
+                        "label": "PV-DBOW",
+                        "value": "0",
+                        "default": false
+                    }
+                ],
+                "visibleOption": [],
+                "control": "RadioButton",
+                "columnType": [],
+                "validation": []
+            },
+            {
                 "id": "vector_size",
                 "label": "Dimension of Vectors",
-                "description": "",
+                "description": "Dimensionality of the feature vectors.",
                 "mandatory": false,
                 "items": [],
                 "visibleOption": [],
@@ -54,11 +84,39 @@
                 "type": "Integer",
                 "min": 1,
                 "placeHolder": "100"
+            },    
+            {
+                "id": "window",
+                "label": "Window Size",
+                "description": "Maximum distance between the current and predicted word within a sentence.",
+                "mandatory": false,
+                "items": [],
+                "visibleOption": [],
+                "control": "InputBox",
+                "columnType": [],
+                "validation": [],
+                "placeHolder": "5 (value >= 1)",
+                "type": "Integer",
+                "min": 1
+            },
+            {
+                "id": "min_count",
+                "label": "Minimum count",
+                "description": "Ignores all words with total frequency lower than this.",
+                "mandatory": false,
+                "items": [],
+                "visibleOption": [],
+                "control": "InputBox",
+                "columnType": [],
+                "validation": [],
+                "type": "Integer",
+                "min": 1,
+                "placeHolder": "1"
             },
             {
                 "id": "alpha",
                 "label": "Alpha",
-                "description": "",
+                "description": "The initial learning rate.",
                 "mandatory": false,
                 "items": [],
                 "visibleOption": [],
@@ -71,7 +129,7 @@
             {
                 "id": "min_alpha",
                 "label": "Minimum alpha",
-                "description": "",
+                "description": "Learning rate will linearly drop to min_alpha as training progresses.",
                 "mandatory": false,
                 "items": [],
                 "visibleOption": [],
@@ -84,7 +142,7 @@
             {
                 "id": "seed",
                 "label": "Seed",
-                "description": "",
+                "description": "Seed for the random number generator. Initial vectors for each word are seeded with a hash of the concatenation of word + str(seed). Note that hash randomization that breaks reproducibility is used by default.",
                 "mandatory": false,
                 "items": [],
                 "visibleOption": [],
@@ -94,23 +152,9 @@
                 "type": "Integer"
             },
             {
-                "id": "min_count",
-                "label": "Minimum count",
-                "description": "",
-                "mandatory": false,
-                "items": [],
-                "visibleOption": [],
-                "control": "InputBox",
-                "columnType": [],
-                "validation": [],
-                "type": "Integer",
-                "min": 1,
-                "placeHolder": "1"
-            },
-            {
                 "id": "train_epoch",
                 "label": "Train epoch",
-                "description": "",
+                "description": "Number of iterations (epochs) over the corpus.",
                 "mandatory": false,
                 "items": [],
                 "visibleOption": [],
@@ -124,21 +168,21 @@
             {
                 "id": "workers",
                 "label": "Number of workers",
-                "description": "",
+                "description": "Use these many worker threads to train the model (=faster training with multicore machines).",
                 "mandatory": false,
                 "items": [],
                 "visibleOption": [],
                 "control": "InputBox",
                 "columnType": [],
                 "validation": [],
-                "placeHolder": "4",
+                "placeHolder": "4 (value >= 1)",
                 "type": "Integer",
                 "min": 1
             },
             {
                 "id": "hs",
                 "label": "Hierarchical softmax",
-                "description": "",
+                "description": "If it is True, hierarchical softmax will be used for model training. If it is False, and Negative is non-zero, negative sampling will be used.",
                 "mandatory": false,
                 "items": [],
                 "visibleOption": [],
@@ -150,7 +194,7 @@
             {
                 "id": "negative",
                 "label": "Negative",
-                "description": "",
+                "description": "If Negative > 0, negative sampling will be used, the int for negative specifies how many noise words should be drawn (usually between 5-20).",
                 "mandatory": false,
                 "items": [],
                 "visibleOption": [
@@ -165,6 +209,24 @@
                 "type": "Integer",
                 "min": 1,
                 "placeHolder": "5"
+            },
+            {
+                "id": "ns_exponent",
+                "label": "Negative sampling exponent",
+                "description": "The exponent used to shape the negative sampling distribution. A value of 1.0 samples exactly in proportion to the frequencies, 0.0 samples all words equally, while a negative value samples low-frequency words more than high-frequency words. The popular default value of 0.75 was chosen by the original Word2Vec paper.",
+                "mandatory": false,
+                "items": [],
+                "visibleOption": [
+                    {
+                        "id": "hs",
+                        "value": false
+                    }
+                ],
+                "control": "InputBox",
+                "columnType": [],
+                "validation": [],
+                "placeHolder": "0.75",
+                "type": "Integer"
             }
         ]
     },

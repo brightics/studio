@@ -14,52 +14,118 @@
     limitations under the License.
 """
 
+from random import randint
+import pandas as pd
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 
-def doc2vec(table, input_col, vector_size=100, window=10, min_count=1, max_vocab_size=None,     
-            train_epoch=100, dm=1, workers=4, alpha=0.025, min_alpha=0.025, seed=1, hs=1, negative=5):
+from brightics.common.utils import check_required_parameters
+from brightics.common.utils import get_default_from_parameters_if_required
+from brightics.common.validation import validate
+from brightics.common.validation import greater_than_or_equal_to
+from brightics.common.repr import BrtcReprBuilder 
+from brightics.common.repr import strip_margin
+from brightics.function.utils import _model_dict
+from brightics.common.repr import dict2MD
+
+
+def doc2vec(table, **params):
+    check_required_parameters(_doc2vec, params, ['table'])
     
+    params = get_default_from_parameters_if_required(params, _doc2vec)
+    param_validation_check = [greater_than_or_equal_to(params, 1, 'vector_size'),
+                              greater_than_or_equal_to(params, 1, 'window'),
+                              greater_than_or_equal_to(params, 1, 'min_count'),
+                              greater_than_or_equal_to(params, 1, 'train_epoch'),
+                              greater_than_or_equal_to(params, 1, 'workers'),
+                              greater_than_or_equal_to(params, 1, 'negative')]
+    validate(*param_validation_check) 
+    return _doc2vec(table, **params)
+
+
+def _doc2vec(table, input_col, dm=1, vector_size=100, window=10, min_count=1, max_vocab_size=None,
+            train_epoch=100, workers=4, alpha=0.025, min_alpha=0.025, seed=None,
+            hs=1, negative=5, ns_exponent=0.75):
+    
+    if seed is None:
+        random_state = seed
+        seed = randint(0, 0xffffffff)
+    else:
+        random_state = seed
+        
     docs = table[input_col]
     tagged_docs = [TaggedDocument(doc, [i]) for i, doc in enumerate(docs)]
     
-    d2v = Doc2Vec(dm=dm,
-                  vector_size=vector_size,
-                  window=window, 
-                  alpha=alpha, 
-                  min_alpha=min_alpha, 
-                  seed=seed, 
-                  min_count=min_count,
-                  max_vocab_size=max_vocab_size,
-                  train_epoch=train_epoch,
-                  workers=workers,
-                  hs=hs,
-                  negative=negative)
-    
-    d2v.build_vocab(tagged_docs)
-    corpus_count = d2v.corpus_count
-    epochs = d2v.epochs
-    
-    if dm == 1:
+    if dm == "1":
+        dm = 1
         algo = 'PV-DM'
     else:
+        dm = 0
         algo = 'PV-DBOW'
+    
+    d2v = Doc2Vec(documents=tagged_docs,
+                  dm=dm,
+                  vector_size=vector_size,
+                  window=window,
+                  alpha=alpha,
+                  min_alpha=min_alpha,
+                  seed=seed,
+                  min_count=min_count,
+                  max_vocab_size=max_vocab_size,
+                  workers=workers,
+                  epochs=train_epoch,
+                  hs=hs,
+                  negative=negative,
+                  ns_exponent=ns_exponent)
+    
+    vocab = d2v.wv.vocab
         
     params = {'Input column': input_col,
+              'Training algorithm': algo,
               'Dimension of Vectors': vector_size,
               'Window': window,
-              'Min count': min_count,
+              'Minimum count': min_count,
               'Max vocabulary size': max_vocab_size,
               'Train epoch': train_epoch,
-              'Training algorithm': algo,
               'Number of workers': workers,
               'Alpha': alpha,
-              'Min alpha': min_alpha,
-              'Seed': seed,
-              'Hierarchical softmax': hs, 
+              'Minimum alpha': min_alpha,
+              'Seed': random_state,
+              'Hierarchical softmax': hs,
               'Negative': negative,
-              'Corpus count': corpus_count,
-              'Epochs': epochs}
+              'Negative sampling exponent': ns_exponent}
     
+    rb = BrtcReprBuilder()
+    rb.addMD(strip_margin("""
+    | ## Doc2Vec Result
+    |
+    | ### Parameters
+    | {params}
+    """.format(params=dict2MD(params))))
+    
+    model = _model_dict('doc2vec_model')
+    model['params'] = params
+    model['d2v'] = d2v
+    model['_repr_brtc_'] = rb.get()
+    
+    out_table1 = table.copy()
+    out_table1['document_vectors'] = [d2v.infer_vector(doc.words).tolist() for doc in tagged_docs]
+    out_table2 = pd.DataFrame({'words': d2v.wv.index2word, 'word_vectors': d2v.wv[vocab].tolist()})
+    
+    return {'model': model, 'doc_table': out_table1, 'word_table': out_table2}  
+
+
+def doc2vec_model(table, model, **params):
+    check_required_parameters(_doc2vec_model, params, ['table', 'model'])
+    return _doc2vec_model(table, model, **params)
+
+
+def _doc2vec_model(table, model):
+    docs = table[model['params']['Input column']]
+    d2v_model = model['d2v']
+    
+    tagged_docs = [TaggedDocument(doc, [i]) for i, doc in enumerate(docs)]
+
     out_table = table.copy()
-    out_table['document_vectors'] = [d2v.infer_vector(doc.words).tolist() for doc in tagged_docs]
-    return {'out_table': out_table} 
+    out_table['document_vectors'] = [d2v_model.infer_vector(doc.words).tolist() for doc in tagged_docs]
+
+    return {'out_table': out_table}
