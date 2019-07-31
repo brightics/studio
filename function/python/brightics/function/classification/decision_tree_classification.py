@@ -13,7 +13,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.tree import DecisionTreeClassifier
@@ -26,7 +26,7 @@ from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate
-from brightics.common.validation import greater_than_or_equal_to, greater_than
+from brightics.common.validation import greater_than_or_equal_to, greater_than, from_to
 from brightics.common.validation import raise_error
 import sklearn.utils as sklearn_utils
 from brightics.common.classify_input_type import check_col_type
@@ -39,7 +39,7 @@ def decision_tree_classification_train(table, group_by=None, **params):
 
     param_validation_check = [greater_than_or_equal_to(params, 2, 'min_samples_split'),
                               greater_than_or_equal_to(params, 1, 'min_samples_leaf'),
-                              greater_than_or_equal_to(params, 0.0, 'min_weight_fraction_leaf'),
+                              from_to(params, 0.0, 0.5, 'min_weight_fraction_leaf'),
                               greater_than_or_equal_to(params, 0.0, 'min_impurity_decrease'),
                               greater_than_or_equal_to(params, 1, 'max_depth'),
                               greater_than_or_equal_to(params, 1, 'max_features'),
@@ -139,7 +139,8 @@ def _decision_tree_classification_train(table, feature_cols, label_col,  # fig_s
                list_parameters=params
                )))
     model['_repr_brtc_'] = rb.get()
-
+    feature_importance_table = pd.DataFrame([[feature_cols[i],feature_importance[i]] for i in range(len(feature_cols))],columns = ['feature_name','importance'])
+    model['feature_importance_table'] = feature_importance_table
     return {'model' : model}
 
 

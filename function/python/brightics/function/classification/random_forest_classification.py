@@ -145,7 +145,9 @@ def _random_forest_classification_train(table, feature_cols, label_col,
     """.format(params=dict2MD(params), fig_feature_importances=fig_feature_importances)))
         
     model['_repr_brtc_'] = rb.get()
-               
+    feature_importance = classifier.feature_importances_
+    feature_importance_table = pd.DataFrame([[feature_cols[i],feature_importance[i]] for i in range(len(feature_cols))],columns = ['feature_name','importance'])
+    model['feature_importance_table'] = feature_importance_table
     return {'model' : model}
 
 

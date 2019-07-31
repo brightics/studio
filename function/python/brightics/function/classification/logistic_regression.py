@@ -54,9 +54,9 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
                                solver='liblinear', max_iter=100, multi_class='ovr', verbose=0, warm_start=False,
                                n_jobs=1):
 
-    feature_names, features = check_col_type(table, feature_cols)
+    feature_names, features = check_col_type(table,feature_cols)
     features = pd.DataFrame(features, columns=feature_names)
-    
+
     label = table[label_col]
 
     if(sklearn_utils.multiclass.type_of_target(label) == 'continuous'):
@@ -91,7 +91,7 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
         else:
             x_design = features.values
         v = np.product(prob, axis=1)
-        x_design_modi = np.array([x_design[i]*v[i] for i in range(len(x_design))])
+        x_design_modi = (x_design.T*v).T
         cov_logit = np.linalg.inv(np.dot(x_design_modi.T, x_design))
         std_err = np.sqrt(np.diag(cov_logit))
         if fit_intercept:
@@ -108,7 +108,7 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
         std_err = []
         for i in range(len(classes)):
             v = prob.T[i]*(1 - prob.T[i])
-            x_design_modi = np.array([x_design[i]*v[i] for i in range(len(x_design))])
+            x_design_modi = (x_design.T*v).T
             cov_logit = np.linalg.inv(np.dot(x_design_modi.T, x_design))
             std_err.append(np.sqrt(np.diag(cov_logit)))
         std_err = np.array(std_err)
@@ -220,7 +220,7 @@ def _logistic_regression_predict(table, model, prediction_col='prediction', prob
         raise_error('0613', ['thresholds'])
     
     prob = lr_model.predict_proba(features)
-    prediction = [classes[np.argmax(x / thresholds)] for x in prob]
+    prediction = classes[np.argmax(prob/thresholds,axis=1)]
         
     out_table = table.copy()
     out_table[prediction_col] = prediction
