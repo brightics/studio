@@ -110,6 +110,8 @@ def _flatten(grouped_table, groups, group_by, columns):
             for i in range(len(table)):
                 result2.append(key)
     result2 = pd.DataFrame(result2, columns = group_by)
+    if '\u0002' in result1.values:
+        result1 = result1.replace('\u0002',np.nan)
     if '\u0002' in result2.values:
         result2 = result2.replace('\u0002',np.nan)
     result2 = result2.drop(common_columns, axis=1)

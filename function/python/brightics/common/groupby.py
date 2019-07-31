@@ -111,7 +111,7 @@ def _flatten(grouped_table):
     group_key_dict = grouped_table['_grouped_data']['group_key_dict']
     return pd.concat([_add_group_cols_front_if_required(v, k, group_cols, group_key_dict)
                       for k, v in grouped_table['_grouped_data']['data'].items() if v is not None],
-                      ignore_index=True, sort=False)
+                      ignore_index=True)
 
 
 @time_usage
