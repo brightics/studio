@@ -101,10 +101,10 @@ def _xgb_classification_train(table, feature_cols, label_col, max_depth=3, learn
     rb.addMD(strip_margin("""
     | ## XGB Classification Train Result
     |
-    | ### Plot Importance
+    | ### Plot Feature Importance
     | {fig_importance}
     |
-    | ### Feature Importance
+    | ### Normalized Feature Importance Table
     | {table_feature_importance}
     |
     | ### Parameters
@@ -114,8 +114,9 @@ def _xgb_classification_train(table, feature_cols, label_col, max_depth=3, learn
                table_feature_importance=pandasDF2MD(feature_importance_df, 20),
                list_parameters=params            
                )))     
-    model['_repr_brtc_'] = rb.get()   
-               
+    model['_repr_brtc_'] = rb.get() 
+    feature_importance_table = pd.DataFrame([[feature_cols[i],feature_importance[i]] for i in range(len(feature_cols))],columns = ['feature_name','importance'])
+    model['feature_importance_table'] = feature_importance_table
     return {'model' : model}
 
 
@@ -148,7 +149,7 @@ def _xgb_classification_predict(table, model, prediction_col='prediction', proba
             thresholds = np.array(thresholds)
     
     prob = classifier.predict_proba(table[feature_cols], ntree_limit)
-    prediction = [classes[np.argmax(x / thresholds)] for x in prob]
+    prediction = classes[np.argmax(prob/thresholds,axis=1)]
     
     if suffix == 'index':
         suffixes = [i for i, _ in enumerate(classes)]

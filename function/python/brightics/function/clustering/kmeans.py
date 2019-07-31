@@ -33,7 +33,7 @@ from brightics.common.validation import greater_than_or_equal_to, greater_than, 
 from brightics.common.classify_input_type import check_col_type
 
 
-def _kmeans_centers_plot(input_cols, cluster_centers):
+def _kmeans_centers_plot(input_cols, cluster_centers, colors):
     sum_len_cols = np.sum([len(col) for col in input_cols])
     x = range(len(input_cols))
     if sum_len_cols >= 512:
@@ -43,15 +43,14 @@ def _kmeans_centers_plot(input_cols, cluster_centers):
     else:
         plt.xticks(x, input_cols)
     for idx, centers in enumerate(cluster_centers):
-        plt.plot(x, centers, "o-", label=idx)
-    plt.legend()
+        plt.plot(x, centers, "o-", label=idx, color=colors[idx])
     plt.tight_layout()
     fig_centers = plt2MD(plt)
     plt.clf()
     return fig_centers
 
 
-def _kmeans_samples_plot(table, input_cols, n_samples, cluster_centers, seed):
+def _kmeans_samples_plot(table, input_cols, n_samples, cluster_centers, seed, colors):
     feature_names, inputarr = check_col_type(table, input_cols)
     sum_len_cols = np.sum([len(col) for col in feature_names])
     sample = pd.DataFrame(inputarr).sample(n=n_samples, random_state=seed)
@@ -65,16 +64,15 @@ def _kmeans_samples_plot(table, input_cols, n_samples, cluster_centers, seed):
     for idx in sample.index:
         plt.plot(x, sample.transpose()[idx], color='grey', linewidth=1)
     for idx, centers in enumerate(cluster_centers):
-        plt.plot(x, centers, "o-", label=idx, linewidth=4)
+        plt.plot(x, centers, "o-", label=idx, linewidth=2, color=colors[idx])
     plt.tight_layout()
     fig_samples = plt2MD(plt)
     plt.clf()
     return fig_samples
 
 
-def _kmeans_pca_plot(labels, cluster_centers, pca2_model, pca2):
+def _kmeans_pca_plot(labels, cluster_centers, pca2_model, pca2, colors):
     n_clusters = len(cluster_centers)
-    colors = cm.nipy_spectral(np.arange(n_clusters).astype(float) / n_clusters)
 
     pca2_centers = pca2_model.transform(cluster_centers)
     
@@ -133,14 +131,16 @@ def _kmeans_train_predict(table, input_cols, n_clusters=3, prediction_col='predi
               'precompute_distances':precompute_distances, 'seed':seed, 'n_jobs':n_jobs, 'algorithm':algorithm, 'n_samples':n_samples}
     
     cluster_centers = k_means.cluster_centers_
+    n_clusters = len(cluster_centers)
+    colors = cm.nipy_spectral(np.arange(n_clusters).astype(float) / n_clusters)
     labels = k_means.labels_
     
     pca2_model = PCA(n_components=min(2, len(feature_names))).fit(inputarr)
     pca2 = pca2_model.transform(inputarr)
     
-    fig_centers = _kmeans_centers_plot(feature_names, cluster_centers)
-    fig_samples = _kmeans_samples_plot(table, input_cols, n_samples, cluster_centers, seed)
-    fig_pca = _kmeans_pca_plot(labels, cluster_centers, pca2_model, pca2)
+    fig_centers = _kmeans_centers_plot(feature_names, cluster_centers, colors)
+    fig_samples = _kmeans_samples_plot(table, input_cols, n_samples, cluster_centers, seed, colors)
+    fig_pca = _kmeans_pca_plot(labels, cluster_centers, pca2_model, pca2, colors)
     
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
@@ -301,9 +301,11 @@ def _kmeans_silhouette_train_predict(table, input_cols, n_clusters_list=range(2,
     best_centers = best_model.cluster_centers_
     best_labels = best_model.labels_
     
-    fig_centers = _kmeans_centers_plot(feature_names, best_centers)
-    fig_samples = _kmeans_samples_plot(table, input_cols, n_samples, best_centers, seed)
-    fig_pca = _kmeans_pca_plot(predict, best_centers, pca2_model, pca2)
+    n_clusters = len(best_centers)
+    colors = cm.nipy_spectral(np.arange(n_clusters).astype(float) / n_clusters)
+    fig_centers = _kmeans_centers_plot(feature_names, best_centers, colors)
+    fig_samples = _kmeans_samples_plot(table, input_cols, n_samples, best_centers, seed, colors)
+    fig_pca = _kmeans_pca_plot(predict, best_centers, pca2_model, pca2, colors)
     
     x_clusters = range(len(n_clusters_list))
     plt.xticks(x_clusters, n_clusters_list)

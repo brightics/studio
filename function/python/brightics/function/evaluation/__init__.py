@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import explained_variance_score, mean_absolute_error, mean_squared_error, median_absolute_error, r2_score
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, confusion_matrix
 from sklearn.metrics import roc_curve, auc, precision_recall_curve, average_precision_score
-from sklearn.utils.fixes import signature
+from inspect import signature
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.utils import check_required_parameters

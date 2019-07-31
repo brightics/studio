@@ -27,3 +27,7 @@ from .naive_bayes_classification import naive_bayes_predict
 from .knn_classification import knn_classification
 from .random_forest_classification import random_forest_classification_train
 from .random_forest_classification import random_forest_classification_predict
+from .mlp_classification import mlp_classification_train
+from .mlp_classification import mlp_classification_predict
+from .ada_boost_classification import ada_boost_classification_train
+from .ada_boost_classification import ada_boost_classification_predict

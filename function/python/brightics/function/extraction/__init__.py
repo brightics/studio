@@ -31,3 +31,9 @@ from .extraction import binarizer
 from .extraction import capitalize_variable
 from .bucketizer import bucketizer
 from .moving_average import ewma, moving_average
+from .lda import lda
+from .lda import lda_model
+from .replace_string import replace_string
+from .array_column_conversion import columns_to_array
+from .array_column_conversion import array_to_columns
+from .string_split import string_split

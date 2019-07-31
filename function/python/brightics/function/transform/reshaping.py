@@ -183,13 +183,12 @@ def _transpose(table, input_cols, label_col=None, label_col_name='label'):
     sort_table = table[feature_col_name]
     
     out_table = sort_table.transpose()
+    len_table = len(table)
     
     if label_col is None:
-        for i in range(0, len(table)):
-            out_table = out_table.rename(columns={len(table) - i - 1:'x' + str(len(table) - i)})
+        out_table.columns = ['x' + str(i + 1) for i in range(len_table)]
     else:
-        for i in range(0, len(table)):
-            out_table = out_table.rename(columns={i:str(table[label_col][i])})
+        out_table.columns = [str(table[label_col][i]) for i in range(len_table)]
     
     out_table.insert(loc=0, column=label_col_name, value=feature_col_name)
 
@@ -204,6 +203,9 @@ def distinct(table, group_by=None, **params):
         return _distinct(table, **params)
 
         
-def _distinct(table, input_cols):
-    out_table = table.drop_duplicates(input_cols)
+def _distinct(table, input_cols, hold_cols=None):
+    if hold_cols is None:
+        out_table = table.drop_duplicates(input_cols)
+    else:
+        out_table = table[list(set(input_cols + hold_cols))].drop_duplicates(input_cols)
     return {'out_table': out_table}

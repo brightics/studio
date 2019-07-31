@@ -102,10 +102,10 @@ def _xgb_regression_train(table, feature_cols, label_col, max_depth=3, learning_
     rb.addMD(strip_margin("""
     | ## XGB Regression Result
     |
-    | ### Plot Importance
+    | ### Plot Feature Importance
     | {image_importance}
     |
-    | ### Feature Importance
+    | ### Normalized Feature Importance Table
     | {table_feature_importance}
     |
     | ### Parameters
@@ -114,9 +114,10 @@ def _xgb_regression_train(table, feature_cols, label_col, max_depth=3, learning_
     """.format(image_importance=fig_plot_importance,
                table_feature_importance=pandasDF2MD(feature_importance_df, 20),
                table_parameter=pandasDF2MD(get_param_df)            
-               )))     
+               )))      
     out_model['_repr_brtc_'] = rb.get()
-               
+    feature_importance_table = pd.DataFrame([[feature_cols[i],feature_importance[i]] for i in range(len(feature_cols))],columns = ['feature_name','importance'])
+    out_model['feature_importance_table'] = feature_importance_table
     return {'model' : out_model}
 
 

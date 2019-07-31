@@ -20,7 +20,7 @@ from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 from brightics.common.validation import raise_runtime_error
-
+from brightics.common.classify_input_type import check_col_type
 
 def glm_train(table, group_by=None, **params):
     check_required_parameters(_glm_train, params, ['table'])
@@ -31,29 +31,16 @@ def glm_train(table, group_by=None, **params):
         return _glm_train(table, **params)
 
 
-def _glm_train(table, feature_cols, label_col, family="Gaussian", link="ident", fit_intercept=True):
-    features = table[feature_cols]
+def _glm_train(table, feature_cols, label_col, family="Gaussian", link="auto", fit_intercept=True):
+    feature_names, features = check_col_type(table,feature_cols)
     label = table[label_col]
 
     if label_col in feature_cols:
         raise_runtime_error("%s is duplicated." % label_col)
-
-    if family == "Gaussian": 
-        sm_family = sm.families.Gaussian()
-    elif family == "inv_Gaussian":
-        sm_family = sm.families.InverseGaussian()
-    elif family == "binomial":
-        sm_family = sm.families.Binomial()
-    elif family == "Poisson":
-        sm_family = sm.families.Poisson()
-    elif family == "neg_binomial":
-        sm_family = sm.families.NegativeBinomial()
-    elif family == "gamma":
-        sm_family = sm.families.Gamma()
-    elif family == "Tweedie":
-        sm_family = sm.families.Tweedie()
-
-    if link == "ident":
+    
+    if link == "auto":
+        sm_link = None
+    elif link == "ident":
         sm_link = sm.families.links.identity
     elif link == "log":
         sm_link = sm.families.links.log
@@ -62,16 +49,32 @@ def _glm_train(table, feature_cols, label_col, family="Gaussian", link="ident", 
     elif link == "probit":
         sm_link = sm.families.links.probit
     elif link == "cloglog":
-        sm_link = sm.families.links.cLogLog
+        sm_link = sm.families.links.CLogLog
     elif link == "pow":
         sm_link = sm.families.links.Power
     elif link == "nbinom":
-        sm_link = sm.families.links.binom
+        sm_link = sm.families.links.binom 
+        
+    if family == "Gaussian": 
+        sm_family = sm.families.Gaussian(sm_link)
+    elif family == "inv_Gaussian":
+        sm_family = sm.families.InverseGaussian(sm_link)
+    elif family == "binomial":
+        sm_family = sm.families.Binomial(sm_link)
+    elif family == "Poisson":
+        sm_family = sm.families.Poisson(sm_link)
+    elif family == "neg_binomial":
+        sm_family = sm.families.NegativeBinomial(sm_link)
+    elif family == "gamma":
+        sm_family = sm.families.Gamma(sm_link)
+    elif family == "Tweedie":
+        sm_family = sm.families.Tweedie(sm_link)
+
 
     if fit_intercept == True:
-        glm_model = sm.GLM(label, sm.add_constant(features), family=sm_family, link=sm_link).fit()
+        glm_model = sm.GLM(label, sm.add_constant(features), family=sm_family).fit()
     else:
-        glm_model = sm.GLM(label, features, family=sm_family, link=sm_link).fit()
+        glm_model = sm.GLM(label, features, family=sm_family).fit()
     summary = glm_model.summary().as_html()
 
     rb = BrtcReprBuilder()
@@ -93,6 +96,7 @@ def _glm_train(table, feature_cols, label_col, family="Gaussian", link="ident", 
     model['tvalues'] = glm_model.tvalues
     model['pvalues'] = glm_model.pvalues
     model['fit_intercept'] = fit_intercept
+    glm_model.remove_data()
     model['glm_model'] = glm_model
     model['_repr_brtc_'] = rb.get()
 
@@ -109,7 +113,7 @@ def glm_predict(table, model, **params):
 
 def _glm_predict(table, model, prediction_col='prediction'):
     feature_cols = model['features']
-    features = table[feature_cols]
+    feature_names, features = check_col_type(table,feature_cols)
 
     fit_intercept = model['fit_intercept']
     glm_model = model['glm_model']

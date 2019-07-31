@@ -27,3 +27,7 @@ from .penalized_linear_regression import penalized_linear_regression_train
 from .penalized_linear_regression import penalized_linear_regression_predict
 from .random_forest_regression import random_forest_regression_train
 from .random_forest_regression import random_forest_regression_predict
+from .mlp_regression import mlp_regression_train
+from .mlp_regression import mlp_regression_predict
+from .ada_boost_regression import ada_boost_regression_train
+from .ada_boost_regression import ada_boost_regression_predict

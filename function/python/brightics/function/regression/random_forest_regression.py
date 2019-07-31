@@ -14,6 +14,7 @@
     limitations under the License.
 """
 
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestRegressor 
@@ -117,7 +118,9 @@ def _random_forest_regression_train(table, feature_cols, label_col,
     """.format(fig_feature_importances=fig_feature_importances))) 
         
     model['_repr_brtc_'] = rb.get()   
-               
+    feature_importance = regressor.feature_importances_
+    feature_importance_table = pd.DataFrame([[feature_cols[i],feature_importance[i]] for i in range(len(feature_cols))],columns = ['feature_name','importance'])
+    model['feature_importance_table'] = feature_importance_table
     return {'model' : model}
 
 

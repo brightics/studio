@@ -128,7 +128,7 @@ def _svm_classification_predict(table, model, prediction_col='prediction', prob_
     prob_cols = ['{probability_col}_{suffix}'.format(probability_col=prob_prefix, suffix=suffix) for suffix in suffixes]
     prob_df = pd.DataFrame(data=prob, columns=prob_cols)
     
-    prediction = [classes[np.argmax(x / thresholds)] for x in prob]
+    prediction = classes[np.argmax(prob/thresholds,axis=1)]
     
     out_table = table.copy()
     out_table[prediction_col] = prediction

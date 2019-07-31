@@ -19,7 +19,7 @@ from brightics.common.groupby2 import _function_by_group2
 from brightics.common.utils import check_required_parameters
 import numpy as np
 import pandas as pd
-
+import copy
 
 def add_shift(table, group_by=None, **params):
     check_required_parameters(_add_shift, params, ['table'])
@@ -40,7 +40,7 @@ def add_shift(table, group_by=None, **params):
     if group_by is not None:
         return _function_by_group2(_add_shift, table, columns=columns, group_by=group_by, **params)
     else:
-        tmp_table = table.values
+        tmp_table = table.values.tolist()
     
         result = _add_shift(tmp_table, **params)
         result['out_table'] = pd.DataFrame(result['out_table'],columns=columns)
@@ -50,8 +50,7 @@ def add_shift(table, group_by=None, **params):
 def _add_shift(table, input_col, shift_list, shifted_col=None, order_by=None, ordering='asc'):
      
     # always doing descending sort if ordering is not asc
-    tmp_table = table.copy()
-    tmp_table = np.array(tmp_table).tolist()
+    tmp_table = copy.deepcopy(table)
     
     if order_by is not None:
         tmp_table = sorted(tmp_table, key=lambda x: tuple(x[order_by] for order_by in order_by), reverse=(ordering != 'asc'))

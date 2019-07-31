@@ -38,6 +38,11 @@ def unload(table, partial_path):
 
 
 def write_csv(table, path):
+    dir_data = os.getcwd()+'/data'
+    path=os.path.join(dir_data,path)
+    dir_ = os.path.dirname(path)
+    if not os.path.exists(dir_):
+        os.makedirs(dir_)
     table.to_csv(path, index=False)
 
 

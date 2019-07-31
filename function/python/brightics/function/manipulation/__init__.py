@@ -159,15 +159,21 @@ def replace_missing_string(table, group_by=None, **params):
     else:
         return _replace_missing_string(table, **params)
 
+def _empty_string_to_null(a):
+    if a == '':
+        return None
+    else:
+        return a
 
-def _replace_missing_string(table, input_cols, fill_method=None, fill_string='', limit=None, downcast=None):
+def _replace_missing_string(table, input_cols, fill_method=None, fill_string='', limit=None, downcast=None, empty_string_null = False):
     _table = table.copy()
     
     if input_cols is None or len(input_cols) == 0:
         _raw_input_cols = _table.columns
     else:
         _raw_input_cols = input_cols
-    
+    if empty_string_null:
+        _table = _table.applymap(_empty_string_to_null)
     if fill_method == 'ffill' or fill_method == 'bfill':
         _out_table = _table
         _out_table[input_cols] = _table[input_cols].fillna(method=fill_method, limit=limit, downcast=downcast)

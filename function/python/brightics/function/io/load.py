@@ -15,6 +15,7 @@
 """
 
 import json
+import os
 
 import boto3
 import pandas as pd
@@ -26,8 +27,10 @@ from brightics.common.datasource import DbEngine
 from brightics.common.validation import raise_runtime_error
 
 
-def read_csv(path):
-    return {'table': table_reader.read_csv(path)}
+def read_csv(path, delimiter = ',', na_filter = False, strip_col = False, ):
+    dir_data = os.getcwd()+'/data'
+    path=os.path.join(dir_data,path)
+    return {'table': table_reader.read_csv(path, delimiter, na_filter, strip_col)}
 
 
 def load_model(path):
@@ -62,5 +65,5 @@ def read_parquet_or_csv(path):
     return {'table': table_reader.read_parquet_or_csv(path)}
 
 
-def load(partial_path=['/brightics@samsung.com/upload/sample_iris.csv']):
+def load(partial_path):
     return {'table': table_reader.read_parquet(util.make_data_path_from_key(partial_path[0]))}

@@ -32,5 +32,6 @@ from .word2vec import word2vec
 from .word2vec import word2vec_similarity
 from .word2vec import word2vec_model
 from .doc2vec import doc2vec
+from .doc2vec import doc2vec_model
 from .search import search
 from .search import search_user_dict
