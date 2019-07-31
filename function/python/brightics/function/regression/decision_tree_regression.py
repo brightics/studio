@@ -19,7 +19,7 @@ from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
-from brightics.common.validation import validate, greater_than_or_equal_to, greater_than
+from brightics.common.validation import validate, greater_than_or_equal_to, greater_than, from_to 
 from brightics.common.classify_input_type import check_col_type
 
 import pandas as pd
@@ -34,7 +34,7 @@ def decision_tree_regression_train(table, group_by=None, **params):
     params = get_default_from_parameters_if_required(params, _decision_tree_regression_train)
     param_validation_check = [greater_than_or_equal_to(params, 2, 'min_samples_split'),
                               greater_than_or_equal_to(params, 1, 'min_samples_leaf'),
-                              greater_than_or_equal_to(params, 0.0, 'min_weight_fraction_leaf'),
+                              from_to(params, 0.0, 0.5, 'min_weight_fraction_leaf'),
                               greater_than_or_equal_to(params, 1, 'max_depth'),
                               greater_than_or_equal_to(params, 1, 'max_features'),
                               greater_than(params, 1, 'max_leaf_nodes'),
@@ -129,7 +129,8 @@ def _decision_tree_regression_train(table, feature_cols, label_col,  # fig_size=
                list_parameters=params            
                )))     
     model['_repr_brtc_'] = rb.get()   
-               
+    feature_importance_table = pd.DataFrame([[feature_cols[i],feature_importance[i]] for i in range(len(feature_cols))],columns = ['feature_name','importance'])
+    model['feature_importance_table'] = feature_importance_table
     return {'model' : model}
 
 
