@@ -17,7 +17,9 @@
 package com.samsung.sds.brightics.server.service;
 
 import java.io.InputStream;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -190,7 +192,7 @@ public class DataService {
     public void fileUpload(InputStream inputstream, String path, String delimiter, String columnTypeJson, String columnNameJson) {
         filePathValidator(path); 
         String param = ParameterBuilder.newBuild()
-                .addProperty("delimiter", delimiter)
+                .addProperty("delimiter", convertDelimiter(delimiter))
                 .addProperty("columntype", toCommaDelimitedString(columnTypeJson))
                 .addProperty("columnname", toCommaDelimitedString(columnNameJson))
                 .build();
@@ -207,10 +209,31 @@ public class DataService {
         }
     }
 
+    private String convertDelimiter(String delimiter) {
+        try {
+            String decoded = (delimiter.startsWith("%22")) ?
+                    (URLDecoder.decode(delimiter, StandardCharsets.UTF_8.toString())) :
+                    (delimiter);
+            return (decoded.length() >= 3) ?
+                    decoded.substring(1, decoded.length() - 1) :
+                    decoded.replace("\"", "");
+        } catch (Exception e) {
+            return delimiter.replace("\"", "");
+        }
+    }
+    
     private String toCommaDelimitedString(String json) {
-        return Arrays.stream(JsonUtil.fromJson(json, String[].class))
-                .reduce((a, b) -> a + "," + b)
-                .orElse("");
+        if (json.startsWith("[")) {
+            return Arrays.stream(JsonUtil.fromJson(json, String[].class))
+                    .reduce((a, b) -> a + "," + b)
+                    .orElse("");
+        } else {
+            try {
+                return URLDecoder.decode(json, StandardCharsets.UTF_8.toString());
+            } catch (Exception e) {
+                return json;
+            }
+        }
     }
 
     /**
