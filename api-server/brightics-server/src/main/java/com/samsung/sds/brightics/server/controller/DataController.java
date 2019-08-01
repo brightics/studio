@@ -148,7 +148,7 @@ public class DataController {
 		if (fileNames.hasNext()) {
 			MultipartFile file = request.getFile(fileNames.next());
 			InputStream is = file.getInputStream();
-			dataService.fileUpload(is, path, delimiter.replace("\"", ""), columnTypeJson, columnNameJson);
+			dataService.fileUpload(is, path, delimiter, columnTypeJson, columnNameJson);
 		}
 	}
 	
