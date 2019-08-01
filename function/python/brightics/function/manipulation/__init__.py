@@ -34,58 +34,56 @@ def filter(table, query):
 
 
 def simple_filter(table, input_cols, operators, operands, main_operator='and'):
-    _table = table.copy()
-    _column = [c.strip() for c in input_cols]
-    _operator = [o.strip() for o in operators]
-    
     if len(input_cols) == 0 or not (len(input_cols) == len(operators) == len(operands)):
         validate(require_param('input_cols'))
-    
+
+    _column = [c.strip() for c in input_cols]
+    _operator = [o.strip() for o in operators]
+
     _query = ""
     first_filter_list = []
     second_filter_list = []
+
     for c, op, od in zip(_column, _operator, operands):
         if op in ['starts with', 'ends with', 'contain', 'not contain']:
             second_filter_list.append([c, op, od.strip('\'')])
         else:
             first_filter_list.append([c, op, od])
-    _query = main_operator.join(['''({input_cols} {operators} {operands})'''.format(input_cols=c, operators=op, operands=od) for c, op, od in first_filter_list])
-    
-    if len(_query) == 0:
-        _out_table = _table
+    _query = main_operator.join(
+        ['''({input_cols} {operators} {operands})'''.format(input_cols=c, operators=op, operands=od) for c, op, od in first_filter_list])
+
+    if len(first_filter_list) == 0:
+        _table = table.copy()
     else:
-        _out_table = _table.query(_query, engine='python')
-    first_filtered_set = set(_out_table.index)
-    
+        _table = table.query(_query, engine='python')
+
     if len(second_filter_list) == 0:
-        _out_table = _out_table
+        cond = np.full(len(_table), True)
     else:
         if main_operator == 'and':
-            cond = np.full(len(_table), True).tolist()
+            cond = np.full(len(_table), True)
             for _filter in second_filter_list:
                 if _filter[1] == 'starts with':
-                    cond = (cond) and (_table[_filter[0]].str.startswith(_filter[2]))
+                    cond = cond & _table[_filter[0]].str.startswith(_filter[2]).values
                 if _filter[1] == 'ends with':
-                    cond = (cond) and (_table[_filter[0]].str.endswith(_filter[2]))
+                    cond = cond & _table[_filter[0]].str.endswith(_filter[2]).values
                 if _filter[1] == 'contain':
-                    cond = (cond) and (_table[_filter[0]].str.contains(_filter[2]))
+                    cond = cond & _table[_filter[0]].str.contains(_filter[2]).values
                 if _filter[1] == 'not contain':
-                    cond = (cond) and (~(_table[_filter[0]].str.contains(_filter[2])))
-            _out_table = _table.loc[list(first_filtered_set.intersection(set(_table[cond].index)))]
-        
+                    cond = cond & ~(_table[_filter[0]].str.contains(_filter[2]).values)
         elif main_operator == 'or':
-            cond = np.full(len(_table), False).tolist()
+            cond = np.full(len(_table), False)
             for _filter in second_filter_list:
                 if _filter[1] == 'starts with':
-                    cond = (cond)or(_table[_filter[0]].str.startswith(_filter[2]))
+                    cond = cond | _table[_filter[0]].str.startswith(_filter[2]).values
                 if _filter[1] == 'ends with':
-                    cond = (cond)or(_table[_filter[0]].str.endswith(_filter[2]))
+                    cond = cond | _table[_filter[0]].str.endswith(_filter[2]).values
                 if _filter[1] == 'contain':
-                    cond = (cond) or (_table[_filter[0]].str.contains(_filter[2]))
+                    cond = cond | _table[_filter[0]].str.contains(_filter[2]).values
                 if _filter[1] == 'not contain':
-                    cond = (cond) or (~(_table[_filter[0]].str.contains(_filter[2])))
-            _out_table = _table.loc[list(first_filtered_set.union(set(_table[cond].index)))]
-    return {'out_table':_out_table}
+                    cond = cond | ~(_table[_filter[0]].str.contains(_filter[2]).values)
+
+    return {'out_table': _table[cond]}
 
 
 def sort(table, group_by=None, **params):
