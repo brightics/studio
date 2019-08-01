@@ -158,9 +158,16 @@ const uploadFile = function (req, res) {
             let options = __BRTC_CORE_SERVER.createRequestOptions('POST', '/api/core/v2/data/upload');
             __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
             options.headers['Content-Type'] = 'multipart/form-data; charset=UTF-8; boundary="---unloadfileboundrary"';
-            if (fields['column-name']) options.headers['column-name'] = fields['column-name'];
+            if (fields['column-name']) {
+                let columnName = fields['column-name'];
+                if (columnName.startsWith('[') && columnName.endsWith(']')) {
+                    options.headers['column-name'] = encodeURIComponent(JSON.parse(fields['column-name']).join(','));
+                } else {
+                    options.headers['column-name'] = columnName;
+                }
+            }
             options.headers['column-type'] = fields['column-type'];
-            options.headers.delimiter = fields.delimiter;
+            options.headers.delimiter = encodeURIComponent(fields.delimiter);
             options.headers.path = fields.path;
             options.formData = formData;
             request(options, cb(res));
