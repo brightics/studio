@@ -64,7 +64,7 @@ def _kmeans_samples_plot(table, input_cols, n_samples, cluster_centers, seed, co
     for idx in sample.index:
         plt.plot(x, sample.transpose()[idx], color='grey', linewidth=1)
     for idx, centers in enumerate(cluster_centers):
-        plt.plot(x, centers, "o-", label=idx, linewidth=2, color=colors[idx])
+        plt.plot(x, centers, "o-", label=idx, linewidth=4, color=colors[idx])
     plt.tight_layout()
     fig_samples = plt2MD(plt)
     plt.clf()
