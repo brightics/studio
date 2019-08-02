@@ -49,16 +49,17 @@ def simple_filter(table, input_cols, operators, operands, main_operator='and'):
             second_filter_list.append([c, op, od.strip('\'')])
         else:
             first_filter_list.append([c, op, od])
-    _query = main_operator.join(
-        ['''({input_cols} {operators} {operands})'''.format(input_cols=c, operators=op, operands=od) for c, op, od in first_filter_list])
+    _query = main_operator.join(['''({input_cols} {operators} {operands})'''.format(input_cols=c, operators=op, operands=od) for c, op, od in first_filter_list])
 
     if len(first_filter_list) == 0:
         _table = table.copy()
+        cond = np.full(len(table), False)
     else:
         _table = table.query(_query, engine='python')
+        cond = [True if i in _table.index else False for i in range(len(table))]
 
     if len(second_filter_list) == 0:
-        cond = np.full(len(_table), True)
+        out_table = _table.copy()
     else:
         if main_operator == 'and':
             cond = np.full(len(_table), True)
@@ -71,19 +72,21 @@ def simple_filter(table, input_cols, operators, operands, main_operator='and'):
                     cond = cond & _table[_filter[0]].str.contains(_filter[2]).values
                 if _filter[1] == 'not contain':
                     cond = cond & ~(_table[_filter[0]].str.contains(_filter[2]).values)
+            out_table = _table[cond]
+
         elif main_operator == 'or':
-            cond = np.full(len(_table), False)
             for _filter in second_filter_list:
                 if _filter[1] == 'starts with':
-                    cond = cond | _table[_filter[0]].str.startswith(_filter[2]).values
+                    cond = cond | table[_filter[0]].str.startswith(_filter[2]).values
                 if _filter[1] == 'ends with':
-                    cond = cond | _table[_filter[0]].str.endswith(_filter[2]).values
+                    cond = cond | table[_filter[0]].str.endswith(_filter[2]).values
                 if _filter[1] == 'contain':
-                    cond = cond | _table[_filter[0]].str.contains(_filter[2]).values
+                    cond = cond | table[_filter[0]].str.contains(_filter[2]).values
                 if _filter[1] == 'not contain':
-                    cond = cond | ~(_table[_filter[0]].str.contains(_filter[2]).values)
+                    cond = cond | ~(table[_filter[0]].str.contains(_filter[2]).values)
+            out_table = table[cond]
 
-    return {'out_table': _table[cond]}
+    return {'out_table': out_table}
 
 
 def sort(table, group_by=None, **params):
