@@ -50,11 +50,11 @@ def _string_split(table, input_col, hold_cols=None, delimiter=',', output_col_na
     
     remain_arr = [head_arr[i] + remain_arr[i] + tail_arr[i] \
                     if not pd.isnull(table[input_col][i]) \
-                    else np.nan for i in range(len(list(table[input_col])))]
+                    else None for i in range(len(list(table[input_col])))]
                   
     for i, output in enumerate(output_arr):
         if len(output) < output_col_cnt:
-            output += [np.nan] * (output_col_cnt - len(output))
+            output += [None] * (output_col_cnt - len(output))
         output_arr[i] = output_arr[i][:output_col_cnt]
         for j, value in enumerate(output_arr[i]):
             try:
@@ -65,7 +65,7 @@ def _string_split(table, input_col, hold_cols=None, delimiter=',', output_col_na
                 else:
                     output_arr[i][j] = value
             except:
-                output_arr[i][j] = np.nan
+                output_arr[i][j] = None
     if output_col_type in ['string','double','integer','long']:
         output_arr = np.transpose(output_arr)
         for i, output in enumerate(output_arr):
