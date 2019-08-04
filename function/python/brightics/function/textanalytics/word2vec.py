@@ -119,7 +119,6 @@ def _word2vec(table, input_col, size=100, window=5, min_count=1, seed=None, work
     out_table = pd.DataFrame()
     out_table['words'] = w2v.wv.index2word
     out_table['word_vectors'] = w2v.wv[vocab].tolist()
-    plt.figure(figsize=(6.4,4.8))
     return {'model': model, 'out_table': out_table}
 
 # def word2vec_update(table, model):
