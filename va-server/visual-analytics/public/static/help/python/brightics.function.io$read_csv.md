@@ -21,7 +21,7 @@ This function reads a csv file into a table.
 2. **Delimiter**: Choose Delimiter to split
    - Value type : String
    - Default : ,
-3. **Null Filtering**: 
+3. **Null Filtering**: Choose whether to filter null values 
 4. **Strip White Space in Column Name**: Strip white space in column name
 
 #### Outputs: table
