@@ -35,7 +35,7 @@ This function reads a csv file into a table.
 2. **delimiter**: Choose Delimiter to split
    - Value type : String
    - Default : ,
-3. **na_filter**: 
+3. **na_filter**: Choose whether to filter null values
 4. **strip_col**: Strip white space in column name
 
 #### Outputs: table
