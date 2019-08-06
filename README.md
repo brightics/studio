@@ -17,7 +17,7 @@ Please visit our web site http://www.brightics.ai
 
 ## Getting started
 ### Prerequisite
-* Mac OS users have to install [graphviz](http://graphviz.org/download/) using [Homebrew](https://brew.sh/)
+* macOS users have to install [graphviz](http://graphviz.org/download/) using [Homebrew](https://brew.sh/)
 ```
 brew install graphviz
 ```
