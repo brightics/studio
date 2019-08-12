@@ -34,28 +34,28 @@ import com.samsung.sds.brightics.server.service.TaskService;
 
 @Service
 public class BeanHolder {
-    
+
     @Autowired
     public AgentService agentService;
-    
+
     @Autowired
     public AgentUserService agentUserService;
-    
+
     @Autowired
     public DataSourceService dataSourceService;
-    
+
     @Autowired
     public JobStatusService jobStatusService;
-    
+
     @Autowired
     public DatabaseService databaseService;
-    
+
     @Autowired
     public JobService suiteService;
-    
+
     @Autowired
     public TaskService taskService;
-    
+
     @Autowired
     public ObjectMapper jacksonObjectMapper;
 
@@ -67,7 +67,7 @@ public class BeanHolder {
 
     @Autowired
     public PyFunctionService pyFunctionService;
-    
+
     @Autowired
     public MetadataConverterService metadataConverterService;
 

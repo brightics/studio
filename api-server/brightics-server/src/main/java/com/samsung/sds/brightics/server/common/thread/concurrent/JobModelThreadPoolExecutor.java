@@ -154,15 +154,13 @@ public class JobModelThreadPoolExecutor extends ThreadPoolExecutor {
                 });
 
                 // remove from rejected queue
-                synchronized (rejectedQueue) {
-                    rejectedQueue.removeIf(r -> {
-                        boolean isTarget = id.equals(((JobModelRunnable) r).getId());
-                        if (isTarget) {
-                            ((JobModelRunnable) r).deactivate();
-                        }
-                        return isTarget;
-                    });
-                }
+                rejectedQueue.removeIf(r -> {
+                    boolean isTarget = id.equals(((JobModelRunnable) r).getId());
+                    if (isTarget) {
+                        ((JobModelRunnable) r).deactivate();
+                    }
+                    return isTarget;
+                });
                 return false;
             } else {
                 Thread t = runningThreadMap.remove(id);
@@ -186,10 +184,9 @@ public class JobModelThreadPoolExecutor extends ThreadPoolExecutor {
             return null;
         }
 
-        synchronized (rejectedQueue) {
-            if (!this.rejectedQueue.isEmpty()) {
-                return this.rejectedQueue.poll();
-            }
+        try {
+            return rejectedQueue.poll(0, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
             return null;
         }
     }
@@ -249,9 +246,7 @@ public class JobModelThreadPoolExecutor extends ThreadPoolExecutor {
         try {
             rejectedWorkHandler.interrupt();
             List<Runnable> tasks = super.shutdownNow();
-            synchronized (rejectedQueue) {
-                rejectedQueue.drainTo(tasks);
-            }
+            rejectedQueue.drainTo(tasks);
             tasks.stream().filter(task -> task instanceof JobModelRunnable).forEach(task -> ((JobModelRunnable) task).deactivate());
             return tasks;
         } finally {
