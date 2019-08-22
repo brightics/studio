@@ -111,56 +111,56 @@ def over_under(params, over_v, under_v, var_name):
 
 def all_elements_greater_than(params, criteria, var_name):
     if params[var_name] is not None:
-        return get_error(all([x > criteria for x in params[var_name]]), '0009', [var_name, criteria])
+        return get_error(all([x is not None and x > criteria for x in params[var_name]]), '0009', [var_name, criteria])
     else:
         return None
 
 
 def all_elements_greater_than_or_equal_to(params, criteria, var_name):
     if params[var_name] is not None:
-        return get_error(all([x >= criteria for x in params[var_name]]), '0011', [var_name, criteria])
+        return get_error(all([x is not None and x >= criteria for x in params[var_name]]), '0011', [var_name, criteria])
     else:
         return None
 
 
 def all_elements_less_than(params, criteria, var_name):
     if params[var_name] is not None:
-        return get_error(all([x < criteria for x in params[var_name]]), '0013', [var_name, criteria])
+        return get_error(all([x is not None and x < criteria for x in params[var_name]]), '0013', [var_name, criteria])
     else:
         return None
 
 
 def all_elements_less_than_or_equal_to(params, criteria, var_name):
     if params[var_name] is not None:
-        return get_error(all([x <= criteria for x in params[var_name]]), '0015', [var_name, criteria])
+        return get_error(all([x is not None and x <= criteria for x in params[var_name]]), '0015', [var_name, criteria])
     else:
         return None
 
 
 def all_elements_from_to(params, from_v, to_v, var_name):
     if params[var_name] is not None:
-        return get_error(all([from_v <= x <= to_v for x in params[var_name]]), '0005', [var_name, from_v, to_v])
+        return get_error(all([x is not None and from_v <= x <= to_v for x in params[var_name]]), '0005', [var_name, from_v, to_v])
     else:
         return None
 
 
 def all_elements_from_under(params, from_v, under_v, var_name):
     if params[var_name] is not None:
-        return get_error(all([from_v <= x < under_v for x in params[var_name]]), '0007', [var_name, from_v, under_v])
+        return get_error(all([x is not None and from_v <= x < under_v for x in params[var_name]]), '0007', [var_name, from_v, under_v])
     else:
         return None
 
 
 def all_elements_over_to(params, over_v, to_v, var_name):
     if params[var_name] is not None:
-        return get_error(all([over_v < x <= to_v for x in params[var_name]]), '0017', [var_name, over_v, to_v])
+        return get_error(all([x is not None and over_v < x <= to_v for x in params[var_name]]), '0017', [var_name, over_v, to_v])
     else:
         return None
 
 
 def all_elements_over_under(params, over_v, under_v, var_name):
     if params[var_name] is not None:
-        return get_error(all([over_v < x < under_v for x in params[var_name]]), '0019', [var_name, over_v, under_v])
+        return get_error(all([x is not None and over_v < x < under_v for x in params[var_name]]), '0019', [var_name, over_v, under_v])
     else:
         return None
 
