@@ -663,7 +663,6 @@ def _association_rule_visualization(table, option='multiple_to_single', edge_len
 
     model = _model_dict('Association rule')
     model['_repr_brtc_'] = rb.get()
-    plt.figure(figsize=(6.4,4.8))
     return{'model' : model}
     
     

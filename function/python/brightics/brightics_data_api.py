@@ -217,7 +217,7 @@ def _generate_pil_data(p):
 def _generate_matplotlib_data(p):
     img = BytesIO()
     p.savefig(img, format='png')
-    p.clf()  # clear the current figure
+    p.close()  # clear the current figure
     return _png2uri(img.getvalue().strip())
 
 
