@@ -120,7 +120,7 @@ def _word2vec(table, input_col, size=100, window=5, min_count=1, seed=None, work
 
 
 def _feature_vec(words, model, num_features):
-    feature_vector = np.zeros(num_features, dtype="float32")
+    feature_vector = np.zeros(num_features, dtype="float64")
     word_set = set(model.wv.index2word)    
     num_words = 0
     for word in words:
@@ -132,7 +132,7 @@ def _feature_vec(words, model, num_features):
 
 
 def _avg_feature_vecs(docs, model, num_features):
-    doc_feature_vectors = np.zeros((len(docs), num_features), dtype="float32")
+    doc_feature_vectors = np.zeros((len(docs), num_features), dtype="float64")
     counter = 0.
     for doc in docs:
         doc_feature_vectors[int(counter)] = _feature_vec(doc, model, num_features)   
