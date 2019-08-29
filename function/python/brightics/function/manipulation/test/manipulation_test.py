@@ -55,6 +55,36 @@ class ManipulationTest(unittest.TestCase):
 
 class SortTest(unittest.TestCase):
 
+    def setUp(self):
+        print("*** Sort UnitTest Start ***")
+        self.testdata = load_iris()
+
+    def tearDown(self):
+        print("*** Sort UnitTest End ***")
+        
+    def test_first(self):
+        
+        st = sort(self.testdata, input_cols = ['sepal_length', 'sepal_width'], is_asc=True)
+        DF1 = st['out_table'].values
+        # print(DF1)
+        np.testing.assert_array_equal(DF1[0][0:4], [4.3, 3.0, 1.1, 0.1])
+        np.testing.assert_array_equal(DF1[1][0:4], [4.4, 2.9, 1.4, 0.2])
+        np.testing.assert_array_equal(DF1[2][0:4], [4.4, 3.0, 1.3, 0.2])
+        np.testing.assert_array_equal(DF1[3][0:4], [4.4, 3.2, 1.3, 0.2])
+        np.testing.assert_array_equal(DF1[4][0:4], [4.5, 2.3, 1.3, 0.3])
+        
+    def test_second(self):
+        
+        st = sort(self.testdata, input_cols = ['petal_length', 'species'], is_asc=False)
+        DF2 = st['out_table'].values
+        # print(DF2)
+        np.testing.assert_array_equal(DF2[0][0:4], [7.7, 2.6, 6.9, 2.3])
+        np.testing.assert_array_equal(DF2[1][0:4], [7.7, 3.8, 6.7, 2.2])
+        np.testing.assert_array_equal(DF2[2][0:4], [7.7, 2.8, 6.7, 2.0])
+        np.testing.assert_array_equal(DF2[3][0:4], [7.6, 3.0, 6.6, 2.1])
+        np.testing.assert_array_equal(DF2[4][0:4], [7.9, 3.8, 6.4, 2.0])
+
+'''
     def test_default(self):
         df = load_iris()
         out_df = sort(df, input_cols=['species', 'petal_length'], is_asc=['desc', 'asc'])['out_table']
@@ -68,66 +98,55 @@ class SortTest(unittest.TestCase):
             
         test_errors = bfe.exception.errors
         self.assertTrue({'0033': ['input_cols']} in test_errors)
+'''
 
 
-class ReplaceMissingDataTest(unittest.TestCase):
+class ReplaceMissingNumber(unittest.TestCase):
 
     def setUp(self):
+        print("*** Replace Missing Number UnitTest Start ***")
         self.input_df = pd.DataFrame([[np.nan, 2, np.nan, 0 , 'A'],
                                       [3, 4, np.nan, 1, 'B'],
                                       [np.nan, np.nan, np.nan, 5, 'C'],
                                       [np.nan, 3, np.nan, 4, None]],
                                       columns=list('ABCDE'))
 
-    def test1(self):
-        print(self.input_df)
-        out1 = self.input_df.fillna(0)
-        print(out1)
-        out2 = self.input_df.fillna(method='ffill')
-        print(out2)
-        values = {'A': 0, 'B': 1, 'D': 3}
-        out3 = self.input_df.fillna(value=values)
-        print(out3)
-        out4 = self.input_df.fillna(value=values, limit=1)
-        print(out4)
+    def tearDown(self):
+        print("*** Replace Missing Number UnitTest End ***")
 
-    def test2(self):
-        input_cols = ['A', 'B']
-        input_cols_formula = {x:0.0 for x in input_cols}
-        out = self.input_df.fillna(value=input_cols_formula)
-        pd.DataFrame.query
-        print(self.input_df)
-        print(out)
-
-    def test3(self):
+    def test(self):
         input_table = self.input_df
         input_cols = ['A', 'B', 'E']
         target_number = 1230
-        target_string = 'null'
         func = replace_missing_number(table=input_table, input_cols=input_cols, fill_value_to=target_number, limit=1)
-        print(func['out_table'])
-        print(func['out_table'].dtypes)
+        np.testing.assert_almost_equal(func['out_table']['A'].values, np.array([1230.0, 3.0, np.nan, np.nan]),10)
+        np.testing.assert_almost_equal(func['out_table']['B'].values, np.array([2.0, 4.0, 1230.0, 3.0]),10)
+        np.testing.assert_almost_equal(func['out_table']['C'].values, np.array([np.nan, np.nan, np.nan, np.nan]),10)
+        np.testing.assert_almost_equal(func['out_table']['D'].values, np.array([0,1,5,4]),10)
+        np.testing.assert_equal(func['out_table']['E'].values, np.array(['A','B','C',None]),10)
+        
+
+
+class ReplaceMissingString(unittest.TestCase):
+
+    def setUp(self):
+        print("*** Replace Missing String UnitTest Start ***")
+        self.input_df = pd.DataFrame([[np.nan, 2, np.nan, 0 , 'A'],
+                                      [3, 4, np.nan, 1, 'B'],
+                                      [np.nan, np.nan, np.nan, 5, 'C'],
+                                      [np.nan, 3, np.nan, 4, None]],
+                                      columns=list('ABCDE'))
+
+    def tearDown(self):
+        print("*** Replace Missing String UnitTest End ***")
+
+    def test(self):
+        input_table = self.input_df
+        input_cols = ['A', 'B', 'E']
+        target_string = 'null'
         func = replace_missing_string(table=input_table, input_cols=input_cols, fill_string=target_string, limit=1)
-        print(func['out_table'])
-        print(func['out_table'].dtypes)
-
-    def test_temp(self):
-        d = df_example2['num2']
-        out1 = replace_missing_number(table=df_example2, input_cols=['num2'], fill_value='mean')
-        print(out1['out_table'])
-        out2 = replace_missing_number(table=df_example2, input_cols=['num2', 'num3'], fill_value='median')
-        print(out2['out_table'])
-        out3 = replace_missing_number(table=df_example2, input_cols=[], fill_method='ffill')
-        print(out3['out_table'])
-        out4 = replace_missing_number(table=df_example2, input_cols=None, fill_method='bfill')
-        print(out4['out_table'])
-
-    def test_validation(self):
-        out = replace_missing_number(table=df_example2, group_by=['grp'], input_cols=['num2'], fill_method='ffill')
-        print(out['out_table'])
-        with self.assertRaises(BrighticsFunctionException) as bfe:
-            out = replace_missing_number(table=df_example2, group_by=['grp'], fill_method='ffill')
-
-        test_errors = bfe.exception.errors
-        self.assertTrue({'0033':['input_cols']} in test_errors)
-
+        np.testing.assert_almost_equal(func['out_table']['A'].values, np.array([np.nan, 3.0, np.nan, np.nan]),10)
+        np.testing.assert_almost_equal(func['out_table']['B'].values, np.array([2.0, 4.0, np.nan, 3.0]),10)
+        np.testing.assert_almost_equal(func['out_table']['C'].values, np.array([np.nan, np.nan, np.nan, np.nan]),10)
+        np.testing.assert_almost_equal(func['out_table']['D'].values, np.array([0,1,5,4]),10)
+        np.testing.assert_equal(func['out_table']['E'].values, np.array(['A','B','C','null']),10)
