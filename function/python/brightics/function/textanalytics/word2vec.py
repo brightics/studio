@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-from gensim.test.utils import common_texts
 from gensim.models import Word2Vec
 import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
@@ -33,10 +32,6 @@ from brightics.common.validation import validate
 from brightics.common.validation import greater_than_or_equal_to
 
 
-def hash_brtc(astring):
-    return ord(astring[0])
-
-
 def word2vec(table, **params):
     check_required_parameters(_word2vec, params, ['table'])
     
@@ -50,10 +45,9 @@ def word2vec(table, **params):
     return _word2vec(table, **params)
 
 
-def _word2vec(table, input_col, size=100, window=5, min_count=1, seed=None, workers=4, sg=1, topn=30): 
+def _word2vec(table, input_col, size=100, window=5, min_count=1, seed=None, workers=1, sg=1, topn=30): 
 
-    texts = table[input_col].apply(list).tolist()
-    w2v = Word2Vec(texts, size=size, window=window, min_count=min_count, seed=seed, workers=workers, sg=sg, hashfxn=hash_brtc)
+    w2v = Word2Vec(table[input_col].apply(list).tolist(), size=size, window=window, min_count=min_count, seed=seed, workers=workers, sg=sg)
     w2v.init_sims(replace=True)
     
     vocab = w2v.wv.vocab
@@ -117,8 +111,9 @@ def _word2vec(table, input_col, size=100, window=5, min_count=1, seed=None, work
     model['_repr_brtc_'] = rb.get()
     
     out_table = pd.DataFrame()
-    out_table['words'] = w2v.wv.index2word
+    out_table['words'] = vocab
     out_table['word_vectors'] = w2v.wv[vocab].tolist()
+    # plt.figure(figsize=(6.4,4.8))
     return {'model': model, 'out_table': out_table}
 
 # def word2vec_update(table, model):
@@ -127,11 +122,12 @@ def _word2vec(table, input_col, size=100, window=5, min_count=1, seed=None, work
 def _feature_vec(words, model, num_features):
     feature_vector = np.zeros(num_features, dtype="float32")
     word_set = set(model.wv.index2word)    
-    num_words = 1.
+    num_words = 0
     for word in words:
         if word in word_set:
-            feature_vector = np.divide(np.add(feature_vector, model[word]), num_words)
+            feature_vector = np.add(feature_vector, model[word])
             num_words = num_words + 1.
+    feature_vector = np.divide(feature_vector, num_words)
     return feature_vector
 
 
