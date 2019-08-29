@@ -43,7 +43,7 @@ def doc2vec(table, **params):
 
 
 def _doc2vec(table, input_col, dm=1, vector_size=100, window=10, min_count=1, max_vocab_size=None,
-            train_epoch=100, workers=4, alpha=0.025, min_alpha=0.025, seed=None,
+            train_epoch=100, workers=1, alpha=0.025, min_alpha=0.025, seed=None,
             hs=1, negative=5, ns_exponent=0.75):
     
     if seed is None:
