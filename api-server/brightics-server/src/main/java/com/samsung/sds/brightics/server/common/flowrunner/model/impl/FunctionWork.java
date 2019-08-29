@@ -23,7 +23,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.samsung.sds.brightics.common.core.exception.AbsBrighticsException;
@@ -41,7 +40,6 @@ import com.samsung.sds.brightics.server.common.message.task.TaskMessageRepositor
 import com.samsung.sds.brightics.server.common.util.JsonObjectUtil;
 import com.samsung.sds.brightics.server.common.util.LoggerUtil;
 import com.samsung.sds.brightics.server.common.util.ValidationUtil;
-import com.samsung.sds.brightics.server.common.util.keras.KerasScriptUtil;
 import com.samsung.sds.brightics.server.model.entity.BrtcDatasources;
 
 public class FunctionWork extends Work {
@@ -161,8 +159,6 @@ public class FunctionWork extends Work {
     private Parameters complementParameters() {
         ParametersBuilder pb = new ParametersBuilder(resolvedParameters);
 
-        // complementDistributedJdbcLoaderParam(pb); we don't need this line anymore.
-        complementDLPredictParam(pb);
         complementPyFunctionParam(pb);
         complementInOutDataParam(pb);
 
@@ -187,27 +183,6 @@ public class FunctionWork extends Work {
             throw new BrighticsCoreException("3137").initCause(e);
         }
     }
-
-    private void complementDLPredictParam(ParametersBuilder pb) {
-        if (!"DLPredict".equals(functionName)) {
-            return;
-        }
-
-        // Deep Learning model need to combine parameters.
-        String resultDF = "resultDF";
-
-        JsonArray outTableAlias = new JsonArray();
-        outTableAlias.add(resultDF);
-
-        try {
-            String script = KerasScriptUtil.getKerasPredictScript(resultDF, resolvedParameters.toJsonObject());
-            pb.add("script", script);
-            pb.add("out-table-alias", outTableAlias);
-        } catch (Exception e) {
-            throw new BrighticsCoreException("3133", e.getMessage()).initCause(e);
-        }
-    }
-
 
     private void complementInOutDataParam(ParametersBuilder pb) {
         Parameters params = resolvedParameters;

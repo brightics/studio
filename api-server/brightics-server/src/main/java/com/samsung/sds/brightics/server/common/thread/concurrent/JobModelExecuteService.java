@@ -67,11 +67,11 @@ public class JobModelExecuteService implements ApplicationContextAware {
     @Value("${brightics.concurrent.maxFlowQueue:100")
     public void setMaxFlowQueue(String maxFlowQueue){
         try {
-            MAX_FLOW_QUEUE = Integer.valueOf(maxFlowQueue);
-        } catch (NumberFormatException e) {
-            MAX_FLOW_QUEUE = 100;
+    MAX_FLOW_QUEUE = Integer.valueOf(maxFlowQueue);
+} catch (NumberFormatException e) {
+        MAX_FLOW_QUEUE = 100;
         }
-    }
+        }
 
     @Value("${brightics.jobexecutor.mininterval:0}")
     public void setMinInterval(String minInterval) {
