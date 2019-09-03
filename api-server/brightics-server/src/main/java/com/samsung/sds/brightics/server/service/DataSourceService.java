@@ -51,6 +51,8 @@ public class DataSourceService {
         dbTypeList.add("oracle");
         dbTypeList.add("mariadb");
         dbTypeList.add("mysql");
+        dbTypeList.add("mssql");
+
         return dbTypeList;
     }
     
