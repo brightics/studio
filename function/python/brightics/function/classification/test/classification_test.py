@@ -14,6 +14,7 @@
     limitations under the License.
 """
 
+
 import unittest
 from brightics.function.classification import svm_classification_train, svm_classification_predict
 from brightics.function.transform import split_data
@@ -26,6 +27,8 @@ from brightics.function.classification.logistic_regression import logistic_regre
     logistic_regression_predict
 from brightics.function.classification.xgb_classification import xgb_classification_train, \
     xgb_classification_predict
+import HtmlTestRunner
+import os
 
 
 class SVMTest(unittest.TestCase):
@@ -38,10 +41,8 @@ class SVMTest(unittest.TestCase):
         test_df = df_splitted['test_table']
         
         train_out = svm_classification_train(table=train_df, feature_cols=['sepal_length', 'sepal_width', 'petal_length', 'petal_width'], label_col='species')
-        # print(train_out['model']['svc_model'])
         
         predict_out = svm_classification_predict(table=test_df, model=train_out['model'])
-        print(predict_out['out_table'][['species', 'prediction']])
         
     def test_predict_thresholds(self):
         iris = load_iris()
@@ -51,10 +52,8 @@ class SVMTest(unittest.TestCase):
         test_df = df_splitted['test_table']
         
         train_out = svm_classification_train(table=train_df, feature_cols=['sepal_length', 'sepal_width', 'petal_length', 'petal_width'], label_col='species')
-        # print(train_out['model']['svc_model'])
         
         predict_out = svm_classification_predict(table=test_df, model=train_out['model'], thresholds=[0.1, 0.2, 0.3])
-        print(predict_out['out_table'][['species', 'prediction']])
         
     def test_groupby1(self):
         df = load_iris()
@@ -65,7 +64,6 @@ class SVMTest(unittest.TestCase):
         
         train_out = svm_classification_train(table=df, feature_cols=['sepal_length', 'sepal_width', 'petal_length', 'petal_width'], label_col='species', group_by=['random_group'])
         predict_out = svm_classification_predict(table=df, model=train_out['model'])
-        print(predict_out['out_table'][['species', 'prediction']])
         
 
 class DecisionTreeClassificationTest(unittest.TestCase):
@@ -79,7 +77,6 @@ class DecisionTreeClassificationTest(unittest.TestCase):
         
         train_out = decision_tree_classification_train(table=df, feature_cols=['sepal_length', 'sepal_width', 'petal_length', 'petal_width'], label_col='species', group_by=['random_group'])
         predict_out = decision_tree_classification_predict(table=df, model=train_out['model'])
-        print(predict_out['out_table'][['species', 'prediction']])
         
         
 class LogisticRegressionTest(unittest.TestCase):
@@ -93,7 +90,6 @@ class LogisticRegressionTest(unittest.TestCase):
         
         train_out = logistic_regression_train(table=df, feature_cols=['sepal_length', 'sepal_width', 'petal_length', 'petal_width'], label_col='species', group_by=['random_group'])
         predict_out = logistic_regression_predict(table=df, model=train_out['model'])
-        print(predict_out['out_table'][['species', 'prediction']])
         
         
 class XGBClassificationTest(unittest.TestCase):
@@ -107,4 +103,9 @@ class XGBClassificationTest(unittest.TestCase):
         
         train_out = xgb_classification_train(table=df, feature_cols=['sepal_length', 'sepal_width', 'petal_length', 'petal_width'], label_col='species', group_by=['random_group'])
         predict_out = xgb_classification_predict(table=df, model=train_out['model'])
-        print(predict_out['out_table'][['species', 'prediction']])
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

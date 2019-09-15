@@ -14,10 +14,13 @@
     limitations under the License.
 """
 
+
 import unittest
 from brightics.common.datasets import load_iris
 from brightics.function.classification.decision_tree_classification import decision_tree_classification_train, \
     decision_tree_classification_predict
+import HtmlTestRunner
+import os
 
 
 class DecisionTreeClassificationTest(unittest.TestCase):
@@ -62,4 +65,6 @@ class DecisionTreeClassificationTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

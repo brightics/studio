@@ -20,6 +20,8 @@ from brightics.common.datasets import load_iris
 import unittest
 import pandas as pd
 import numpy as np
+import HtmlTestRunner
+import os
 
 
 class Levene(unittest.TestCase):
@@ -41,3 +43,9 @@ class Levene(unittest.TestCase):
         self.assertAlmostEqual(lv_res['result']['result_table']['p_value'][1], 0.5248269975)
         self.assertAlmostEqual(lv_res['result']['result_table']['p_value'][2], 0.0000000258)
         self.assertAlmostEqual(lv_res['result']['result_table']['p_value'][3], 0.0000000330)
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

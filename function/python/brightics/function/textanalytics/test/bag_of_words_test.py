@@ -18,6 +18,8 @@
 import pandas as pd
 import unittest
 from brightics.function.textanalytics import bow
+import HtmlTestRunner
+import os
 
 
 class TestBagOfWords(unittest.TestCase):
@@ -67,7 +69,9 @@ class TestBagOfWords(unittest.TestCase):
         self.assertListEqual(table[2], ['I', 3])
         self.assertListEqual(table[3], ['would', 2])
         self.assertListEqual(table[4], ['me', 4])
-        
+
 
 if __name__ == '__main__':
-    unittest.main()
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

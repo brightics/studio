@@ -14,9 +14,12 @@
     limitations under the License.
 """
 
+
 from brightics.function.timeseries import holt_winters_train, holt_winters_predict
 from brightics.common.datasets import load_iris
 import unittest
+import HtmlTestRunner
+import os
 
 
 class TestHoltWinters(unittest.TestCase):
@@ -32,22 +35,20 @@ class TestHoltWinters(unittest.TestCase):
         
         hw_train = holt_winters_train(self.testdata, input_cols=['sepal_length'], period=12, model_type='multiplicative')
         DF1 = hw_train['model']
-        # print(DF1['sse_sepal_length'])
-        # print(DF1['aic_sepal_length'])
-        # print(DF1['bic_sepal_length'])
         self.assertAlmostEqual(DF1['sse_sepal_length'], 75.0985720516664, 10)
         self.assertAlmostEqual(DF1['aic_sepal_length'], -71.77506241991551, 10)
         self.assertAlmostEqual(DF1['bic_sepal_length'], -23.604897714375426, 10)
  
         hw_predict = holt_winters_predict(model=DF1, prediction_num=24)
         DF2 = hw_predict['out_table'].values
-        # print(DF2[0][1])
-        # print(DF2[1][1])
-        # print(DF2[2][1])
-        # print(DF2[3][1])
-        # print(DF2[4][1])
         self.assertAlmostEqual(DF2[0][1], 5.602275321420261, 10)
         self.assertAlmostEqual(DF2[1][1], 5.5832064381953055, 10)
         self.assertAlmostEqual(DF2[2][1], 5.496285744490528, 10)
         self.assertAlmostEqual(DF2[3][1], 5.449483922508893, 10)
         self.assertAlmostEqual(DF2[4][1], 5.183025448632435, 10)
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

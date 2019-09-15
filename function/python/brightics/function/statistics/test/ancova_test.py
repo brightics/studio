@@ -20,6 +20,8 @@ from brightics.common.datasets import load_iris
 import unittest
 import pandas as pd
 import numpy as np
+import HtmlTestRunner
+import os
 
 
 class Ancova(unittest.TestCase):
@@ -45,3 +47,9 @@ class Ancova(unittest.TestCase):
         np.testing.assert_array_equal([round(x, 15) for x in petal_length_res['SS']], [13.019810102934493,6.332585167433126,20.887004664475192])
         np.testing.assert_array_equal([round(x, 15) for x in petal_length_res['F'][0:2]], [45.504185630347727,44.264721021379003])
         np.testing.assert_array_equal([round(x, 15) for x in petal_length_res['p-unc'][0:2]], [0.000000000000000,0.000000000538366])
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

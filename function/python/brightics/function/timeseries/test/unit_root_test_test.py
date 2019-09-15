@@ -14,11 +14,14 @@
     limitations under the License.
 """
 
+
 from brightics.function.timeseries.unit_root_test import unit_root_test
 from brightics.common.datasets import load_iris
 import unittest
 import pandas as pd
 import numpy as np
+import HtmlTestRunner
+import os
 
 
 class UnitRootTest(unittest.TestCase):
@@ -39,6 +42,9 @@ class UnitRootTest(unittest.TestCase):
         np.testing.assert_almost_equal(result['critical_values']['1%'], -3.479007355368944 , 10)
         np.testing.assert_almost_equal(result['critical_values']['5%'], -2.8828782366015093 , 10)
         np.testing.assert_almost_equal(result['critical_values']['10%'], -2.5781488587564603 , 10)
-        
 
-        
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

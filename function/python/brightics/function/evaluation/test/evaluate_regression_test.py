@@ -14,11 +14,14 @@
     limitations under the License.
 """
 
+
 from brightics.function.evaluation import evaluate_regression
 from brightics.common.datasets import load_iris
 import unittest
 import pandas as pd
 import numpy as np
+import HtmlTestRunner
+import os
 
 
 class EvaluateRegression(unittest.TestCase):
@@ -38,4 +41,9 @@ class EvaluateRegression(unittest.TestCase):
         result = evaluate_regression(table=table,label_col='a',prediction_col='b')['result']
         np.testing.assert_almost_equal(result['r2_score'],-0.9820165023749556,10)
         np.testing.assert_almost_equal(result['mean_absolute_error'],0.2939061622832298,10)  
-        
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

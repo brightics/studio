@@ -14,11 +14,14 @@
     limitations under the License.
 """
 
+
 import unittest
 from brightics.function.clustering.kmeans import kmeans_train_predict, \
     kmeans_predict, kmeans_silhouette_train_predict
 from brightics.common.datasets import load_iris
 import numpy as np
+import HtmlTestRunner
+import os
 
 
 class KMeansSilhouetteTest(unittest.TestCase):
@@ -67,7 +70,6 @@ class KMeansSilhouetteTest(unittest.TestCase):
     def test_kmeans_silhouette_groupby2(self):
         predict_out = kmeans_silhouette_train_predict(table=self.iris, input_cols=['sepal_length', 'sepal_width', 'petal_length', 'petal_width'], n_clusters_list=[3, 2], prediction_col='predict', init='random', n_init=3, max_iter=300, tol=0.0001, precompute_distances=False, seed=12345, n_jobs=1, algorithm='full', n_samples=2, group_by=['species'])
         table = predict_out['model']['_grouped_data']['data']['setosa']['best_centers'].tolist()
-        print(table)
 
         self.assertAlmostEqual(table[0][0], 4.71304348, 8)
         self.assertAlmostEqual(table[0][1], 3.12173913, 8)
@@ -78,3 +80,9 @@ class KMeansSilhouetteTest(unittest.TestCase):
         self.assertAlmostEqual(table[1][1], 3.67037037, 8)
         self.assertAlmostEqual(table[1][2], 1.5037037, 7)
         self.assertAlmostEqual(table[1][3], 0.28888889, 8)
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

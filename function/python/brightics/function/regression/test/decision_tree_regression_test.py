@@ -14,11 +14,14 @@
     limitations under the License.
 """
 
+
 import unittest
 import numpy as np
 from brightics.function.regression import decision_tree_regression_train
 from brightics.function.regression import decision_tree_regression_predict
 from brightics.common.datasets import load_iris
+import HtmlTestRunner
+import os
 
 
 class TestDecisionTreeRegression(unittest.TestCase):
@@ -34,7 +37,7 @@ class TestDecisionTreeRegression(unittest.TestCase):
         df_res = decision_tree_regression_predict(table=df_iris, model=model_train, prediction_col='prediction', check_input=True)['out_table']
                                            
         np.testing.assert_array_almost_equal([1.4, 1.4, 1.4500000000000002, 1.5, 1.4],
-                                             df_res['prediction'].values[:5], 7, 'incorrect prediction')   
+                                             df_res['prediction'].values[:5], 10, 'incorrect prediction')   
         
     def test_optional(self):
         df_iris = load_iris()
@@ -47,5 +50,10 @@ class TestDecisionTreeRegression(unittest.TestCase):
         df_res = decision_tree_regression_predict(table=df_iris, model=model_train, prediction_col='prediction', check_input=True)['out_table']
                                            
         np.testing.assert_array_almost_equal([1.5, 1.4, 1.5, 1.4, 1.5],
-                                             df_res['prediction'].values[:5], 7, 'incorrect prediction')        
+                                             df_res['prediction'].values[:5], 10, 'incorrect prediction')        
 
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

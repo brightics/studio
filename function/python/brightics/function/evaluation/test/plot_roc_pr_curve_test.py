@@ -14,13 +14,14 @@
     limitations under the License.
 """
 
+
 import unittest
 import pandas as pd
 import numpy as np
 from brightics.function.test_data import get_iris
 from brightics.function.evaluation import plot_roc_pr_curve
-
-df_iris = get_iris()
+import HtmlTestRunner
+import os
 
 
 class PlotROCPRCurveTest(unittest.TestCase):
@@ -135,8 +136,12 @@ class PlotROCPRCurveTest(unittest.TestCase):
 
     def test_plot_roc_pr_curve1(self):
         plot_roc_pr_curve_out = plot_roc_pr_curve(table=self.example_df, label_col='species', probability_col='probability_0', fig_w=6.4, fig_h=4.8, pos_label='versicolor', group_by=None)
-        print(plot_roc_pr_curve_out['result'])
 
     def test_plot_roc_pr_curve2(self):
         plot_roc_pr_curve_out = plot_roc_pr_curve(table=self.example_df, label_col='species', probability_col='probability_0', fig_w=6.4, fig_h=4.8, pos_label='versicolor', group_by=['species'])
-        print(plot_roc_pr_curve_out['result'])
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

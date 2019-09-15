@@ -14,11 +14,14 @@
     limitations under the License.
 """
 
+
 import unittest
 import pandas as pd
 import numpy as np
 from brightics.function.transform import join, bind_row_column
 from brightics.common.datasets import load_iris
+import HtmlTestRunner
+import os
 
 
 class TestJoin(unittest.TestCase):
@@ -95,3 +98,9 @@ class TestBindRowColumn(unittest.TestCase):
         np.testing.assert_array_equal(DF2[3][5:9], [4.6, 3.1, 1.5, 0.2])
         np.testing.assert_array_equal(DF2[4][0:4], [5.0, 3.6, 1.4, 0.2])
         np.testing.assert_array_equal(DF2[4][5:9], [5.0, 3.6, 1.4, 0.2])
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

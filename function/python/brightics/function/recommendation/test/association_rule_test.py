@@ -14,6 +14,7 @@
     limitations under the License.
 """
 
+
 from brightics.function.recommendation.association_rule import association_rule
 from brightics.common.datasets import load_iris
 import unittest
@@ -34,3 +35,8 @@ class AssociationRule(unittest.TestCase):
         result = association_rule(self.testdata, input_mode ='merong', items = 'petal_length', user_name='petal_width', min_support= 0.1)['out_table']
         np.testing.assert_array_equal(result.values[:5], [[[1.4], [1.5], 0.13636363636363635, 1.0, 5.5, np.inf],[[1.3], [1.5], 0.13636363636363635, 1.0, 5.5, np.inf],[[1.3], [1.7], 0.13636363636363635, 1.0, 5.5, np.inf],[[1.3], [1.5, 1.7], 0.13636363636363635, 1.0, 7.333333333333333, np.inf],[[1.3, 1.5], [1.7], 0.13636363636363635, 1.0, 5.5, np.inf]])
 
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

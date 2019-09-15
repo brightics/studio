@@ -14,12 +14,15 @@
     limitations under the License.
 """
 
+
 from brightics.function.regression.glm import glm_train
 from brightics.function.regression.glm import glm_predict
 from brightics.common.datasets import load_iris
 import unittest
 import pandas as pd
 import numpy as np
+import HtmlTestRunner
+import os
 
 
 class GLMRegression(unittest.TestCase):
@@ -38,4 +41,7 @@ class GLMRegression(unittest.TestCase):
         np.testing.assert_array_almost_equal(predict[:5],[0.2371754544 ,0.2105262982 ,0.1999606014 ,0.2203860121 ,0.2386977666],10)
         
 
-        
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

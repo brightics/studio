@@ -20,6 +20,8 @@ from brightics.common.datasets import load_iris
 import unittest
 import pandas as pd
 import numpy as np
+import HtmlTestRunner
+import os
 
 
 class Duncan(unittest.TestCase):
@@ -38,3 +40,9 @@ class Duncan(unittest.TestCase):
         np.testing.assert_array_equal(res['sepal_length_species']['mean_by_factor']['sepal_length'], [6.587999999999998,5.936,5.005999999999999])
         np.testing.assert_array_equal(res['sepal_length_species']['comp_by_factor']['difference'], [0.6519999999999984,1.581999999999999,0.9300000000000006])
         np.testing.assert_array_equal(res['sepal_length_species']['comp_by_factor']['significant'], ['YES','YES','YES'])
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

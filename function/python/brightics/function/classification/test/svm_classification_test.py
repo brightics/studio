@@ -14,9 +14,12 @@
     limitations under the License.
 """
 
+
 import unittest
 from brightics.common.datasets import load_iris
 from brightics.function.classification import svm_classification_train, svm_classification_predict
+import HtmlTestRunner
+import os
 
 
 class SVMClassificationTest(unittest.TestCase):
@@ -86,4 +89,6 @@ class SVMClassificationTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

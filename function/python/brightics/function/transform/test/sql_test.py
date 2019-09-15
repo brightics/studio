@@ -14,16 +14,24 @@
     limitations under the License.
 """
 
+
 import unittest
 import pandas as pd
 from brightics.function.test_data import get_iris
 from brightics.function.transform import sql_execute
 from brightics.common.repr import strip_margin
-
-df_iris = get_iris()
+import HtmlTestRunner
+import os
 
 
 class SQLTest(unittest.TestCase):
+
+    def setUp(self):
+        print("*** SQL UnitTest Start ***")
+        df_iris = get_iris()
+
+    def tearDown(self):
+        print("*** SQL UnitTest End ***")
 
     def test_percentile(self):
         query = strip_margin('''

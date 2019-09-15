@@ -14,9 +14,12 @@
     limitations under the License.
 """
 
+
 import pandas as pd
 import unittest
 from brightics.function.textanalytics.search import search
+import HtmlTestRunner
+import os
 
 
 class SearchTest(unittest.TestCase):
@@ -48,3 +51,9 @@ class SearchTest(unittest.TestCase):
         self.assertListEqual(table[1], [1, 'This is an example of why the majority of action films are the same. Generic and boring, there\'s really nothing worth watching here. ',4])
         self.assertListEqual(table[2], [4, 'signalling boredom, loathing, delight, fear, hate ... and ecstasy) are the best reason to watch this picture and worth two stars.', 3])
         self.assertListEqual(table[3], [5, 'She endures this basically trashy stuff with an astonishing amount of dignity. I wish some really good parts come along for her. She really deserves it.',2])
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

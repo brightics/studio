@@ -20,6 +20,8 @@ from brightics.common.datasets import load_iris
 import unittest
 import pandas as pd
 import numpy as np
+import HtmlTestRunner
+import os
 
 
 class KernelDensityEstimation(unittest.TestCase):
@@ -40,3 +42,9 @@ class KernelDensityEstimation(unittest.TestCase):
         
         res = kernel_density_estimation(self.testdata, input_col='sepal_length', points='1.5', bandwidth=1.0, kernel='gaussian')
         np.testing.assert_array_almost_equal([0.0005600162258325031], res['out_table']['input_estimated'], 10)
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

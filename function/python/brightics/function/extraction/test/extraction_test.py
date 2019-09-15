@@ -14,16 +14,15 @@
     limitations under the License.
 """
 
+
 import unittest
 import pandas as pd
 import numpy as np
 from brightics.function.extraction import add_row_number, discretize_quantile, capitalize_variable, binarizer
 from brightics.function.extraction import add_expression_column, add_expression_column_if
 from brightics.common.datasets import load_iris
-
-df_example1 = pd.DataFrame({'num1':[1, 2, 3, 4, 5],
-                            'num2':[10, 20, 30, 40, 50],
-                            'str1':['a', 'b', 'c', 'd', 'e']}) 
+import HtmlTestRunner
+import os
 
 
 class TestAddRowNumber(unittest.TestCase):
@@ -111,23 +110,18 @@ class AddFunctionColumnTest(unittest.TestCase):
         
     def test1(self):
         out = add_expression_column(self.example_df, ['num3', 'num4'], ['log(num1)', 'sqrt(num3)'], expr_type='python')
-        print(out['out_table'])
     
     def test4(self):
         df = self.example_df
-        print(df)
         out = add_expression_column(self.example_df, ['str2', 'num3', 'str3', 'num4'],
                                     [''' str1 || '_a' ''',
                                      ''' case when num1 > 2 then 100 else 0 end''',
                                      ''' cast(num1 as char)''',
                                      ''' cast(num1 as float)'''], expr_type='sqlite')['out_table']
-        print(out)
-        print(out.dtypes)
     
     def test6(self):
         df = self.example_df
         out = add_expression_column(df, ['str10'], ['str1 || 100'])
-        print(out['out_table'])
         
     def test7(self):
         out = add_expression_column(self.example_df,
@@ -137,29 +131,31 @@ class AddFunctionColumnTest(unittest.TestCase):
                                     ['log(num1)', 'exp(num1)', 'sin(num1)', 'cos(num1)',
                                      'sqrt(num1)', 'arctan(num1)', 'num1 in [1,3,5]',
                                      '''str1 in ['a', 'c']''', '''str1 in ['a', 'c'] & str1 in ['b', 'c']'''], expr_type='python')
-        print(out['out_table'])
-        
-        
+
+"""
 class AddFunctionColumnIfTest(unittest.TestCase):
     
     def test2(self):
         # df = df_iris.copy().query(''' species != 'setosa' ''')
         df = load_iris()
-        print(df)
         out = add_expression_column_if(df,
                                      'encoded_species',
                                      ['''species == 'setosa' ''', '''species == 'virginica' '''],
                                      [1.0, 2.0],
                                      0.0)['out_table']
-        print(out['encoded_species'][48:102])
         
     def test3(self):
         # df = df_iris.copy().query(''' species != 'setosa' ''')
         df = load_iris()
-        print(df)
         out = add_expression_column_if(df,
                                      'encoded_species',
                                      ['''species == 'setosa' ''', '''species == 'virginica' '''],
                                      ['1.0', '2.0'],
                                      '0.0')['out_table']
-        print(out['encoded_species'][48:102])
+"""
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

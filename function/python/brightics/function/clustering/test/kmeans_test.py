@@ -14,9 +14,12 @@
     limitations under the License.
 """
 
+
 import unittest
 from brightics.function.clustering.kmeans import kmeans_train_predict, kmeans_predict
 from brightics.common.datasets import load_iris
+import HtmlTestRunner
+import os
 
 
 class KMeansTest(unittest.TestCase):
@@ -48,3 +51,9 @@ class KMeansTest(unittest.TestCase):
         self.assertListEqual(table[2], [4.7, 3.2, 1.3, 0.2, 'setosa', 0])
         self.assertListEqual(table[3], [4.6, 3.1, 1.5, 0.2, 'setosa', 0])
         self.assertListEqual(table[4], [5.0, 3.6, 1.4, 0.2, 'setosa', 1])
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

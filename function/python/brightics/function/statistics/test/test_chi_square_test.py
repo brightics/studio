@@ -16,9 +16,12 @@
 
 
 import unittest
+import numpy as np
 from brightics.common.datasets import load_iris
 from brightics.function.test_data import get_iris
 from brightics.function.statistics import chi_square_test_of_independence
+import HtmlTestRunner
+import os
 
 
 class TestChiSquareTestOfIndependence(unittest.TestCase):
@@ -38,7 +41,7 @@ class TestChiSquareTestOfIndependence(unittest.TestCase):
         print(res)
         
         table = res.values.tolist()
-        self.assertListEqual(table[0], [156.26666666666668, 68.0, 6.665987344005466e-09])
+        np.testing.assert_array_almost_equal(table[0], [156.26666666666668, 68.0, 6.665987344005466e-09], 10)
     
     def test_chi_square_test_of_independence2(self):
         input_dataframe = self.iris
@@ -52,9 +55,11 @@ class TestChiSquareTestOfIndependence(unittest.TestCase):
         
         table0 = res0.values.tolist()
         table1 = res1.values.tolist()
-        self.assertListEqual(table0[0], [156.26666666666668, 68.0, 6.665987344005466e-09])
-        self.assertListEqual(table1[0], [89.54628704628703, 44.0, 6.016031482207116e-05])
+        np.testing.assert_array_almost_equal(table0[0], [156.26666666666668, 68.0, 6.665987344005466e-09], 10)
+        np.testing.assert_array_almost_equal(table1[0], [89.54628704628703, 44.0, 6.016031482207116e-05], 10)
         
 
 if __name__ == '__main__':
-    unittest.main()
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

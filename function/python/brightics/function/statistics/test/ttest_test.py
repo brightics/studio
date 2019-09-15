@@ -14,10 +14,13 @@
     limitations under the License.
 """
 
+
 import unittest
 import numpy as np
 from brightics.common.datasets import load_iris
 from brightics.function.statistics import one_sample_ttest, paired_ttest, two_sample_ttest_for_stacked_data
+import HtmlTestRunner
+import os
 
 
 class TestOneSampleTTest(unittest.TestCase):
@@ -30,10 +33,10 @@ class TestOneSampleTTest(unittest.TestCase):
                                   hypothesized_mean=0,
                                   conf_level=0.95)['model']['result']
 
-        np.testing.assert_array_almost_equal([86.4253746172] * 3, df_res['t_value'].values[:3], 7, 'incorrect t-value')
-        np.testing.assert_array_almost_equal([2.1874883768175626e-129, 1., 4.374976753635125e-129], df_res['p_value'].values[3:6], 7, 'incorrect p-value')
-        np.testing.assert_array_almost_equal([3.5202193882, -np.inf, 3.4739936640], df_res['lower_confidence_interval'].values[6:9], 7, 'incorrect lower confidence limit')
-        np.testing.assert_array_almost_equal([np.inf, 1.3018017244, 1.3217956315], df_res['upper_confidence_interval'].values[9:12], 7, 'incorrect upper confidence limit')
+        np.testing.assert_array_almost_equal([86.4253746172] * 3, df_res['t_value'].values[:3], 10, 'incorrect t-value')
+        np.testing.assert_array_almost_equal([2.1874883768175626e-129, 1., 4.374976753635125e-129], df_res['p_value'].values[3:6], 10, 'incorrect p-value')
+        np.testing.assert_array_almost_equal([3.5202193882, -np.inf, 3.4739936640], df_res['lower_confidence_interval'].values[6:9], 10, 'incorrect lower confidence limit')
+        np.testing.assert_array_almost_equal([np.inf, 1.3018017244, 1.3217956315], df_res['upper_confidence_interval'].values[9:12], 10, 'incorrect upper confidence limit')
 
     def test_optional(self):
         df_iris = load_iris()
@@ -43,10 +46,10 @@ class TestOneSampleTTest(unittest.TestCase):
                                   hypothesized_mean=5.0,
                                   conf_level=0.99)['model']['result']
               
-        self.assertAlmostEqual(12.4732571467, df_res['t_value'].values[0], 7, 'incorrect t-value')
-        self.assertAlmostEqual(1., df_res['p_value'].values[0], 7, 'incorrect p-value')
-        self.assertAlmostEqual(-np.inf, df_res['lower_confidence_interval'].values[0], 7, 'incorrect lower confidence limit')
-        self.assertAlmostEqual(6.0023304639 , df_res['upper_confidence_interval'].values[0], 7, 'incorrect upper confidence limit')
+        self.assertAlmostEqual(12.4732571467, df_res['t_value'].values[0], 10, 'incorrect t-value')
+        self.assertAlmostEqual(1., df_res['p_value'].values[0], 10, 'incorrect p-value')
+        self.assertAlmostEqual(-np.inf, df_res['lower_confidence_interval'].values[0], 10, 'incorrect lower confidence limit')
+        self.assertAlmostEqual(6.0023304639 , df_res['upper_confidence_interval'].values[0], 10, 'incorrect upper confidence limit')
 
         
 class TestPairedTTest(unittest.TestCase):
@@ -94,3 +97,9 @@ class TTestForStackedDataTest(unittest.TestCase):
         np.testing.assert_almost_equal(ttest.estimates[0], -13.914852805468179, 10)
         np.testing.assert_array_almost_equal(ttest.p_value, [1.0, 3.0531725711507176e-25, 6.106345142301435e-25], 10)
         np.testing.assert_array_almost_equal(ttest.lower_confidence_interval, [-1.0615185295011744, -np.inf, -1.0919325209228996], 10)
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

@@ -11,10 +11,13 @@
     limitations under the License.
 """
 
+
 import unittest
 from brightics.common.datasets import load_iris
 from brightics.function.extraction.extraction import add_row_number
 from brightics.function.clustering import hierarchical_clustering, hierarchical_clustering_post
+import HtmlTestRunner
+import os
 
 
 class TestHierarchicalClustering(unittest.TestCase):
@@ -34,8 +37,6 @@ class TestHierarchicalClustering(unittest.TestCase):
         res_post_process = hierarchical_clustering_post(res_clustering['model'],
                                                   num_clusters=3)
         
-        # print(res_post_process['out_table'])
-        
         table = res_post_process['out_table'].values.tolist()
         self.assertListEqual(table[49], [5, 3.3, 1.4, 0.2, 'setosa', 'pt_49', 3])
         self.assertListEqual(table[50], [7, 3.2, 4.7, 1.4, 'versicolor', 'pt_50', 1])
@@ -52,11 +53,15 @@ class TestHierarchicalClustering(unittest.TestCase):
         res_post_process = hierarchical_clustering_post(res_clustering['model'],
                                                   num_clusters=5, cluster_col='cluster_name')
         
-        # print(res_post_process['out_table'])
-        
         table = res_post_process['out_table'].values.tolist()
         self.assertListEqual(table[49], [49, 5, 3.3, 1.4, 0.2, 'setosa', 49, 1])
         self.assertListEqual(table[50], [50, 7, 3.2, 4.7, 1.4, 'versicolor', 50, 5])
         self.assertListEqual(table[51], [51, 6.4, 3.2, 4.5, 1.5, 'versicolor', 51, 5])
         self.assertListEqual(table[52], [52, 6.9, 3.1, 4.9, 1.5, 'versicolor', 52, 5])
         self.assertListEqual(table[53], [53, 5.5, 2.3, 4, 1.3, 'versicolor', 53, 4])
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

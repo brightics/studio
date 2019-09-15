@@ -14,11 +14,14 @@
     limitations under the License.
 """
 
+
 import unittest
 from brightics.common.datasets import load_iris
 from brightics.function.io.unload import write_csv
 from brightics.function.io.load import read_csv
 import pandas
+import os
+import HtmlTestRunner
 import os
 
 
@@ -39,3 +42,9 @@ class LoadTest(unittest.TestCase):
         write_csv(table=df, path=self._path)
         df_load = read_csv(path=self._path)['table']
         pandas.testing.assert_frame_equal(df, df_load)
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

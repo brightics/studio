@@ -20,6 +20,8 @@ from brightics.common.datasets import load_iris
 import unittest
 import pandas as pd
 import numpy as np
+import HtmlTestRunner
+import os
 
 
 class StringSplit(unittest.TestCase):
@@ -43,3 +45,9 @@ class StringSplit(unittest.TestCase):
         out_array = [[row[0],row[1],row[2],row[3]] for row in res['out_table']['split']]
         array = self.testdata[['sepal_length','sepal_width','petal_length','petal_width']].values
         np.testing.assert_array_equal(np.array(array), out_array)
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

@@ -14,10 +14,13 @@
     limitations under the License.
 """
 
+
 import unittest
 import numpy as np
 from brightics.function.statistics import correlation
 from brightics.common.datasets import load_iris
+import HtmlTestRunner
+import os
 
 
 class CorrelationTest(unittest.TestCase):
@@ -50,3 +53,9 @@ class CorrelationTest(unittest.TestCase):
         np.testing.assert_almost_equal(DF2[1][3], 0.0005856929405699988, 10)
         np.testing.assert_almost_equal(DF2[2][2], 0.9360033509355782, 10)
         np.testing.assert_almost_equal(DF2[2][3], 5.383649646072797e-69, 10)
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

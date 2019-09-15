@@ -14,11 +14,14 @@
     limitations under the License.
 """
 
+
 import unittest
 import numpy as np
 from sklearn.model_selection import train_test_split
 from brightics.common.datasets import load_iris
 from brightics.function.classification import knn_classification
+import HtmlTestRunner
+import os
 
 
 class TestKNNClassification(unittest.TestCase):
@@ -31,9 +34,9 @@ class TestKNNClassification(unittest.TestCase):
                                     k=5, algorithm='auto', leaf_size=30, p=2)['out_table']
         
         self.assertListEqual(['versicolor', 'setosa', 'virginica', 'setosa', 'setosa'], df_res['prediction'].tolist()[:5], 'incorrect prediction')                                    
-        np.testing.assert_array_almost_equal([0.0, 1.0, 0.0, 1.0, 1.0], df_res['probability_0'].values[:5], 7, 'incorrect probability_0')
-        np.testing.assert_array_almost_equal([0.8, 0.0, 0.2, 0.0, 0.0], df_res['probability_1'].values[:5], 7, 'incorrect probability_1')
-        np.testing.assert_array_almost_equal([0.2, 0.0, 0.8, 0.0, 0.0], df_res['probability_2'].values[:5], 7, 'incorrect probability_2')
+        np.testing.assert_array_almost_equal([0.0, 1.0, 0.0, 1.0, 1.0], df_res['probability_0'].values[:5], 10, 'incorrect probability_0')
+        np.testing.assert_array_almost_equal([0.8, 0.0, 0.2, 0.0, 0.0], df_res['probability_1'].values[:5], 10, 'incorrect probability_1')
+        np.testing.assert_array_almost_equal([0.2, 0.0, 0.8, 0.0, 0.0], df_res['probability_2'].values[:5], 10, 'incorrect probability_2')
 
     def test_optional(self):
         df_iris = load_iris()
@@ -43,6 +46,12 @@ class TestKNNClassification(unittest.TestCase):
                                     k=10, algorithm='auto', leaf_size=30, p=2)['out_table']
         
         self.assertListEqual(['versicolor', 'setosa', 'versicolor', 'setosa', 'setosa'], df_res['prediction'].tolist()[:5], 'incorrect prediction')                                    
-        np.testing.assert_array_almost_equal([0.0, 1.0, 0.0, 1.0, 1.0], df_res['probability_0'].values[:5], 7, 'incorrect probability_0')
-        np.testing.assert_array_almost_equal([1.0, 0.0, 0.7, 0.0, 0.0], df_res['probability_1'].values[:5], 7, 'incorrect probability_1')
-        np.testing.assert_array_almost_equal([0.0, 0.0, 0.3, 0.0, 0.0], df_res['probability_2'].values[:5], 7, 'incorrect probability_2')
+        np.testing.assert_array_almost_equal([0.0, 1.0, 0.0, 1.0, 1.0], df_res['probability_0'].values[:5], 10, 'incorrect probability_0')
+        np.testing.assert_array_almost_equal([1.0, 0.0, 0.7, 0.0, 0.0], df_res['probability_1'].values[:5], 10, 'incorrect probability_1')
+        np.testing.assert_array_almost_equal([0.0, 0.0, 0.3, 0.0, 0.0], df_res['probability_2'].values[:5], 10, 'incorrect probability_2')
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

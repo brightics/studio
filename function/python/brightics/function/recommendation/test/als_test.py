@@ -14,6 +14,7 @@
     limitations under the License.
 """
 
+
 from brightics.function.recommendation.als import als_train
 from brightics.function.recommendation.als import als_predict
 from brightics.function.recommendation.als import als_recommend
@@ -21,6 +22,8 @@ from brightics.common.datasets import load_iris
 import unittest
 import pandas as pd
 import numpy as np
+import HtmlTestRunner
+import os
 
 
 class ALS(unittest.TestCase):
@@ -48,3 +51,8 @@ class ALS(unittest.TestCase):
         recommend_result = als_recommend(self.testdata, user_col = 'user', item_col = 'item', rating_col = 'rating', filter=False, seed = 5)['out_table']
         np.testing.assert_array_almost_equal(recommend_result['rating_top1'][:5],[16.976264923981944,3.9679093140523096,3.9873630479966105,3.0033018849257873,7.9666502915457755],10)
 
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

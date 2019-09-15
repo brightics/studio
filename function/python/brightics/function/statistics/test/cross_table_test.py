@@ -14,12 +14,15 @@
     limitations under the License.
 """
 
+
 from brightics.function.statistics.cross_table import cross_table
 from brightics.common.datasets import load_iris
 import unittest
 import pandas as pd
 import numpy as np
 import random
+import HtmlTestRunner
+import os
 
 
 class TestCrossTable(unittest.TestCase):
@@ -57,3 +60,9 @@ class TestCrossTable(unittest.TestCase):
         np.testing.assert_array_almost_equal(DF2[2][1:4], [0.006666666666666667, 0.0, 0.0], 10)
         np.testing.assert_array_almost_equal(DF2[3][1:4], [0.006666666666666667, 0.0, 0.0], 10)
         np.testing.assert_array_almost_equal(DF2[4][1:4], [0.006666666666666667, 0.0, 0.0], 10)
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

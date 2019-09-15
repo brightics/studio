@@ -14,10 +14,13 @@
     limitations under the License.
 """
 
+
 from brightics.function.timeseries import timeseries_decomposition
 from brightics.common.datasets import load_iris
 import unittest
 import numpy as np
+import HtmlTestRunner
+import os
 
 
 class TimeseriesDecompositionTest(unittest.TestCase):
@@ -33,11 +36,6 @@ class TimeseriesDecompositionTest(unittest.TestCase):
         
         td = timeseries_decomposition(self.testdata, input_col = ['sepal_length'], frequency = 10, model_type='additive', filteration=None, two_sided=True, extrapolate_trend=0)
         DF1 = td['out_table'].values
-        # print(DF1[0][5:8])
-        # print(DF1[1][5:8])
-        # print(DF1[5][5:8])
-        # print(DF1[6][5:8])
-        # print(DF1[7][5:8])
         np.testing.assert_almost_equal(DF1[0][5], np.nan, 10)
         np.testing.assert_almost_equal(DF1[0][6], 0.08167857142857139, 10)
         np.testing.assert_almost_equal(DF1[0][7], np.nan, 10)
@@ -52,13 +50,14 @@ class TimeseriesDecompositionTest(unittest.TestCase):
         
         td = timeseries_decomposition(self.testdata, input_col = ['sepal_width'], frequency = 5, model_type='multiplicative', filteration=[1, 2, 3], two_sided=True, extrapolate_trend=10)
         DF2 = td['out_table'].values
-        # print(DF2[0][5:8])
-        # print(DF2[1][5:8])
-        # print(DF2[2][5:8])
-        # print(DF2[3][5:8])
-        # print(DF2[4][5:8])
         np.testing.assert_array_almost_equal(DF2[0][5:8], [19.75636363636364, 1.0141210519311832, 0.1746912831777005], 10)
         np.testing.assert_array_almost_equal(DF2[1][5:8], [19.7, 0.9952018506915731, 0.1530184694226276], 10)
         np.testing.assert_array_almost_equal(DF2[2][5:8], [18.5, 0.989904288778258, 0.17473706795073754], 10)
         np.testing.assert_array_almost_equal(DF2[3][5:8], [19.400000000000002, 0.9839955881778083, 0.16239281593619798], 10)
         np.testing.assert_array_almost_equal(DF2[4][5:8], [20.4, 1.016777220421178, 0.17355875475081453], 10)
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

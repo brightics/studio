@@ -14,10 +14,13 @@
     limitations under the License.
 """
 
+
 from brightics.function.clustering.gaussian_mixture import gaussian_mixture_train, gaussian_mixture_predict
 from brightics.common.datasets import load_iris
 import unittest
 import numpy as np
+import HtmlTestRunner
+import os
 
 
 class GaussianMixture(unittest.TestCase):
@@ -52,3 +55,9 @@ class GaussianMixture(unittest.TestCase):
         np.testing.assert_equal(DF3[2][5], 0)
         np.testing.assert_equal(DF3[147][5], 2)
         np.testing.assert_equal(DF3[148][5], 1)
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

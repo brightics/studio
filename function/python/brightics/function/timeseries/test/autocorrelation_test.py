@@ -14,10 +14,13 @@
     limitations under the License.
 """
 
+
 from brightics.function.timeseries.autocorrelation import autocorrelation
 from brightics.common.datasets import load_iris
 import unittest
 import numpy as np
+import HtmlTestRunner
+import os
 
 
 class AutocorrelationTest(unittest.TestCase):
@@ -33,7 +36,6 @@ class AutocorrelationTest(unittest.TestCase):
         
         ac = autocorrelation(self.testdata, input_col = 'sepal_length', nlags=20, conf_level=0.95)
         DF1 = ac['model']['autocorrelation_table'].values
-        # print(DF1)
         np.testing.assert_array_almost_equal(eval(DF1[0][2]), (1.0, 1.0), 10)
         np.testing.assert_array_almost_equal(eval(DF1[1][2]), (0.4320361893649062, 0.7520969677885935), 10)
         np.testing.assert_array_almost_equal(eval(DF1[2][2]), (0.42608371979516196, 0.8435251500982057), 10)
@@ -49,7 +51,6 @@ class AutocorrelationTest(unittest.TestCase):
         
         ac = autocorrelation(self.testdata, input_col = 'sepal_width', nlags=15, conf_level=0.99)
         DF2 = ac['model']['partial_autocorrelation_table'].values
-        # print(DF2)
         np.testing.assert_array_almost_equal(eval(DF2[0][2]), (1.0, 1.0), 10)
         np.testing.assert_array_almost_equal(eval(DF2[1][2]), (0.22620960205307344, 0.646840765933298), 10)
         np.testing.assert_array_almost_equal(eval(DF2[2][2]), (-0.06555562287373096, 0.35507554100649363), 10)
@@ -60,3 +61,9 @@ class AutocorrelationTest(unittest.TestCase):
         np.testing.assert_array_almost_equal(DF2[2][0:2], [2, 0.14475995906638134], 10)
         np.testing.assert_array_almost_equal(DF2[3][0:2], [3, 0.18177510494570534], 10)
         np.testing.assert_array_almost_equal(DF2[4][0:2], [4, 0.2298370131312961], 10)
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

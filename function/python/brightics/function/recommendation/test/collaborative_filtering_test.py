@@ -14,6 +14,7 @@
     limitations under the License.
 """
 
+
 from brightics.function.recommendation.collaborative_filtering import collaborative_filtering_train
 from brightics.function.recommendation.collaborative_filtering import collaborative_filtering_predict
 from brightics.function.recommendation.collaborative_filtering import collaborative_filtering_recommend
@@ -21,6 +22,8 @@ from brightics.common.datasets import load_iris
 import unittest
 import pandas as pd
 import numpy as np
+import HtmlTestRunner
+import os
 
 
 class CollaborativeFiltering(unittest.TestCase):
@@ -48,4 +51,8 @@ class CollaborativeFiltering(unittest.TestCase):
         recommend_result = collaborative_filtering_recommend(self.testdata, user_col = 'user', item_col = 'item', rating_col = 'rating')        
         np.testing.assert_array_almost_equal(recommend_result['out_table']['rating_top1'][:5],[9.058001251195108,2.5503525350619616,2.19020248543627,1.2333489755922515,np.nan],10)
 
-        
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

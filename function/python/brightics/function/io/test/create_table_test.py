@@ -14,10 +14,13 @@
     limitations under the License.
 """
 
+
 from brightics.function.io import create_table
 import unittest
 import pandas as pd
 import numpy as np
+import HtmlTestRunner
+import os
 
 
 class TestCreateTable(unittest.TestCase):
@@ -51,4 +54,9 @@ class TestCreateTable(unittest.TestCase):
         np.testing.assert_array_equal(DF2[0].tolist(), [1.0, '', 2.4])
         np.testing.assert_array_equal(DF2[1].tolist(), [np.nan, 'def', 3.6])
         np.testing.assert_array_equal(DF2[2].tolist(), [3.0, 'ghi', np.nan])        
-        
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

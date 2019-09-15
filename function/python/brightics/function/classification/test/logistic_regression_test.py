@@ -14,10 +14,13 @@
     limitations under the License.
 """
 
+
 import unittest
 from brightics.common.datasets import load_iris
 from brightics.function.classification.logistic_regression import logistic_regression_train, \
     logistic_regression_predict
+import HtmlTestRunner
+import os
 
 
 class LogisticRegressionTest(unittest.TestCase):
@@ -99,4 +102,6 @@ class LogisticRegressionTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

@@ -14,11 +14,14 @@
     limitations under the License.
 """
 
+
 import unittest
 import pandas as pd
 import numpy as np
 from brightics.function.transform import random_sampling
 from brightics.common.datasets import load_iris
+import HtmlTestRunner
+import os
 
 
 class TestRandomSampling(unittest.TestCase):
@@ -38,3 +41,9 @@ class TestRandomSampling(unittest.TestCase):
         self.assertListEqual([6.2, 2.8, 4.8, 1.8, 'virginica'], df_res.loc[2].tolist(), 'incorrect sample[2]') 
         self.assertListEqual([5.8, 2.7, 5.1, 1.9, 'virginica'], df_res.loc[3].tolist(), 'incorrect sample[3]') 
         self.assertListEqual([4.9, 3.1, 1.5, 0.1, 'setosa'], df_res.loc[4].tolist(), 'incorrect sample[4]')
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

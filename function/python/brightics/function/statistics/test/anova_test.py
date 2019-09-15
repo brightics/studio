@@ -14,12 +14,15 @@
     limitations under the License.
 """
 
+
 import pandas as pd
 import unittest
 from brightics.function.statistics import bartletts_test
 from brightics.function.statistics.anova import oneway_anova
 from brightics.function.statistics.anova import twoway_anova
 from brightics.common.datasets import load_iris
+import HtmlTestRunner
+import os
 
 
 class TestBartlettsTest(unittest.TestCase):
@@ -32,10 +35,10 @@ class TestBartlettsTest(unittest.TestCase):
         
         self.assertListEqual(['sepal_length by species', 'sepal_width by species', 'petal_length by species', 'petal_width by species'],
                              df_res['data'].tolist(), 'incorrect data column')
-        self.assertAlmostEqual(16.005701874401502, df_res['estimate'].values[0], 'sepal_length by species: incorrect estimate')
-        self.assertAlmostEqual(2.2158125491551637, df_res['estimate'].values[1], 'sepal_length by species: incorrect estimate')
-        self.assertAlmostEqual(8.904503355816222e-13, df_res['p_value'].values[2], 'petal_length by species: incorrect p_value')
-        self.assertAlmostEqual(5.615311140767724e-09, df_res['p_value'].values[3], 'petal_width by species: incorrect p_value')
+        self.assertAlmostEqual(16.005701874401502, df_res['estimate'].values[0], 10, 'sepal_length by species: incorrect estimate')
+        self.assertAlmostEqual(2.2158125491551637, df_res['estimate'].values[1], 10, 'sepal_length by species: incorrect estimate')
+        self.assertAlmostEqual(8.904503355816222e-13, df_res['p_value'].values[2], 10, 'petal_length by species: incorrect p_value')
+        self.assertAlmostEqual(5.615311140767724e-09, df_res['p_value'].values[3], 10, 'petal_width by species: incorrect p_value')
 
         
 class TwowayAnovaTest(unittest.TestCase):
@@ -67,16 +70,22 @@ class TwowayAnovaTest(unittest.TestCase):
 
     def test_oneway1(self):
         oneway_anova_out = oneway_anova(table=self.iris, response_cols=['sepal_width'], factor_col='petal_width', group_by=None)
-        print(oneway_anova_out['result'])
+        #print(oneway_anova_out['result'])
 
     def test_oneway2(self):
         oneway_anova_out = oneway_anova(table=self.iris, response_cols=['sepal_width'], factor_col='petal_width', group_by=['species'])
-        print(oneway_anova_out['result'])
+        #print(oneway_anova_out['result'])
 
     def test_twoway1(self):
         twoway_anova_out = twoway_anova(table=self.example_df, response_cols=['value'], factor_cols=['Genotype', 'years'], group_by=None)
-        print(twoway_anova_out['result'])
+        #print(twoway_anova_out['result'])
 
     def test_twoway2(self):
         twoway_anova_out = twoway_anova(table=self.example_df, response_cols=['value'], factor_cols=['Genotype', 'years'], group_by=['Genotype'])
-        print(twoway_anova_out['result'])
+        #print(twoway_anova_out['result'])
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

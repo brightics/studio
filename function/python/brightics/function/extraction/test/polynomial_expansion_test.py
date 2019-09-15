@@ -20,6 +20,8 @@ from brightics.common.datasets import load_iris
 import unittest
 import pandas as pd
 import numpy as np
+import HtmlTestRunner
+import os
 
 
 class PolynomialExpansion(unittest.TestCase):
@@ -36,3 +38,9 @@ class PolynomialExpansion(unittest.TestCase):
         np.testing.assert_array_almost_equal([17.849999999999998,14.700000000000001,15.040000000000001,14.26,18], res['out_table']['sepal_length_sepal_width'][0:5], 10)
         np.testing.assert_array_almost_equal([26.009999999999998,24.010000000000005,22.090000000000003,21.159999999999997,25], res['out_table']['sepal_length_sepal_length'][0:5], 10)
         np.testing.assert_array_almost_equal([12.25,9,10.240000000000002,9.610000000000001,12.96], res['out_table']['sepal_width_sepal_width'][0:5], 10)
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

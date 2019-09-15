@@ -14,11 +14,14 @@
     limitations under the License.
 """
 
+
 import unittest
 import numpy as np
 from sklearn.model_selection import train_test_split
 from brightics.common.datasets import load_iris
 from brightics.function.regression import knn_regression
+import HtmlTestRunner
+import os
 
 
 class TestKNNRegression(unittest.TestCase):
@@ -31,7 +34,7 @@ class TestKNNRegression(unittest.TestCase):
                                 k=5, algorithm='auto', leaf_size=30, p=2)['out_table']
                                    
         np.testing.assert_array_almost_equal([4.0, 1.3800000000000001, 5.22, 1.52, 1.6800000000000002],
-                                             df_res['prediction'].values[:5], 7, 'incorrect prediction')
+                                             df_res['prediction'].values[:5], 10, 'incorrect prediction')
 
     def test_optional(self):
         df_iris = load_iris()
@@ -41,4 +44,10 @@ class TestKNNRegression(unittest.TestCase):
                                     k=3, algorithm='auto', leaf_size=10, p=2)['out_table']
         
         np.testing.assert_array_almost_equal([1.1333333333333335, 0.2333333333333333, 1.5666666666666667, 0.2333333333333333, 0.2333333333333333],
-                                             df_res['prediction'].values[:5], 7, 'incorrect prediction')
+                                             df_res['prediction'].values[:5], 10, 'incorrect prediction')
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

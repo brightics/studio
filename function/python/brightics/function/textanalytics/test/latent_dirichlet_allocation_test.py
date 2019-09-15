@@ -18,6 +18,8 @@
 import unittest
 import pandas as pd
 from brightics.function.textanalytics import lda
+import HtmlTestRunner
+import os
 
 
 class TestLatentDirichletAllocation(unittest.TestCase):
@@ -80,4 +82,6 @@ class TestLatentDirichletAllocation(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

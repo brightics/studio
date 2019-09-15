@@ -14,12 +14,15 @@
     limitations under the License.
 """
 
+
 from brightics.function.regression.penalized_linear_regression import penalized_linear_regression_train
 from brightics.function.regression.penalized_linear_regression import penalized_linear_regression_predict
 from brightics.common.datasets import load_iris
 import unittest
 import pandas as pd
 import numpy as np
+import HtmlTestRunner
+import os
 
 
 class PenalizedRegression(unittest.TestCase):
@@ -37,4 +40,8 @@ class PenalizedRegression(unittest.TestCase):
         predict = penalized_linear_regression_predict(self.testdata, train)['out_table']['prediction']
         np.testing.assert_array_almost_equal(predict[:5],[1.1986666666666668,1.1986666666666668,1.1986666666666668,1.1986666666666668,1.1986666666666668],10)
 
-        
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

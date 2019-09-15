@@ -14,11 +14,14 @@
     limitations under the License.
 """
 
+
 from brightics.function.evaluation import evaluate_classification
 from brightics.common.datasets import load_iris
 import unittest
 import pandas as pd
 import numpy as np
+import HtmlTestRunner
+import os
 
 
 class EvaluateClassification(unittest.TestCase):
@@ -37,4 +40,10 @@ class EvaluateClassification(unittest.TestCase):
         result = evaluate_classification(table=table,label_col='a',prediction_col='b')['result']
         np.testing.assert_almost_equal(result['f1_score'],0.07305502645502646,10)
         np.testing.assert_almost_equal(result['precision_score'],0.08168456543456543,10)  
-        
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))
+

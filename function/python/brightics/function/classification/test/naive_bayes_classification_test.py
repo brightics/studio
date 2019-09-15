@@ -14,12 +14,15 @@
     limitations under the License.
 """
 
+
 from brightics.function.classification.naive_bayes_classification import naive_bayes_train
 from brightics.function.classification.naive_bayes_classification import naive_bayes_predict
 from brightics.common.datasets import load_iris
 import unittest
 import pandas as pd
 import numpy as np
+import HtmlTestRunner
+import os
 
 
 class NaiveBayesClassification(unittest.TestCase):
@@ -43,14 +46,9 @@ class NaiveBayesClassification(unittest.TestCase):
         prob2 = predict['out_table']['probability_2']
         np.testing.assert_array_almost_equal(prob1[:5],[0.1609057108 ,0.1996142797 ,0.1803124811 ,0.2085379644 ,0.1564119916],10)
         np.testing.assert_array_almost_equal(prob2[:5],[0.0870622943 ,0.1158949593 ,0.1031335674 ,0.1235653077 ,0.0843493850],10)
-        """
-        outfile = open('D:/tmp', 'w')
-        for i in range(5):
-            print("%.10f " % prob1[i], end = ',', file=outfile)
-        print('', file=outfile)
-        for i in range(5):
-            print("%.10f " % prob2[i], end = ',', file=outfile)
-        print('', file=outfile)
-            
-        outfile.close()
-        """
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

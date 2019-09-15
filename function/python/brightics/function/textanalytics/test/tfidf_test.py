@@ -14,9 +14,12 @@
     limitations under the License.
 """
 
+
 import unittest
 import pandas as pd
 from brightics.function.textanalytics import tfidf2
+import HtmlTestRunner
+import os
 
 
 class TestTFIDF(unittest.TestCase):
@@ -87,4 +90,6 @@ class TestTFIDF(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

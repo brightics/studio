@@ -14,10 +14,13 @@
     limitations under the License.
 """
 
+
 import unittest
 import numpy as np
 from brightics.common.datasets import load_iris
 from brightics.function.regression import random_forest_regression_train, random_forest_regression_predict
+import HtmlTestRunner
+import os
 
 
 class TestRandomForestRegression(unittest.TestCase):
@@ -31,10 +34,14 @@ class TestRandomForestRegression(unittest.TestCase):
                                                      max_depth=None, min_samples_split=2, min_samples_leaf=1,
                                                      min_weight_fraction_leaf=0, max_features="None",
                                                      max_leaf_nodes=None, min_impurity_decrease=0, random_state=12345)['model']
+                                                     
+        df_feature_importance = model_train['feature_importance_table']
+        np.testing.assert_array_almost_equal([0.8419393152, 0.1580606848], [df_feature_importance.values[i][1] for i in range(2)], 10, 'incorrect feature_importance')
+        
         df_res = random_forest_regression_predict(table=df_iris, model=model_train, prediction_col='prediction')['out_table']
                                            
         np.testing.assert_array_almost_equal([1.3975, 1.4200000000000002, 1.446, 1.45, 1.41],
-                                             df_res['prediction'].values[:5], 7, 'incorrect prediction')
+                                             df_res['prediction'].values[:5], 10, 'incorrect prediction')
         
     def test_optional(self):
         
@@ -46,7 +53,17 @@ class TestRandomForestRegression(unittest.TestCase):
                                                      max_depth=None, min_samples_split=2, min_samples_leaf=1,
                                                      min_weight_fraction_leaf=0, max_features="None",
                                                      max_leaf_nodes=None, min_impurity_decrease=0, random_state=12345)['model']
+                                                     
+        df_feature_importance = model_train['feature_importance_table']
+        np.testing.assert_array_almost_equal([0.0201313834, 0.0233862213, 0.9564823953], [df_feature_importance.values[i][1] for i in range(3)], 10, 'incorrect feature_importance')
+        
         df_res = random_forest_regression_predict(table=df_iris, model=model_train, prediction_col='prediction')['out_table']
                                            
         np.testing.assert_array_almost_equal([0.24708333333333332, 0.19000000000000009, 0.20000000000000004, 0.19166666666666674, 0.23875000000000002],
-                                             df_res['prediction'].values[:5], 7, 'incorrect prediction')
+                                             df_res['prediction'].values[:5], 10, 'incorrect prediction')
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

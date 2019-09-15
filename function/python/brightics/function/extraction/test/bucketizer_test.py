@@ -14,11 +14,14 @@
     limitations under the License.
 """
 
+
 from brightics.function.extraction.bucketizer import bucketizer
 from brightics.common.datasets import load_iris
 import unittest
 import pandas as pd
 import numpy as np
+import HtmlTestRunner
+import os
 
 
 class Bucketizer(unittest.TestCase):
@@ -33,6 +36,9 @@ class Bucketizer(unittest.TestCase):
     def test(self):
         result = bucketizer(self.testdata, input_cols='sepal_length', radio_splits = 'merong', splits_from = 0,splits_to=10, splits_by = 0.1, new_name = 'prediction')['out_table']
         np.testing.assert_array_almost_equal(result.prediction[:5], [52.0000000000 ,50.0000000000 ,48.0000000000 ,47.0000000000 ,51.0000000000] , 10)
-        
 
 
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

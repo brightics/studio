@@ -14,11 +14,14 @@
     limitations under the License.
 """
 
+
 import unittest
 import pandas as pd
 import numpy as np
 from brightics.function.transform import split_data
 from brightics.common.datasets import load_iris
+import HtmlTestRunner
+import os
 
 
 class TestSplitData(unittest.TestCase):
@@ -56,3 +59,9 @@ class TestSplitData(unittest.TestCase):
         self.assertListEqual([5.6, 2.5, 3.9, 1.1, 'versicolor'], df_test.loc[0].tolist(), 'incorrect train data in the 1st row')
         self.assertListEqual([4.4, 3.2, 1.3, 0.2, 'setosa'], df_test.loc[1].tolist(), 'incorrect train data in the 2nd row')
         self.assertListEqual([6.3, 3.3, 4.7, 1.6, 'versicolor'], df_test.loc[2].tolist(), 'incorrect train data in the 3rd row')
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

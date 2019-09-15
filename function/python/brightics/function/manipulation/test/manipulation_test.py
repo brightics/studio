@@ -14,12 +14,16 @@
     limitations under the License.
 """
 
+
 import unittest
 import pandas as pd
 import numpy as np
 from brightics.function.manipulation import filter, sort, replace_missing_number, replace_missing_string, simple_filter
 from brightics.common.datasets import load_iris
 from brightics.common.exception import BrighticsFunctionException
+import HtmlTestRunner
+import os
+
 
 df_example1 = pd.DataFrame({'num1':[1, 2, 3, 4, 5],
                             'num2':[10, 20, 30, 40, 50],
@@ -37,14 +41,10 @@ class ManipulationTest(unittest.TestCase):
     def test_filter(self):
         df = df_example1.copy()
         out_df = filter(df, 'num1 > 1 & num2 != 40')['out_table']
-        print(df)
-        print(out_df)
 
     def test_simple_filter_1(self):
         df = df_example1.copy()
         out_df = simple_filter(df, ['num1', 'num2', 'str1'], ['>', 'not in', 'in'], ['1', '''[40]''', '''['b','e']'''], 'and')['out_table']
-        print(df)
-        print(out_df)
 
     def test_simple_filter_2(self):
         df = df_example1.copy()
@@ -150,3 +150,9 @@ class ReplaceMissingString(unittest.TestCase):
         np.testing.assert_almost_equal(func['out_table']['C'].values, np.array([np.nan, np.nan, np.nan, np.nan]),10)
         np.testing.assert_almost_equal(func['out_table']['D'].values, np.array([0,1,5,4]),10)
         np.testing.assert_equal(func['out_table']['E'].values, np.array(['A','B','C','null']),10)
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

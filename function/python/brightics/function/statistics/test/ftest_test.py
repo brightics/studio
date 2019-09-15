@@ -14,11 +14,14 @@
     limitations under the License.
 """
 
+
 from brightics.function.statistics.ftest import ftest_for_stacked_data
 from brightics.common.datasets import load_iris
 import unittest
 import pandas as pd
 import numpy as np
+import HtmlTestRunner
+import os
 
 
 class F_Test(unittest.TestCase):
@@ -37,4 +40,8 @@ class F_Test(unittest.TestCase):
         np.testing.assert_array_almost_equal(ftest.p_value, [0.9956714058186501,0.0043285941813499046,0.008657188362699797], 10)
         np.testing.assert_array_almost_equal(ftest.lower_confidence_interval, [0.2376157326265369,0.0,0.22069688033086174], 10)
 
-        
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

@@ -14,6 +14,7 @@
     limitations under the License.
 """
 
+
 from brightics.function.statistics.summary import statistic_summary, \
     statistic_derivation, string_summary
 from brightics.common.datasets import load_iris
@@ -21,6 +22,8 @@ import unittest
 import pandas as pd
 import numpy as np
 import random
+import HtmlTestRunner
+import os
 
 
 class StatisticSummary(unittest.TestCase):
@@ -201,3 +204,9 @@ class SummaryTest(unittest.TestCase):
         out = statistic_derivation(df, input_cols=['d1', 'd2', 'd3'], statistics=['min', 'mode'], percentile_amounts=[0.1, 0.75], trimmed_mean_amounts=[0.1, 0.3])['out_table']
         print(out)
 """     
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

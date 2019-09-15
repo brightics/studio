@@ -14,11 +14,14 @@
     limitations under the License.
 """
 
+
 from brightics.function.transform import delete_missing_data
 from brightics.common.datasets import load_iris
 import unittest
 import pandas as pd
 import numpy as np
+import HtmlTestRunner
+import os
 
 
 class DeleteMissingData(unittest.TestCase):
@@ -38,4 +41,9 @@ class DeleteMissingData(unittest.TestCase):
         result = delete_missing_data(table=self.data,input_cols=['number2','string1'])['out_table'].values
         np.testing.assert_array_equal(result[0], np.array([1, 10, 'A', 'a'],dtype=object))
         np.testing.assert_array_equal(result[1], np.array([2, 20, 'A', None],dtype=object))
-    
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

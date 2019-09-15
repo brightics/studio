@@ -14,10 +14,13 @@
     limitations under the License.
 """
 
+
 import pandas as pd
 import unittest
 from brightics.function.textanalytics import doc_term_mtx
 from brightics.function.textanalytics import bow
+import HtmlTestRunner
+import os
 
 
 class TestTermDocumentMatrix(unittest.TestCase):
@@ -69,7 +72,9 @@ class TestTermDocumentMatrix(unittest.TestCase):
         self.assertListEqual(table[2], ['life', 1, 0, 0, 0, 0, 0, 0, 0, 0, 0])
         self.assertListEqual(table[3], ['wonderful', 1, 0, 0, 0, 0, 0, 0, 0, 0, 0])
         self.assertListEqual(table[4], ['You', 0, 1, 0, 0, 0, 0, 0, 0, 0, 0])
-        
+
 
 if __name__ == '__main__':
-    unittest.main()
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

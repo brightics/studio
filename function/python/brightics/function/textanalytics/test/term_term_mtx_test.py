@@ -14,10 +14,13 @@
     limitations under the License.
 """
 
+
 import pandas as pd
 import unittest
 from brightics.function.textanalytics import term_term_mtx
 from brightics.function.textanalytics import bow
+import HtmlTestRunner
+import os
 
 
 class TestTermTermMatrix(unittest.TestCase):
@@ -72,4 +75,6 @@ class TestTermTermMatrix(unittest.TestCase):
         
         
 if __name__ == '__main__':
-    unittest.main()
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

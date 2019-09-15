@@ -19,6 +19,8 @@ from brightics.function.extraction import add_shift
 from brightics.common.datasets import load_iris
 import unittest
 import math
+import HtmlTestRunner
+import os
 
 
 class AddShiftTest(unittest.TestCase):
@@ -54,5 +56,8 @@ class AddShiftTest(unittest.TestCase):
         self.assertListEqual(table[2], [4.9, 3.0, 1.4, 0.2, 'setosa', 4.4])
         self.assertListEqual(table[3], [4.8, 3.0, 1.4, 0.1, 'setosa', 4.9])
 
+
 if __name__ == '__main__':
-    unittest.main()
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

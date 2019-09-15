@@ -14,12 +14,15 @@
     limitations under the License.
 """
 
+
 from brightics.function.extraction.pca import pca, pca_model
 from brightics.common.datasets import load_iris
 import unittest
 import random
 import pandas as pd
 import numpy as np
+import HtmlTestRunner
+import os
 
 
 def get_iris_randomgroup():
@@ -79,3 +82,9 @@ class TestPCA(unittest.TestCase):
         model_out = pca_model(df, enc_out['model'])
         # print(model_out['out_table'])
     '''
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))
