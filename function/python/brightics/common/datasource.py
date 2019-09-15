@@ -24,7 +24,8 @@ class DbEngine:
         'postgre': 'postgresql+pg8000',
         'oracle': 'oracle+cx_oracle',
         'mysql': 'mysql+pymysql',
-        'mariadb': 'mysql+pymysql'
+        'mariadb': 'mysql+pymysql',
+        'mssql' : 'mssql+pymssql'
     }
     required_keys = {'dbType', 'username', 'password', 'ip', 'port', 'dbName'}
 
