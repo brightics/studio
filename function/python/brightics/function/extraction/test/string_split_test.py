@@ -51,3 +51,4 @@ if __name__ == '__main__':
     filepath = os.path.dirname(os.path.abspath(__file__))
     reportFoler = filepath + "/../../../../../../../reports"
     unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))
+

@@ -20,8 +20,6 @@ from brightics.common.datasets import load_iris
 import unittest
 import pandas as pd
 import numpy as np
-import HtmlTestRunner
-import os
 
 
 class MLPClassification(unittest.TestCase):
@@ -55,3 +53,4 @@ if __name__ == '__main__':
     filepath = os.path.dirname(os.path.abspath(__file__))
     reportFoler = filepath + "/../../../../../../../reports"
     unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))
+
