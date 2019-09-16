@@ -14,24 +14,37 @@
     limitations under the License.
 """
 
+
 import unittest
 from brightics.common.datasets import load_iris
 from brightics.function.io.unload import write_csv
 from brightics.function.io.load import read_csv
 import pandas
 import os
+import HtmlTestRunner
+import os
 
 
 class LoadTest(unittest.TestCase):
 
-    path_kr = '아이리스.csv'
+    _path = 'sample_iris.csv'    
+    
+    def setUp(self):
+        print("*** Load Table UnitTest Start ***")
 
     def tearDown(self):
-        if os.path.exists(self.path_kr):
-            os.remove(self.path_kr)
+        if os.path.exists(self._path):
+            os.remove(self._path)
+        print("*** Load Table UnitTest End ***")
 
     def test_read_write_csv_korean_path(self):
         df = load_iris()
-        write_csv(table=df, path=self.path_kr)
-        df_load = read_csv(path=self.path_kr)['table']
+        write_csv(table=df, path=self._path)
+        df_load = read_csv(path=self._path)['table']
         pandas.testing.assert_frame_equal(df, df_load)
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))

@@ -21,6 +21,8 @@ from brightics.common.datasets import load_iris
 import unittest
 import pandas as pd
 import numpy as np
+import HtmlTestRunner
+import os
 
 
 class ArrayColumnConversion(unittest.TestCase):
@@ -44,3 +46,10 @@ class ArrayColumnConversion(unittest.TestCase):
         np.testing.assert_array_equal(list(column['array_1']), list(self.testdata['sepal_width']))
         np.testing.assert_array_equal(list(column['array_2']), list(self.testdata['petal_length']))
         np.testing.assert_array_equal(list(column['array_3']), list(self.testdata['petal_width']))
+
+
+if __name__ == '__main__':
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    reportFoler = filepath + "/../../../../../../../reports"
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))
+
