@@ -59,7 +59,7 @@ public enum PythonScriptType {
         @Override
         public String getSource(TaskMessageWrapper message) {
             return scriptBuilder(message).
-                    addInputsScript().
+                    addInputsUDFScript().
                     addParameters().
                     addScript().
                     addPutOutputsScript().

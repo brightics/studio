@@ -92,6 +92,18 @@ public class PythonScriptBuilder {
         return this;
     }
 
+    PythonScriptBuilder addInputsUDFScript() {
+        DataAttribute inputs = message.getInputs();
+
+        for (Entry<String, Collection<String>> entry : inputs.entrySetAsIterableValue()) {
+            script.add(entry.getValue().stream().
+                    map(this::makeDataLoadScript).
+                    collect(Collectors.joining(", ", String.format("%s = ", entry.getKey()), " ")));
+        }
+
+        return this;
+    }
+
     PythonScriptBuilder addOutDataScript() {
         String[] outDatas = message.getOutData();
 
