@@ -126,7 +126,7 @@ public class PythonProcessManager {
             if(IS_WINDOWS){
                 Runtime.getRuntime().exec("taskkill /F /PID " + pythonProcessPid);
             } else {
-                Runtime.getRuntime().exec("kill -SIGINT " + pythonProcessPid);
+                Runtime.getRuntime().exec("kill -SIGKILL " + pythonProcessPid);
             }
             return true;
         } catch (IOException e) {
