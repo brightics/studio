@@ -160,12 +160,14 @@ def pivot2(table, values, aggfunc, index=None, columns=None):  # TODO
             for name in out_table.columns.tolist()[len(columns) + 1:]:
                 name_list.append(name[1:])
             out_table.columns = out_table.columns.tolist()[:len(columns) + 1] + name_list
+        return {'out_table': out_table}
+    
     elif index is not None:
         name_list = []
         for name in out_table.columns.tolist()[len(index):]:
             name_list.append(name[0][1:] + "_" + "_".join(str(i) for i in name[1:]))
-        out_table.columns = index + name_list
-    return {'out_table':out_table}
+        out_table.columns = out_table.columns.tolist()[:len(index)] + name_list
+        return {'out_table':out_table[index + name_list]}
 
 
 def transpose(table, group_by=None, **params):
