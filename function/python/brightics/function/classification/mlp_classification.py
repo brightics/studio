@@ -61,9 +61,9 @@ def mlp_classification_train(table, group_by=None, **params):
         return _mlp_classification_train(table, **params)
 
 
-def _mlp_classification_train(table, feature_cols, label_col, hidden_layer_sizes=(100, ), activation='relu', solver='adam', alpha=0.0001, batch_size_auto=True, batch_size='auto', learning_rate='constant', learning_rate_init=0.001, max_iter=200, random_state=None, tol=0.0001):
+def _mlp_classification_train(table, feature_cols, label_col, hidden_layer_sizes=(100,), activation='relu', solver='adam', alpha=0.0001, batch_size_auto=True, batch_size='auto', learning_rate='constant', learning_rate_init=0.001, max_iter=200, random_state=None, tol=0.0001):
 
-    feature_names, features = check_col_type(table,feature_cols)
+    feature_names, features = check_col_type(table, feature_cols)
     label = table[label_col]
 
     if(sklearn_utils.multiclass.type_of_target(label) == 'continuous'):
@@ -73,12 +73,6 @@ def _mlp_classification_train(table, feature_cols, label_col, hidden_layer_sizes
     mlp_model.fit(features, label)
     
     predict = mlp_model.predict(features)
-
-    intercepts = mlp_model.intercepts_
-    coefficients = mlp_model.coefs_
-    classes = mlp_model.classes_
-    # is_binary = len(classes) == 2
-    loss = mlp_model.loss_
     
     _accuracy_score = accuracy_score(label, predict)
     _f1_score = f1_score(label, predict, average='micro')
@@ -160,7 +154,7 @@ def _mlp_classification_predict(table, model, prediction_col='prediction', prob_
                                  output_log_prob=False, log_prob_prefix='log_probability', thresholds=None,
                                  suffix='index'):
     feature_cols = model['features']
-    feature_names, features = check_col_type(table,feature_cols)
+    feature_names, features = check_col_type(table, feature_cols)
     mlp_model = model['mlp_model']
     classes = mlp_model.classes_
     len_classes = len(classes)
@@ -180,7 +174,7 @@ def _mlp_classification_predict(table, model, prediction_col='prediction', prob_
         raise_error('0613', ['thresholds'])
     
     prob = mlp_model.predict_proba(features)
-    prediction = classes[np.argmax(prob/thresholds,axis=1)]
+    prediction = classes[np.argmax(prob / thresholds, axis=1)]
         
     out_table = table.copy()
     out_table[prediction_col] = prediction

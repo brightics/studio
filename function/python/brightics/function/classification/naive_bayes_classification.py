@@ -20,7 +20,7 @@ from sklearn.metrics import confusion_matrix
 import pandas as pd
 from sklearn import preprocessing
 import itertools
-from sklearn.naive_bayes import MultinomialNB
+from sklearn.naive_bayes import MultinomialNB, BernoulliNB
 from brightics.common.repr import BrtcReprBuilder
 from brightics.common.repr import strip_margin
 from brightics.common.repr import plt2MD
@@ -141,18 +141,33 @@ def naive_bayes_predict(table, model, **params):
 
 
 def _naive_bayes_predict(table, model, suffix, display_log_prob=False, prediction_col='prediction', prob_prefix='probability', log_prob_prefix='log_probability'):
-    feature_cols = model['features']
-    feature_names, features = check_col_type(table, feature_cols)
-    nb_model = model['nb_model']
-    label_encoder = model['label_encoder']
-
-    prediction_correspond = nb_model.predict(features)
-    prediction = label_encoder.inverse_transform(prediction_correspond)
-
-    if suffix == 'label':
-        suffixes = label_encoder.classes_
+    if 'features' in model:
+        feature_cols = model['features']
     else:
-        suffixes = range(0, len(label_encoder.classes_)) 
+        feature_cols = model['feature_cols']
+    feature_names, features = check_col_type(table, feature_cols)
+    if 'nb_model' in model:
+        nb_model = model['nb_model']
+    else:
+        model_table = model['table_1']
+        if model_table.model_type[0] == 'multinomial':
+            nb_model = MultinomialNB()
+        else:
+            nb_model = BernoulliNB()
+        nb_model.fit([[1]], [1])
+        nb_model.classes_ = np.array([0, 1])
+        nb_model.class_log_prior_ = model_table.pi.values
+        nb_model.feature_log_prob_ = np.array(list(model_table.theta))
+    prediction = nb_model.predict(features)
+    if 'label_encoder' in model:
+        label_encoder = model['label_encoder']
+        prediction = label_encoder.inverse_transform(prediction)
+        if suffix == 'label':
+            suffixes = label_encoder.classes_
+        else:
+            suffixes = range(0, len(label_encoder.classes_))
+    else:
+        suffixes = [0, 1]
 
     prob = nb_model.predict_proba(features)    
     prob_cols = ['{prefix}_{suffix}'.format(prefix=prob_prefix, suffix=suffix) for suffix in suffixes]

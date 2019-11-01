@@ -5,18 +5,12 @@
     },
     "specJson": {
         "category": "classification",
-        "func": "brightics.function.classification$xgb_classification_predict",
-        "name": "brightics.function.classification$xgb_classification_predict",
+        "func": "brightics.function.classification$classification_predictedict",
+        "name": "brightics.function.classification$classification_predict",
         "context": "python",
-        "label": "XGB Classification Predict",
-        "description": "Using the result of 'XGB Classification Train', this function predicts with the input table",
-        "tags": [
-            "xgboost",
-            "python",
-            "tree",
-            "classification",
-            "predict"
-        ],
+        "label": "Classification Predict",
+        "description": "Predict data using a loaded classification model.",
+        "tags": [],
         "version": "3.6",
         "inputs": {
             "table": "",
@@ -26,34 +20,34 @@
             "out_table": ""
         },
         "meta": {
-            "out_table": {
-                "type": "table"
-            },
             "table": {
                 "type": "table"
             },
             "model": {
                 "type": "model"
+            },
+            "out_table": {
+                "type": "table"
             }
         },
         "params": [
             {
                 "id": "prediction_col",
                 "label": "Prediction Column Name",
-                "description": "Column name for prediction.",
+                "description": "Column name for Prediction.",
                 "mandatory": false,
                 "items": [],
                 "visibleOption": [],
                 "control": "InputBox",
                 "columnType": [],
                 "validation": [],
-                "type": "String",
-                "placeHolder": "prediction"
+                "placeHolder": "prediction",
+                "type": "String"
             },
             {
-                "id": "probability_col",
+                "id": "prob_prefix",
                 "label": "Probability Column Prefix",
-                "description": "Probability Column Name",
+                "description": "Prefix column name for Probability.",
                 "mandatory": false,
                 "items": [],
                 "visibleOption": [],
@@ -61,6 +55,36 @@
                 "columnType": [],
                 "validation": [],
                 "placeHolder": "probability",
+                "type": "String"
+            },
+            {
+                "id": "output_log_prob",
+                "label": "Display Log Probability",
+                "description": "Display Log Probability.",
+                "mandatory": false,
+                "items": [],
+                "visibleOption": [],
+                "control": "BooleanRadio",
+                "columnType": [],
+                "validation": [],
+                "defaultValue": false
+            },
+            {
+                "id": "log_prob_prefix",
+                "label": "Log Probability Column Prefix",
+                "description": "Log Probability column prefix.",
+                "mandatory": false,
+                "items": [],
+                "visibleOption": [
+                    {
+                        "id": "output_log_prob",
+                        "value": true
+                    }
+                ],
+                "control": "InputBox",
+                "columnType": [],
+                "validation": [],
+                "placeHolder": "log_probability",
                 "type": "String"
             },
             {
@@ -88,7 +112,7 @@
             {
                 "id": "thresholds",
                 "label": "Thresholds",
-                "description": "Thresholds used to predict.",
+                "description": "Thresholds used to predict. Return the biggest value of probability/threshold. In binary case, this is equivalent with choosing the first value if and only if probability is bigger than threshold. Please note that prediction values are sorted in alphabetical order when you input lists of thresholds.",
                 "mandatory": false,
                 "items": [],
                 "visibleOption": [],

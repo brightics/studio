@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 import unittest
 from brightics.function.classification import svm_classification_train, svm_classification_predict
 from brightics.function.transform import split_data
@@ -58,7 +57,7 @@ class SVMTest(unittest.TestCase):
     def test_groupby1(self):
         df = load_iris()
         random_group = []
-        for i in range(len(df)):
+        for _ in range(len(df)):
             random_group.append(random.randint(1, 2))
         df['random_group'] = random_group
         
@@ -71,7 +70,7 @@ class DecisionTreeClassificationTest(unittest.TestCase):
     def test_groupby1(self):
         df = load_iris()
         random_group = []
-        for i in range(len(df)):
+        for _ in range(len(df)):
             random_group.append(random.randint(1, 2))
         df['random_group'] = random_group
         
@@ -84,7 +83,7 @@ class LogisticRegressionTest(unittest.TestCase):
     def test_groupby1(self):
         df = load_iris()
         random_group = []
-        for i in range(len(df)):
+        for _ in range(len(df)):
             random_group.append(random.randint(1, 2))
         df['random_group'] = random_group
         
@@ -97,7 +96,7 @@ class XGBClassificationTest(unittest.TestCase):
     def test_groupby1(self):
         df = load_iris()
         random_group = []
-        for i in range(len(df)):
+        for _ in range(len(df)):
             random_group.append(random.randint(1, 2))
         df['random_group'] = random_group
         

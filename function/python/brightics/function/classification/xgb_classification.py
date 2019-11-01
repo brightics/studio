@@ -45,17 +45,51 @@ def xgb_classification_train(table, group_by=None, **params):
         return _xgb_classification_train(table, **params)
 
 
+def _make_sample_weight(label, class_weight):
+        return class_weight[label]
+
+    
 def _xgb_classification_train(table, feature_cols, label_col, max_depth=3, learning_rate=0.1, n_estimators=100,
             silent=True, objective='binary:logistic', booster='gbtree', n_jobs=1, nthread=None, gamma=0, min_child_weight=1,
             max_delta_step=0, subsample=1, colsample_bytree=1, colsample_bylevel=1, reg_alpha=0, reg_lambda=1,
-            scale_pos_weight=1, base_score=0.5, random_state=0, seed=None, missing=None,
-            sample_weight=None, eval_set=None, eval_metric=None, early_stopping_rounds=None, verbose=True,
+            scale_pos_weight=1, base_score=0.5, random_state=0, seed=None, missing=None, importance_type='gain',
+            class_weight=None, eval_set=None, eval_metric=None, early_stopping_rounds=None, verbose=True,
             xgb_model=None, sample_weight_eval_set=None):
     
-    classifier = XGBClassifier(max_depth, learning_rate, n_estimators,
-                               silent, objective, booster, n_jobs, nthread, gamma, min_child_weight,
-                               max_delta_step, subsample, colsample_bytree, colsample_bylevel, reg_alpha, reg_lambda,
-                               scale_pos_weight, base_score, random_state, seed, missing)
+    y_train = table[label_col]
+    class_labels = sorted(set(y_train))
+    if class_weight is None:
+        sample_weight = None
+    else:
+        if len(class_weight) != len(class_labels):
+            raise ValueError("Number of class weights should match number of labels.")
+        else:            
+            class_weight = {class_labels[i] : class_weight[i] for i in range(len(class_labels))}
+            sample_weight = np.vectorize(_make_sample_weight)(y_train, class_weight)
+
+    classifier = XGBClassifier(max_depth=max_depth,
+                               learning_rate=learning_rate,
+                               n_estimators=n_estimators,
+                               silent=silent,
+                               objective=objective,
+                               booster=booster,
+                               n_jobs=n_jobs,
+                               nthread=nthread,
+                               gamma=gamma,
+                               min_child_weight=min_child_weight,
+                               max_delta_step=max_delta_step,
+                               subsample=subsample,
+                               colsample_bytree=colsample_bytree,
+                               colsample_bylevel=colsample_bylevel,
+                               reg_alpha=reg_alpha,
+                               reg_lambda=reg_lambda,
+                               scale_pos_weight=scale_pos_weight,
+                               base_score=base_score,
+                               random_state=random_state,
+                               seed=seed,
+                               missing=missing,
+                               importance_type=importance_type)
+    
     classifier.fit(table[feature_cols], table[label_col],
                    sample_weight, eval_set, eval_metric, early_stopping_rounds, verbose,
                    xgb_model, sample_weight_eval_set)
@@ -115,7 +149,7 @@ def _xgb_classification_train(table, feature_cols, label_col, max_depth=3, learn
                list_parameters=params            
                )))     
     model['_repr_brtc_'] = rb.get() 
-    feature_importance_table = pd.DataFrame([[feature_cols[i],feature_importance[i]] for i in range(len(feature_cols))],columns = ['feature_name','importance'])
+    feature_importance_table = pd.DataFrame([[feature_cols[i], feature_importance[i]] for i in range(len(feature_cols))], columns=['feature_name', 'importance'])
     model['feature_importance_table'] = feature_importance_table
     return {'model' : model}
 
@@ -149,7 +183,7 @@ def _xgb_classification_predict(table, model, prediction_col='prediction', proba
             thresholds = np.array(thresholds)
     
     prob = classifier.predict_proba(table[feature_cols], ntree_limit)
-    prediction = classes[np.argmax(prob/thresholds,axis=1)]
+    prediction = classes[np.argmax(prob / thresholds, axis=1)]
     
     if suffix == 'index':
         suffixes = [i for i, _ in enumerate(classes)]
