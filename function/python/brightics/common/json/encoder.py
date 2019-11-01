@@ -98,15 +98,24 @@ class PickleEncoder(DefaultEncoder):
         elif hasattr(o, '_repr_html_'):
             rb = BrtcReprBuilder()
             rb.addHTML(o._repr_html_())
-            return {'_repr_brtc_':rb.get(), '__pickled__': list(pickle.dumps(o))}
+            if isinstance(o, pd.DataFrame):
+                return {'_repr_brtc_':rb.get(), '__pickled__': list(pickle.dumps(o)), 'type':'table'}
+            else:
+                return {'_repr_brtc_':rb.get(), '__pickled__': list(pickle.dumps(o))}
         elif hasattr(o, 'savefig'):
             rb = BrtcReprBuilder()
             rb.addPlt(o)
-            return {'_repr_brtc_':rb.get(), '__pickled__': list(pickle.dumps(o))}
+            if isinstance(o, pd.DataFrame):
+                return {'_repr_brtc_':rb.get(), '__pickled__': list(pickle.dumps(o)), 'type':'table'}
+            else:
+                return {'_repr_brtc_':rb.get(), '__pickled__': list(pickle.dumps(o))}
         else:
             rb = BrtcReprBuilder()
             rb.addRawTextMD(str(o))
-            return {'_repr_brtc_':rb.get(), '__pickled__': list(pickle.dumps(o))}
+            if isinstance(o, pd.DataFrame):
+                return {'_repr_brtc_':rb.get(), '__pickled__': list(pickle.dumps(o)), 'type':'table'}
+            else:
+                return {'_repr_brtc_':rb.get(), '__pickled__': list(pickle.dumps(o))}
 
 
 

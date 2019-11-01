@@ -46,3 +46,13 @@ def make_data_path(path):
 
 def make_data_path_from_key(key):
     return make_data_path(gateway.data_root + key)
+
+
+def get_unique_column_name(col_name, table):
+    new_col_name = col_name
+    col_index = 0
+    while new_col_name in table.columns:
+        new_col_name = '{}_{}'.format(col_name, col_index)
+        col_index += 1
+
+    return new_col_name

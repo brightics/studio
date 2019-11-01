@@ -62,16 +62,16 @@ def _function_by_group(function, table=None, model=None, group_by=None, **params
     if isinstance(table, pd.DataFrame):
         table, group_key_dict = _group(table, group_by)  # use group keys from table even there is a model.
 
-    print('Number of groups: {}'.format(len(group_key_dict)))
-    print('group_by: {}'.format(group_by))
-    print('group_key_dict: {}'.format(group_key_dict))
+    #print('Number of groups: {}'.format(len(group_key_dict)))
+    #print('group_by: {}'.format(group_by))
+    #print('group_key_dict: {}'.format(group_key_dict))
 
     sample_result = _sample_result(function, table, model, params, group_key_dict)
     res_keys, df_keys, model_keys_containing_repr = _info_from_sample_result(sample_result, group_by, group_key_dict)
     res_dict, success_keys = _function_by_group_key(function, table, model, params, group_key_dict, res_keys, group_by)
 
-    print(res_dict)
-    print(success_keys)
+    #print(res_dict)
+    #print(success_keys)
     for repr_key in model_keys_containing_repr:
         rb = BrtcReprBuilder()
         for group in success_keys:
@@ -116,32 +116,32 @@ def _flatten(grouped_table):
 
 @time_usage
 def _sample_result(function, table, model, params, group_key_dict):
-    print( '_sample_result is running' )
+    #print( '_sample_result is running' )
     sample_result = None
     for sample_group in group_key_dict:
-        print( '_sample_result for group {} is running.'.format(sample_group) )
+        #print( '_sample_result for group {} is running.'.format(sample_group) )
         try:
             sample_result = _run_function(function, table, model, params, sample_group)
             break
         except Exception:
-            print( '_sample_result got an exception while running for group {}.'.format(sample_group) )
+            #print( '_sample_result got an exception while running for group {}.'.format(sample_group) )
             traceback.print_exc()
 
     if sample_result is None:
         raise Exception('Please check the dataset. All the sample run fails.')
-    print( '_sample_result finished.' )
+    #print( '_sample_result finished.' )
     return sample_result  # if all the cases failed
 
 
 def _function_by_group_key(function, table, model, params, group_key_dict, res_keys, group_by):
-    print( '_function_by_group_key is running' )
+    #print( '_function_by_group_key is running' )
     res_dict = dict()
     for res_key in res_keys:
         res_dict[res_key] = {'_grouped_data': _grouped_data(group_by, dict())}
     
     success_keys = []
     for group_key in group_key_dict:  # todo try except
-        print( '_function_by_group_key for group {} is running.'.format(group_key) )
+        #print( '_function_by_group_key for group {} is running.'.format(group_key) )
         try:
             res_group = _run_function(function, table, model, params, group_key)
 
@@ -151,10 +151,10 @@ def _function_by_group_key(function, table, model, params, group_key_dict, res_k
 
             success_keys.append(group_key)
         except Exception:
-            print( '_function_by_group_key got an exception while running for group {}.'.format(group_key) )
+            #print( '_function_by_group_key got an exception while running for group {}.'.format(group_key) )
             traceback.print_exc()
 
-    print( '_function_by_group_key finished.' )
+    #print( '_function_by_group_key finished.' )
     return res_dict, success_keys
 
 
