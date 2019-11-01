@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.transform import split_data
-res = split_data(train_ratio = ,test_ratio = ,random_state = ,group_by = )
+res = split_data(table = ,train_ratio = ,test_ratio = ,random_state = ,group_by = )
 res['train_table']
 res['test_table']
 ```
@@ -14,8 +14,7 @@ Split data into random train and test subsets.
 
 ## Properties
 ### VA
-#### Inputs
-1. **table**: table
+#### Inputs: table
 
 #### Parameters
 1. **Train Ratio**: Train ratio.
@@ -28,13 +27,10 @@ Split data into random train and test subsets.
    - Value type : Integer
 4. **Group By**: Columns to group by
 
-#### Outputs
-1. **train_table**: table
-2. **test_table**: table
+#### Outputs: table, table
 
 ### Python
-#### Inputs
-1. **table**: table
+#### Inputs: table
 
 #### Parameters
 1. **train_ratio**: Train ratio.
@@ -47,7 +43,5 @@ Split data into random train and test subsets.
    - Value type : Integer
 4. **group_by**: Columns to group by
 
-#### Outputs
-1. **train_table**: table
-2. **test_table**: table
+#### Outputs: table, table
 

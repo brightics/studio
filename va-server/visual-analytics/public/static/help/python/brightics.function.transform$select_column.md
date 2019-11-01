@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.transform import select_column
-res = select_column(table = ,input_cols = ,output_cols = ,output_types = )
+res = select_column(table = ,input_cols = )
 res['out_table']
 ```
 
@@ -16,7 +16,7 @@ Reorganize table with the selected columns according to the selected sequence.
 #### Inputs: table
 
 #### Parameters
-1. **Selected Column (Condition)**<b style="color:red">*</b>: Columns to be in the output table. The name and type of each selected columns can be reassigned. 
+1. **Selected Column**<b style="color:red">*</b>: Columns to select as input
 
 #### Outputs: table
 
@@ -24,9 +24,7 @@ Reorganize table with the selected columns according to the selected sequence.
 #### Inputs: table
 
 #### Parameters
-1. **input_cols**<b style="color:red">*</b>: The columns to be in the output table.
-2. **output_cols**: The new names of output columns. Default is equal to 'input_cols'.
-3. **output_types**: The new types of output columns. Default is equal to 'input_cols'.
+1. **input_cols**<b style="color:red">*</b>: Columns to select as input
 
 #### Outputs: table
 
