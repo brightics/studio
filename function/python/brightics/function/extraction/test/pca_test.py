@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 from brightics.function.extraction.pca import pca, pca_model
 from brightics.common.datasets import load_iris
 import unittest
@@ -30,7 +29,7 @@ def get_iris_randomgroup():
     random_group1 = []
     random_group2 = []
     random_group2_map = {1:'A', 2:'B'}
-    for i in range(len(df)):
+    for _ in range(len(df)):
         random_group1.append(random.randint(1, 2))
         random_group2.append(random_group2_map[random.randint(1, 2)])
     df['random_group1'] = random_group1

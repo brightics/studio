@@ -27,7 +27,7 @@ from brightics.common.validation import from_to
 
 def ewma(table, group_by=None, **params):
     check_required_parameters(_ewma, params, ['table'])
-    params = get_default_from_parameters_if_required(params,_ewma)
+    params = get_default_from_parameters_if_required(params, _ewma)
     param_validation_check = [greater_than_or_equal_to(params, 1, 'period_number'),
                               from_to(params, 0, 1, 'custom_ratio')]
     validate(*param_validation_check)
@@ -62,7 +62,7 @@ def _ewma(table, input_cols, ratio_type, custom_ratio=0.5, period_number=1):
 
 def moving_average(table, group_by=None, **params):
     check_required_parameters(_moving_average, params, ['table'])
-    params = get_default_from_parameters_if_required(params,_moving_average)
+    params = get_default_from_parameters_if_required(params, _moving_average)
     param_validation_check = [greater_than_or_equal_to(params, 1, 'window_size')]
     validate(*param_validation_check)
     if group_by is not None:

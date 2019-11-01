@@ -27,6 +27,7 @@ from brightics.common.classify_input_type import check_col_type
 def replace_string(table, **params):
     check_required_parameters(_replace_string, params, ['table'])
     return _replace_string(table, **params)
+
     
 def _replace_string(table, input_cols, replace_mode='part', empty_as_null=False, target_string_null=True, target_string=None, replace_string_null=True, replace_string=None):
     out_table = table.copy()

@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 import unittest
 from brightics.common.datasets import load_iris
 from brightics.function.io.unload import write_csv

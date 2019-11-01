@@ -37,3 +37,7 @@ from .replace_string import replace_string
 from .array_column_conversion import columns_to_array
 from .array_column_conversion import array_to_columns
 from .string_split import string_split
+from .polynomial_expansion import polynomial_expansion
+from .decompose_datetime import decompose_datetime
+from .shift_datetime import shift_datetime
+from .datetime_formatter import datetime_formatter

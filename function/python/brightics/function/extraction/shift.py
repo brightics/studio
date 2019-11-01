@@ -21,6 +21,7 @@ import numpy as np
 import pandas as pd
 import copy
 
+
 def add_shift(table, group_by=None, **params):
     check_required_parameters(_add_shift, params, ['table'])
     
@@ -43,7 +44,7 @@ def add_shift(table, group_by=None, **params):
         tmp_table = table.values.tolist()
     
         result = _add_shift(tmp_table, **params)
-        result['out_table'] = pd.DataFrame(result['out_table'],columns=columns)
+        result['out_table'] = pd.DataFrame(result['out_table'], columns=columns)
     return result
 
     
@@ -55,7 +56,7 @@ def _add_shift(table, input_col, shift_list, shifted_col=None, order_by=None, or
     if order_by is not None:
         tmp_table = sorted(tmp_table, key=lambda x: tuple(x[order_by] for order_by in order_by), reverse=(ordering != 'asc'))
     
-    result=[]
+    result = []
     if shifted_col is None:
         shifted_col = input_col
         

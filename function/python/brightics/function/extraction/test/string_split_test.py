@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 from brightics.function.extraction.string_split import string_split
 from brightics.common.datasets import load_iris
 import unittest
@@ -42,8 +41,8 @@ class StringSplit(unittest.TestCase):
         np.testing.assert_array_equal(self.testdata['petal_length'], out_table['split_2'])
         np.testing.assert_array_equal(self.testdata['petal_width'], out_table['split_3'])
         res = string_split(self.testdata, input_col='array', delimiter='|', output_col_cnt=4, output_col_type='double_arr', start_pos=1, end_pos=1)
-        out_array = [[row[0],row[1],row[2],row[3]] for row in res['out_table']['split']]
-        array = self.testdata[['sepal_length','sepal_width','petal_length','petal_width']].values
+        out_array = [[row[0], row[1], row[2], row[3]] for row in res['out_table']['split']]
+        array = self.testdata[['sepal_length', 'sepal_width', 'petal_length', 'petal_width']].values
         np.testing.assert_array_equal(np.array(array), out_array)
 
 
@@ -51,4 +50,3 @@ if __name__ == '__main__':
     filepath = os.path.dirname(os.path.abspath(__file__))
     reportFoler = filepath + "/../../../../../../../reports"
     unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))
-

@@ -18,7 +18,7 @@ import pandas as pd
 import numpy as np
 
 
-def create_table(col_names = None, data_array = None, type_array = None):
+def create_table(col_names=None, data_array=None, type_array=None):
 
     if col_names is None:
         col_name = []
@@ -47,6 +47,7 @@ def create_table(col_names = None, data_array = None, type_array = None):
     out_table = pd.DataFrame(new_data_array, columns=col_names)
     
     return {'out_table': out_table}
+
     
 def set_data(data_set) :
     result_data_set = {}

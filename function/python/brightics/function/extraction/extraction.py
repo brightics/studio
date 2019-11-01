@@ -39,9 +39,11 @@ def add_row_number(table, group_by=None, **params):
 
         
 def _add_row_number(table, new_col='add_row_number'):
-    n = len(table)
+    if new_col in table.columns:
+        raise ValueError('Duplicate column names are not allowed.')
+
     out_table = table.copy()
-    out_table[new_col] = range(n)
+    out_table[new_col] = range(len(table))
     columns = table.columns.insert(0, new_col)
     out_table = out_table.reindex(columns=columns)
     return {'out_table': out_table}
@@ -130,7 +132,7 @@ def capitalize_variable(table, **params):
     return _capitalize_variable(table, **params)
 
     
-def capitalize_variable(table, input_cols, replace, out_col_suffix=None):
+def _capitalize_variable(table, input_cols, replace, out_col_suffix=None):
     if out_col_suffix is None:
         out_col_suffix = '_' + replace
      
