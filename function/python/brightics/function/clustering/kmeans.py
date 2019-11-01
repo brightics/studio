@@ -64,7 +64,7 @@ def _kmeans_samples_plot(table, input_cols, n_samples, cluster_centers, seed, co
     for idx in sample.index:
         plt.plot(x, sample.transpose()[idx], color='grey', linewidth=1)
     for idx, centers in enumerate(cluster_centers):
-        plt.plot(x, centers, "o-", label=idx, linewidth=4, color=colors[idx])
+        plt.plot(x, centers, "o-", label=idx, linewidth=2, color=colors[idx])
     plt.tight_layout()
     fig_samples = plt2MD(plt)
     plt.clf()
@@ -146,6 +146,7 @@ def _kmeans_train_predict(table, input_cols, n_clusters=3, prediction_col='predi
     rb.addMD(strip_margin("""
     | ## Kmeans Result
     | - Number of iterations run: {n_iter_}.
+    | - Sum of square error: {sse_}.
     | - Coordinates of cluster centers
     | {fig_cluster_centers} 
     | - Samples
@@ -154,7 +155,7 @@ def _kmeans_train_predict(table, input_cols, n_clusters=3, prediction_col='predi
     |
     | ### Parameters
     | {params}
-    """.format(n_iter_=k_means.n_iter_, fig_cluster_centers=fig_centers, fig_pca=fig_pca, fig_samples=fig_samples, params=dict2MD(params))))
+    """.format(n_iter_=k_means.n_iter_, sse_=k_means.inertia_, fig_cluster_centers=fig_centers, fig_pca=fig_pca, fig_samples=fig_samples, params=dict2MD(params))))
     
     model = _model_dict('kmeans')
     model['model'] = k_means
@@ -228,7 +229,6 @@ def _kmeans_silhouette_train_predict(table, input_cols, n_clusters_list=range(2,
     pca2 = pca2_model.transform(inputarr)
     
     silhouette_list = []
-    silhouette_samples_list = []
     models = []
     centers_list = []
     images = []
@@ -300,6 +300,7 @@ def _kmeans_silhouette_train_predict(table, input_cols, n_clusters_list=range(2,
     predict = best_model.predict(inputarr)
     best_centers = best_model.cluster_centers_
     best_labels = best_model.labels_
+    best_sse = best_model.inertia_
     
     n_clusters = len(best_centers)
     colors = cm.nipy_spectral(np.arange(n_clusters).astype(float) / n_clusters)
@@ -318,15 +319,16 @@ def _kmeans_silhouette_train_predict(table, input_cols, n_clusters_list=range(2,
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## Kmeans Silhouette Result
-    | - silloutte metrics:
+    | - silhoutte metrics:
     | {fig_silhouette}
     | - best K: {best_k} 
+    | - Sum of square error: {best_sse}.
     | - best centers:
     | {fig_pca}
     | {fig_centers}
     | {fig_samples}
     |
-    """.format(fig_silhouette=fig_silhouette, best_k=best_k, fig_pca=fig_pca, fig_centers=fig_centers,
+    """.format(fig_silhouette=fig_silhouette, best_k=best_k, best_sse=best_sse, fig_pca=fig_pca, fig_centers=fig_centers,
                fig_samples=fig_samples)))
 
     for k, image in zip(n_clusters_list, images):

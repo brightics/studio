@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 from brightics.function.timeseries import arima_train, arima_predict, auto_arima_train, auto_arima_predict
 from brightics.common.datasets import load_iris
 import unittest

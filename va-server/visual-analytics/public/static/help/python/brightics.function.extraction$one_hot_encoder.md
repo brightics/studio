@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.extraction import one_hot_encoder
-res = one_hot_encoder(input_cols = ,prefix = ,prefix_list = ,suffix = ,drop_last = ,group_by = )
+res = one_hot_encoder(table = ,input_cols = ,prefix = ,prefix_list = ,suffix = ,drop_last = ,group_by = )
 res['out_table']
 res['model']
 ```
@@ -14,12 +14,11 @@ Encode categorical integer features using a one-hot aka one-of-K scheme.
 
 ## Properties
 ### VA
-#### Inputs
-1. **table**: table
+#### Inputs: table
 
 #### Parameters
-1. **Input Columns**<b style="color:red">*</b>: Input columns.
-   - Allowed column type : Integer, Long, Float, Double, String, Boolean
+1. **Input Columns**<b style="color:red">*</b>: Columns to select as input
+   - Allowed column type : Integer, Long, Float, Double, String
 2. **Prefix Type**: Choose prefix type.
    - Available items
       - Use existing column name(s) (default)
@@ -30,19 +29,16 @@ Encode categorical integer features using a one-hot aka one-of-K scheme.
       - Index (default)
       - Label
 5. **Drop Last**: Drop the last column.
-6. **Group By**: Columns to group by.
+6. **Group By**: Columns to group by
 
-#### Outputs
-1. **out_table**: table
-2. **model**: model
+#### Outputs: table, model
 
 ### Python
-#### Inputs
-1. **table**: table
+#### Inputs: table
 
 #### Parameters
-1. **input_cols**<b style="color:red">*</b>: Input columns.
-   - Allowed column type : Integer, Long, Float, Double, String, Boolean
+1. **input_cols**<b style="color:red">*</b>: Columns to select as input
+   - Allowed column type : Integer, Long, Float, Double, String
 2. **prefix**: Choose prefix type.
    - Available items
       - col_name (default)
@@ -53,9 +49,7 @@ Encode categorical integer features using a one-hot aka one-of-K scheme.
       - index (default)
       - label
 5. **drop_last**: Drop the last column.
-6. **group_by**: Columns to group by.
+6. **group_by**: Columns to group by
 
-#### Outputs
-1. **out_table**: table
-2. **model**: model
+#### Outputs: table, model
 

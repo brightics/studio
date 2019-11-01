@@ -30,7 +30,7 @@ from sklearn.mixture import GaussianMixture
 
 def gaussian_mixture_train(table, group_by=None, **params):
     check_required_parameters(_gaussian_mixture_train, params, ['table'])
-    params = get_default_from_parameters_if_required(params,_gaussian_mixture_train)
+    params = get_default_from_parameters_if_required(params, _gaussian_mixture_train)
     param_validation_check = [greater_than_or_equal_to(params, 1, 'number_of_components'),
                               greater_than(params, 0, 'tolerance'),
                               greater_than(params, 0, 'regularize_covariance'),

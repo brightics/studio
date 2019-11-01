@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 from brightics.function.regression.isotonic_regression import isotonic_regression_train
 from brightics.function.regression.isotonic_regression import isotonic_regression_predict
 from brightics.common.datasets import load_iris
@@ -26,6 +25,7 @@ import os
 
 
 class IsotonicRegression(unittest.TestCase):
+
     def setUp(self):
         print("*** Isotonic Regression Train/Predict UnitTest Start ***")
         self.testdata = load_iris()
@@ -37,7 +37,7 @@ class IsotonicRegression(unittest.TestCase):
         isotonic_train = isotonic_regression_train(self.testdata, feature_col='sepal_length', label_col='petal_width')
         predict = isotonic_regression_predict(self.testdata, isotonic_train['model'])['out_table']['prediction']
         desired_label = [0.44, 0.44, 0.2166667, 0.2166667, 0.44]
-        np.testing.assert_array_almost_equal(desired_label, [round(x,7) for x in predict.values[:5]], 7, 'incorrect prediction')
+        np.testing.assert_array_almost_equal(desired_label, [round(x, 7) for x in predict.values[:5]], 7, 'incorrect prediction')
 
 
 if __name__ == '__main__':

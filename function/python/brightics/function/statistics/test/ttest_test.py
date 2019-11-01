@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 import unittest
 import numpy as np
 from brightics.common.datasets import load_iris

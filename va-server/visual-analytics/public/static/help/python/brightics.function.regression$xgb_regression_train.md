@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.regression import xgb_regression_train
-res = xgb_regression_train(feature_cols = ,label_col = ,max_depth = ,learning_rate = ,n_estimators = ,random_state = ,group_by = )
+res = xgb_regression_train(table = ,feature_cols = ,label_col = ,max_depth = ,learning_rate = ,n_estimators = ,importance_type = ,random_state = ,group_by = )
 res['model']
 ```
 
@@ -14,52 +14,62 @@ The gradient boosted trees has been around for a while, and there are a lot of m
 
 ## Properties
 ### VA
-#### Inputs
-1. **table**: table
+#### Inputs: table
 
 #### Parameters
-1. **Feature Columns**<b style="color:red">*</b>: Feature columns.
-   - Allowed column type : Integer, Long, Double, Float, Boolean
-2. **Label Column**<b style="color:red">*</b>: Label column.
+1. **Feature Columns**<b style="color:red">*</b>: Columns to select as features
+   - Allowed column type : Integer, Long, Float, Double, Double[]
+2. **Label Column**<b style="color:red">*</b>: Columns to select as label
    - Allowed column type : Integer, Long, Double, Float
 3. **Max Depth**: Maximum tree depth for base learners.
    - Value type : Integer
    - Default : 3 (1 <= value)
-4. **Learning Rate**: Boosting learning rate.
+4. **Learning Rate**: 
    - Value type : Double
-   - Default : 0.1 (0< value)
-5. **Number of Trees**: Number of boosted trees to fit.
+   - Default : 0.1 (0 <= value)
+5. **Number of Trees**: 
    - Value type : Integer
-   - Default : 100 (1<= value)
-6. **Seed**: The seed used by the random number generator.
+   - Default : 100 (1 <= value)
+6. **Importance Type**: Importance Type is a feature importance type property.
+   - Available items
+      - Gain (default)
+      - Weight
+      - Cover
+      - Total Gain
+      - Total Cover
+7. **Seed**: The seed used by the random number generator.
    - Value type : Integer
-7. **Group By**: Columns to group by
+8. **Group By**: Columns to group by
 
-#### Outputs
-1. **model**: model
+#### Outputs: model
 
 ### Python
-#### Inputs
-1. **table**: table
+#### Inputs: table
 
 #### Parameters
-1. **feature_cols**<b style="color:red">*</b>: Feature columns.
-   - Allowed column type : Integer, Long, Double, Float, Boolean
-2. **label_col**<b style="color:red">*</b>: Label column.
+1. **feature_cols**<b style="color:red">*</b>: Columns to select as features
+   - Allowed column type : Integer, Long, Float, Double, Double[]
+2. **label_col**<b style="color:red">*</b>: Columns to select as label
    - Allowed column type : Integer, Long, Double, Float
 3. **max_depth**: Maximum tree depth for base learners.
    - Value type : Integer
    - Default : 3 (1 <= value)
-4. **learning_rate**: Boosting learning rate.
+4. **learning_rate**: 
    - Value type : Double
-   - Default : 0.1 (0< value)
-5. **n_estimators**: Number of boosted trees to fit.
+   - Default : 0.1 (0 <= value)
+5. **n_estimators**: 
    - Value type : Integer
-   - Default : 100 (1<= value)
-6. **random_state**: The seed used by the random number generator.
+   - Default : 100 (1 <= value)
+6. **importance_type**: Importance Type is a feature importance type property.
+   - Available items
+      - gain (default)
+      - weight
+      - cover
+      - total_gain
+      - total_cover
+7. **random_state**: The seed used by the random number generator.
    - Value type : Integer
-7. **group_by**: Columns to group by
+8. **group_by**: Columns to group by
 
-#### Outputs
-1. **model**: model
+#### Outputs: model
 

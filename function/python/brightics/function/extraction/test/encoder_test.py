@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 from brightics.function.extraction.encoder import label_encoder, label_encoder_model, \
     one_hot_encoder, one_hot_encoder_model
 from brightics.common.datasets import load_iris

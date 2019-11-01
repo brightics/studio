@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 from brightics.function.statistics.summary import statistic_summary, \
     statistic_derivation, string_summary
 from brightics.common.datasets import load_iris
@@ -45,7 +44,7 @@ class StatisticSummary(unittest.TestCase):
                   'median', 'q1', 'q3', 'iqr', 'percentile', 'trimmed_mean']
         pa_list = [0.25, 0.25]
         ta_list = [0.20, 0.20]
-        out = statistic_summary(self.testdata, input_cols=['d1', 'd2'], statistics=stats, percentile_amounts=pa_list, trimmed_mean_amounts=ta_list, group_by = ['d3'])
+        out = statistic_summary(self.testdata, input_cols=['d1', 'd2'], statistics=stats, percentile_amounts=pa_list, trimmed_mean_amounts=ta_list, group_by=['d3'])
         np.testing.assert_array_almost_equal(list(out['out_table'].values[0][2:]), [43.0, 2.0, 41.0, 132.0, 18.857142857142858, 214.80952380952385, 14.65638167521315, 0.456945126469852, -0.9637153614645078, 7, 7, 0, 17.0, 8.0, 27.0, 19.0, 2.045, 17.4], 10)
         np.testing.assert_array_almost_equal(list(out['out_table'].values[1][2:]), [43.0, 2.5, 40.5, 121.5, 20.25, 239.775, 15.484669838262617, np.nan, np.nan, 7, 6, 1, 20.0, np.nan, np.nan, np.nan, np.nan, 23.8], 10)
         np.testing.assert_array_almost_equal(list(out['out_table'].values[2][2:]), [47.0, 3.0, 44.0, 155.0, 22.142857142857142, 262.4761904761905, 16.201116951500303, 0.325040658885993, -1.2313300865139738, 7, 7, 0, 19.0, 10.0, 33.0, 23.0, 3.06, 21.0], 10)
@@ -99,22 +98,20 @@ class StringSummary(unittest.TestCase):
         t = self.testdata
         
         out = string_summary(t, input_cols=['s1', 's2'])
-        np.testing.assert_array_equal(out['summary_table']['column_name'],['s1', 's2'])
-        np.testing.assert_array_equal(out['summary_table']['max'],['e', 'a'])
-        np.testing.assert_array_equal(out['summary_table']['min'],['', '    '])
-        self.assertListEqual(out['summary_table']['mode'].tolist(),[['b'],['A']])
-        np.testing.assert_array_equal(out['summary_table']['num_of_row'],[12, 12])
-        np.testing.assert_array_equal(out['summary_table']['null_count'],[4, 2])
-        np.testing.assert_array_equal(out['summary_table']['num_of_distinct'],[4, 5])
-        np.testing.assert_array_equal(out['summary_table']['num_of_white_space'],[5, 3])
-        np.testing.assert_array_equal(out['summary_table']['num_of_space_padded'],[0, 1])
-        np.testing.assert_array_equal(out['count_table']['column_name'][:5],['s1', 's1', 's1', 's1', 's1'])
-        np.testing.assert_array_equal(out['count_table']['value'][:5],['', 'Z', 'a', 'b', 'e'])
-        np.testing.assert_array_equal(out['count_table']['counts'][:5],[1, 1, 2, 3, 1])
-        np.testing.assert_array_almost_equal(out['count_table']['rate'][:5],[0.08333333333333333, 0.08333333333333333, 0.16666666666666666, 0.25, 0.08333333333333333],10)
-        np.testing.assert_array_almost_equal(out['count_table']['cumulative_rate'][:5],[0.08333333333333333, 0.16666666666666666, 0.3333333333333333, 0.5833333333333333, 0.6666666666666666],10)
-
-        
+        np.testing.assert_array_equal(out['summary_table']['column_name'], ['s1', 's2'])
+        np.testing.assert_array_equal(out['summary_table']['max'], ['e', 'a'])
+        np.testing.assert_array_equal(out['summary_table']['min'], ['', '    '])
+        self.assertListEqual(out['summary_table']['mode'].tolist(), [['b'], ['A']])
+        np.testing.assert_array_equal(out['summary_table']['num_of_row'], [12, 12])
+        np.testing.assert_array_equal(out['summary_table']['null_count'], [4, 2])
+        np.testing.assert_array_equal(out['summary_table']['num_of_distinct'], [4, 5])
+        np.testing.assert_array_equal(out['summary_table']['num_of_white_space'], [5, 3])
+        np.testing.assert_array_equal(out['summary_table']['num_of_space_padded'], [0, 1])
+        np.testing.assert_array_equal(out['count_table']['column_name'][:5], ['s1', 's1', 's1', 's1', 's1'])
+        np.testing.assert_array_equal(out['count_table']['value'][:5], ['', 'Z', 'a', 'b', 'e'])
+        np.testing.assert_array_equal(out['count_table']['counts'][:5], [1, 1, 2, 3, 1])
+        np.testing.assert_array_almost_equal(out['count_table']['rate'][:5], [0.08333333333333333, 0.08333333333333333, 0.16666666666666666, 0.25, 0.08333333333333333], 10)
+        np.testing.assert_array_almost_equal(out['count_table']['cumulative_rate'][:5], [0.08333333333333333, 0.16666666666666666, 0.3333333333333333, 0.5833333333333333, 0.6666666666666666], 10)
         
 """
 
@@ -204,7 +201,6 @@ class SummaryTest(unittest.TestCase):
         out = statistic_derivation(df, input_cols=['d1', 'd2', 'd3'], statistics=['min', 'mode'], percentile_amounts=[0.1, 0.75], trimmed_mean_amounts=[0.1, 0.3])['out_table']
         print(out)
 """     
-
 
 if __name__ == '__main__':
     filepath = os.path.dirname(os.path.abspath(__file__))

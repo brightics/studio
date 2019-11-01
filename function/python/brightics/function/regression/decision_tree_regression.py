@@ -1,3 +1,4 @@
+
 """
     Copyright 2019 Samsung SDS
     
@@ -21,7 +22,7 @@ from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate, greater_than_or_equal_to, greater_than, from_to 
 from brightics.common.classify_input_type import check_col_type
-
+import numexpr as ne
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -141,14 +142,117 @@ def decision_tree_regression_predict(table, model, **params):
     else:
         return _decision_tree_regression_predict(table, model, **params)         
 
+def _string_make(character, index, path, start, array, split_feature_name, split_threshold):
+    if index == 0:
+        return ' & ({} <= {})'.format(character,split_threshold[start])+path
+    else:
+        return ' & ({} > {})'.format(character,split_threshold[start])+path
+
+def _string_make_complex_version(character, index, path, start, split_feature_name, split_threshold, split_left_categories_values, split_right_categories_values):
+    if pd.isnull(split_threshold[start]):
+        if index == 0:
+            result = ''
+            tmp = split_left_categories_values[start]
+            for i in tmp:
+                result += " | ({} == '{}')".format(character,i)
+            result = ' & ( ' + result[3:] + ' )'
+            return result+path
+        else:
+            result = ''
+            tmp = split_right_categories_values[start]
+            for i in tmp:
+                result += " | ({} == '{}')".format(character,i)
+            result = ' & ( ' + result[3:] + ' )'
+            return result+path
+    else:
+        if index == 0:
+            return ' & ({} <= {})'.format(character,split_threshold[start])+path
+        else:
+            return ' & ({} > {})'.format(character,split_threshold[start])+path    
+
+def _path_find(start, children_array, array, split_feature_name, split_threshold,predict, result):
+    paths = []
+    start = array[start]
+    for index, child in enumerate(children_array[start]):
+        if child == -1:
+            result.append(predict[start])
+            return result, ['']
+        result, tmp_paths = _path_find(child, children_array, array, split_feature_name, split_threshold,predict, result)
+        for path in tmp_paths:
+            paths.append(_string_make(split_feature_name[start], index, path, start,array, split_feature_name, split_threshold))
+    return result, paths
+
+def _path_find_complex_version(start, children_array, array, split_feature_name, split_threshold, split_left_categories_values, split_right_categories_values, predict, result):
+    paths = []
+    start = array[start]
+    for index, child in enumerate(children_array[start]):
+        if child == -1:
+            result.append(predict[start])
+            return result, ['']
+        result, tmp_paths = _path_find_complex_version(child, children_array, array, split_feature_name, split_threshold, split_left_categories_values, split_right_categories_values, predict, result)
+        for path in tmp_paths:
+            paths.append(_string_make_complex_version(split_feature_name[start], index, path, start,split_feature_name, split_threshold, split_left_categories_values, split_right_categories_values))
+    return result, paths
 
 def _decision_tree_regression_predict(table, model, prediction_col='prediction',
                                      check_input=True):
     out_table = table.copy()
     feature_cols = model['feature_cols']
-    feature_names, features = check_col_type(table,feature_cols)
-    regressor = model['regressor']
-    prediction = regressor.predict(features, check_input)
-    out_table[prediction_col] = prediction
     
+    if 'regressor' in model:
+        feature_names, features = check_col_type(table,feature_cols)
+        regressor = model['regressor']
+        prediction = regressor.predict(features, check_input)
+        out_table[prediction_col] = prediction
+    else:
+        if model['_type'] == 'decision_tree_model':
+            model_table = model['table_1']
+            tmp_max = model_table.id.max()
+            array = np.empty(tmp_max+1,dtype = np.int32)
+            for index, value in enumerate(model_table.id):
+                array[value] = index
+            children_array = model_table[['left_nodeid','right_nodeid']].values
+            predict = model_table.predict.values
+            split_feature_name = model_table.split_feature_name.values
+            split_threshold = model_table.split_threshold.values
+            result=[]
+            result, expr_array = _path_find(1, children_array, array, split_feature_name, split_threshold, predict,result)
+            expr_array = [i[3:] for i in expr_array]
+            conclusion = [None] * len(table)
+            our_list = dict()
+            for i in feature_cols:
+                our_list[i] = table[i].values
+            for index, expr in enumerate(expr_array):
+                conclusion = np.where(ne.evaluate(expr,local_dict=our_list),result[index],conclusion)
+            out_table[prediction_col] = conclusion
+        elif 'tree_regression' in model['_type']:
+            if model['auto']:
+                model_table = model['table_4']
+            else:
+                model_table = model['table_3']
+            tmp_max=model_table.node_id.max()
+            array=np.empty(tmp_max+1,dtype = np.int32)
+            for index, value in enumerate(model_table.node_id):
+                array[value] = index
+            children_table=model_table[['left_nodeid','right_nodeid']]
+            children_array=children_table.values
+            predict = model_table.predict.values
+            split_feature_name = model_table.split_feature_name.values
+            split_threshold = model_table.split_threshold.values
+            split_left_categories_values = model_table['split_left_categories_values'].values
+            split_right_categories_values = model_table['split_right_categories_values'].values
+            result = []
+            result, expr_array = _path_find_complex_version(1, children_array, array, split_feature_name, split_threshold, split_left_categories_values, split_right_categories_values, predict, result)
+            expr_array = [i[3:] for i in expr_array]
+            conclusion = [None] * len(table)
+            our_list = dict()
+            for i in feature_cols:
+                if table[i].dtype == 'object':
+                    our_list[i] = np.array(table[i],dtype='|S')
+                else:
+                    our_list[i] = table[i].values
+                
+            for index, expr in enumerate(expr_array):
+                conclusion = np.where(ne.evaluate(expr,local_dict=our_list),result[index],conclusion)
+            out_table[prediction_col] = conclusion
     return {'out_table': out_table}

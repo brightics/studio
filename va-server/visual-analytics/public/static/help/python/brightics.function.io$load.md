@@ -13,22 +13,18 @@ Load data from repository.
 
 ## Properties
 ### VA
-#### Inputs
-This function has no input data.
+#### Inputs: This function has no input data.
 
 #### Parameters
 1. **Path**: Path to enter
 
-#### Outputs
-1. **table**: table
+#### Outputs: table
 
 ### Python
-#### Inputs
-This function has no input data.
+#### Inputs: This function has no input data.
 
 #### Parameters
 1. **partial_path**: Path to enter
 
-#### Outputs
-1. **table**: table
+#### Outputs: table
 

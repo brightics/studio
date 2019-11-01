@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 import unittest
 import numpy as np
 from brightics.function.regression import decision_tree_regression_train

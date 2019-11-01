@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 from brightics.function.timeseries import timeseries_decomposition
 from brightics.common.datasets import load_iris
 import unittest
@@ -34,7 +33,7 @@ class TimeseriesDecompositionTest(unittest.TestCase):
 
     def test_first(self):
         
-        td = timeseries_decomposition(self.testdata, input_col = ['sepal_length'], frequency = 10, model_type='additive', filteration=None, two_sided=True, extrapolate_trend=0)
+        td = timeseries_decomposition(self.testdata, input_col=['sepal_length'], frequency=10, model_type='additive', filteration=None, two_sided=True, extrapolate_trend=0)
         DF1 = td['out_table'].values
         np.testing.assert_almost_equal(DF1[0][5], np.nan, 10)
         np.testing.assert_almost_equal(DF1[0][6], 0.08167857142857139, 10)
@@ -48,7 +47,7 @@ class TimeseriesDecompositionTest(unittest.TestCase):
         
     def test_second(self):
         
-        td = timeseries_decomposition(self.testdata, input_col = ['sepal_width'], frequency = 5, model_type='multiplicative', filteration=[1, 2, 3], two_sided=True, extrapolate_trend=10)
+        td = timeseries_decomposition(self.testdata, input_col=['sepal_width'], frequency=5, model_type='multiplicative', filteration=[1, 2, 3], two_sided=True, extrapolate_trend=10)
         DF2 = td['out_table'].values
         np.testing.assert_array_almost_equal(DF2[0][5:8], [19.75636363636364, 1.0141210519311832, 0.1746912831777005], 10)
         np.testing.assert_array_almost_equal(DF2[1][5:8], [19.7, 0.9952018506915731, 0.1530184694226276], 10)

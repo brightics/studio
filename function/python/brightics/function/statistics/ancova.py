@@ -28,6 +28,7 @@ from pingouin import ancova as pg_ancova
 import numpy as np
 import pandas as pd
 
+
 def ancova(table, group_by=None, **params):
     check_required_parameters(_ancova, params, ['table'])
     

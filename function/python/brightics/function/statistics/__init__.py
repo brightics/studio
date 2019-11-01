@@ -30,3 +30,10 @@ from .summary import statistic_summary, statistic_derivation, string_summary
 from .cross_table import cross_table
 from .levene import levenes_test
 from .duncan_test import duncan_test
+from .ljung_box_test import ljung_box_test
+from .mann_whitney_test import mann_whitney_test
+from .wilcoxon_test import wilcoxon_test
+from .friedman_test import friedman_test
+from .kruskal_wallis_test import kruskal_wallis_test
+from .normality_test import normality_test
+from .kernel_density_estimation import kernel_density_estimation

@@ -33,11 +33,11 @@ def read_parquet_or_csv(path):
     return df
 
 
-def read_csv(path, delimiter, na_filter, strip_col):
+def read_csv(path, engine, delimiter, na_filter, strip_col, quoting, encoding):
     try:
-        result = pd.read_csv(path, engine='python', quoting=3, encoding='utf-8-sig', na_filter = na_filter, sep = delimiter)
+        result = pd.read_csv(path, engine=engine, quoting=quoting, encoding=encoding, na_filter = na_filter, sep = delimiter)
     except Exception:
-        result = pd.read_csv(path, engine='python', quoting=3, na_filter = na_filter, sep = delimiter)
+        result = pd.read_csv(path, engine=engine, quoting=quoting, na_filter = na_filter, sep = delimiter)
     if strip_col:
         result.columns = result.columns.str.strip()
     return result

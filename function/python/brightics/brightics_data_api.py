@@ -185,13 +185,32 @@ def _get_data_status_json(data):
 
 
 def _write_dataframe(dataframe, path):
-    path = data_util.make_data_path(path)
+    if dataframe.columns.empty:
+        raise Exception('Empty DataFrame cannot be written.')
 
+    if not path.startswith('hdfs://'):
+        path = data_util.make_data_path(path)
+
+    _remove_exist_directory_if_dir(path)
     _make_directory_if_needed(path)
 
     table = pa.Table.from_pandas(dataframe, preserve_index=False)
     pq.write_table(table, path)
 
+
+def _remove_exist_directory_if_dir(path):
+    """
+    remove directory made by spark data frame.
+    pyarrow.parquet write table method can not overwrite directory. 
+    """
+    parsed_uri = urlparse(path)
+    if parsed_uri.scheme == 'hdfs':
+        if pa.HadoopFileSystem().isdir(path) :
+            pa.HadoopFileSystem().delete(path, recursive='true')
+    else :
+        parsed_uri = urlparse(path)
+        if os.path.isdir(parsed_uri.path):
+            os.removedirs(parsed_uri.path, recursive='true')
 
 def _make_directory_if_needed(path):
     """

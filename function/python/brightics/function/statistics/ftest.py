@@ -27,8 +27,9 @@ from brightics.common.validation import validate
 from brightics.common.validation import from_to
 from brightics.common.utils import get_default_from_parameters_if_required
 
+
 def ftest_for_stacked_data(table, group_by=None, **params):
-    params = get_default_from_parameters_if_required(params,_ftest_for_stacked_data)
+    params = get_default_from_parameters_if_required(params, _ftest_for_stacked_data)
     param_validation_check = [from_to(params, 0, 1, 'confi_level')]
         
     validate(*param_validation_check)
@@ -39,7 +40,8 @@ def ftest_for_stacked_data(table, group_by=None, **params):
     else:
         return _ftest_for_stacked_data(table, **params)
 
-def _ftest_for_stacked_data(table, response_cols, factor_col, alternatives, first = None, second = None, confi_level=0.95):
+
+def _ftest_for_stacked_data(table, response_cols, factor_col, alternatives, first=None, second=None, confi_level=0.95):
    
     if first is not None or second is not None:
         check_table = np.array(table[factor_col])
@@ -69,7 +71,7 @@ def _ftest_for_stacked_data(table, response_cols, factor_col, alternatives, firs
                 else:
                     break
     if first is None or second is None:
-        tmp_factors=np.unique(table[factor_col])
+        tmp_factors = np.unique(table[factor_col])
         if len(tmp_factors) != 2:
             raise_error('0719', 'factor_col')
     if first is None:
@@ -128,7 +130,7 @@ def _ftest_for_stacked_data(table, response_cols, factor_col, alternatives, firs
                 p_value = p_value_tmp * 2
             tmp_model += [['true ratio != 1'] + 
             [p_value] + [(f_value / (scipy.stats.f.ppf((1 + confi_level) / 2, d_num, d_denum)), f_value * (scipy.stats.f.ppf((1 + confi_level) / 2, d_denum, d_num)))]]
-            tmp_table += [['%s by %s(%s,%s)' % (response_col, factor_col, first, second)] +
+            tmp_table += [['%s by %s(%s,%s)' % (response_col, factor_col, first, second)] + 
             ['true ratio of variances != 1'] + 
             ['F statistic, F distribution with %d numerator degrees of freedom and %d degrees of freedom under the null hypothesis.' % (d_num, d_denum)] + 
             [f_value] + [p_value] + [confi_level] + [f_value / (scipy.stats.f.ppf((1 + confi_level) / 2, d_num, d_denum))] + [f_value * (scipy.stats.f.ppf((1 + confi_level) / 2, d_denum, d_num))]]

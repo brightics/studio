@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 import unittest
 from brightics.common.datasets import load_iris
 from brightics.function.classification.logistic_regression import logistic_regression_train, \

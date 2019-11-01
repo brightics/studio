@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 from brightics.function.evaluation import evaluate_regression
 from brightics.common.datasets import load_iris
 import unittest
@@ -29,18 +28,17 @@ class EvaluateRegression(unittest.TestCase):
     def setUp(self):
         print("*** Evaluate Regression UnitTest Start ***")
 
-
     def tearDown(self):
         print("*** Evaluate Regression UnitTest End ***")
     
     def test(self):
-        np.random.seed(3); a=np.random.rand(100)
-        np.random.seed(4); b=np.random.rand(100)
-        table=pd.DataFrame([a,b]).transpose()
-        table.columns=['a','b']
-        result = evaluate_regression(table=table,label_col='a',prediction_col='b')['result']
-        np.testing.assert_almost_equal(result['r2_score'],-0.9820165023749556,10)
-        np.testing.assert_almost_equal(result['mean_absolute_error'],0.2939061622832298,10)  
+        np.random.seed(3); a = np.random.rand(100)
+        np.random.seed(4); b = np.random.rand(100)
+        table = pd.DataFrame([a, b]).transpose()
+        table.columns = ['a', 'b']
+        result = evaluate_regression(table=table, label_col='a', prediction_col='b')['result']
+        np.testing.assert_almost_equal(result['r2_score'], -0.9820165023749556, 10)
+        np.testing.assert_almost_equal(result['mean_absolute_error'], 0.2939061622832298, 10)  
 
 
 if __name__ == '__main__':

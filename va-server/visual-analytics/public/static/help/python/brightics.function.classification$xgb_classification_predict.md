@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.classification import xgb_classification_predict
-res = xgb_classification_predict(prediction_col = ,probability_col = ,suffix = ,thresholds = )
+res = xgb_classification_predict(table = ,model = ,prediction_col = ,probability_col = ,suffix = ,thresholds = )
 res['out_table']
 ```
 
@@ -13,15 +13,13 @@ Using the result of 'XGB Classification Train', this function predicts with the 
 
 ## Properties
 ### VA
-#### Inputs
-1. **table**: table
-2. **model**: model
+#### Inputs: table, model
 
 #### Parameters
-1. **Prediction Column Name**: Column name for prediction.
+1. **Prediction Column Name**: Column name for prediction
    - Value type : String
    - Default : prediction
-2. **Probability Column Prefix**: Probability Column Name
+2. **Probability Column Prefix**: Prefix for column name of probability
    - Value type : String
    - Default : probability
 3. **Suffix Type**: Choose suffix type.
@@ -30,19 +28,16 @@ Using the result of 'XGB Classification Train', this function predicts with the 
       - Label
 4. **Thresholds**: Thresholds used to predict.
 
-#### Outputs
-1. **out_table**: table
+#### Outputs: table
 
 ### Python
-#### Inputs
-1. **table**: table
-2. **model**: model
+#### Inputs: table, model
 
 #### Parameters
-1. **prediction_col**: Column name for prediction.
+1. **prediction_col**: Column name for prediction
    - Value type : String
    - Default : prediction
-2. **probability_col**: Probability Column Name
+2. **probability_col**: Prefix for column name of probability
    - Value type : String
    - Default : probability
 3. **suffix**: Choose suffix type.
@@ -51,6 +46,5 @@ Using the result of 'XGB Classification Train', this function predicts with the 
       - label
 4. **thresholds**: Thresholds used to predict.
 
-#### Outputs
-1. **out_table**: table
+#### Outputs: table
 

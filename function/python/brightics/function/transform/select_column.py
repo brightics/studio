@@ -16,6 +16,7 @@
 
 from brightics.common.utils import check_required_parameters
 
+
 def select_column(table, **params):
     check_required_parameters(_select_column, params, ['table'])
     return _select_column(table, **params)

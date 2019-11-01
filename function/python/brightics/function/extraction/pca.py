@@ -33,7 +33,7 @@ from brightics.common.validation import validate, greater_than_or_equal_to
 
 def pca(table, group_by=None, **params):
     check_required_parameters(_pca, params, ['table'])
-    params = get_default_from_parameters_if_required(params,_pca)
+    params = get_default_from_parameters_if_required(params, _pca)
     param_validation_check = [from_to(params, 1, len(params['input_cols']), 'n_components')]
     validate(*param_validation_check)
     if group_by is not None:
@@ -50,7 +50,7 @@ def _pca(table, input_cols, new_column_name='projected_', n_components=None, cop
     if n_components is None:
         n_components = num_feature_cols
     
-    pca = PCA(None, copy, whiten, svd_solver, tol, iterated_power, random_state = seed)
+    pca = PCA(None, copy, whiten, svd_solver, tol, iterated_power, random_state=seed)
     pca_model = pca.fit(table[input_cols])
         
     column_names = []

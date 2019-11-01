@@ -23,3 +23,4 @@ from .arima import arima_train
 from .arima import arima_predict
 from .arima import auto_arima_train
 from .arima import auto_arima_predict
+from .autocorrelation import autocorrelation

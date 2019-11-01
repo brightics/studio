@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.extraction import scale_model
-res = scale_model()
+res = scale_model(table = ,model = ,)
 res['out_table']
 ```
 
@@ -13,24 +13,18 @@ This function transforms the features using the result of Normalization.
 
 ## Properties
 ### VA
-#### Inputs
-1. **table**: table
-2. **model**: model
+#### Inputs: table, model
 
 #### Parameters
 
 
-#### Outputs
-1. **out_table**: table
+#### Outputs: table
 
 ### Python
-#### Inputs
-1. **table**: table
-2. **model**: model
+#### Inputs: table, model
 
 #### Parameters
 
 
-#### Outputs
-1. **out_table**: table
+#### Outputs: table
 

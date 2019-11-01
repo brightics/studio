@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 from brightics.function.statistics.cross_table import cross_table
 from brightics.common.datasets import load_iris
 import unittest
@@ -36,7 +35,7 @@ class TestCrossTable(unittest.TestCase):
 
     def test_first(self):
         
-        ct = cross_table(self.testdata, input_cols_1 = ['sepal_length'], input_cols_2 = ['sepal_length'], result='N', margins=False)
+        ct = cross_table(self.testdata, input_cols_1=['sepal_length'], input_cols_2=['sepal_length'], result='N', margins=False)
         DF1 = ct['model']['result_table'].values
         # print(DF1)
         np.testing.assert_array_equal(DF1[0][0:3].tolist(), ['4.3', 1, 0])
@@ -47,7 +46,7 @@ class TestCrossTable(unittest.TestCase):
         
     def test_second(self):
         
-        ct = cross_table(self.testdata, input_cols_1 = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width'], input_cols_2 = ['species'], result='N / Total', margins=False)
+        ct = cross_table(self.testdata, input_cols_1=['sepal_length', 'sepal_width', 'petal_length', 'petal_width'], input_cols_2=['species'], result='N / Total', margins=False)
         DF2 = ct['model']['result_table'].values
         # print(DF2)
         np.testing.assert_equal(DF2[0][0], '4.3_3.0_1.1_0.1')

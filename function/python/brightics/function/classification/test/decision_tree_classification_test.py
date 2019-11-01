@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 import unittest
 from brightics.common.datasets import load_iris
 from brightics.function.classification.decision_tree_classification import decision_tree_classification_train, \

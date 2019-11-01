@@ -63,7 +63,6 @@ def _term_term_mtx(table, model, input_col, result_type='sparse'):
             model['add_words'] = []       
         num_origin = len(dictionary) - len(model['add_words'])
         terms = [term for term in dictionary.token2id.keys()][:num_origin]
-        doc_idx = ['doc_{}'.format(i) for i in range(len(corpus))]
         out_table = pd.DataFrame(term_term.todense())
         out_table.insert(loc=0, column=' ', value=terms)
         out_table.columns = np.append(" ", terms)

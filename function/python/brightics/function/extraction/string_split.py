@@ -27,6 +27,7 @@ from brightics.common.classify_input_type import check_col_type
 def string_split(table, **params):
     check_required_parameters(_string_split, params, ['table'])
     return _string_split(table, **params)
+
     
 def _string_split(table, input_col, hold_cols=None, delimiter=',', output_col_name='split', output_col_cnt=3, output_col_type='double', start_pos=0, end_pos=0):
     out_table = pd.DataFrame()
@@ -58,15 +59,21 @@ def _string_split(table, input_col, hold_cols=None, delimiter=',', output_col_na
         output_arr[i] = output_arr[i][:output_col_cnt]
         for j, value in enumerate(output_arr[i]):
             try:
-                if output_col_type in ['integer','long','integer_arr','long_arr']:
-                    output_arr[i][j] = int(value)
-                elif output_col_type in ['double','float','double_arr']:
-                    output_arr[i][j] = float(value)
+                if output_col_type in ['integer', 'integer_arr']:
+                    tmp = value.split('.')
+                    output_arr[i][j] = np.int32(tmp[0]) if len(tmp) <= 2 else None
+                elif output_col_type in ['long', 'long_arr']:
+                    tmp = value.split('.')
+                    output_arr[i][j] = np.int64(tmp[0]) if len(tmp) <= 2 else None
+                elif output_col_type in ['float']:
+                    output_arr[i][j] = np.float32(value)
+                elif output_col_type in ['double', 'double_arr']:
+                    output_arr[i][j] = np.float64(value)
                 else:
                     output_arr[i][j] = value
             except:
                 output_arr[i][j] = None
-    if output_col_type in ['string','double','integer','long']:
+    if output_col_type in ['string', 'double', 'integer', 'long']:
         output_arr = np.transpose(output_arr)
         for i, output in enumerate(output_arr):
             out_table[output_col_name + '_' + str(i)] = output

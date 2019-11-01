@@ -24,14 +24,17 @@ from brightics.common.validation import greater_than
 from brightics.common.validation import greater_than_or_equal_to
 from brightics.common.classify_input_type import check_col_type
 
-def fill_na(list,number):
-    for i in range(number-len(list)):
+
+def fill_na(list, number):
+    for _ in range(number - len(list)):
         list.append(None)
     return list
+
 
 def columns_to_array(table, **params):
     check_required_parameters(_columns_to_array, params, ['table'])
     return _columns_to_array(table, **params)
+
     
 def _columns_to_array(table, input_cols, remain_cols=False, output_col_name='array'):
     _output_col_name = re.sub("[ ,;{}()\n\t=]", "_", output_col_name)
@@ -46,9 +49,11 @@ def _columns_to_array(table, input_cols, remain_cols=False, output_col_name='arr
         out_table[_output_col_name] = list(npa)
         return {'out_table' : out_table}
 
+
 def array_to_columns(table, **params):
     check_required_parameters(_array_to_columns, params, ['table'])
     return _array_to_columns(table, **params)
+
     
 def _array_to_columns(table, input_cols, remain_cols=False):
     if remain_cols:
@@ -63,8 +68,8 @@ def _array_to_columns(table, input_cols, remain_cols=False):
         for input_col in input_cols:
             _input_col = re.sub("[ ,;{}()\n\t=]", "_", input_col)
             length = np.max([len(i) for i in table[input_col]])
-            tmp = np.array([fill_na(i,length) for i in table[input_col]])
+            tmp = np.array([fill_na(i, length) for i in table[input_col]])
             columns = [_input_col + '_' + str(i) for i in range(tmp.shape[1])]
-            result_table = pd.DataFrame(tmp,columns=columns)
-            out_table = pd.concat([out_table, result_table],axis=1)
+            result_table = pd.DataFrame(tmp, columns=columns)
+            out_table = pd.concat([out_table, result_table], axis=1)
         return {'out_table' : out_table}

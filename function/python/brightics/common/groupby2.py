@@ -206,3 +206,4 @@ def _info_from_sample_result(sample_result, group_by, groups):
     model_keys_containing_repr = [k for k, v in sample_result.items()
                                   if isinstance(v, dict) and '_repr_brtc_' in v]
     return res_keys, df_keys, model_keys_containing_repr
+    

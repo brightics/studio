@@ -1,3 +1,4 @@
+
 """
     Copyright 2019 Samsung SDS
     
@@ -23,3 +24,6 @@ from .gaussian_mixture import gaussian_mixture_train
 from .gaussian_mixture import gaussian_mixture_predict
 from .mean_shift import mean_shift
 from .mean_shift import mean_shift_predict
+from .clustering_predict import clustering_predict
+from .agglomerative_clustering import agglomerative_clustering
+from .spectral_clustering import spectral_clustering

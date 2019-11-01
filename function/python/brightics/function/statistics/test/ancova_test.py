@@ -13,8 +13,8 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
-
+# Erase until pingouin package is installed.
+"""
 from brightics.function.statistics.ancova import ancova
 from brightics.common.datasets import load_iris
 import unittest
@@ -38,18 +38,19 @@ class Ancova(unittest.TestCase):
         sepal_length_res = acv_res['result']['_grouped_data']['sepal_length']
         sepal_width_res = acv_res['result']['_grouped_data']['sepal_width']
         petal_length_res = acv_res['result']['_grouped_data']['petal_length']
-        np.testing.assert_array_equal([round(x, 15) for x in sepal_length_res['SS']], [0.035976611203942,5.179385219249953,33.776279306611876])
-        np.testing.assert_array_equal([round(x, 15) for x in sepal_length_res['F'][0:2]], [0.077755533522417,22.388204311848675])
-        np.testing.assert_array_equal([round(x, 15) for x in sepal_length_res['p-unc'][0:2]], [0.925228863130016,0.000005209190425])
-        np.testing.assert_array_equal([round(x, 15) for x in sepal_width_res['SS']], [11.326033726136874,3.908856506250405,13.125890313070389]) 
-        np.testing.assert_array_equal([round(x, 15) for x in sepal_width_res['F'][0:2]], [62.990048087228601,43.478425942983783])
-        np.testing.assert_array_equal([round(x, 15) for x in sepal_width_res['p-unc'][0:2]], [0.000000000000000,0.000000000733167])
-        np.testing.assert_array_equal([round(x, 15) for x in petal_length_res['SS']], [13.019810102934493,6.332585167433126,20.887004664475192])
-        np.testing.assert_array_equal([round(x, 15) for x in petal_length_res['F'][0:2]], [45.504185630347727,44.264721021379003])
-        np.testing.assert_array_equal([round(x, 15) for x in petal_length_res['p-unc'][0:2]], [0.000000000000000,0.000000000538366])
+        np.testing.assert_array_equal([round(x, 15) for x in sepal_length_res['SS']], [0.035976611203942, 5.179385219249953, 33.776279306611876])
+        np.testing.assert_array_equal([round(x, 15) for x in sepal_length_res['F'][0:2]], [0.077755533522417, 22.388204311848675])
+        np.testing.assert_array_equal([round(x, 15) for x in sepal_length_res['p-unc'][0:2]], [0.925228863130016, 0.000005209190425])
+        np.testing.assert_array_equal([round(x, 15) for x in sepal_width_res['SS']], [11.326033726136874, 3.908856506250405, 13.125890313070389]) 
+        np.testing.assert_array_equal([round(x, 15) for x in sepal_width_res['F'][0:2]], [62.990048087228601, 43.478425942983783])
+        np.testing.assert_array_equal([round(x, 15) for x in sepal_width_res['p-unc'][0:2]], [0.000000000000000, 0.000000000733167])
+        np.testing.assert_array_equal([round(x, 15) for x in petal_length_res['SS']], [13.019810102934493, 6.332585167433126, 20.887004664475192])
+        np.testing.assert_array_equal([round(x, 15) for x in petal_length_res['F'][0:2]], [45.504185630347727, 44.264721021379003])
+        np.testing.assert_array_equal([round(x, 15) for x in petal_length_res['p-unc'][0:2]], [0.000000000000000, 0.000000000538366])
 
 
 if __name__ == '__main__':
     filepath = os.path.dirname(os.path.abspath(__file__))
     reportFoler = filepath + "/../../../../../../../reports"
     unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))
+"""

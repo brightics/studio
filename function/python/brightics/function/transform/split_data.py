@@ -15,16 +15,17 @@
 """
 
 from sklearn.model_selection import train_test_split as sktrain_test_split
-from brightics.common.validation import validate, greater_than
+from brightics.common.validation import validate, greater_than, from_to
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 
 
 def split_data(table, group_by=None, **params):
-    params = get_default_from_parameters_if_required(params,_split_data)
+    params = get_default_from_parameters_if_required(params, _split_data)
     param_validation_check = [greater_than(params, 0.0, 'train_ratio'),
-                              greater_than(params, 0.0, 'test_ratio')]
+                              greater_than(params, 0.0, 'test_ratio'),
+                              from_to(params, 0, 2**30, 'random_state')]
         
     validate(*param_validation_check)
     check_required_parameters(_split_data, params, ['table'])
@@ -35,7 +36,6 @@ def split_data(table, group_by=None, **params):
 
 
 def _split_data(table, train_ratio=7.0, test_ratio=3.0, random_state=None, shuffle=True, stratify=None):
-
     
     ratio = test_ratio / (train_ratio + test_ratio)
     out_table_train, out_table_test = sktrain_test_split(table, test_size=ratio, random_state=random_state, shuffle=shuffle, stratify=stratify)

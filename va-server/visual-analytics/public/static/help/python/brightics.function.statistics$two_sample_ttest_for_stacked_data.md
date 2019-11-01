@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.statistics import two_sample_ttest_for_stacked_data
-res = two_sample_ttest_for_stacked_data(response_cols = ,factor_col = ,alternatives = ,confi_level = ,first = ,second = ,hypo_diff = ,equal_vari = ,group_by = )
+res = two_sample_ttest_for_stacked_data(table = ,response_cols = ,factor_col = ,alternatives = ,confi_level = ,first = ,second = ,hypo_diff = ,equal_vari = ,group_by = )
 res['model']
 res['out_table']
 ```
@@ -20,19 +20,18 @@ https://en.wikipedia.org/wiki/Student's_t-test#Independent_two-sample_t-test
 
 ## Properties
 ### VA
-#### Inputs
-1. **table**: table
+#### Inputs: table
 
 #### Parameters
-1. **Response Columns**<b style="color:red">*</b>: 
+1. **Response Columns**<b style="color:red">*</b>: Columns to select as response
    - Allowed column type : Integer, Long, Float, Double
-2. **Factor Column**<b style="color:red">*</b>: 
+2. **Factor Column**<b style="color:red">*</b>: Column to select as factor
    - Allowed column type : String, Integer, Double, Long, Float, Boolean
-3. **Alternatives**: Array[String] Alternative hypothesis. "two_sided","less","greater" are possible. 
+3. **Alternatives**<b style="color:red">*</b>: Array[String] Alternative hypothesis. "two_sided","less","greater" are possible. 
    - Available items
       - Greater
       - Less
-      - Two Sided
+      - Two Sided (default)
 4. **Confidence Level**: Double Confidence level. Default: 0.95
    - Value type : Double
    - Default : 0.95 (0 <= value <= 1)
@@ -52,24 +51,21 @@ https://en.wikipedia.org/wiki/Student's_t-test#Independent_two-sample_t-test
       - False
 9. **Group By**: Columns to group by
 
-#### Outputs
-1. **model**: model
-2. **out_table**: table
+#### Outputs: model, table
 
 ### Python
-#### Inputs
-1. **table**: table
+#### Inputs: table
 
 #### Parameters
-1. **response_cols**<b style="color:red">*</b>: 
+1. **response_cols**<b style="color:red">*</b>: Columns to select as response
    - Allowed column type : Integer, Long, Float, Double
-2. **factor_col**<b style="color:red">*</b>: 
+2. **factor_col**<b style="color:red">*</b>: Column to select as factor
    - Allowed column type : String, Integer, Double, Long, Float, Boolean
-3. **alternatives**: Array[String] Alternative hypothesis. "two_sided","less","greater" are possible. 
+3. **alternatives**<b style="color:red">*</b>: Array[String] Alternative hypothesis. "two_sided","less","greater" are possible. 
    - Available items
       - larger
       - smaller
-      - two-sided
+      - two-sided (default)
 4. **confi_level**: Double Confidence level. Default: 0.95
    - Value type : Double
    - Default : 0.95 (0 <= value <= 1)
@@ -89,7 +85,5 @@ https://en.wikipedia.org/wiki/Student's_t-test#Independent_two-sample_t-test
       - unequal
 9. **group_by**: Columns to group by
 
-#### Outputs
-1. **model**: model
-2. **out_table**: table
+#### Outputs: model, table
 

@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 from brightics.function.regression.xgb_regression import xgb_regression_train
 from brightics.function.regression.xgb_regression import xgb_regression_predict
 from brightics.common.datasets import load_iris
@@ -36,9 +35,9 @@ class XGBRegression(unittest.TestCase):
     
     def test(self):
         xgb_train = xgb_regression_train(self.testdata, feature_cols=['sepal_length', 'sepal_width', 'petal_length'], label_col='petal_width')['model']
-        np.testing.assert_array_almost_equal(xgb_train['feature_importance'], [0.2591911852359772,0.2077205926179886,0.533088207244873] , 10)
+        np.testing.assert_array_almost_equal(xgb_train['feature_importance'], [0.2591911852359772, 0.2077205926179886, 0.533088207244873] , 10)
         predict = xgb_regression_predict(self.testdata, xgb_train)['out_table']['prediction']
-        np.testing.assert_array_almost_equal(predict[:5],[0.2634012401 ,0.1740619838 ,0.1951409280 ,0.1879036427 ,0.2634012401],10)
+        np.testing.assert_array_almost_equal(predict[:5], [0.2634012401 , 0.1740619838 , 0.1951409280 , 0.1879036427 , 0.2634012401], 10)
 
 
 if __name__ == '__main__':

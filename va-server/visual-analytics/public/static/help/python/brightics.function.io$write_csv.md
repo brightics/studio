@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.io import write_csv
-res = write_csv(path = )
+res = write_csv(table = ,path = )
 
 ```
 
@@ -13,24 +13,20 @@ This function writes a table to a csv file.
 
 ## Properties
 ### VA
-#### Inputs
-1. **table**: table
+#### Inputs: table
 
 #### Parameters
 1. **Path**<b style="color:red">*</b>: csv file path.
    - Value type : String
 
-#### Outputs
-This function has no output data.
+#### Outputs: This function has no output data.
 
 ### Python
-#### Inputs
-1. **table**: table
+#### Inputs: table
 
 #### Parameters
 1. **path**<b style="color:red">*</b>: csv file path.
    - Value type : String
 
-#### Outputs
-This function has no output data.
+#### Outputs: This function has no output data.
 

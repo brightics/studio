@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.manipulation import outlier_detection_tukey_carling_model
-res = outlier_detection_tukey_carling_model(new_column_prefix = ,group_by = )
+res = outlier_detection_tukey_carling_model(table = ,model = ,new_column_prefix = )
 res['out_table']
 ```
 
@@ -14,30 +14,22 @@ This method allows to generalize prediction to new observations (not in the trai
 
 ## Properties
 ### VA
-#### Inputs
-1. **table**: table
-2. **model**: model
+#### Inputs: table, model
 
 #### Parameters
-1. **New Column Prefix**: 
+1. **New Column Prefix**: Column prefix for new columns.
    - Value type : String
    - Default : is_outlier_
-2. **Group By**: Columns to group by
 
-#### Outputs
-1. **out_table**: table
+#### Outputs: table
 
 ### Python
-#### Inputs
-1. **table**: table
-2. **model**: model
+#### Inputs: table, model
 
 #### Parameters
-1. **new_column_prefix**: 
+1. **new_column_prefix**: Column prefix for new columns.
    - Value type : String
    - Default : is_outlier_
-2. **group_by**: Columns to group by
 
-#### Outputs
-1. **out_table**: table
+#### Outputs: table
 

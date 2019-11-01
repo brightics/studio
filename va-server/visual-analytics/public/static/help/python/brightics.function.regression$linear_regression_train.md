@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.regression import linear_regression_train
-res = linear_regression_train(feature_cols = ,label_col = ,fit_intercept = ,group_by = )
+res = linear_regression_train(table = ,feature_cols = ,label_col = ,fit_intercept = ,is_vif = ,vif_threshold = ,group_by = )
 res['model']
 ```
 
@@ -15,32 +15,36 @@ https://en.wikipedia.org/wiki/Linear_regression
 
 ## Properties
 ### VA
-#### Inputs
-1. **table**: table
+#### Inputs: table
 
 #### Parameters
-1. **Feature Columns**<b style="color:red">*</b>: Feature columns
-   - Allowed column type : Integer, Long, Float, Double
-2. **Label column**<b style="color:red">*</b>: 
+1. **Feature Columns**<b style="color:red">*</b>: Columns to select as features
+   - Allowed column type : Integer, Long, Float, Double, Double[]
+2. **Label column**<b style="color:red">*</b>: Columns to select as label
    - Allowed column type : Integer, Long, Float, Double
 3. **Fit Intercept**: Whether to fit an intercept
-4. **Group By**: Columns to group by
+4. **VIF**: Variance Inflation Factor
+5. **VIF Threshold**: Whether to check VIF excceds threshold
+   - Value type : Double
+   - Default : 10 (1 <= value)
+6. **Group By**: Columns to group by
 
-#### Outputs
-1. **model**: model
+#### Outputs: model
 
 ### Python
-#### Inputs
-1. **table**: table
+#### Inputs: table
 
 #### Parameters
-1. **feature_cols**<b style="color:red">*</b>: Feature columns
-   - Allowed column type : Integer, Long, Float, Double
-2. **label_col**<b style="color:red">*</b>: 
+1. **feature_cols**<b style="color:red">*</b>: Columns to select as features
+   - Allowed column type : Integer, Long, Float, Double, Double[]
+2. **label_col**<b style="color:red">*</b>: Columns to select as label
    - Allowed column type : Integer, Long, Float, Double
 3. **fit_intercept**: Whether to fit an intercept
-4. **group_by**: Columns to group by
+4. **is_vif**: Variance Inflation Factor
+5. **vif_threshold**: Whether to check VIF excceds threshold
+   - Value type : Double
+   - Default : 10 (1 <= value)
+6. **group_by**: Columns to group by
 
-#### Outputs
-1. **model**: model
+#### Outputs: model
 

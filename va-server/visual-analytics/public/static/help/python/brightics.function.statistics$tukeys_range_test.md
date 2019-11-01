@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.statistics import tukeys_range_test
-res = tukeys_range_test(response_cols = ,factor_col = ,alpha = ,group_by = )
+res = tukeys_range_test(table = ,response_cols = ,factor_col = ,alpha = ,group_by = )
 res['result']
 ```
 
@@ -16,34 +16,30 @@ Reference:
 
 ## Properties
 ### VA
-#### Inputs
-1. **table**: table
+#### Inputs: table
 
 #### Parameters
-1. **Response Columns**<b style="color:red">*</b>: Response columns
+1. **Response Columns**<b style="color:red">*</b>: Columns to select as response
    - Allowed column type : Integer, Long, Float, Double
-2. **Factor Column**<b style="color:red">*</b>: Factor column
+2. **Factor Column**<b style="color:red">*</b>: Column to select as factor
 3. **Significance Level**: Significant level
    - Value type : Double
-   - Default : 0.05
+   - Default : 0.05 (0.001 <= value < 0.9)
 4. **Group By**: Columns to group by
 
-#### Outputs
-1. **result**: model
+#### Outputs: model
 
 ### Python
-#### Inputs
-1. **table**: table
+#### Inputs: table
 
 #### Parameters
-1. **response_cols**<b style="color:red">*</b>: Response columns
+1. **response_cols**<b style="color:red">*</b>: Columns to select as response
    - Allowed column type : Integer, Long, Float, Double
-2. **factor_col**<b style="color:red">*</b>: Factor column
+2. **factor_col**<b style="color:red">*</b>: Column to select as factor
 3. **alpha**: Significant level
    - Value type : Double
-   - Default : 0.05
+   - Default : 0.05 (0.001 <= value < 0.9)
 4. **group_by**: Columns to group by
 
-#### Outputs
-1. **result**: model
+#### Outputs: model
 

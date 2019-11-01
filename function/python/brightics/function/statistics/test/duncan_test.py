@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 from brightics.function.statistics.duncan_test import duncan_test
 from brightics.common.datasets import load_iris
 import unittest
@@ -37,9 +36,9 @@ class Duncan(unittest.TestCase):
         duncan_res = duncan_test(self.testdata, response_cols=['sepal_length'], factor_col='species')
         res = duncan_res['result']
         np.testing.assert_array_equal(res['sepal_length_species']['critical_val']['critical_value'], [0.20346880603871212, 0.21415681109106452])
-        np.testing.assert_array_equal(res['sepal_length_species']['mean_by_factor']['sepal_length'], [6.587999999999998,5.936,5.005999999999999])
-        np.testing.assert_array_equal(res['sepal_length_species']['comp_by_factor']['difference'], [0.6519999999999984,1.581999999999999,0.9300000000000006])
-        np.testing.assert_array_equal(res['sepal_length_species']['comp_by_factor']['significant'], ['YES','YES','YES'])
+        np.testing.assert_array_equal(res['sepal_length_species']['mean_by_factor']['sepal_length'], [6.587999999999998, 5.936, 5.005999999999999])
+        np.testing.assert_array_equal(res['sepal_length_species']['comp_by_factor']['difference'], [0.6519999999999984, 1.581999999999999, 0.9300000000000006])
+        np.testing.assert_array_equal(res['sepal_length_species']['comp_by_factor']['significant'], ['YES', 'YES', 'YES'])
 
 
 if __name__ == '__main__':

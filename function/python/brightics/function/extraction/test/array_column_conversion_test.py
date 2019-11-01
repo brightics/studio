@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 from brightics.function.extraction.array_column_conversion import columns_to_array
 from brightics.function.extraction.array_column_conversion import array_to_columns
 from brightics.common.datasets import load_iris
@@ -52,4 +51,3 @@ if __name__ == '__main__':
     filepath = os.path.dirname(os.path.abspath(__file__))
     reportFoler = filepath + "/../../../../../../../reports"
     unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(combine_reports=True, output=reportFoler))
-

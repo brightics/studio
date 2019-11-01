@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 import pandas as pd
 import unittest
 from brightics.function.statistics import bartletts_test
@@ -70,19 +69,19 @@ class TwowayAnovaTest(unittest.TestCase):
 
     def test_oneway1(self):
         oneway_anova_out = oneway_anova(table=self.iris, response_cols=['sepal_width'], factor_col='petal_width', group_by=None)
-        #print(oneway_anova_out['result'])
+        # print(oneway_anova_out['result'])
 
     def test_oneway2(self):
         oneway_anova_out = oneway_anova(table=self.iris, response_cols=['sepal_width'], factor_col='petal_width', group_by=['species'])
-        #print(oneway_anova_out['result'])
+        # print(oneway_anova_out['result'])
 
     def test_twoway1(self):
         twoway_anova_out = twoway_anova(table=self.example_df, response_cols=['value'], factor_cols=['Genotype', 'years'], group_by=None)
-        #print(twoway_anova_out['result'])
+        # print(twoway_anova_out['result'])
 
     def test_twoway2(self):
         twoway_anova_out = twoway_anova(table=self.example_df, response_cols=['value'], factor_cols=['Genotype', 'years'], group_by=['Genotype'])
-        #print(twoway_anova_out['result'])
+        # print(twoway_anova_out['result'])
 
 
 if __name__ == '__main__':

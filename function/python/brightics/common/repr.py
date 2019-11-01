@@ -82,7 +82,10 @@ def pandasDF2MD(table, num_rows=20, precision=None, col_max_width=None):
     
     def to_string(v, col_max_width=None):
         if not isinstance(v, str):
-            return str(v)
+            if isinstance(v, np.ndarray):
+                return str(list(v))
+            else:
+                return str(v)
         else:
             s = str(v)
             l = len(s)

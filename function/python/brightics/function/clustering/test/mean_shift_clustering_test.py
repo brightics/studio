@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 from brightics.function.clustering.mean_shift import mean_shift, mean_shift_predict
 from brightics.common.datasets import load_iris
 import unittest
@@ -38,7 +37,7 @@ class MeanShift(unittest.TestCase):
         ms_model = ms_train['model']['model']
         cluster_centers = ms_model.cluster_centers_
         self.assertEqual(len(cluster_centers), 3)
-        np.testing.assert_array_equal([round(x, 15) for x in cluster_centers[0]], [6.059574468085108 ,2.834042553191489 ,4.587234042553192 ,1.500000000000000])
+        np.testing.assert_array_equal([round(x, 15) for x in cluster_centers[0]], [6.059574468085108 , 2.834042553191489 , 4.587234042553192 , 1.500000000000000])
         np.testing.assert_array_equal([round(x, 15) for x in cluster_centers[1]], [4.988888888888890, 3.400000000000002, 1.482222222222222, 0.244444444444444])
         np.testing.assert_array_equal([round(x, 15) for x in cluster_centers[2]], [6.633333333333333, 3.066666666666666, 5.548148148148147, 2.100000000000000])
         

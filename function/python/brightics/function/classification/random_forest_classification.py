@@ -14,6 +14,8 @@
     limitations under the License.
 """
 
+import numexpr as ne
+from scipy import stats
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -23,6 +25,7 @@ from brightics.common.repr import BrtcReprBuilder
 from brightics.common.repr import strip_margin
 from brightics.common.repr import plt2MD
 from brightics.common.repr import dict2MD
+from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
@@ -74,7 +77,7 @@ def _random_forest_classification_train(table, feature_cols, label_col,
                                  max_leaf_nodes=None, min_impurity_decrease=0, class_weight=None, random_state=None):
     
     feature_names, features_train = check_col_type(table, feature_cols)
-    #X_train = table[feature_cols]
+    # X_train = table[feature_cols]
     y_train = table[label_col]
 
     if(type_of_target(y_train) == 'continuous'):
@@ -83,21 +86,13 @@ def _random_forest_classification_train(table, feature_cols, label_col,
     if max_features == "n":
         max_features = None
         
-    class_labels = list(set(y_train))
+    class_labels = y_train.unique()
     if class_weight is not None:
         if len(class_weight) != len(class_labels):
             raise ValueError("Number of class weights should match number of labels.")
         else:
-            if y_train.dtype == str:
-                classes = sorted((class_labels), key=str.lower)
-            else:
-                classes = sorted(class_labels)
-
-                weights = class_weight
-                class_weight = {classes[0]: weights[0]}
-                
-                for i in range(1, len(classes)):
-                    class_weight[classes[i]] = weights[i]
+            classes = sorted(class_labels)              
+            class_weight = {classes[i] : class_weight[i] for i in range(len(classes))}
             
     classifier = RandomForestClassifier(n_estimators=n_estimators,
                                         criterion=criterion,
@@ -126,7 +121,7 @@ def _random_forest_classification_train(table, feature_cols, label_col,
              'class_weight': class_weight,
              'random_state': random_state}
     
-    model = dict()
+    model = _model_dict('random_forest_classification_model')
     model['classifier'] = classifier
     model['params'] = params
 
@@ -146,7 +141,7 @@ def _random_forest_classification_train(table, feature_cols, label_col,
         
     model['_repr_brtc_'] = rb.get()
     feature_importance = classifier.feature_importances_
-    feature_importance_table = pd.DataFrame([[feature_cols[i],feature_importance[i]] for i in range(len(feature_cols))],columns = ['feature_name','importance'])
+    feature_importance_table = pd.DataFrame([[feature_cols[i], feature_importance[i]] for i in range(len(feature_cols))], columns=['feature_name', 'importance'])
     model['feature_importance_table'] = feature_importance_table
     return {'model' : model}
 
@@ -159,24 +154,204 @@ def random_forest_classification_predict(table, model, **params):
         return _random_forest_classification_predict(table, model, **params)
 
 
+def _string_make(character, index, path, start, array, split_feature_name, split_threshold):
+    if index == 0:
+        return ' & ({} <= {})'.format(character, split_threshold[start]) + path
+    else:
+        return ' & ({} > {})'.format(character, split_threshold[start]) + path
+
+
+def _string_make_complex_version(character, index, path, start, split_feature_name, split_threshold, split_left_categories_values, split_right_categories_values):
+    if pd.isnull(split_threshold[start]):
+        if index == 0:
+            result = ''
+            tmp = split_left_categories_values[start]
+            for i in tmp:
+                result += " | ({} == '{}')".format(character, i)
+            result = ' & ( ' + result[3:] + ' )'
+            return result+path
+        else:
+            result = ''
+            tmp = split_right_categories_values[start]
+            for i in tmp:
+                result += " | ({} == '{}')".format(character, i)
+            result = ' & ( ' + result[3:] + ' )'
+            return result+path
+    else:
+        if index == 0:
+            return ' & ({} <= {})'.format(character, split_threshold[start]) + path
+        else:
+            return ' & ({} > {})'.format(character, split_threshold[start]) + path    
+
+
+def _path_find(start, children_array, array, split_feature_name, split_threshold, predict, result):
+    paths = []
+    start = array[start]
+    for index, child in enumerate(children_array[start]):
+        if child == -1:
+            result.append(predict[start])
+            return result, ['']
+        result, tmp_paths = _path_find(child, children_array, array, split_feature_name, split_threshold, predict, result)
+        for path in tmp_paths:
+            paths.append(_string_make(split_feature_name[start], index, path, start, array, split_feature_name, split_threshold))
+    return result, paths
+
+
+def _path_find_complex_version(start, children_array, array, split_feature_name, split_threshold, split_left_categories_values, split_right_categories_values, predict, result):
+    paths = []
+    start = array[start]
+    for index, child in enumerate(children_array[start]):
+        if child == -1:
+            result.append(predict[start])
+            return result, ['']
+        result, tmp_paths = _path_find_complex_version(child, children_array, array, split_feature_name, split_threshold, split_left_categories_values, split_right_categories_values, predict, result)
+        for path in tmp_paths:
+            paths.append(_string_make_complex_version(split_feature_name[start], index, path, start, split_feature_name, split_threshold, split_left_categories_values, split_right_categories_values))
+    return result, paths
+
+
 def _random_forest_classification_predict(table, model, pred_col_name='prediction', prob_col_prefix='probability', suffix='index'):
     out_table = table.copy()
-    classifier = model['classifier']
-    
-    feature_cols = model['params']['feature_cols']
-    feature_names, features_test = check_col_type(table, feature_cols)
-    
-    out_table[pred_col_name] = classifier.predict(features_test)
-    
-    classes = classifier.classes_
-    if suffix == 'index':
-        suffixes = [i for i, _ in enumerate(classes)]
+    if 'feature_cols' in model:
+        feature_cols = model['feature_cols']
     else:
-        suffixes = classes
-        
-    prob = classifier.predict_proba(features_test)
-    prob_col_name = ['{prob_col_prefix}_{suffix}'.format(prob_col_prefix=prob_col_prefix, suffix=suffix) for suffix in suffixes]
-    out_col_prob = pd.DataFrame(data=prob, columns=prob_col_name)
-
-    out_table = pd.concat([out_table, out_col_prob], axis=1)
+        feature_cols = model['params']['feature_cols']
+    
+    if 'classifier' in model:
+        feature_names, features_test = check_col_type(table, feature_cols)
+        classifier = model['classifier']
+        out_table[pred_col_name] = classifier.predict(features_test)
+        classes = classifier.classes_
+        prob = classifier.predict_proba(features_test)
+        if suffix == 'index':
+            suffixes = [i for i, _ in enumerate(classes)]
+        else:
+            suffixes = classes
+        prob_col_name = ['{prob_col_prefix}_{suffix}'.format(prob_col_prefix=prob_col_prefix, suffix=suffix) for suffix in suffixes]
+        out_col_prob = pd.DataFrame(data=prob, columns=prob_col_name)
+        out_table = pd.concat([out_table, out_col_prob], axis=1)
+    else:
+        if model['_type'] == 'random_forest_model':
+            feature_cols = model['feature_cols']
+            test_data = table[feature_cols]
+            model_table = model['table_1']
+            tree_indices = model_table.reset_index().groupby('tree_id').agg({'index':['min', 'max']}).values
+            node_id_full = model_table.node_id.values
+            children_array_full = model_table[['left_nodeid', 'right_nodeid']].values
+            predict_full = model_table.predict.values
+            classes = np.unique(predict_full)
+            split_feature_name_full = model_table.split_feature_name.values
+            split_threshold_full = model_table.split_threshold.values
+            conclusion_list = []
+            for i in tree_indices:
+                tmp_max = node_id_full[i[0]:i[1] + 1].max()
+                array = np.empty(tmp_max + 1, dtype=np.int32)
+                children_array = children_array_full[i[0]:i[1] + 1]
+                predict = predict_full[i[0]:i[1] + 1]
+                split_feature_name = split_feature_name_full[i[0]:i[1] + 1]
+                split_threshold = split_threshold_full[i[0]:i[1] + 1]
+                for index, value in enumerate(node_id_full[i[0]:i[1] + 1]):
+                    array[value] = index
+                result = []
+                result, expr_array = _path_find(1, children_array, array, split_feature_name, split_threshold, predict, result)
+                expr_array = [i[3:] for i in expr_array]
+                conclusion = [None] * len(table)
+                our_list = dict()
+                for i in feature_cols:
+                    our_list[i] = table[i].values
+                for index, expr in enumerate(expr_array):
+                    conclusion = np.where(ne.evaluate(expr, local_dict=our_list), result[index], conclusion)
+                conclusion_list.append(conclusion)
+            result = stats.mode(np.array(conclusion_list, dtype=int), axis=0)
+            out_table[pred_col_name] = result[0][0]
+            out_table['probability'] = result[1][0] / len(tree_indices)
+        else:
+            feature_cols = model['feature_cols']
+            if 'gbt' in model['_type']:
+                if model['auto']:
+                    model_table = model['table_3']
+                    classes = model['table_4']['labels'].values[-1]
+                    data_type = model['table_4']['data_type'].values[-1]
+                    if data_type == 'integer':
+                        classes = np.array([np.int32(i) for i in classes])
+                    elif data_type == 'double':
+                        classes = np.array([np.float64(i) for i in classes])
+                    elif data_type == 'long':
+                        classes = np.array([np.int64(i) for i in classes])
+                else:
+                    model_table = model['table_2']
+                    classes = model['table_3']['labels'].values[-1]
+                    data_type = model['table_3']['data_type'].values[-1]
+                    if data_type == 'integer':
+                        classes = np.array([np.int32(i) for i in classes])
+                    elif data_type == 'double':
+                        classes = np.array([np.float64(i) for i in classes])
+                    elif data_type == 'long':
+                        classes = np.array([np.int64(i) for i in classes])
+                tree_weight_full = model_table.tree_weight.values
+            else:
+                if model['auto']:
+                    model_table = model['table_4']
+                    classes = np.array(model['table_5']['labels'].values[-1])
+                    data_type = model['table_5']['data_type'].values[-1]
+                    if data_type == 'integer':
+                        classes = np.array([np.int32(i) for i in classes])
+                    elif data_type == 'double':
+                        classes = np.array([np.float64(i) for i in classes])
+                    elif data_type == 'long':
+                        classes = np.array([np.int64(i) for i in classes])
+                else:
+                    model_table = model['table_3']
+                    classes = np.array(model['table_4']['labels'].values[-1])
+                    data_type = model['table_4']['data_type'].values[-1]
+                    if data_type == 'integer':
+                        classes = np.array([np.int32(i) for i in classes])
+                    elif data_type == 'double':
+                        classes = np.array([np.float64(i) for i in classes])
+                    elif data_type == 'long':
+                        classes = np.array([np.int64(i) for i in classes])
+            tree_indices = model_table.reset_index().groupby('tree_id').agg({'index':['min', 'max']}).values
+            node_id_full = model_table.node_id.values
+            children_array_full = model_table[['left_nodeid', 'right_nodeid']].values
+            predict_full = model_table.predict.values
+            split_feature_name_full = model_table.split_feature_name.values
+            split_threshold_full = model_table.split_threshold.values
+            split_left_categories_values_full = model_table.split_left_categories_values.values
+            split_right_categories_values_full = model_table.split_right_categories_values.values
+            conclusion_list = []
+            for i in tree_indices:
+                tmp_max = node_id_full[i[0]:i[1] + 1].max()
+                array = np.empty(tmp_max + 1, dtype=np.int32)
+                children_array = children_array_full[i[0]:i[1] + 1]
+                predict = predict_full[i[0]:i[1] + 1]
+                split_feature_name = split_feature_name_full[i[0]:i[1] + 1]
+                split_threshold = split_threshold_full[i[0]:i[1] + 1]
+                split_left_categories_values = split_left_categories_values_full[i[0]:i[1] + 1]
+                split_right_categories_values = split_right_categories_values_full[i[0]:i[1] + 1]
+                for index, value in enumerate(node_id_full[i[0]:i[1] + 1]):
+                    array[value] = index
+                result = []
+                result, expr_array = _path_find_complex_version(1, children_array, array, split_feature_name, split_threshold, split_left_categories_values, split_right_categories_values, predict, result)
+                expr_array = [i[3:] for i in expr_array]
+                conclusion = [None] * len(table)
+                our_list = dict()
+                for j in feature_cols:
+                    if table[j].dtype == 'object':
+                        our_list[j] = np.array(table[j], dtype='|S')
+                    else:
+                        our_list[j] = table[j].values
+                for index, expr in enumerate(expr_array):
+                    conclusion = np.where(ne.evaluate(expr, local_dict=our_list), result[index], conclusion)
+                if 'gbt' in model['_type']:
+                    conclusion_list.append(conclusion * tree_weight_full[i[0]])
+                else:
+                    conclusion_list.append(conclusion)
+            if 'gbt' in model['_type']:
+                result = np.sum(np.array(conclusion_list), axis=0)
+                result = np.where(result < 0, classes[0], classes[1])
+                out_table[pred_col_name] = result
+            else:
+                result = stats.mode(np.array(conclusion_list, dtype=int), axis=0)
+                out_table[pred_col_name] = classes[result[0][0]]
+                out_table['probability'] = result[1][0] / len(tree_indices)
     return {'out_table': out_table}

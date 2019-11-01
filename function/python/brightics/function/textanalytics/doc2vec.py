@@ -44,7 +44,7 @@ def doc2vec(table, **params):
 
 def _doc2vec(table, input_col, dm=1, vector_size=100, window=10, min_count=1, max_vocab_size=None,
             train_epoch=100, workers=1, alpha=0.025, min_alpha=0.025, seed=None,
-            hs=1, negative=5, ns_exponent=0.75):
+            hs=1, negative=5, ns_exponent=0.75, hashfxn=hash):
     
     if seed is None:
         random_state = seed
@@ -75,7 +75,8 @@ def _doc2vec(table, input_col, dm=1, vector_size=100, window=10, min_count=1, ma
                   epochs=train_epoch,
                   hs=hs,
                   negative=negative,
-                  ns_exponent=ns_exponent)
+                  ns_exponent=ns_exponent,
+                  hashfxn=hashfxn)
     
     vocab = d2v.wv.vocab
         

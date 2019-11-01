@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 import unittest
 import pandas as pd
 from brightics.function.textanalytics import lda

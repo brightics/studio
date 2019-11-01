@@ -18,9 +18,11 @@ import math
 import numpy as np
 from brightics.common.utils import check_required_parameters
 
+
 def bucketizer(table, **params):
     check_required_parameters(_bucketizer, params, ['table'])
     return _bucketizer(table, **params)
+
 
 def _bucketizer(table, input_cols, radio_splits, bucket_type='left_closed', splits=[], splits_from=None, splits_to=None, splits_by=None, new_name=None):
     

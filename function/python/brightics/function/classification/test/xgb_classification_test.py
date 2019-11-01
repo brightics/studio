@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 import unittest
 import numpy as np
 from brightics.common.datasets import load_iris
@@ -32,8 +31,8 @@ class TestXgbClassification(unittest.TestCase):
                                           label_col='species',
                                           max_depth=3, learning_rate=0.1, n_estimators=100, random_state=12345)['model']
 
-        df_feature_importance = model_train['feature_importance_table']
-        np.testing.assert_array_almost_equal([0.6451905965805054, 0.354809433221817], [df_feature_importance.values[i][1] for i in range(2)], 10, 'incorrect feature_importance')
+        df_feature_importance = model_train['feature_importance_table']               
+        np.testing.assert_array_almost_equal([0.5877061486, 0.4122938514], [df_feature_importance.values[i][1] for i in range(2)], 10, 'incorrect feature_importance')
         
         df_test = xgb_classification_predict(table=df_iris,
                                              model=model_train,
@@ -42,9 +41,9 @@ class TestXgbClassification(unittest.TestCase):
                                              output_margin=False, ntree_limit=None)['out_table']
                                              
         self.assertListEqual(['setosa'] * 5, df_test['prediction'].tolist()[:5], 'incorrect prediction')                                   
-        np.testing.assert_array_almost_equal([0.9957091808, 0.9548807144, 0.9963358641, 0.9958093166, 0.9968782663], df_test['probability_0'].values[:5].astype('float64'), 10, 'incorrect probability_0')
-        np.testing.assert_array_almost_equal([0.003195002 , 0.0195275117, 0.0022283769, 0.0019767662, 0.0020245721], df_test['probability_1'].values[:5].astype('float64'), 10, 'incorrect probability_1')
-        np.testing.assert_array_almost_equal([0.0010958249, 0.0255918186, 0.0014357698, 0.0022139512, 0.0010971115], df_test['probability_2'].values[:5].astype('float64'), 10, 'incorrect probability_2')
+        np.testing.assert_array_almost_equal([0.9961014986, 0.9555388689, 0.9964415431, 0.9961314201, 0.9970849156], df_test['probability_0'].values[:5].astype('float64'), 10, 'incorrect probability_0')
+        np.testing.assert_array_almost_equal([0.0029145265, 0.0210829079, 0.0020782573, 0.001782414, 0.0019302238], df_test['probability_1'].values[:5].astype('float64'), 10, 'incorrect probability_1')
+        np.testing.assert_array_almost_equal([0.0009839422, 0.0233781971, 0.0014802075, 0.0020861221, 0.0009849136], df_test['probability_2'].values[:5].astype('float64'), 10, 'incorrect probability_2')
         
     def test_class_weight(self):
         df_iris = load_iris()
@@ -54,7 +53,7 @@ class TestXgbClassification(unittest.TestCase):
                                           max_depth=3, learning_rate=0.1, n_estimators=100, class_weight=[0, 1, 1], random_state=12345)['model']
 
         df_feature_importance = model_train['feature_importance_table']
-        np.testing.assert_array_almost_equal([0.0338172317, 0.036154151 , 0.3261058331, 0.6039227843], [df_feature_importance.values[i][1] for i in range(4)], 10, 'incorrect feature_importance')
+        np.testing.assert_array_almost_equal([0.114977307617,0.234493196010,0.332829058170,0.3177004456520], [df_feature_importance.values[i][1] for i in range(4)], 10, 'incorrect feature_importance')
         
         df_test = xgb_classification_predict(table=df_iris,
                                              model=model_train,

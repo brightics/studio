@@ -58,6 +58,8 @@ def pivot(table, values, aggfunc, index=None, columns=None):  # TODO
 
     def _75th(x): return brtc_stat.percentile(x, 75)
     
+    def _distinct(x): return list(set(x))
+    
     def _mi2index(mi):
         return pd.Index([_replace_col(col) for col in mi.get_values()])
     
@@ -91,6 +93,8 @@ def pivot(table, values, aggfunc, index=None, columns=None):  # TODO
             func_list.append(_max)
         elif func_name == 'sum':
             func_list.append(_sum) 
+        elif func_name == 'distinct':
+            func_list.append(_distinct) 
     
     pivoted = pd.pivot_table(table, values=values, index=index, columns=columns, aggfunc=func_list, fill_value=None, margins=False, margins_name='All')
     pivoted.columns = _mi2index(pivoted.columns)
@@ -124,6 +128,8 @@ def pivot2(table, values, aggfunc, index=None, columns=None):  # TODO
 
     def _q3(x): return brtc_stat.percentile(x, 75)
     
+    def _distinct(x): return list(set(x))
+    
     func_list = []
     for func_name in aggfunc:
         if func_name == 'count':
@@ -146,6 +152,8 @@ def pivot2(table, values, aggfunc, index=None, columns=None):  # TODO
             func_list.append(_max)
         elif func_name == 'sum':
             func_list.append(_sum) 
+        elif func_name == 'distinct':
+            func_list.append(_distinct) 
     
     pivoted = pd.pivot_table(table, values=values, index=index, columns=columns, aggfunc=func_list, fill_value=None, margins=False, margins_name='All')
     out_table = pd.concat([pivoted.index.to_frame(), pivoted], axis=1)
@@ -160,14 +168,12 @@ def pivot2(table, values, aggfunc, index=None, columns=None):  # TODO
             for name in out_table.columns.tolist()[len(columns) + 1:]:
                 name_list.append(name[1:])
             out_table.columns = out_table.columns.tolist()[:len(columns) + 1] + name_list
-        return {'out_table': out_table}
-    
     elif index is not None:
         name_list = []
         for name in out_table.columns.tolist()[len(index):]:
             name_list.append(name[0][1:] + "_" + "_".join(str(i) for i in name[1:]))
-        out_table.columns = out_table.columns.tolist()[:len(index)] + name_list
-        return {'out_table':out_table[index + name_list]}
+        out_table.columns = index + name_list
+    return {'out_table':out_table}
 
 
 def transpose(table, group_by=None, **params):
@@ -190,7 +196,8 @@ def _transpose(table, input_cols, label_col=None, label_col_name='label'):
     if label_col is None:
         out_table.columns = ['x' + str(i + 1) for i in range(len_table)]
     else:
-        out_table.columns = [str(table[label_col][i]) for i in range(len_table)]
+        tmp = table[label_col].tolist()
+        out_table.columns = [str(tmp[i]) for i in range(len_table)]
     
     out_table.insert(loc=0, column=label_col_name, value=feature_col_name)
 

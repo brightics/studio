@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 import unittest
 import pandas as pd
 import numpy as np
@@ -23,7 +22,6 @@ from brightics.common.datasets import load_iris
 from brightics.common.exception import BrighticsFunctionException
 import HtmlTestRunner
 import os
-
 
 df_example1 = pd.DataFrame({'num1':[1, 2, 3, 4, 5],
                             'num2':[10, 20, 30, 40, 50],
@@ -64,7 +62,7 @@ class SortTest(unittest.TestCase):
         
     def test_first(self):
         
-        st = sort(self.testdata, input_cols = ['sepal_length', 'sepal_width'], is_asc=True)
+        st = sort(self.testdata, input_cols=['sepal_length', 'sepal_width'], is_asc=True)
         DF1 = st['out_table'].values
         # print(DF1)
         np.testing.assert_array_equal(DF1[0][0:4], [4.3, 3.0, 1.1, 0.1])
@@ -75,7 +73,7 @@ class SortTest(unittest.TestCase):
         
     def test_second(self):
         
-        st = sort(self.testdata, input_cols = ['petal_length', 'species'], is_asc=False)
+        st = sort(self.testdata, input_cols=['petal_length', 'species'], is_asc=False)
         DF2 = st['out_table'].values
         # print(DF2)
         np.testing.assert_array_equal(DF2[0][0:4], [7.7, 2.6, 6.9, 2.3])
@@ -119,12 +117,11 @@ class ReplaceMissingNumber(unittest.TestCase):
         input_cols = ['A', 'B', 'E']
         target_number = 1230
         func = replace_missing_number(table=input_table, input_cols=input_cols, fill_value_to=target_number, limit=1)
-        np.testing.assert_almost_equal(func['out_table']['A'].values, np.array([1230.0, 3.0, np.nan, np.nan]),10)
-        np.testing.assert_almost_equal(func['out_table']['B'].values, np.array([2.0, 4.0, 1230.0, 3.0]),10)
-        np.testing.assert_almost_equal(func['out_table']['C'].values, np.array([np.nan, np.nan, np.nan, np.nan]),10)
-        np.testing.assert_almost_equal(func['out_table']['D'].values, np.array([0,1,5,4]),10)
-        np.testing.assert_equal(func['out_table']['E'].values, np.array(['A','B','C',None]),10)
-        
+        np.testing.assert_almost_equal(func['out_table']['A'].values, np.array([1230.0, 3.0, np.nan, np.nan]), 10)
+        np.testing.assert_almost_equal(func['out_table']['B'].values, np.array([2.0, 4.0, 1230.0, 3.0]), 10)
+        np.testing.assert_almost_equal(func['out_table']['C'].values, np.array([np.nan, np.nan, np.nan, np.nan]), 10)
+        np.testing.assert_almost_equal(func['out_table']['D'].values, np.array([0, 1, 5, 4]), 10)
+        np.testing.assert_equal(func['out_table']['E'].values, np.array(['A', 'B', 'C', None]), 10)
 
 
 class ReplaceMissingString(unittest.TestCase):
@@ -145,11 +142,11 @@ class ReplaceMissingString(unittest.TestCase):
         input_cols = ['A', 'B', 'E']
         target_string = 'null'
         func = replace_missing_string(table=input_table, input_cols=input_cols, fill_string=target_string, limit=1)
-        np.testing.assert_almost_equal(func['out_table']['A'].values, np.array([np.nan, 3.0, np.nan, np.nan]),10)
-        np.testing.assert_almost_equal(func['out_table']['B'].values, np.array([2.0, 4.0, np.nan, 3.0]),10)
-        np.testing.assert_almost_equal(func['out_table']['C'].values, np.array([np.nan, np.nan, np.nan, np.nan]),10)
-        np.testing.assert_almost_equal(func['out_table']['D'].values, np.array([0,1,5,4]),10)
-        np.testing.assert_equal(func['out_table']['E'].values, np.array(['A','B','C','null']),10)
+        np.testing.assert_almost_equal(func['out_table']['A'].values, np.array([np.nan, 3.0, np.nan, np.nan]), 10)
+        np.testing.assert_almost_equal(func['out_table']['B'].values, np.array([2.0, 4.0, np.nan, 3.0]), 10)
+        np.testing.assert_almost_equal(func['out_table']['C'].values, np.array([np.nan, np.nan, np.nan, np.nan]), 10)
+        np.testing.assert_almost_equal(func['out_table']['D'].values, np.array([0, 1, 5, 4]), 10)
+        np.testing.assert_equal(func['out_table']['E'].values, np.array(['A', 'B', 'C', 'null']), 10)
 
 
 if __name__ == '__main__':

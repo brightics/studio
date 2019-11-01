@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 from brightics.function.evaluation import evaluate_classification
 from brightics.common.datasets import load_iris
 import unittest
@@ -33,13 +32,13 @@ class EvaluateClassification(unittest.TestCase):
         print("*** Evaluate Classification UnitTest End ***")
     
     def test(self):
-        np.random.seed(3); a=np.random.randint(10,size=100)
-        np.random.seed(4); b=np.random.randint(10,size=100)
-        table=pd.DataFrame([a,b]).transpose()
-        table.columns=['a','b']
-        result = evaluate_classification(table=table,label_col='a',prediction_col='b')['result']
-        np.testing.assert_almost_equal(result['f1_score'],0.07305502645502646,10)
-        np.testing.assert_almost_equal(result['precision_score'],0.08168456543456543,10)  
+        np.random.seed(3); a = np.random.randint(10, size=100)
+        np.random.seed(4); b = np.random.randint(10, size=100)
+        table = pd.DataFrame([a, b]).transpose()
+        table.columns = ['a', 'b']
+        result = evaluate_classification(table=table, label_col='a', prediction_col='b')['result']
+        np.testing.assert_almost_equal(result['f1_score'], 0.07305502645502646, 10)
+        np.testing.assert_almost_equal(result['precision_score'], 0.08168456543456543, 10)  
 
 
 if __name__ == '__main__':

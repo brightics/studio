@@ -15,41 +15,46 @@
 """
 
 import pandas as pd
+import numpy as np
 from brightics.common.utils import check_required_parameters
+
 
 def synonym_converter(table, **params):
     check_required_parameters(_synonym_converter, params, ['table'])   
     return _synonym_converter(table, **params)
+    
 
 def synonym_converter_user_dict(table, **params):
     check_required_parameters(_synonym_converter, params, ['table'])   
     return _synonym_converter(table, **params)
+    
 
-def _synonym_converter(table, input_cols, hold_cols=None, default_dict=False, synonym_list=None, prefix='synonym', user_dict=pd.DataFrame()):
+def _synonym_converter(table, input_cols, hold_cols=None, default_dict=False, synonym_list=None, prefix='synonym', user_dict=None):
     
-    len_table = len(table)
-    if synonym_list is None:
-        len_synonym_list = 0
-    else:
-        len_synonym_list = len(synonym_list)
-    len_user_dict = len(user_dict)
-    out_table = pd.DataFrame()
+    hold_table = pd.DataFrame()    
+    if hold_cols is not None:
+        hold_table[hold_cols] = table[hold_cols]
+    
+    # initial dictionary
     synonym_dict = dict()
-    
-    if hold_cols is None:
-        hold_cols = []
-    for column in hold_cols:
-        out_table[column] = table[column]
+    if (synonym_list is not None):        
+        for word_synonym in synonym_list:
+            synonym_dict.update({synonym.strip() : word_synonym.split(',')[0] for synonym in word_synonym.split(',')[1:]})
         
+    # default dictionary update
     if (default_dict == True):
         synonym_dict.update(dict())  # To do dict() => default dictionary
-    if (user_dict.empty == False):
-        for i in range(len_user_dict):
-            synonym_dict[user_dict[user_dict.keys()[0]][i]] = user_dict[user_dict.keys()[1]][i]
-    for i in range(len_synonym_list):
-        synonym_dict[synonym_list[i].split(',')[0]] = synonym_list[i].split(',')[1]
+
+    # user_dict update
+    if (user_dict is not None):
+        user_dictionary = user_dict.values
+        for word_synonym in user_dictionary:
+            synonym_dict.update({synonym.strip() : word_synonym[0] for synonym in word_synonym[1].split(',')})
+
+    values = [[[synonym_dict.get(word, word) for word in word_list] for word_list in table[column]] for column in input_cols]
+    value_columns = ['{}_{}'.format(prefix, column) for column in input_cols]
+    value_table = pd.DataFrame(np.transpose(values), columns=value_columns)
     
-    for column in input_cols:
-        out_table['{}_{}'.format(prefix, column)] = [[synonym_dict.get(n, n) for n in table[column][i]] for i in range(0, len_table)]
-    
+    out_table = pd.concat([hold_table, value_table.reset_index(drop=True)], axis=1)
+            
     return {'out_table' : out_table}

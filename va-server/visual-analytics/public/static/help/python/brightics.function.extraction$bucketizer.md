@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.extraction import bucketizer
-res = bucketizer(input_cols = ,bucket_type = ,radio_splits = ,splits = ,splits_from = ,splits_to = ,splits_by = ,new_name = )
+res = bucketizer(table = ,input_cols = ,bucket_type = ,radio_splits = ,splits = ,splits_from = ,splits_to = ,splits_by = ,new_name = )
 res['out_table']
 ```
 
@@ -15,11 +15,10 @@ If two input tables are chosen, the first table would be used for in-table and t
 
 ## Properties
 ### VA
-#### Inputs
-1. **table**: table
+#### Inputs: table
 
 #### Parameters
-1. **Input Column**<b style="color:red">*</b>: Column name to deal with. From input table, one column can be selected (It should be number type column). If two tables are chosen, another column name should be selected for split. (It should be number type column.)
+1. **Input Column**<b style="color:red">*</b>: Column to select as input
    - Allowed column type : Integer, Long, Float, Double
 2. **Bucket Type**: 
    - Available items
@@ -35,7 +34,7 @@ In the list format, -Infinity and Infinity are available for the input value. ex
    - Available items
       - List Format (default)
       - Range Format
-4. **Splits**: 
+4. **Splits**: Input list of split points
 5. **From**: 
    - Value type : Double
    - Default : Enter value
@@ -49,15 +48,13 @@ In the list format, -Infinity and Infinity are available for the input value. ex
    - Value type : String
    - Default : Enter value
 
-#### Outputs
-1. **out_table**: table
+#### Outputs: table
 
 ### Python
-#### Inputs
-1. **table**: table
+#### Inputs: table
 
 #### Parameters
-1. **input_cols**<b style="color:red">*</b>: Column name to deal with. From input table, one column can be selected (It should be number type column). If two tables are chosen, another column name should be selected for split. (It should be number type column.)
+1. **input_cols**<b style="color:red">*</b>: Column to select as input
    - Allowed column type : Integer, Long, Float, Double
 2. **bucket_type**: 
    - Available items
@@ -73,7 +70,7 @@ In the list format, -Infinity and Infinity are available for the input value. ex
    - Available items
       - array (default)
       - from_to_by
-4. **splits**: 
+4. **splits**: Input list of split points
 5. **splits_from**: 
    - Value type : Double
    - Default : Enter value
@@ -87,6 +84,5 @@ In the list format, -Infinity and Infinity are available for the input value. ex
    - Value type : String
    - Default : Enter value
 
-#### Outputs
-1. **out_table**: table
+#### Outputs: table
 

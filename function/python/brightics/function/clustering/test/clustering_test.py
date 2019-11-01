@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 import unittest
 from brightics.function.clustering.kmeans import kmeans_train_predict, \
     kmeans_predict, kmeans_silhouette_train_predict

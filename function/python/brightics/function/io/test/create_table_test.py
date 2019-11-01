@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 from brightics.function.io import create_table
 import unittest
 import pandas as pd

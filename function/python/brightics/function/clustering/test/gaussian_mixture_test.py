@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 from brightics.function.clustering.gaussian_mixture import gaussian_mixture_train, gaussian_mixture_predict
 from brightics.common.datasets import load_iris
 import unittest

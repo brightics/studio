@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -109,7 +108,7 @@ def _ada_boost_classification_train(table, feature_cols, label_col, max_depth=1,
 
     model['_repr_brtc_'] = rb.get()
     feature_importance = classifier.feature_importances_
-    feature_importance_table = pd.DataFrame([[feature_cols[i],feature_importance[i]] for i in range(len(feature_cols))],columns = ['feature_name','importance'])
+    feature_importance_table = pd.DataFrame([[feature_cols[i], feature_importance[i]] for i in range(len(feature_cols))], columns=['feature_name', 'importance'])
     model['feature_importance_table'] = feature_importance_table
     return {'model': model}
 

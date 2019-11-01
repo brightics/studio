@@ -55,10 +55,10 @@ def _bow(table, input_col, add_words=None, no_below=1, no_above=0.8, keep_n=1000
         'Keep N most Frequent': keep_n
     }
     
-    empty_description=''
-    if len(list(dictionary.dfs.values()))==0:
-        out_table=pd.DataFrame([], columns=['token', 'document_frequency'])
-        empty_description='Out table is empty since parameter \"Minimum Number of Occurrence\" is greater than the maximum of document frequency.'
+    empty_description = ''
+    if len(list(dictionary.dfs.values())) == 0:
+        out_table = pd.DataFrame([], columns=['token', 'document_frequency'])
+        empty_description = 'Out table is empty since parameter \"Minimum Number of Occurrence\" is greater than the maximum of document frequency.'
     else:
         out_table = pd.DataFrame.from_dict(dictionary.token2id, orient='index').drop([0], axis=1)
         out_table.insert(loc=0, column='token', value=dictionary.token2id.keys())
@@ -68,7 +68,6 @@ def _bow(table, input_col, add_words=None, no_below=1, no_above=0.8, keep_n=1000
         for i in range(len(dictionary.dfs)):
             dfs_list.append(token_cnt[i][1])
         out_table['document_frequency'] = dfs_list
-    
     
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""

@@ -90,11 +90,11 @@ def _glm_train(table, feature_cols, label_col, family="Gaussian", link="auto", f
     model['label'] = label_col
     model['family'] = family
     model['link'] = link
-    model['coefficients'] = glm_model.params
+    model['coefficients'] = glm_model.params.values
     model['aic'] = glm_model.aic
     model['bic'] = glm_model.bic
-    model['tvalues'] = glm_model.tvalues
-    model['pvalues'] = glm_model.pvalues
+    model['tvalues'] = glm_model.tvalues.values
+    model['pvalues'] = glm_model.pvalues.values
     model['fit_intercept'] = fit_intercept
     glm_model.remove_data()
     model['glm_model'] = glm_model

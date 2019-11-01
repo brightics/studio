@@ -31,3 +31,4 @@ from .mlp_classification import mlp_classification_train
 from .mlp_classification import mlp_classification_predict
 from .ada_boost_classification import ada_boost_classification_train
 from .ada_boost_classification import ada_boost_classification_predict
+from .classification_predict import classification_predict

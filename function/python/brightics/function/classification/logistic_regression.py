@@ -1,3 +1,4 @@
+
 """
     Copyright 2019 Samsung SDS
     
@@ -24,7 +25,7 @@ from brightics.common.repr import pandasDF2MD
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
-from brightics.common.validation import raise_runtime_error
+from brightics.function.extraction import one_hot_encoder
 from brightics.common.validation import raise_error
 import sklearn.utils as sklearn_utils
 from brightics.common.utils import get_default_from_parameters_if_required
@@ -54,7 +55,7 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
                                solver='liblinear', max_iter=100, multi_class='ovr', verbose=0, warm_start=False,
                                n_jobs=1):
 
-    feature_names, features = check_col_type(table,feature_cols)
+    feature_names, features = check_col_type(table, feature_cols)
     features = pd.DataFrame(features, columns=feature_names)
 
     label = table[label_col]
@@ -62,10 +63,16 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
     if(sklearn_utils.multiclass.type_of_target(label) == 'continuous'):
         raise_error('0718', 'label_col')
     
+    class_labels = sorted(set(label))
+    if class_weight is not None:
+        if len(class_weight) != len(class_labels):
+            raise ValueError("Number of class weights should match number of labels.")
+        else:             
+            class_weight = {class_labels[i] : class_weight[i] for i in range(len(class_labels))}
+        
     lr_model = LogisticRegression(penalty, dual, tol, C, fit_intercept, intercept_scaling, class_weight, random_state,
                                   solver, max_iter, multi_class, verbose, warm_start, n_jobs)
     lr_model.fit(features, label)
-    new_features = pd.DataFrame({"Constant":np.ones(len(features))}).join(pd.DataFrame(features))
     intercept = lr_model.intercept_
     coefficients = lr_model.coef_
     classes = lr_model.classes_
@@ -78,28 +85,28 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
     tmp_label = np.array([classes_dict[i] for i in label])
     likelihood = 1
     for i in range(len(table)):
-        likelihood*=prob_trans[tmp_label[i]][i]
+        likelihood *= prob_trans[tmp_label[i]][i]
     if fit_intercept:
-        k = len(feature_cols)+1
+        k = len(feature_cols) + 1
     else:
         k = len(feature_cols)
-    aic = 2*k-2*np.log(likelihood)
-    bic = np.log(len(table))*k-2*np.log(likelihood)
+    aic = 2 * k - 2 * np.log(likelihood)
+    bic = np.log(len(table)) * k - 2 * np.log(likelihood)
     if is_binary:
         if fit_intercept:
             x_design = np.hstack([np.ones((features.shape[0], 1)), features])
         else:
             x_design = features.values
         v = np.product(prob, axis=1)
-        x_design_modi = (x_design.T*v).T
+        x_design_modi = (x_design.T * v).T
         cov_logit = np.linalg.inv(np.dot(x_design_modi.T, x_design))
         std_err = np.sqrt(np.diag(cov_logit))
         if fit_intercept:
             logit_params = np.insert(coefficients, 0, intercept)
         else:
-            logit_params = coefficients
+            logit_params = coefficients[0]
         wald = (logit_params / std_err) ** 2
-        p_values = 1-chi2.cdf(wald, 1)
+        p_values = 1 - chi2.cdf(wald, 1)
     else:
         if fit_intercept:
             x_design = np.hstack([np.ones((features.shape[0], 1)), features])
@@ -107,13 +114,13 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
             x_design = features.values
         std_err = []
         for i in range(len(classes)):
-            v = prob.T[i]*(1 - prob.T[i])
-            x_design_modi = (x_design.T*v).T
+            v = prob.T[i] * (1 - prob.T[i])
+            x_design_modi = (x_design.T * v).T
             cov_logit = np.linalg.inv(np.dot(x_design_modi.T, x_design))
             std_err.append(np.sqrt(np.diag(cov_logit)))
         std_err = np.array(std_err)
 
-        #print(math.log(likelihood))
+        # print(math.log(likelihood))
 
     if (fit_intercept == True):
         summary = pd.DataFrame({'features': ['intercept'] + feature_names})        
@@ -128,10 +135,10 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
     else:
             summary = pd.concat((summary, pd.DataFrame(coef_trans, columns=[classes[0]])), axis=1)
     if is_binary:
-        summary = pd.concat((summary,pd.DataFrame(std_err,columns=['standard_error']),pd.DataFrame(wald,columns=['wald_statistic']),pd.DataFrame(p_values,columns=['p_value'])),axis=1)
+        summary = pd.concat((summary, pd.DataFrame(std_err, columns=['standard_error']), pd.DataFrame(wald, columns=['wald_statistic']), pd.DataFrame(p_values, columns=['p_value'])), axis=1)
     else:
         columns = ['standard_error_{}'.format(classes[i]) for i in range(len(classes))]
-        summary = pd.concat((summary, pd.DataFrame(std_err.T,columns=columns)), axis=1)
+        summary = pd.concat((summary, pd.DataFrame(std_err.T, columns=columns)), axis=1)
         arrange_col = ['features']
         for i in range(len(classes)):
             arrange_col.append(classes[i])
@@ -149,7 +156,7 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
         | #### AIC : {aic}
         |
         | #### BIC : {bic}
-        """.format(small = classes[0], big = classes[1], table1=pandasDF2MD(summary, num_rows=100),aic=aic,bic=bic
+        """.format(small=classes[0], big=classes[1], table1=pandasDF2MD(summary, num_rows=100), aic=aic, bic=bic
                    )))
     else:
         rb = BrtcReprBuilder()
@@ -165,7 +172,7 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
         | #### AIC : {aic}
         |
         | #### BIC : {bic}
-        """.format(small = classes[0], table1=pandasDF2MD(summary, num_rows=100),aic=aic,bic=bic
+        """.format(small=classes[0], table1=pandasDF2MD(summary, num_rows=100), aic=aic, bic=bic
                    )))
 
     model = _model_dict('logistic_regression_model')
@@ -199,13 +206,91 @@ def logistic_regression_predict(table, model, **params):
 def _logistic_regression_predict(table, model, prediction_col='prediction', prob_prefix='probability',
                                  output_log_prob=False, log_prob_prefix='log_probability', thresholds=None,
                                  suffix='index'):
-    feature_cols = model['features']
-    feature_names, features = check_col_type(table,feature_cols)
-    lr_model = model['lr_model']
-    classes = lr_model.classes_
-    len_classes = len(classes)
-    is_binary = len_classes == 2
-    
+    if 'features' in model:
+        feature_cols = model['features']
+    else:
+        feature_cols = model['feature_cols']
+    if 'lr_model' in model:
+        feature_names, features = check_col_type(table, feature_cols)
+        features = pd.DataFrame(features, columns=feature_names)
+    else:
+        features = table[feature_cols]
+    if 'auto' in model and 'vs' not in model['_type']:
+        if model['auto']:
+            one_hot_input = model['table_4'][:-1][model['table_4']['data_type'][:-1] == 'string'].index
+            if len(one_hot_input != 0):
+                features = one_hot_encoder(prefix='col_name', table=features, input_cols=features.columns[one_hot_input].tolist(), suffix='label')['out_table']
+                features = features[model['table_2']['features']]
+        else:
+            one_hot_input = model['table_3'][:-1][model['table_3']['data_type'][:-1] == 'string'].index
+            if len(one_hot_input != 0):
+                features = one_hot_encoder(prefix='col_name', table=features, input_cols=features.columns[one_hot_input].tolist(), suffix='label')['out_table']
+                features = features[model['table_1']['features']]
+    elif 'auto' in model and 'vs' in model['_type']:
+        if model['auto']:
+            one_hot_input = model['table_3'][:-1][model['table_3']['data_type'][:-1] == 'string'].index
+            if len(one_hot_input != 0):
+                features = one_hot_encoder(prefix='col_name', table=features, input_cols=features.columns[one_hot_input].tolist(), suffix='label')['out_table']
+                features = features[model['table_2']['features']]
+        else:
+            one_hot_input = model['table_2'][:-1][model['table_2']['data_type'][:-1] == 'string'].index
+            if len(one_hot_input != 0):
+                features = one_hot_encoder(prefix='col_name', table=features, input_cols=features.columns[one_hot_input].tolist(), suffix='label')['out_table']
+                features = features[model['table_1']['features']]
+    if 'lr_model' in model:
+        lr_model = model['lr_model']
+        classes = lr_model.classes_
+        len_classes = len(classes)
+        is_binary = len_classes == 2
+    else:
+        fit_intercept = model['fit_intercept']
+        if 'vs' not in model['_type']:
+            len_classes = 2
+            is_binary = True
+            if 'auto' in model:
+                if model['auto']:
+                    classes = model['table_4']['labels'].values[-1]
+                    classes_type = model['table_4']['data_type'].values[-1]
+                    if classes_type == 'integer' or classes_type == 'long':
+                        classes = np.array([int(i) for i in classes])
+                    elif classes_type == 'float' or classes_type == 'double':
+                        classes = np.array([float(i) for i in classes])
+                    coefficients = model['table_3']['coefficients'][0]
+                    intercept = model['table_3']['intercept'][0]
+                else:
+                    classes = model['table_3']['labels'].values[-1]
+                    classes_type = model['table_3']['data_type'].values[-1]
+                    if classes_type == 'integer' or classes_type == 'long':
+                        classes = np.array([int(i) for i in classes])
+                    elif classes_type == 'float' or classes_type == 'double':
+                        classes = np.array([float(i) for i in classes])
+                    coefficients = model['table_2']['coefficients'][0]
+                    intercept = model['table_2']['intercept'][0]
+            else:
+                classes = np.array([0, 1])
+                coefficients = model['table_2']['coefficient'][1:]
+                if fit_intercept:
+                    intercept = model['table_2']['coefficient'][0]
+        else:
+            if 'auto' in model:
+                if model['auto']:
+                    classes = np.array(model['table_3']['labels'].values[-1])
+                    len_classes = len(classes)
+                    is_binary = len_classes == 2
+                    intercept = model['table_2'].intercept
+                    coefficients = model['table_2'].coefficients
+                else:
+                    classes = np.array(model['table_2']['labels'].values[-1])
+                    len_classes = len(classes)
+                    is_binary = len_classes == 2
+                    intercept = model['table_1'].intercept
+                    coefficients = model['table_1'].coefficients
+            else:
+                classes = np.array(model['table_1'].labelInfo)
+                len_classes = len(classes)
+                is_binary = len_classes == 2
+                intercept = model['table_1'].intercept
+                coefficients = (model['table_1'][[i for i in model['table_1'].columns if 'coefficient' in i]]).values
     if thresholds is None:
         thresholds = np.array([1 / len_classes for _ in classes])
     elif isinstance(thresholds, list):
@@ -213,14 +298,34 @@ def _logistic_regression_predict(table, model, prediction_col='prediction', prob
             thresholds = np.array([thresholds[0], 1 - thresholds[0]])
         else:
             thresholds = np.array(thresholds)
-    
     len_thresholds = len(thresholds)
     if len_classes > 0 and len_thresholds > 0 and len_classes != len_thresholds:
         # FN-0613='%s' must have length equal to the number of classes.
         raise_error('0613', ['thresholds'])
     
-    prob = lr_model.predict_proba(features)
-    prediction = classes[np.argmax(prob/thresholds,axis=1)]
+    if 'lr_model' in model:
+        prob = lr_model.predict_proba(features)
+    else:
+        features = features.values
+        coefficients = np.array(coefficients)
+        if is_binary:
+            tmp = features * coefficients
+            if fit_intercept or 'auto' in model:
+                prob = 1 / (np.exp(np.sum(tmp, axis=1) + intercept) + 1)
+            else:
+                prob = 1 / (np.exp(np.sum(tmp, axis=1)) + 1)
+            prob = np.array([[x, 1 - x] for x in prob])
+        else:
+            prob = []
+            for i in range(len(coefficients)):
+                tmp = features * coefficients[i]
+                if fit_intercept:
+                    prob.append(1 / (np.exp(-np.sum(tmp, axis=1) - intercept[i]) + 1))
+                else:
+                    prob.append(1 / (np.exp(-np.sum(tmp, axis=1)) + 1))
+            prob = np.array(prob).T
+            prob = np.apply_along_axis(lambda x: x / np.sum(x), 1 , prob)
+    prediction = classes[np.argmax(prob / thresholds, axis=1)]
         
     out_table = table.copy()
     out_table[prediction_col] = prediction
@@ -234,7 +339,7 @@ def _logistic_regression_predict(table, model, prediction_col='prediction', prob
     prob_df = pd.DataFrame(data=prob, columns=prob_cols)
     
     if output_log_prob:     
-        log_prob = lr_model.predict_log_proba(features)
+        log_prob = np.log(prob)
         logprob_cols = ['{log_probability_col}_{suffix}'.format(log_probability_col=log_prob_prefix, suffix=suffix) for suffix in suffixes]
         logprob_df = pd.DataFrame(data=log_prob, columns=logprob_cols)
         out_table = pd.concat([out_table, prob_df, logprob_df], axis=1)

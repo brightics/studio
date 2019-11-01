@@ -22,6 +22,8 @@ from .unload import unload_model
 
 from .load import read_from_s3
 from .unload import write_to_s3
+from .load import read_from_s3_2
+from .unload import write_to_s3_2
 
 from .load import read_from_db
 from .unload import write_to_db
@@ -35,3 +37,5 @@ from .unload import unload
 
 from .create_table import create_table
 from .create_table import set_data
+
+#from .image import image_load

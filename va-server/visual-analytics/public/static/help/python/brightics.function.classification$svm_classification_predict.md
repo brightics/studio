@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.classification import svm_classification_predict
-res = svm_classification_predict(prediction_col = ,probability_col = ,log_probability_col = ,suffix = ,thresholds = )
+res = svm_classification_predict(table = ,model = ,prediction_col = ,prob_prefix = ,display_log_prob = ,log_prob_prefix = ,suffix = ,thresholds = )
 res['out_table']
 ```
 
@@ -13,50 +13,46 @@ Predict data using a support vector classification model.
 
 ## Properties
 ### VA
-#### Inputs
-1. **table**: table
-2. **model**: model
+#### Inputs: table, model
 
 #### Parameters
-1. **Prediction Column Name**: Prediction column name
+1. **Prediction Column Name**: Column name for prediction
    - Value type : String
    - Default : prediction
-2. **Probability Column Prefix**: Probability Column Name
+2. **Probability Column Prefix**: Prefix for column name of probability
    - Value type : String
    - Default : probability
-3. **Log Probability Column Prefix**: Log Probability Column Name
+3. **Display Log Probability**: Display log probability.
+4. **Log Probability Column Prefix**: Log Probability column prefix.
    - Value type : String
    - Default : log_probability
-4. **Suffix Type**: Choose suffix type.
+5. **Suffix Type**: Choose suffix type.
    - Available items
       - Index (default)
       - Label
-5. **Thresholds**: Thresholds used to predict.
+6. **Thresholds**: Thresholds used to predict.
 
-#### Outputs
-1. **out_table**: table
+#### Outputs: table
 
 ### Python
-#### Inputs
-1. **table**: table
-2. **model**: model
+#### Inputs: table, model
 
 #### Parameters
-1. **prediction_col**: Prediction column name
+1. **prediction_col**: Column name for prediction
    - Value type : String
    - Default : prediction
-2. **probability_col**: Probability Column Name
+2. **prob_prefix**: Prefix for column name of probability
    - Value type : String
    - Default : probability
-3. **log_probability_col**: Log Probability Column Name
+3. **display_log_prob**: Display log probability.
+4. **log_prob_prefix**: Log Probability column prefix.
    - Value type : String
    - Default : log_probability
-4. **suffix**: Choose suffix type.
+5. **suffix**: Choose suffix type.
    - Available items
       - index (default)
       - label
-5. **thresholds**: Thresholds used to predict.
+6. **thresholds**: Thresholds used to predict.
 
-#### Outputs
-1. **out_table**: table
+#### Outputs: table
 

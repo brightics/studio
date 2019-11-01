@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 from brightics.function.extraction import add_shift
 from brightics.common.datasets import load_iris
 import unittest

@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 import unittest
 import pandas as pd
 import numpy as np
@@ -153,7 +152,6 @@ class AddFunctionColumnIfTest(unittest.TestCase):
                                      ['1.0', '2.0'],
                                      '0.0')['out_table']
 """
-
 
 if __name__ == '__main__':
     filepath = os.path.dirname(os.path.abspath(__file__))

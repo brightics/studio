@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 import unittest
 import pandas as pd
 from brightics.function.textanalytics import synonym_converter, synonym_converter_user_dict
@@ -58,11 +57,6 @@ class TestSynonymConverter(unittest.TestCase):
         user_dict = pd.DataFrame({'word':['you', 'quit'], 'synonym':['You, she', 'stop']})
         
         df_res = synonym_converter_user_dict(df_input, input_cols=['text'], hold_cols=None, default_dict=False, synonym_list=None, prefix='synonym', user_dict=user_dict)['out_table']
-        
-        outfile = open("D:/tmp", 'w')
-        for i in range(3):
-            print(df_res['synonym_text'].values[i], end=',', file=outfile)
-        print('', file=outfile)
         
         self.assertListEqual(["you", "may", "know", "about", "the", "reason", "why", "you", "cried"], df_res['synonym_text'].values[1], 'incorrect result')
         self.assertListEqual(["I", "would", "like", "to", "quit", "working"], df_res['synonym_text'].values[2], 'incorrect result')
