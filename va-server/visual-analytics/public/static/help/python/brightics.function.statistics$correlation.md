@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.statistics import correlation
-res = correlation(vars = ,method = ,height = ,corr_prec = ,group_by = )
+res = correlation(table = ,vars = ,method = ,display_plt = ,height = ,corr_prec = ,group_by = )
 res['result']
 ```
 
@@ -16,48 +16,46 @@ Reference:
 
 ## Properties
 ### VA
-#### Inputs
-1. **table**: table
+#### Inputs: table
 
 #### Parameters
-1. **Input Columns**<b style="color:red">*</b>: Input columns
-   - Allowed column type : Integer, Long, Float, Double, Decimal
-2. **Method**: Method
+1. **Input Columns**<b style="color:red">*</b>: Columns to select as input
+   - Allowed column type : Integer, Long, Float, Double
+2. **Method**: Method.
    - Available items
       - pearson (default)
       - spearman
-      - kendal
-3. **Height**: Height
+      - kendall
+3. **Display Plots**: Display Plots
+4. **Height**: Height of correlation matrix.
    - Value type : Double
    - Default : 2.5
-4. **Precision**: Precision for correlation coefficients.
+5. **Precision**: Precision for correlation coefficients.
    - Value type : Integer
    - Default : 2
-5. **Group By**: Columns to group by
+6. **Group By**: Columns to group by
 
-#### Outputs
-1. **result**: model
+#### Outputs: model
 
 ### Python
-#### Inputs
-1. **table**: table
+#### Inputs: table
 
 #### Parameters
-1. **vars**<b style="color:red">*</b>: Input columns
-   - Allowed column type : Integer, Long, Float, Double, Decimal
-2. **method**: Method
+1. **vars**<b style="color:red">*</b>: Columns to select as input
+   - Allowed column type : Integer, Long, Float, Double
+2. **method**: Method.
    - Available items
       - pearson (default)
       - spearman
-      - kendal
-3. **height**: Height
+      - kendall
+3. **display_plt**: Display Plots
+4. **height**: Height of correlation matrix.
    - Value type : Double
    - Default : 2.5
-4. **corr_prec**: Precision for correlation coefficients.
+5. **corr_prec**: Precision for correlation coefficients.
    - Value type : Integer
    - Default : 2
-5. **group_by**: Columns to group by
+6. **group_by**: Columns to group by
 
-#### Outputs
-1. **result**: model
+#### Outputs: model
 

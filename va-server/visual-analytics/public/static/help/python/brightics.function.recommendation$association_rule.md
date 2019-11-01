@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.recommendation import association_rule
-res = association_rule(items = ,user_name = ,min_support = ,min_confidence = ,min_lift = ,max_lift = ,min_conviction = ,max_conviction = ,group_by = )
+res = association_rule(table = ,input_mode = ,array_input = ,mul_items = ,user_name = ,items = ,min_support = ,min_confidence = ,min_lift = ,max_lift = ,min_conviction = ,max_conviction = ,group_by = )
 res['out_table']
 ```
 
@@ -17,62 +17,80 @@ https://en.wikipedia.org/wiki/Association_rule_learning
 
 ## Properties
 ### VA
-#### Inputs
-1. **table**: table
+#### Inputs: table
 
 #### Parameters
-1. **Item Column**<b style="color:red">*</b>: 
-2. **User Column**<b style="color:red">*</b>: 
-3. **Min Support**: The minimal support level. Default: 0.01
+1. **Input Type**: 
+   - Available items
+      - User - single item (default)
+      - User - multiple items 
+      - Array
+2. **Input Column**: Column to select as input
+   - Allowed column type : String[], Double[]
+3. **Item Columns**: for Input Type "User - multiple items"
+   - Allowed column type : Integer, Long, Float, Double, String
+4. **User Column**<b style="color:red">*</b>: for Input Type "User-single item"
+   - Allowed column type : Integer, Long, Float, Double, String
+5. **Item Column**<b style="color:red">*</b>: for Input Type "User-single item"
+   - Allowed column type : Integer, Long, Float, Double, String
+6. **Min Support**: The minimal support level. Default: 0.01
    - Value type : Double
    - Default : 0.01 (0 <= value <= 1)
-4. **Min Confidence**: The minimal confidence. Default: 0.8
+7. **Min Confidence**: The minimal confidence. Default: 0.8
    - Value type : Double
    - Default : 0.8 (0 <= value <= 1)
-5. **Min Lift**: 
+8. **Min Lift**: 
    - Value type : Double
    - Default : 0
-6. **Max Lift**: 
+9. **Max Lift**: 
    - Value type : Double
    - Default : infinity
-7. **Min Conviction**: 
-   - Value type : Double
-   - Default : 0
-8. **Max Conviction**: 
-   - Value type : Double
-   - Default : infinity
-9. **Group By**: Columns to group by
+10. **Min Conviction**: 
+    - Value type : Double
+    - Default : 0
+11. **Max Conviction**: 
+    - Value type : Double
+    - Default : infinity
+12. **Group By**: Columns to group by
 
-#### Outputs
-1. **out_table**: table
+#### Outputs: table
 
 ### Python
-#### Inputs
-1. **table**: table
+#### Inputs: table
 
 #### Parameters
-1. **items**<b style="color:red">*</b>: 
-2. **user_name**<b style="color:red">*</b>: 
-3. **min_support**: The minimal support level. Default: 0.01
+1. **input_mode**: 
+   - Available items
+      - item_user (default)
+      - user_multiple
+      - transaction
+2. **array_input**: Column to select as input
+   - Allowed column type : String[], Double[]
+3. **mul_items**: for Input Type "User - multiple items"
+   - Allowed column type : Integer, Long, Float, Double, String
+4. **user_name**<b style="color:red">*</b>: for Input Type "User-single item"
+   - Allowed column type : Integer, Long, Float, Double, String
+5. **items**<b style="color:red">*</b>: for Input Type "User-single item"
+   - Allowed column type : Integer, Long, Float, Double, String
+6. **min_support**: The minimal support level. Default: 0.01
    - Value type : Double
    - Default : 0.01 (0 <= value <= 1)
-4. **min_confidence**: The minimal confidence. Default: 0.8
+7. **min_confidence**: The minimal confidence. Default: 0.8
    - Value type : Double
    - Default : 0.8 (0 <= value <= 1)
-5. **min_lift**: 
+8. **min_lift**: 
    - Value type : Double
    - Default : 0
-6. **max_lift**: 
+9. **max_lift**: 
    - Value type : Double
    - Default : infinity
-7. **min_conviction**: 
-   - Value type : Double
-   - Default : 0
-8. **max_conviction**: 
-   - Value type : Double
-   - Default : infinity
-9. **group_by**: Columns to group by
+10. **min_conviction**: 
+    - Value type : Double
+    - Default : 0
+11. **max_conviction**: 
+    - Value type : Double
+    - Default : infinity
+12. **group_by**: Columns to group by
 
-#### Outputs
-1. **out_table**: table
+#### Outputs: table
 

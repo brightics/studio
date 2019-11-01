@@ -1,13 +1,13 @@
 ## Format
 ### Python
 ```python
-from brightics.function.regression import linear_regression_predict
-res = linear_regression_predict(table = ,model = ,prediction_col = )
+from brightics.function.regression import penalized_linear_regression_predict
+res = penalized_linear_regression_predict(table = ,model = ,prediction_col = )
 res['out_table']
 ```
 
 ## Description
-Predict data using a linear regression model.
+This function predict data using the trained penalized linear regression model.
 
 ---
 
@@ -16,7 +16,7 @@ Predict data using a linear regression model.
 #### Inputs: table, model
 
 #### Parameters
-1. **Prediction Column Name**: Column name for prediction
+1. **New Column Name**: Column name for prediction
    - Value type : String
    - Default : prediction
 

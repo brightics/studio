@@ -1,13 +1,13 @@
 ## Format
 ### Python
 ```python
-from brightics.function.regression import linear_regression_predict
-res = linear_regression_predict(table = ,model = ,prediction_col = )
+from brightics.function.regression import ada_boost_regression_predict
+res = ada_boost_regression_predict(table = ,model = ,pred_col_name = )
 res['out_table']
 ```
 
 ## Description
-Predict data using a linear regression model.
+Predict data using an adaptive boost regression model.
 
 ---
 
@@ -26,7 +26,7 @@ Predict data using a linear regression model.
 #### Inputs: table, model
 
 #### Parameters
-1. **prediction_col**: Column name for prediction
+1. **pred_col_name**: Column name for prediction
    - Value type : String
    - Default : prediction
 

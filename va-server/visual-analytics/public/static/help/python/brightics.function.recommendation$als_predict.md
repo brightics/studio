@@ -1,13 +1,13 @@
 ## Format
 ### Python
 ```python
-from brightics.function.regression import linear_regression_predict
-res = linear_regression_predict(table = ,model = ,prediction_col = )
+from brightics.function.recommendation import als_predict
+res = als_predict(table = ,model = ,prediction_col = )
 res['out_table']
 ```
 
 ## Description
-Predict data using a linear regression model.
+This function predicts ratings for user-item pairs.
 
 ---
 
