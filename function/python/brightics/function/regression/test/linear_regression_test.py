@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 from brightics.function.regression.linear_regression import linear_regression_train
 from brightics.function.regression.linear_regression import linear_regression_predict
 from brightics.common.datasets import load_iris
@@ -36,9 +35,9 @@ class LinearRegression(unittest.TestCase):
     
     def test(self):
         linear_train = linear_regression_train(self.testdata, feature_cols=['sepal_length', 'sepal_width', 'petal_length'], label_col='petal_width')['model']
-        np.testing.assert_array_almost_equal(linear_train['coefficients'], [-0.2487235860 ,-0.2102713288 ,0.2287772140 ,0.5260881801] , 10)
+        np.testing.assert_array_almost_equal(linear_train['coefficients'], [-0.2487235860 , -0.2102713288 , 0.2287772140 , 0.5260881801] , 10)
         predict = linear_regression_predict(self.testdata, linear_train)['out_table']['prediction']
-        np.testing.assert_array_almost_equal(predict[:5],[0.2161363378 ,0.1438019966 ,0.1790028872 ,0.2823699347 ,0.2600411921],10)
+        np.testing.assert_array_almost_equal(predict[:5], [0.2161363378 , 0.1438019966 , 0.1790028872 , 0.2823699347 , 0.2600411921], 10)
 
 
 if __name__ == '__main__':

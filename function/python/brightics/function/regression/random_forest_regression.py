@@ -1,3 +1,4 @@
+
 """
     Copyright 2019 Samsung SDS
     
@@ -14,6 +15,7 @@
     limitations under the License.
 """
 
+import numexpr as ne
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -131,11 +133,149 @@ def random_forest_regression_predict(table, model, **params):
     else:
         return _random_forest_regression_predict(table, model, **params)
 
+def _string_make(character, index, path, start, array, split_feature_name, split_threshold):
+    if index == 0:
+        return ' & ({} <= {})'.format(character,split_threshold[start])+path
+    else:
+        return ' & ({} > {})'.format(character,split_threshold[start])+path
+
+def _string_make_complex_version(character, index, path, start, split_feature_name, split_threshold, split_left_categories_values, split_right_categories_values):
+    if pd.isnull(split_threshold[start]):
+        if index == 0:
+            result = ''
+            tmp = split_left_categories_values[start]
+            for i in tmp:
+                result += " | ({} == '{}')".format(character,i)
+            result = ' & ( ' + result[3:] + ' )'
+            return result+path
+        else:
+            result = ''
+            tmp = split_right_categories_values[start]
+            for i in tmp:
+                result += " | ({} == '{}')".format(character,i)
+            result = ' & ( ' + result[3:] + ' )'
+            return result+path
+    else:
+        if index == 0:
+            return ' & ({} <= {})'.format(character,split_threshold[start])+path
+        else:
+            return ' & ({} > {})'.format(character,split_threshold[start])+path    
+
+def _path_find(start, children_array, array, split_feature_name, split_threshold,predict, result):
+    paths = []
+    start = array[start]
+    for index, child in enumerate(children_array[start]):
+        if child == -1:
+            result.append(predict[start])
+            return result, ['']
+        result, tmp_paths = _path_find(child, children_array, array, split_feature_name, split_threshold,predict, result)
+        for path in tmp_paths:
+            paths.append(_string_make(split_feature_name[start], index, path, start,array, split_feature_name, split_threshold))
+    return result, paths
+
+def _path_find_complex_version(start, children_array, array, split_feature_name, split_threshold, split_left_categories_values, split_right_categories_values, predict, result):
+    paths = []
+    start = array[start]
+    for index, child in enumerate(children_array[start]):
+        if child == -1:
+            result.append(predict[start])
+            return result, ['']
+        result, tmp_paths = _path_find_complex_version(child, children_array, array, split_feature_name, split_threshold, split_left_categories_values, split_right_categories_values, predict, result)
+        for path in tmp_paths:
+            paths.append(_string_make_complex_version(split_feature_name[start], index, path, start,split_feature_name, split_threshold, split_left_categories_values, split_right_categories_values))
+    return result, paths
 
 def _random_forest_regression_predict(table, model, prediction_col='prediction'):
     out_table = table.copy()
-    regressor = model['regressor']
-    test_data = table[model['params']['feature_cols']]
-    
-    out_table[prediction_col] = regressor.predict(test_data)    
+    if 'regressor' in model:
+        regressor = model['regressor']
+        test_data = table[model['params']['feature_cols']]
+        out_table[prediction_col] = regressor.predict(test_data)
+    else:
+        if model['_type'] == 'random_forest_model':
+            feature_cols = model['feature_cols']
+            test_data = table[feature_cols]
+            model_table = model['table_1']
+            tree_indices = model_table.reset_index().groupby('tree_id').agg({'index':['min','max']}).values
+            node_id_full = model_table.node_id.values
+            children_array_full = model_table[['left_nodeid','right_nodeid']].values
+            predict_full = model_table.predict.values
+            split_feature_name_full = model_table.split_feature_name.values
+            split_threshold_full = model_table.split_threshold.values
+            conclusion_list = []
+            for i in tree_indices:
+                tmp_max = node_id_full[i[0]:i[1]+1].max()
+                array = np.empty(tmp_max+1,dtype = np.int32)
+                children_array = children_array_full[i[0]:i[1]+1]
+                predict = predict_full[i[0]:i[1]+1]
+                split_feature_name = split_feature_name_full[i[0]:i[1]+1]
+                split_threshold = split_threshold_full[i[0]:i[1]+1]
+                for index, value in enumerate(node_id_full[i[0]:i[1]+1]):
+                    array[value] = index
+                result=[]
+                result, expr_array = _path_find(1, children_array, array, split_feature_name, split_threshold, predict,result)
+                expr_array = [i[3:] for i in expr_array]
+                conclusion = [None] * len(table)
+                our_list = dict()
+                for i in feature_cols:
+                    our_list[i] = table[i].values
+                for index, expr in enumerate(expr_array):
+                    conclusion = np.where(ne.evaluate(expr,local_dict=our_list),result[index],conclusion)
+                conclusion_list.append(conclusion)
+            result = np.mean(np.array(conclusion_list), axis=0)
+            out_table[prediction_col] = result
+        else:
+            feature_cols = model['feature_cols']
+            if 'gbt' in model['_type']:
+                if model['auto']:
+                    model_table = model['table_3']
+                else:
+                    model_table = model['table_2']
+                tree_weight_full = model_table.tree_weight.values
+            else:
+                if model['auto']:
+                    model_table = model['table_4']
+                else:
+                    model_table = model['table_3']
+            tree_indices = model_table.reset_index().groupby('tree_id').agg({'index':['min','max']}).values
+            node_id_full = model_table.node_id.values
+            children_array_full = model_table[['left_nodeid','right_nodeid']].values
+            predict_full = model_table.predict.values
+            split_feature_name_full = model_table.split_feature_name.values
+            split_threshold_full = model_table.split_threshold.values
+            split_left_categories_values_full = model_table.split_left_categories_values.values
+            split_right_categories_values_full = model_table.split_right_categories_values.values
+            conclusion_list = []
+            for i in tree_indices:
+                tmp_max = node_id_full[i[0]:i[1]+1].max()
+                array = np.empty(tmp_max+1,dtype = np.int32)
+                children_array = children_array_full[i[0]:i[1]+1]
+                predict = predict_full[i[0]:i[1]+1]
+                split_feature_name = split_feature_name_full[i[0]:i[1]+1]
+                split_threshold = split_threshold_full[i[0]:i[1]+1]
+                split_left_categories_values = split_left_categories_values_full[i[0]:i[1]+1]
+                split_right_categories_values = split_right_categories_values_full[i[0]:i[1]+1]
+                for index, value in enumerate(node_id_full[i[0]:i[1]+1]):
+                    array[value] = index
+                result=[]
+                result, expr_array = _path_find_complex_version(1, children_array, array, split_feature_name, split_threshold, split_left_categories_values, split_right_categories_values, predict, result)
+                expr_array = [i[3:] for i in expr_array]
+                conclusion = [None] * len(table)
+                our_list = dict()
+                for j in feature_cols:
+                    if table[j].dtype == 'object':
+                        our_list[j] = np.array(table[j],dtype='|S')
+                    else:
+                        our_list[j] = table[j].values
+                for index, expr in enumerate(expr_array):
+                    conclusion = np.where(ne.evaluate(expr,local_dict=our_list),result[index],conclusion)
+                if 'gbt' in model['_type']:
+                    conclusion_list.append(conclusion*tree_weight_full[i[0]])
+                else:
+                    conclusion_list.append(conclusion)
+            if 'gbt' in model['_type']:
+                result = np.sum(np.array(conclusion_list), axis=0)
+            else:
+                result = np.mean(np.array(conclusion_list), axis=0)
+            out_table[prediction_col] = result
     return {'out_table': out_table}

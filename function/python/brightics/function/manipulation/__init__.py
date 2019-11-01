@@ -15,6 +15,7 @@
 """
 
 from .outlier_detection import outlier_detection_lof, outlier_detection_tukey_carling, outlier_detection_tukey_carling_model, outlier_detection_lof_model
+from .extend_datetime import extend_datetime
 
 import pandas as pd
 import numpy as np
@@ -23,6 +24,8 @@ from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate, greater_than_or_equal_to, raise_error, require_param
+#from .timeseries_distance import timeseries_distance
+
 
 
 def filter(table, query):
@@ -160,13 +163,15 @@ def replace_missing_string(table, group_by=None, **params):
     else:
         return _replace_missing_string(table, **params)
 
+
 def _empty_string_to_null(a):
     if a == '':
         return None
     else:
         return a
 
-def _replace_missing_string(table, input_cols, fill_method=None, fill_string='', limit=None, downcast=None, empty_string_null = False):
+
+def _replace_missing_string(table, input_cols, fill_method=None, fill_string='', limit=None, downcast=None, empty_string_null=False):
     _table = table.copy()
     
     if input_cols is None or len(input_cols) == 0:

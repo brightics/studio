@@ -5,15 +5,15 @@
     },
     "specJson": {
         "category": "regression",
-        "func": "brightics.function.regression$xgb_regression_train",
-        "name": "brightics.function.regression$xgb_regression_train",
+        "func": "brightics.function.regression$ada_boost_regression_train",
+        "name": "brightics.function.regression$ada_boost_regression_train",
         "context": "python",
-        "label": "XGB Regression Train",
-        "description": "\"XGBoost stands for 'Extreme Gradient Boosting', where the term 'Gradient Boosting' originates from the paper Greedy Function Approximation: A Gradient Boosting Machine, by Friedman. This is a tutorial on gradient boosted trees, and most of the content is based on these slides by Tianqi Chen, the original author of XGBoost.\nThe gradient boosted trees has been around for a while, and there are a lot of materials on the topic. This tutorial will explain boosted trees in a self-contained and principled way using the elements of supervised learning. We think this explanation is cleaner, more formal, and motivates the model formulation used in XGBoost.\"",
+        "label": "AdaBoost Regression Train",
+        "description": "AdaBoost, short for Adaptive Boosting, is a machine learning meta-algorithm which can be conjunction with many other types of learning algorithms to improve performance. The output of the other learning algorithms ('weak learners') is combined into a weighted sum that represents the final output of the boosted classifier. AdaBoost is adaptive in the sense that subsequent weak learners are tweaked in favor of those instances misclassified by previous classifiers. AdaBoost is sensitive to noisy data and outliers. In some problems it can be less susceptible to the overfitting problem than other learning algorithms. The individual learners can be weak, but as long as the performance of each one is slightly better than random guessing, the final model can be proven to converge to a strong learner.\n\nReference:\n+ <https://en.wikipedia.org/wiki/AdaBoost>",
         "tags": [
-            "xgboost",
-            "python",
-            "tree",
+            "adaptive",
+            "boost",
+            "adaboost",
             "regression",
             "train"
         ],
@@ -36,7 +36,7 @@
             {
                 "id": "feature_cols",
                 "label": "Feature Columns",
-                "description": "",
+                "description": "Feature columns.",
                 "mandatory": true,
                 "items": [],
                 "visibleOption": [],
@@ -46,7 +46,7 @@
                     "Long",
                     "Float",
                     "Double",
-                    "Double[]"
+                    "Boolean"
                 ],
                 "validation": [],
                 "multiple": true,
@@ -55,7 +55,7 @@
             {
                 "id": "label_col",
                 "label": "Label Column",
-                "description": "",
+                "description": "Label column.",
                 "mandatory": true,
                 "items": [],
                 "visibleOption": [],
@@ -63,30 +63,46 @@
                 "columnType": [
                     "Integer",
                     "Long",
+                    "Float",
                     "Double",
-                    "Float"
+                    "String",
+                    "Boolean"
                 ],
                 "validation": [],
                 "multiple": false
             },
             {
                 "id": "max_depth",
-                "label": "Max Depth",
-                "description": "Maximum tree depth for base learners.",
+                "label": "Maximum Depth",
+                "description": "The max_depth of the base_estimator's DecisionTreeRegressor.",
                 "mandatory": false,
                 "items": [],
                 "visibleOption": [],
                 "control": "InputBox",
                 "columnType": [],
                 "validation": [],
-                "placeHolder": "3 (1 <= value)",
                 "type": "Integer",
-                "min": 1
+                "min": 2,
+                "placeHolder": "3 (value >= 2)"
+            },
+            {
+                "id": "n_estimators",
+                "label": "Number of Estimators",
+                "description": "The maximum number of estimators at which boosting is terminated.",
+                "mandatory": false,
+                "items": [],
+                "visibleOption": [],
+                "control": "InputBox",
+                "columnType": [],
+                "validation": [],
+                "type": "Integer",
+                "min": 1,
+                "placeHolder": "50 (value >= 1)"
             },
             {
                 "id": "learning_rate",
                 "label": "Learning Rate",
-                "description": "",
+                "description": "Learning rate shrinks the contribution of each classifier by learning_rate.",
                 "mandatory": false,
                 "items": [],
                 "visibleOption": [],
@@ -94,52 +110,27 @@
                 "columnType": [],
                 "validation": [],
                 "type": "Double",
-                "placeHolder": "0.1 (0 <= value)",
-                "min": 0
+                "placeHolder": "1.0 (value > 0)"
             },
             {
-                "id": "n_estimators",
-                "label": "Number of Trees",
-                "description": "",
-                "mandatory": false,
-                "items": [],
-                "visibleOption": [],
-                "control": "InputBox",
-                "columnType": [],
-                "validation": [],
-                "placeHolder": "100 (1 <= value)",
-                "type": "Integer",
-                "min": 1
-            },
-            {
-                "id": "importance_type",
-                "label": "Importance Type",
-                "description": "Importance Type is a feature importance type property.",
+                "id": "loss",
+                "label": "Loss",
+                "description": "The loss function to use when updating the weights after each boosting iteration.",
                 "mandatory": false,
                 "items": [
                     {
-                        "label": "Gain",
-                        "value": "gain",
+                        "label": "LINEAR",
+                        "value": "linear",
                         "default": true
                     },
                     {
-                        "label": "Weight",
-                        "value": "weight",
+                        "label": "SQUARE",
+                        "value": "square",
                         "default": false
                     },
                     {
-                        "label": "Cover",
-                        "value": "cover",
-                        "default": false
-                    },
-                    {
-                        "label": "Total Gain",
-                        "value": "total_gain",
-                        "default": false
-                    },
-                    {
-                        "label": "Total Cover",
-                        "value": "total_cover",
+                        "label": "EXPONENTIAL",
+                        "value": "exponential",
                         "default": false
                     }
                 ],
@@ -163,7 +154,7 @@
             {
                 "id": "group_by",
                 "label": "Group By",
-                "description": "",
+                "description": "Columns to group by",
                 "mandatory": false,
                 "items": [],
                 "visibleOption": [],

@@ -30,6 +30,7 @@ from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils.table_converters import simple_tables2df_list
 from brightics.function.utils import _model_dict
+from brightics.function.extraction import one_hot_encoder
 from brightics.common.validation import validate
 from brightics.common.validation import greater_than_or_equal_to
 from brightics.common.utils import get_default_from_parameters_if_required
@@ -130,15 +131,15 @@ def _linear_regression_train(table, feature_cols, label_col, fit_intercept=True,
     model = _model_dict('linear_regression_model')
     model['features'] = feature_cols
     model['label'] = label_col
-    model['coefficients'] = lr_model_fit.params
+    model['coefficients'] = lr_model_fit.params.values
     model['fit_intercept'] = fit_intercept
     model['r2'] = lr_model_fit.rsquared
     model['adjusted_r2'] = lr_model_fit.rsquared_adj
     model['aic'] = lr_model_fit.aic
     model['bic'] = lr_model_fit.bic
     model['f_static'] = lr_model_fit.fvalue
-    model['tvalues'] = lr_model_fit.tvalues
-    model['pvalues'] = lr_model_fit.pvalues
+    model['tvalues'] = lr_model_fit.tvalues.values
+    model['pvalues'] = lr_model_fit.pvalues.values
     model['_repr_brtc_'] = rb.get()
 
     model['summary0'] = summary0
@@ -158,20 +159,54 @@ def linear_regression_predict(table, model, **params):
 
 
 def _linear_regression_predict(table, model, prediction_col='prediction'):
-
-    result = table.copy()
-    feature_cols = model['features']
-    feature_names, features = check_col_type(result, feature_cols)
-    fit_intercept = model['fit_intercept']
-
-    lr_model_fit = model['lr_model']
-
-    if fit_intercept == True:
-        features = sm.add_constant(features, has_constant='add')
+    result=table.copy()
+    if 'features' in model:
+        feature_cols = model['features']
+    else:
+        feature_cols = model['feature_cols']
+    if 'lr_model' in model:
+        feature_names, features = check_col_type(table, feature_cols)
+        features = pd.DataFrame(features, columns=feature_names)
+    else:
+        features = table[feature_cols]
+    if 'auto' in model:
+        if model['auto']:
+            one_hot_input = model['table_6'][model['table_6']['data_type']=='string'].index
+            if len(one_hot_input != 0):
+                features = one_hot_encoder(prefix='col_name', table=features, input_cols = features.columns[one_hot_input].tolist(),suffix='label')['out_table']
+            if 'intercept' in model['table_3']['x_variable_name'].values:
+                features = features[model['table_3']['x_variable_name'][:-1]]
+                fit_intercept = True
+            else:
+                features = features[model['table_3']['x_variable_name']]
+                fit_intercept = False
+        else:
+            one_hot_input = model['table_5'][model['table_5']['data_type']=='string'].index
+            if len(one_hot_input != 0):
+                features = one_hot_encoder(prefix='col_name',table=features, input_cols = features.columns[one_hot_input].tolist(),suffix='label')['out_table']
+            if 'intercept' in model['table_2']['x_variable_name'].values:
+                features = features[model['table_2']['x_variable_name'][:-1]]
+                fit_intercept = True
+            else:
+                features = features[model['table_2']['x_variable_name']]
+                fit_intercept = False
+    if 'auto' not in model and 'fit_intercept' in model:
+        fit_intercept = model['fit_intercept']
+    if 'lr_model' in model:
+        lr_model_fit = model['lr_model']
+    else:
+        if 'auto' in model and model['auto']:
+            coefficients = np.array(model['table_3']['coefficient'])
+        else:
+            coefficients = np.array(model['table_2']['coefficient'])
+    if 'lr_model' in model:
+        if fit_intercept == True:
+            features = sm.add_constant(features, has_constant='add')
         prediction = lr_model_fit.predict(features)
     else:
-        prediction = lr_model_fit.predict(features)
-
+        if fit_intercept == True:
+            features['const'] = np.ones(len(features))
+        prediction = np.sum(features.values*coefficients,axis=1)
     result[prediction_col] = prediction
 
     return {'out_table' : result}

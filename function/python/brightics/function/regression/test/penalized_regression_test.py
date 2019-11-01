@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 from brightics.function.regression.penalized_linear_regression import penalized_linear_regression_train
 from brightics.function.regression.penalized_linear_regression import penalized_linear_regression_predict
 from brightics.common.datasets import load_iris
