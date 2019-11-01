@@ -2,23 +2,22 @@
 ### Python
 ```python
 from brightics.function.extraction import binarizer
-res = binarizer(column = ,threshold_type = ,threshold = ,out_col_name = )
+res = binarizer(table = ,column = ,threshold_type = ,threshold = ,out_col_name = )
 res['out_table']
 ```
 
 ## Description
-Binarize a column of continuous features given a threshold. The features greater than the threshold, will be binarized to 1.0. The features equal to or less than the threshold, will be binarized to 0.0.
+Binarize a column of continuous features given a threshold. The features satisfying the condition, will be binarized to 1.0. The features not satisfying the condition, will be binarized to 0.0.
 
 ---
 
 ## Properties
 ### VA
-#### Inputs
-1. **table**: table
+#### Inputs: table
 
 #### Parameters
-1. **Column**<b style="color:red">*</b>: Column name to binarize. Only one column is allowed. Column should be of number type.
-   - Allowed column type : Integer, Long, Float, Double, Decimal, Boolean
+1. **Input column**<b style="color:red">*</b>: 
+   - Allowed column type : Integer, Long, Float, Double
 2. **Threshold Type**: Threshold type.
    - Available items
       - 1 if value>threshold (default)
@@ -30,16 +29,14 @@ Binarize a column of continuous features given a threshold. The features greater
    - Value type : String
    - Default : Enter value
 
-#### Outputs
-1. **out_table**: table
+#### Outputs: table
 
 ### Python
-#### Inputs
-1. **table**: table
+#### Inputs: table
 
 #### Parameters
-1. **column**<b style="color:red">*</b>: Column name to binarize. Only one column is allowed. Column should be of number type.
-   - Allowed column type : Integer, Long, Float, Double, Decimal, Boolean
+1. **column**<b style="color:red">*</b>: 
+   - Allowed column type : Integer, Long, Float, Double
 2. **threshold_type**: Threshold type.
    - Available items
       - greater (default)
@@ -51,6 +48,5 @@ Binarize a column of continuous features given a threshold. The features greater
    - Value type : String
    - Default : Enter value
 
-#### Outputs
-1. **out_table**: table
+#### Outputs: table
 

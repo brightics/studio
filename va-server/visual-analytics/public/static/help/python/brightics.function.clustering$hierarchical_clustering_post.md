@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.clustering import hierarchical_clustering_post
-res = hierarchical_clustering_post(num_clusters = ,cluster_col = )
+res = hierarchical_clustering_post(model = ,num_clusters = ,cluster_col = )
 res['out_table']
 res['model']
 ```
@@ -10,44 +10,37 @@ res['model']
 ## Description
 This function gets the number of clusters from a user and gives label using the result of hierarchical clustering.
 
-Input table must be the output of hierarchical clustering.
+Input table must be the output of hierarchical clustering. 
 
 Reference:
-
-https://en.wikipedia.org/wiki/Hierarchical_clustering
++ <https://en.wikipedia.org/wiki/Hierarchical_clustering>
 
 ---
 
 ## Properties
 ### VA
-#### Inputs
-1. **table**: table
-2. **model**: model
+#### Inputs: model
 
 #### Parameters
-1. **Number of Clusters**<b style="color:red">*</b>: Number of clusters for clustering. (positive, default = 2)
+1. **Maximum Number of Clusters**<b style="color:red">*</b>: Maximum number of clusters requested for clustering.
    - Value type : Integer
-2. **New Column Name**: name of cluster column
+   - Default : (value >= 1)
+2. **New Column Name**: Name of cluster column.
    - Value type : String
-   - Default : prediction
+   - Default : cluster
 
-#### Outputs
-1. **out_table**: table
-2. **model**: model
+#### Outputs: table, model
 
 ### Python
-#### Inputs
-1. **table**: table
-2. **model**: model
+#### Inputs: model
 
 #### Parameters
-1. **num_clusters**<b style="color:red">*</b>: Number of clusters for clustering. (positive, default = 2)
+1. **num_clusters**<b style="color:red">*</b>: Maximum number of clusters requested for clustering.
    - Value type : Integer
-2. **cluster_col**: name of cluster column
+   - Default : (value >= 1)
+2. **cluster_col**: Name of cluster column.
    - Value type : String
-   - Default : prediction
+   - Default : cluster
 
-#### Outputs
-1. **out_table**: table
-2. **model**: model
+#### Outputs: table, model
 

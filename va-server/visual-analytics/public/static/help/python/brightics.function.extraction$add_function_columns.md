@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.extraction import add_function_columns
-res = add_function_columns(query = )
+res = add_function_columns(table = ,query = )
 res['out_table']
 ```
 
@@ -16,7 +16,7 @@ This function adds new columns with given expression.
 #### Inputs: table
 
 #### Parameters
-1. **Add Column**<b style="color:red">*</b>: Column name and expression.
+1. **Add Column**<b style="color:red">*</b>: Column name and expression
 
 #### Outputs: table
 
@@ -24,7 +24,7 @@ This function adds new columns with given expression.
 #### Inputs: table
 
 #### Parameters
-1. **query**<b style="color:red">*</b>: Column name and expression.
+1. **query**<b style="color:red">*</b>: Column name and expression
 
 #### Outputs: table
 
