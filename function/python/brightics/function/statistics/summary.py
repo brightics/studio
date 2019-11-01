@@ -29,6 +29,7 @@ import scipy.stats
 import pandas as pd
 import numpy as np
 
+
 def _name_change(a):
     if a == 'mean':
         return 'avg'
@@ -45,26 +46,30 @@ def _name_change(a):
     else:
         return a
 
+
 def _remove_unicode(st):
     if '\u0003' in st:
         return st[:-1]
     else:
         return st
 
+
 def _amounts_colname(a): return str(a).replace('.', '_')
+
 
 def _unique_list(l): return np.unique(list(filter(lambda x: x is not None and not np.isnan(x), l)))
 
+
 def statistic_summary(table, group_by=None, **params):
     check_required_parameters(_statistic_summary_list, params, ['table'])
-    params = get_default_from_parameters_if_required(params,_statistic_summary_original)
+    params = get_default_from_parameters_if_required(params, _statistic_summary_original)
     param_validation_check = [all_elements_from_to(params, 0, 100, 'percentile_amounts'),
                               all_elements_from_under(params, 0, 0.5, 'trimmed_mean_amounts')]
     validate(*param_validation_check)
     if group_by is None:
         return _statistic_summary_original(table, **params)
     if True in pd.isnull(table[group_by]).values:
-        group_by_unicode = [str(i)+'\u0003' for i in group_by]
+        group_by_unicode = [str(i) + '\u0003' for i in group_by]
         table[group_by_unicode] = table[group_by].fillna('\u0003')
         group_by = group_by_unicode
     params1 = dict()
@@ -73,7 +78,7 @@ def statistic_summary(table, group_by=None, **params):
     params1['statistics'] = []
     params2['statistics'] = []
     for st in params['statistics']:
-        if st in ['max','min','range','sum','avg','variance','stddev','nrow','num_of_value','null_count','median']:
+        if st in ['max', 'min', 'range', 'sum', 'avg', 'variance', 'stddev', 'nrow', 'num_of_value', 'null_count', 'median']:
             params1['statistics'].append(st)
         else:
             params2['statistics'].append(st)
@@ -88,7 +93,7 @@ def statistic_summary(table, group_by=None, **params):
             params2['trimmed_mean_amounts'] = params['trimmed_mean_amounts']
     if params1['statistics']:
         result1 = _statistic_summary_groupby(table, group_by=group_by, **params1)
-        result1.index = result1[group_by+['column_name']]
+        result1.index = result1[group_by + ['column_name']]
     else:
         result1 = None
     if params2['statistics']:
@@ -98,7 +103,7 @@ def statistic_summary(table, group_by=None, **params):
             column_indices.append(table.columns.get_loc(i))
         params2['column_indices'] = column_indices
         columns = ['column_name'] + params2['statistics'].copy()
-        columns = ['num_of_row' if x=='nrow' else x for x in columns]
+        columns = ['num_of_row' if x == 'nrow' else x for x in columns]
         if 'percentile' in columns:
             columns.remove('percentile')
             if params2['percentile_amounts'] is not None:
@@ -113,12 +118,12 @@ def statistic_summary(table, group_by=None, **params):
             columns.remove('mode')
             columns.append('mode')
         result2 = _function_by_group2(_statistic_summary_list, table, columns=columns, group_by=group_by, **params2)['out_table']
-        result2.index = result2[group_by+['column_name']]
+        result2.index = result2[group_by + ['column_name']]
         if result1 is not None:
-            result2 = result2[[i for i in result2.columns if i not in group_by+['column_name']]]
+            result2 = result2[[i for i in result2.columns if i not in group_by + ['column_name']]]
             # Update sort parameter after upgrading pandas.
             # result = pd.concat([result2,result1], axis=1, sort = False).reset_index(drop = True)
-            result = pd.concat([result2,result1], axis=1).reset_index(drop = True)
+            result = pd.concat([result2, result1], axis=1).reset_index(drop=True)
         else:
             result = result2
     else:
@@ -126,13 +131,13 @@ def statistic_summary(table, group_by=None, **params):
         result2 = []
         for i in groups:
             for j in params['input_cols']:
-                result2.append(list(i)+[j])
-        result2 = pd.DataFrame(result2, columns = group_by+['column_name'])
-        result2.index = result2[group_by+['column_name']]
-        result1 = result1[[i for i in result1.columns if i not in group_by+['column_name']]]
+                result2.append(list(i) + [j])
+        result2 = pd.DataFrame(result2, columns=group_by + ['column_name'])
+        result2.index = result2[group_by + ['column_name']]
+        result1 = result1[[i for i in result1.columns if i not in group_by + ['column_name']]]
         # Update sort parameter after upgrading pandas.
         # result = pd.concat([result2,result1], axis=1, sort=False).reset_index(drop = True)
-        result = pd.concat([result2,result1], axis=1).reset_index(drop = True)
+        result = pd.concat([result2, result1], axis=1).reset_index(drop=True)
     columns = ['column_name'] + params['statistics'].copy()
     if 'percentile' in columns:
         columns.remove('percentile')
@@ -147,19 +152,18 @@ def statistic_summary(table, group_by=None, **params):
     if 'mode' in columns:
         columns.remove('mode')
         columns.append('mode')
-    result = result[group_by+columns]
+    result = result[group_by + columns]
     if '\u0003' in result.values:
-        result = result.replace('\u0003',np.nan)
+        result = result.replace('\u0003', np.nan)
         tmp_col = result.columns
         result.columns = [_remove_unicode(i) for i in tmp_col]
     return {'out_table' : result}
-    
 
 
 def _statistic_summary_list(table, input_cols, statistics, column_indices=None, percentile_amounts=None, trimmed_mean_amounts=None):
-    tmp_table=table.copy()
-    tmp_table=list(map(list, zip(*tmp_table)))
-    result=[]
+    tmp_table = table.copy()
+    tmp_table = list(map(list, zip(*tmp_table)))
+    result = []
     for i in range(len(input_cols)):
         data = [input_cols[i]]
         for st in statistics:
@@ -177,15 +181,15 @@ def _statistic_summary_list(table, input_cols, statistics, column_indices=None, 
                 data.append(brtc_stats.iqr(tmp_table[column_indices[i]]))
             elif 'percentile' == st and percentile_amounts is not None:
                 for pa in _unique_list(percentile_amounts):
-                    data.append(brtc_stats.percentile(tmp_table[column_indices[i]],pa))
+                    data.append(brtc_stats.percentile(tmp_table[column_indices[i]], pa))
             elif 'trimmed_mean' == st and trimmed_mean_amounts is not None:
                 for ta in _unique_list(trimmed_mean_amounts):
-                    data.append(brtc_stats.trimmed_mean(tmp_table[column_indices[i]],ta))
+                    data.append(brtc_stats.trimmed_mean(tmp_table[column_indices[i]], ta))
         result.append(data)
     return {'out_table' : result}
 
 
-def _statistic_summary_groupby(table, input_cols, statistics, group_by = None):
+def _statistic_summary_groupby(table, input_cols, statistics, group_by=None):
     agg_func = []
     for st in statistics:
         if 'max' == st:
@@ -228,13 +232,14 @@ def _statistic_summary_groupby(table, input_cols, statistics, group_by = None):
         tmp_results.append(tmp)
     result = pd.concat(tmp_results)
     if 'range' in statistics:
-        result['range'] = result['max']-result['min']
+        result['range'] = result['max'] - result['min']
     if 'null_count' in statistics:
-        result['null_count'] = result['size']-result['count']
+        result['null_count'] = result['size'] - result['count']
     result['column_name'] = tmp_list
     col_names = result.columns.tolist()
     result.columns = [_name_change(i) for i in col_names]
     return result
+
 
 def _statistic_summary_original(table, input_cols, statistics, percentile_amounts=None, trimmed_mean_amounts=None):
     
@@ -288,9 +293,10 @@ def _statistic_summary_original(table, input_cols, statistics, percentile_amount
     
     return {'out_table' : result}
 
+
 def statistic_derivation(table, group_by=None, **params):
     check_required_parameters(_statistic_derivation, params, ['table'])
-    params = get_default_from_parameters_if_required(params,_statistic_derivation)
+    params = get_default_from_parameters_if_required(params, _statistic_derivation)
     param_validation_check = [all_elements_from_to(params, 0, 100, 'percentile_amounts'),
                               all_elements_from_under(params, 0, 0.5, 'trimmed_mean_amounts')]
     validate(*param_validation_check)

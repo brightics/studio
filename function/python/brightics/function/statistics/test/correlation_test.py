@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 import unittest
 import numpy as np
 from brightics.function.statistics import correlation
@@ -34,7 +33,7 @@ class CorrelationTest(unittest.TestCase):
         
     def test_first(self):
         
-        cr = correlation(self.testdata, vars = ['sepal_length', 'sepal_width'], method='pearson', display_plt = True, height=2.5, corr_prec=2)
+        cr = correlation(self.testdata, vars=['sepal_length', 'sepal_width'], method='pearson', display_plt=True, height=2.5, corr_prec=2)
         DF1 = cr['result']['corr_table'].values
         # print(DF1)
         np.testing.assert_equal(DF1[0][0], 'sepal_width')
@@ -44,7 +43,7 @@ class CorrelationTest(unittest.TestCase):
         
     def test_second(self):
         
-        cr = correlation(self.testdata, vars = ['sepal_width', 'petal_length', 'petal_width'], method='spearman', display_plt = False, height=2.5, corr_prec=2)
+        cr = correlation(self.testdata, vars=['sepal_width', 'petal_length', 'petal_width'], method='spearman', display_plt=False, height=2.5, corr_prec=2)
         DF2 = cr['result']['corr_table'].values
         # print(DF2)
         np.testing.assert_almost_equal(DF2[0][2], -0.3034206463815157, 10)

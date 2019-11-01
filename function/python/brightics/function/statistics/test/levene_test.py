@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 from brightics.function.statistics.levene import levenes_test
 from brightics.common.datasets import load_iris
 import unittest

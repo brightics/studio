@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 import unittest
 import numpy as np
 from brightics.common.datasets import load_iris
@@ -55,8 +54,9 @@ class TestChiSquareTestOfIndependence(unittest.TestCase):
         
         table0 = res0.values.tolist()
         table1 = res1.values.tolist()
+
         np.testing.assert_array_almost_equal(table0[0], [156.26666666666668, 68.0, 6.665987344005466e-09], 10)
-        np.testing.assert_array_almost_equal(table1[0], [89.54628704628703, 44.0, 6.016031482207116e-05], 10)
+        np.testing.assert_array_almost_equal(table1[0], [88.36446886446, 44.0, 8.3039477879e-05], 10)
         
 
 if __name__ == '__main__':

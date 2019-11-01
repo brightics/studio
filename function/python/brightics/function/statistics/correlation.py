@@ -38,7 +38,7 @@ def correlation(table, group_by=None, **params):
         return _correlation(table, **params)
 
 
-def _correlation(table, vars, method='pearson', display_plt = True, height=2.5, corr_prec=2):
+def _correlation(table, vars, method='pearson', display_plt=True, height=2.5, corr_prec=2):
 
     size = len(vars)
     result_arr = []

@@ -194,7 +194,7 @@ def _twoway_anova(table, response_cols, factor_cols):
         factors = ["C(Q('{v}'))".format(v=v) for v in factor_cols]
         factors_col = " * ".join(v for v in factors)
         
-        model = ols("""{r} ~ {f}""".format(r=r, f=factors_col), table).fit()  #TODO: factor_col = class => error
+        model = ols("""{r} ~ {f}""".format(r=r, f=factors_col), table).fit()  # TODO: factor_col = class => error
         anova = anova_lm(model)
 
         index_list = anova.index.tolist()

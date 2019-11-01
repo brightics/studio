@@ -53,7 +53,12 @@ def _width(col, alpha, n):
 
 
 def _test_result(alter, hypothesized_mean, mean, t_value, p_value_two, width_one_sided, width_two_sided):
-        
+
+    H1 = 'true mean != {}'.format(hypothesized_mean)      
+    p_value = p_value_two              
+    lower_conf_interval = mean - width_two_sided
+    upper_conf_interval = mean + width_two_sided
+    
     if alter == 'Greater':
         H1 = 'true mean > {}'.format(hypothesized_mean)    
         if t_value >= 0:
@@ -73,10 +78,7 @@ def _test_result(alter, hypothesized_mean, mean, t_value, p_value_two, width_one
         upper_conf_interval = mean + width_one_sided
                    
     if alter == 'Two Sided':
-        H1 = 'true mean != {}'.format(hypothesized_mean)      
-        p_value = p_value_two              
-        lower_conf_interval = mean - width_two_sided
-        upper_conf_interval = mean + width_two_sided
+        pass
 
     return (H1, p_value, lower_conf_interval, upper_conf_interval)
 
@@ -235,7 +237,7 @@ def _two_sample_ttest_for_stacked_data(table, response_cols, factor_col, alterna
                 else:
                     break
     if first is None or second is None:
-        tmp_factors=np.unique(table[factor_col])
+        tmp_factors = np.unique(table[factor_col])
         if len(tmp_factors) != 2:
             raise_error('0719', 'factor_col')
     if first is None:
