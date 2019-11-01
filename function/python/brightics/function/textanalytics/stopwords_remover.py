@@ -14,41 +14,56 @@
     limitations under the License.
 """
 
+import os
 from nltk.corpus import stopwords
 import pandas as pd
+import numpy as np
 from brightics.common.utils import check_required_parameters
+
 
 def stopwords_remover(table, **params):
     check_required_parameters(_stopwords_remover, params, ['table'])   
     return _stopwords_remover(table, **params)
 
+
 def stopwords_remover_user_dict(table, **params):
     check_required_parameters(_stopwords_remover, params, ['table'])   
     return _stopwords_remover(table, **params)
 
-def _stopwords_remover(table, input_cols, hold_cols=None, default_dict=False, stop_words=None, prefix='stopwords', user_dict=pd.DataFrame()):
-    
-    len_table = len(table)
-    out_table = pd.DataFrame()
-    
-    if hold_cols is None:
-        hold_cols = []
-    for column in hold_cols:
-        out_table[column] = table[column]    
-    
-    if stop_words is None:
-        stop_words = []        
-    if (user_dict.empty == False):
-        stop_words.extend(user_dict[user_dict.keys()[0]].values.tolist())
-    if (default_dict == True):
-        stop_words.extend(stopwords.words('english'))  # global variable ���Խ� language variable ���� �ѱۻ����� �߰� ����
-    
-    for column in input_cols:
-        result_table = [[] for i in range(len_table)]
-        for i in range(0, len_table):
-            for j in table[column][i]:
-                if (j not in stop_words):
-                    result_table[i].append(j)        
-        out_table['{}_{}'.format(prefix, column)] = result_table    
 
+def _list_diff(first, second):
+    return [element for element in first if element not in second]
+
+
+def _stopwords_remover(table, input_cols, hold_cols=None, default_dict=False, stop_words=None, prefix='stopwords', user_dict=None):
+    
+    hold_table = pd.DataFrame()    
+    if hold_cols is not None:
+        hold_table[hold_cols] = table[hold_cols]        
+
+    # initial dictionary
+    if stop_words is not None:
+        stop_words = set(stop_words)
+    else:
+        stop_words = set({})
+        
+    # default dictionary update
+    if (default_dict == True):
+        stop_words.update(pd.read_csv('brightics/function/textanalytics/data/stopwords_basic_dictionary_english.csv')['stopwords'].tolist())  # English
+        stop_words.update(pd.read_csv('brightics/function/textanalytics/data/stopwords_basic_dictionary_korean.csv')['stopwords'].tolist())  # Korean
+        
+    # user_dict update
+    if user_dict is not None:
+        user_dict_val = set(user_dict.iloc[:, 0].values)
+        stop_words.update(user_dict_val)
+        
+    values = [[_list_diff(word_list, stop_words) for word_list in table[column]] for column in input_cols]
+    value_columns = ['{}_{}'.format(prefix, column) for column in input_cols]
+    value_table = pd.DataFrame(np.transpose(values), columns=value_columns)
+    
+    out_table = pd.concat([hold_table, value_table.reset_index(drop=True)], axis=1)
+    
+#    for column in input_cols:
+#        out_table['{}_{}'.format(prefix, column)] = [_list_diff(word_list, stop_words) for word_list in table[column]]
+        
     return {'out_table': out_table}

@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 from brightics.function.timeseries import holt_winters_train, holt_winters_predict
 from brightics.common.datasets import load_iris
 import unittest

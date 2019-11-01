@@ -17,7 +17,7 @@
         },
         "outputs": {
         	"out_table": "",
-            "model": ""
+        	"model": ""
         },
         "meta": {
             "table": {
@@ -44,6 +44,28 @@
                 ],
                 "validation": [],
                 "multiple": false
+            },
+            {
+                "id": "sg",
+                "label": "Training Algorithm",
+                "description": "Training algorithm: skip-gram, CBOW.",
+                "mandatory": false,
+                "items": [
+                    {
+                        "label": "Skip-gram",
+                        "value": "1",
+                        "default": true
+                    },
+                    {
+                        "label": "CBOW",
+                        "value": "0",
+                        "default": false
+                    }
+                ],
+                "visibleOption": [],
+                "control": "RadioButton",
+                "columnType": [],
+                "validation": []
             },
             {
                 "id": "size",
@@ -88,6 +110,32 @@
                 "min": 1
             },
             {
+                "id": "alpha",
+                "label": "Alpha",
+                "description": "The initial learning rate.",
+                "mandatory": false,
+                "items": [],
+                "visibleOption": [],
+                "control": "InputBox",
+                "columnType": [],
+                "validation": [],
+                "type": "Double",
+                "placeHolder": "0.025"
+            },
+            {
+                "id": "min_alpha",
+                "label": "Minimum alpha",
+                "description": "Learning rate will linearly drop to min_alpha as training progresses.",
+                "mandatory": false,
+                "items": [],
+                "visibleOption": [],
+                "control": "InputBox",
+                "columnType": [],
+                "validation": [],
+                "placeHolder": "0.025",
+                "type": "Double"
+            },
+            {
                 "id": "seed",
                 "label": "Seed",
                 "description": "Seed for the random number generator. Initial vectors for each word are seeded with a hash of the concatenation of word + str(seed). Note that hash randomization that breaks reproducibility is used by default.",
@@ -98,6 +146,20 @@
                 "columnType": [],
                 "validation": [],
                 "type": "Integer"
+            },
+            {
+                "id": "train_epoch",
+                "label": "Train epoch",
+                "description": "Number of iterations (epochs) over the corpus.",
+                "mandatory": false,
+                "items": [],
+                "visibleOption": [],
+                "control": "InputBox",
+                "columnType": [],
+                "validation": [],
+                "type": "Integer",
+                "min": 1,
+                "placeHolder": "100"
             },
             {
                 "id": "workers",
@@ -114,26 +176,53 @@
                 "min": 1
             },
             {
-                "id": "sg",
-                "label": "Algorithm",
-                "description": "Training algorithm: 1 for skip-gram; otherwise CBOW.",
+                "id": "hs",
+                "label": "Hierarchical softmax",
+                "description": "If it is True, hierarchical softmax will be used for model training. If it is False, and Negative is non-zero, negative sampling will be used.",
                 "mandatory": false,
-                "items": [
+                "items": [],
+                "visibleOption": [],
+                "control": "BooleanRadio",
+                "columnType": [],
+                "validation": [],
+                "defaultValue": true
+            },
+            {
+                "id": "negative",
+                "label": "Negative",
+                "description": "If Negative > 0, negative sampling will be used, the int for negative specifies how many noise words should be drawn (usually between 5-20).",
+                "mandatory": false,
+                "items": [],
+                "visibleOption": [
                     {
-                        "label": "Skip-gram",
-                        "value": "1",
-                        "default": true
-                    },
-                    {
-                        "label": "CBOW",
-                        "value": "0",
-                        "default": false
+                        "id": "hs",
+                        "value": false
                     }
                 ],
-                "visibleOption": [],
-                "control": "RadioButton",
+                "control": "InputBox",
                 "columnType": [],
-                "validation": []
+                "validation": [],
+                "type": "Integer",
+                "min": 1,
+                "placeHolder": "5"
+            },
+            {
+                "id": "ns_exponent",
+                "label": "Negative sampling exponent",
+                "description": "The exponent used to shape the negative sampling distribution. A value of 1.0 samples exactly in proportion to the frequencies, 0.0 samples all words equally, while a negative value samples low-frequency words more than high-frequency words. The popular default value of 0.75 was chosen by the original Word2Vec paper.",
+                "mandatory": false,
+                "items": [],
+                "visibleOption": [
+                    {
+                        "id": "hs",
+                        "value": false
+                    }
+                ],
+                "control": "InputBox",
+                "columnType": [],
+                "validation": [],
+                "placeHolder": "0.75",
+                "type": "Integer"
             },
             {
                 "id": "topn",

@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 import pandas as pd
 import unittest
 from brightics.function.textanalytics import doc_doc_mtx

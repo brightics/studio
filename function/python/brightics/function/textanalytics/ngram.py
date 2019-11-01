@@ -14,35 +14,49 @@
     limitations under the License.
 """
 
+import numpy as np
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate
-from brightics.common.validation import greater_than_or_equal_to
-import pandas as pd
-import numpy as np
+from brightics.common.validation import from_to
 
 
-def ngram(table, **params):
+def _slice(list_string, n):
+    return [' '.join(list_string[i:i + n]) for i in range(len(list_string) - n + 1)]
+
+
+def n_gram(table, **params):  # new function
+    check_required_parameters(_n_gram, params, ['table'])
+    params = get_default_from_parameters_if_required(params, _n_gram)
+    
+    max_len = np.max(np.vectorize(len)(table[params["input_col"]])).item() 
+    param_validation_check = [from_to(params, 1, max_len, 'n')]
+    
+    validate(*param_validation_check)   
+    return _n_gram(table, **params)
+
+
+def _n_gram(table, input_col, n=2):         
+    out_table = table.copy() 
+    out_table['n_gram'] = np.vectorize(_slice, otypes=[object])(table[input_col], n)
+    return {'out_table': out_table}
+
+
+def ngram(table, **params):  # to be deprecated
     check_required_parameters(_ngram, params, ['table'])
     params = get_default_from_parameters_if_required(params, _ngram)
-    param_validation_check = [greater_than_or_equal_to(params, 1, 'n')]
+    
+    max_len = np.max(np.vectorize(len)(table[params["input_col"]])).item() 
+    param_validation_check = [from_to(params, 1, max_len, 'n')]
+    
     validate(*param_validation_check)   
     return _ngram(table, **params)
 
 
-def _ngram(table, input_col, n=2):   
-    data = np.array(table[input_col])
+def _ngram(table, input_col, n=2):         
+    list_ngrams = np.vectorize(_slice, otypes=[object])(table[input_col], n)
     out_table = table.copy()
-    
-    list_ngrams = []
-    for i in range(len(data)):
-        list_ngram = []
-    
-        for j in range(len(data[i]) - n + 1):
-            slice = "{}".format(' '.join(data[i][j:j + n]))            
-            list_ngram.append(slice)
-        
-        list_ngrams.append(list_ngram)
     
     out_table['{}-gram'.format(n)] = list_ngrams  
     return {'out_table': out_table}
+

@@ -76,7 +76,7 @@ def _arima_train(table, input_cols, p, d, q, intercept=True):
     model['input_columns'] = input_cols
     # model['order'] = arima_fit.order()
     model['intercept'] = intercept
-    
+    model['aic'] = arima_fit.aic()
     model['_repr_brtc_'] = rb.get()
 
     return{'model':model}
@@ -84,7 +84,7 @@ def _arima_train(table, input_cols, p, d, q, intercept=True):
 
 def arima_predict(model, **params):
     check_required_parameters(_arima_predict, params, ['model'])
-    params = get_default_from_parameters_if_required(params,_arima_predict)
+    params = get_default_from_parameters_if_required(params, _arima_predict)
     param_validation_check = [greater_than_or_equal_to(params, 1, 'prediction_num')]
     validate(*param_validation_check)
     if '_grouped_data' in model:
@@ -148,6 +148,7 @@ def _auto_arima_train(table, input_cols, max_p=5, d=None, max_q=5):
 
     model['input_columns'] = input_cols
     model['order'] = auto_arima.order
+    model['aic'] = auto_arima.aic()
     model['_repr_brtc_'] = rb.get()
 
     return{'model':model}
@@ -155,7 +156,7 @@ def _auto_arima_train(table, input_cols, max_p=5, d=None, max_q=5):
 
 def auto_arima_predict(model, **params):
     check_required_parameters(_auto_arima_predict, params, ['model'])
-    params = get_default_from_parameters_if_required(params,_auto_arima_predict)
+    params = get_default_from_parameters_if_required(params, _auto_arima_predict)
     param_validation_check = [greater_than_or_equal_to(params, 1, 'prediction_num')]
     validate(*param_validation_check)
     if '_grouped_data' in model:

@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 from brightics.function.timeseries.autocorrelation import autocorrelation
 from brightics.common.datasets import load_iris
 import unittest
@@ -34,7 +33,7 @@ class AutocorrelationTest(unittest.TestCase):
 
     def test_first(self):
         
-        ac = autocorrelation(self.testdata, input_col = 'sepal_length', nlags=20, conf_level=0.95)
+        ac = autocorrelation(self.testdata, input_col='sepal_length', nlags=20, conf_level=0.95)
         DF1 = ac['model']['autocorrelation_table'].values
         np.testing.assert_array_almost_equal(eval(DF1[0][2]), (1.0, 1.0), 10)
         np.testing.assert_array_almost_equal(eval(DF1[1][2]), (0.4320361893649062, 0.7520969677885935), 10)
@@ -49,7 +48,7 @@ class AutocorrelationTest(unittest.TestCase):
         
     def test_second(self):
         
-        ac = autocorrelation(self.testdata, input_col = 'sepal_width', nlags=15, conf_level=0.99)
+        ac = autocorrelation(self.testdata, input_col='sepal_width', nlags=15, conf_level=0.99)
         DF2 = ac['model']['partial_autocorrelation_table'].values
         np.testing.assert_array_almost_equal(eval(DF2[0][2]), (1.0, 1.0), 10)
         np.testing.assert_array_almost_equal(eval(DF2[1][2]), (0.22620960205307344, 0.646840765933298), 10)

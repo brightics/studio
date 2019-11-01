@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 from brightics.function.timeseries.unit_root_test import unit_root_test
 from brightics.common.datasets import load_iris
 import unittest
@@ -34,7 +33,7 @@ class UnitRootTest(unittest.TestCase):
         print("*** Unit Root Test UnitTest End ***")
     
     def test(self):
-        result = unit_root_test(self.testdata, input_col = 'sepal_length')['model']
+        result = unit_root_test(self.testdata, input_col='sepal_length')['model']
         np.testing.assert_almost_equal(result['adf'], -1.4361052468046858 , 10)
         np.testing.assert_almost_equal(result['p_value'], 0.5648497057270827 , 10)
         np.testing.assert_almost_equal(result['usedlag'], 12 , 10)

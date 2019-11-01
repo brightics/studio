@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 import unittest
 import pandas as pd
 import numpy as np
@@ -55,11 +54,18 @@ class TestDoc2Vec(unittest.TestCase):
                       hs=1, negative=5, ns_exponent=0.75, hashfxn=hash_brtc)
         df_res = res['doc_table']
          
-        np.testing.assert_array_almost_equal([-0.15087300539016724, 2.5971627235412598], df_res['document_vectors'].values[0], 10, 'incorrect 1st vector')
-        np.testing.assert_array_almost_equal([-2.213388442993164, 1.2029374837875366], df_res['document_vectors'].values[1], 10, 'incorrect 2nd vector')
-        np.testing.assert_array_almost_equal([-2.1448493003845215, -0.5242040753364563], df_res['document_vectors'].values[2], 10, 'incorrect 3rd vector')
-        np.testing.assert_array_almost_equal([-1.7283657789230347, 2.0390093326568604], df_res['document_vectors'].values[3], 10, 'incorrect 4th vector')
-        np.testing.assert_array_almost_equal([-2.8729236125946045, 1.6128734350204468], df_res['document_vectors'].values[4], 10, 'incorrect 5th vector')
+        if os.name == 'posix':
+            np.testing.assert_array_almost_equal([-0.1508731245, 2.5971629619], df_res['document_vectors'].values[0], 10, 'incorrect 1st vector')
+            np.testing.assert_array_almost_equal([-2.2133889198, 1.2029378414], df_res['document_vectors'].values[1], 10, 'incorrect 2nd vector')
+            np.testing.assert_array_almost_equal([-2.1448497772, -0.5242040753], df_res['document_vectors'].values[2], 10, 'incorrect 3rd vector')
+            np.testing.assert_array_almost_equal([-1.7283661365, 2.0390095710], df_res['document_vectors'].values[3], 10, 'incorrect 4th vector')
+            np.testing.assert_array_almost_equal([-2.8729238510, 1.6128736734], df_res['document_vectors'].values[4], 10, 'incorrect 5th vector')
+        else:
+            np.testing.assert_array_almost_equal([-0.15087300539016724, 2.5971627235412598], df_res['document_vectors'].values[0], 10, 'incorrect 1st vector')
+            np.testing.assert_array_almost_equal([-2.213388442993164, 1.2029374837875366], df_res['document_vectors'].values[1], 10, 'incorrect 2nd vector')
+            np.testing.assert_array_almost_equal([-2.1448493003845215, -0.5242040753364563], df_res['document_vectors'].values[2], 10, 'incorrect 3rd vector')
+            np.testing.assert_array_almost_equal([-1.7283657789230347, 2.0390093326568604], df_res['document_vectors'].values[3], 10, 'incorrect 4th vector')
+            np.testing.assert_array_almost_equal([-2.8729236125946045, 1.6128734350204468], df_res['document_vectors'].values[4], 10, 'incorrect 5th vector')
         
         df_res = res['word_table']
         

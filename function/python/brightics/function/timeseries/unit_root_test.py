@@ -22,8 +22,9 @@ from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate
 from brightics.common.validation import greater_than_or_equal_to
 
+
 def unit_root_test(table, group_by=None, **params):
-    params = get_default_from_parameters_if_required(params,_unit_root_test)
+    params = get_default_from_parameters_if_required(params, _unit_root_test)
     param_validation_check = [greater_than_or_equal_to(params, 0, 'maxlag')]
         
     validate(*param_validation_check)
@@ -52,7 +53,7 @@ def _unit_root_test(table, input_col, maxlag=None, regression='c', autolag='AIC'
         | - Critical values for the test statistic at the 1 %, 5 %, and 10 % levels : {critical_values}
         | - The maximized information criterion if autolag is not None : {icbest}
         |
-        """.format(adf = result[0], p_value = result[1], usedlag = result[2], nobs = result[3], critical_values = result[4], icbest = result[5])))
+        """.format(adf=result[0], p_value=result[1], usedlag=result[2], nobs=result[3], critical_values=result[4], icbest=result[5])))
     else:
         rb = BrtcReprBuilder()
         rb.addMD(strip_margin("""
@@ -65,7 +66,7 @@ def _unit_root_test(table, input_col, maxlag=None, regression='c', autolag='AIC'
         | - Number of lags used : {usedlag}
         | - Critical values for the test statistic at the 1 %, 5 %, and 10 % levels : {critical_values}
         |
-        """.format(adf = result[0], p_value = result[1], usedlag = result[2], nobs = result[3], critical_values = result[4])))
+        """.format(adf=result[0], p_value=result[1], usedlag=result[2], nobs=result[3], critical_values=result[4])))
     model['adf'] = result[0]
     model['p_value'] = result[1]
     model['usedlag'] = result[2]

@@ -20,7 +20,7 @@ from brightics.common.repr import dict2MD, plt2MD, pandasDF2MD
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate
-from brightics.common.validation import greater_than_or_equal_to
+from brightics.common.validation import greater_than_or_equal_to, from_to
 from brightics.common.groupby import _function_by_group
 from brightics.function.utils import _model_dict
 
@@ -31,9 +31,10 @@ from statsmodels.tsa.holtwinters import ExponentialSmoothing
 
 
 def holt_winters_train(table, group_by=None, **params):
+    len_table = len(table)
     check_required_parameters(_holt_winters_train, params, ['table'])
-    params = get_default_from_parameters_if_required(params,_holt_winters_train)
-    param_validation_check = [greater_than_or_equal_to(params, 2, 'period')]
+    params = get_default_from_parameters_if_required(params, _holt_winters_train)
+    param_validation_check = [from_to(params, 2, (len_table) // 2, 'period')]
     validate(*param_validation_check)
     if group_by is not None:
         return _function_by_group(_holt_winters_train, table, group_by=group_by, **params)
@@ -86,7 +87,7 @@ def _holt_winters_train(table, input_cols, period, model_type='additive'):
 
 def holt_winters_predict(model, **params):
     check_required_parameters(_holt_winters_predict, params, ['model'])
-    params = get_default_from_parameters_if_required(params,_holt_winters_predict)
+    params = get_default_from_parameters_if_required(params, _holt_winters_predict)
     param_validation_check = [greater_than_or_equal_to(params, 1, 'prediction_num')]
     validate(*param_validation_check)
     if '_grouped_data' in model:

@@ -56,8 +56,8 @@ def _autocorrelation(table, input_col, nlags=20, conf_level=0.95):
     fig_plt_pacf = plt2MD(plt)
     plt.clf()
     
-    acf_ret = acf(data, nlags=nlags, alpha=1-conf_level)
-    pacf_ret = pacf(data, nlags=nlags, alpha=1-conf_level)
+    acf_ret = acf(data, nlags=nlags, alpha=1 - conf_level)
+    pacf_ret = pacf(data, nlags=nlags, alpha=1 - conf_level)
     
     result_table1 = pd.DataFrame([])
     result_table1['lag'] = list(range(nlags + 1))

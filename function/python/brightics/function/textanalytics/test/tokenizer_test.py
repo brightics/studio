@@ -16,7 +16,6 @@
     limitations under the License.
 """
 
-
 import unittest
 import pandas as pd
 from brightics.function.textanalytics import tokenizer_kor
@@ -60,11 +59,6 @@ class TestTokenizerKor(unittest.TestCase):
         
         df_res = tokenizer_kor(df_input, input_cols=['text'], hold_cols=None, new_col_prefix='tokenized',
                                normalization=True, stemming=True, pos_extraction=['Noun'], is_tagged=False)['out_table']
-       
-        outfile = open("D:/tmp", 'w')
-        for i in range(3):
-            print(df_res['tokenized_text'].values[i], end=',', file=outfile)
-        print('', file=outfile)
         
         self.assertListEqual(['아버지', '방'], df_res['tokenized_text'].values[0], 'incorrect result')
         self.assertListEqual(['사과'], df_res['tokenized_text'].values[1], 'incorrect result')

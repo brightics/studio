@@ -19,16 +19,17 @@ from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
-from brightics.common.validation import validate, greater_than_or_equal_to
+from brightics.common.validation import validate, greater_than_or_equal_to, from_under
 
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
 
 
 def timeseries_decomposition(table, group_by=None, **params):
+    len_table = len(table)
     check_required_parameters(_timeseries_decomposition, params, ['table'])
     params = get_default_from_parameters_if_required(params, _timeseries_decomposition)
-    param_validation_check = [greater_than_or_equal_to(params, 1, 'frequency'),
+    param_validation_check = [from_under(params, 1, len_table, 'frequency'),
                               greater_than_or_equal_to(params, 0, 'extrapolate_trend')]
     validate(*param_validation_check)
     if group_by is not None:

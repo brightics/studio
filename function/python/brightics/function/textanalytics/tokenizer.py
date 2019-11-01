@@ -14,6 +14,8 @@
     limitations under the License.
 """
 
+import numpy as np
+import pandas as pd
 from nltk.stem import PorterStemmer
 from nltk.tokenize import sent_tokenize, word_tokenize
 import nltk
@@ -26,44 +28,41 @@ def tokenizer_kor(table, **params):
     check_required_parameters(_tokenizer_kor, params, ['table'])   
     return _tokenizer_kor(table, **params)
 
-    
+
+def _extract(list_tokens_tagged, is_tagged, *pos_extraction):
+    if is_tagged is False:
+        if not pos_extraction:
+            res = [list_tokens_tagged[i][0] for i in range(len(list_tokens_tagged))]
+        else:
+            res = [list_tokens_tagged[i][0] for i in range(len(list_tokens_tagged)) if list_tokens_tagged[i][1] in set(pos_extraction)]
+    else:
+        if not pos_extraction:
+            res = ['{text}/{pos}'.format(text=list_tokens_tagged[i][0], pos=list_tokens_tagged[i][1]) for i in range(len(list_tokens_tagged))]
+        else:
+            res = ['{text}/{pos}'.format(text=list_tokens_tagged[i][0], pos=list_tokens_tagged[i][1]) for i in range(len(list_tokens_tagged)) if list_tokens_tagged[i][1] in set(pos_extraction)]
+    return res
+
+
 def _tokenizer_kor(table, input_cols, hold_cols=None, new_col_prefix='tokenized',
                    normalization=True, stemming=True, pos_extraction=None, is_tagged=False):
-
-    from twkorean import TwitterKoreanProcessor as Tw
-    
-    if hold_cols is None:
-        out_table = table.copy()
-    else:
-        out_table = table[hold_cols]
     
     if pos_extraction is None:
-        pos_extraction = ["Noun", "Verb", "Adjective", "Adverb", "Determiner", "Exclamation",
-                          "Josa", "Eomi", "PreEomi", "Conjunction", "Modifier", "VerbPrefix", "Suffix",
-                          "Unknown", "Korean", "Foreign", "Number", "KoreanParticle", "Alpha", "Punctuation",
-                          "Hashtag", "ScreenName", "Email", "URL", "CashTag", "Space", "Others"]
-        
-    for i in range(len(input_cols)):      
-        tokenizer = Tw(normalization=normalization, stemming=stemming)
-
-        docs = table[input_cols[i]]
-        tagged_doc_list = docs.apply(tokenizer.tokenize)
-
-        pos_doc_list = []
-        
-        for tagged_list in tagged_doc_list:
-            pos_list = []
-            for tagged in tagged_list:
-                for pos in pos_extraction:
-                    if tagged[1] == pos:  
-                        if is_tagged == True:
-                            pos_list = pos_list + ['{text}({pos})'.format(text=tagged[0], pos=tagged[1])]
-                        else:
-                            pos_list = pos_list + [tagged[0]]  
-            pos_doc_list.append(pos_list)
-
-        out_table['{prefix}_{col}'.format(prefix=new_col_prefix, col=input_cols[i])] = pos_doc_list
+        pos_extraction = []
     
+    from twkorean import TwitterKoreanProcessor as Tw   
+    tokenizer = Tw(normalization=normalization, stemming=stemming)
+    tokenize_vec = np.vectorize(tokenizer.tokenize, otypes=[object])(table[input_cols])
+
+    columns = ['{prefix}_{col}'.format(prefix=new_col_prefix, col=input_cols[i]) for i in range(len(input_cols))]
+    
+    tokenized_table = pd.DataFrame(
+        np.vectorize(_extract, otypes=[object])(tokenize_vec, is_tagged, *pos_extraction), columns=columns)
+    
+    if hold_cols is None:
+        out_table = pd.concat([table, tokenized_table], axis=1)
+    else:
+        out_table = pd.concat([table[hold_cols], tokenized_table], axis=1)
+        
     return {'out_table': out_table}
 
 
@@ -113,7 +112,6 @@ def _tokenizer_eng(table, input_cols, hold_cols=None, new_col_prefix='tokenized'
         tagged_doc_list = doc_list.apply(nltk.pos_tag)
 
         pos_doc_list = []
-        extracted_pos_doc_list = []
 
         for tagged_list in tagged_doc_list:
             pos_list = []
