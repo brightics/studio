@@ -29,3 +29,4 @@ from .json_extraction import flatten_json
 from .json_extraction import get_table
 from .sql import execute as sql_execute
 from .svd import svd
+from .transpose_time_series import transpose_time_series

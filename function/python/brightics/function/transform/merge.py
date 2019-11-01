@@ -18,9 +18,11 @@ from brightics.common.validation import raise_runtime_error
 from brightics.common.utils import check_required_parameters
 import pandas as pd
 
+
 def bind_row_column(first_table, second_table, **params):
     check_required_parameters(_bind_row_column, params, ['first_table', 'second_table'])
     return _bind_row_column(first_table, second_table, **params)
+
 
 def _bind_row_column(first_table, second_table, row_or_col):
     if row_or_col == 'row':

@@ -80,6 +80,7 @@ datetime related functions
 """
 # todo weekofmonth, datediff, timediff
 
+
 def datediff(end_isotime, start_isotime):
     end_datetime = dateutil.parser.parse(end_isotime)
     start_datetime = dateutil.parser.parse(start_isotime)

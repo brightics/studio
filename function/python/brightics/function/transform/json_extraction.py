@@ -22,6 +22,7 @@ import json
 import pandas as pd
 import numpy
 
+
 def _key(prev_key, sep, new_key):
     if prev_key is None:
         return new_key
@@ -65,6 +66,7 @@ def _flatten_json(model, sep='__'):
     if result.empty:
         raise Exception('There is nothing to flatten.')
     return {'table': result}
+
 
 def get_element_from_dict(d, key_list):
     if not isinstance(d, dict):
