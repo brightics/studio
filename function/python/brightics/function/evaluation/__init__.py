@@ -30,6 +30,8 @@ from brightics.common.validation import validate, greater_than, greater_than_or_
     less_than_or_equal_to, raise_runtime_error
 from sklearn import preprocessing
 from brightics.common.validation import raise_runtime_error
+from .representative_evaluation_value import representative_evaluation_value
+
 
 def evaluate_regression(table, group_by=None, **params):
     check_required_parameters(_evaluate_regression, params, ['table'])
@@ -95,16 +97,17 @@ def evaluate_classification(table, group_by=None, **params):
         return _evaluate_classification(table, **params)
 
 
-def _evaluate_classification(table, label_col, prediction_col):
-    
+def _evaluate_classification(table, label_col, prediction_col, average="weighted"):
+    if average == 'None':
+        average = None
     label = table[label_col]
     predict = table[prediction_col]
     
     # compute metrics
     accuracy = accuracy_score(label, predict)
-    f1 = f1_score(label, predict, average="weighted")
-    precision = precision_score(label, predict, average="weighted")
-    recall = recall_score(label, predict, average="weighted")
+    f1 = f1_score(label, predict, average=average)
+    precision = precision_score(label, predict, average=average)
+    recall = recall_score(label, predict, average=average)
     class_names = np.unique(np.union1d(label.values, predict.values))
     
     # Plot non-normalized confusion matrix
@@ -128,15 +131,26 @@ def _evaluate_classification(table, label_col, prediction_col):
     summary['precision_score'] = precision
     summary['recall_score'] = recall
     
-    # report    
-    all_dict_list = [{'f1': f1, 'accuracy': accuracy, 'precision': precision, 'recall': recall}]
-    all_df = pd.DataFrame(all_dict_list)
-    all_df = all_df[['f1', 'accuracy', 'precision', 'recall']]
+    # report
+    if average == 'weighted' or average == 'macro':
+        all_dict_list = [{'f1': f1, 'precision': precision, 'recall': recall}]
+        all_df = pd.DataFrame(all_dict_list)
+        all_df = all_df[['f1', 'precision', 'recall']]
+    else:
+        all_dict_list = [f1, precision, recall]
+        all_df = pd.DataFrame(all_dict_list)
+        all_df = all_df.transpose()
+        all_df.columns = ['f1', 'precision', 'recall']
+        all_df['label'] = set(label)
+        all_df = all_df[['label'] + all_df.columns[:-1].tolist()]
     summary['metrics'] = all_df
             
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## Evaluate Classification Result
+    |
+    | ### Accuracy : {accuracy}
+    |
     | ### Metrics
     | {table1}
     |
@@ -145,7 +159,7 @@ def _evaluate_classification(table, label_col, prediction_col):
     |
     | {fig_confusion_matrix_normalized}
     |
-    """.format(table1=pandasDF2MD(all_df),
+    """.format(accuracy=accuracy, table1=pandasDF2MD(all_df),
                fig_confusion_matrix=fig_cnf_matrix,
                fig_confusion_matrix_normalized=fig_cnf_matrix_normalized           
                )))     
@@ -333,25 +347,29 @@ def _plot_roc_pr_curve(table, label_col, probability_col, fig_w=6.4, fig_h=4.8, 
 def _rel(documents, element):
     return element in documents
 
+
 def _precision_k(k_value, num_users, documents, recommend_table):
-    return np.mean([np.sum([_rel(documents[i],recommend_table[i][j]) for j in range(np.min([k_value,len(recommend_table[i])]))]) for i in range(num_users)])/k_value
+    return np.mean([np.sum([_rel(documents[i], recommend_table[i][j]) for j in range(np.min([k_value, len(recommend_table[i])]))]) for i in range(num_users)]) / k_value
+
 
 def _map(num_users, documents, recommend_table):
-    result=[]
+    result = []
     for i in range(num_users):
         number = 0
-        count=0
+        count = 0
         for j in range(len(recommend_table[i])):
-            if _rel(documents[i],recommend_table[i][j])==1:
-                count+=1
-                number += count/(j+1)/(len(documents[i]))
+            if _rel(documents[i], recommend_table[i][j]) == 1:
+                count += 1
+                number += count / (j + 1) / (len(documents[i]))
         result.append(number)
     return np.mean(result)
 
-def _ndcg_k(k_value, num_users, documents, recommend_table):
-    return np.mean([np.sum([_rel(documents[i],recommend_table[i][j])/(np.log(j+2)) for j in range(np.min([k_value,np.max([len(documents[i]),len(recommend_table[i])])]))])/(np.sum([1/np.log(j+2) for j in range(np.min([k_value,len(documents[i])]))])) for i in range(num_users)])
 
-def evaluate_ranking_algorithm(table1, table2, user_col, item_col, evaluation_measure, rating_col = None, rating_edge = None, k_values = None):
+def _ndcg_k(k_value, num_users, documents, recommend_table):
+    return np.mean([np.sum([_rel(documents[i], recommend_table[i][j]) / (np.log(j + 2)) for j in range(np.min([k_value, np.max([len(documents[i]), len(recommend_table[i])])]))]) / (np.sum([1 / np.log(j + 2) for j in range(np.min([k_value, len(documents[i])]))])) for i in range(num_users)])
+
+
+def evaluate_ranking_algorithm(table1, table2, user_col, item_col, evaluation_measure, rating_col=None, rating_edge=None, k_values=None):
     item_encoder = preprocessing.LabelEncoder()
     tmp_table_item_col = table1[item_col]
     item_encoder.fit(tmp_table_item_col)
@@ -360,9 +378,9 @@ def evaluate_ranking_algorithm(table1, table2, user_col, item_col, evaluation_me
     user_encoder = preprocessing.LabelEncoder()
     user_encoder.fit(table2[table2.columns[0]])
     if rating_col is not None and rating_edge is not None:
-        table = table1[table1[rating_col]>rating_edge]
+        table = table1[table1[rating_col] > rating_edge]
     else:
-        table=table1
+        table = table1
     table = table[table[user_col].isin(user_encoder.classes_)]
     table_user_col = table[user_col]
     table_item_col = table[item_col]
@@ -370,27 +388,27 @@ def evaluate_ranking_algorithm(table1, table2, user_col, item_col, evaluation_me
     item_correspond = item_encoder.transform(table_item_col)
     documents = dict()
     for i in range(len(user_encoder.classes_)):
-        documents[i]=[]
+        documents[i] = []
     for i in range(len(user_correspond)):
         documents[user_correspond[i]].append(item_correspond[i])
-    columns=[]
-    for i in range(int(len(table2.columns)/2)):
-        if table2.columns[2*i+1] != 'item_%d' %(i+1) and table2.columns[2*i+2] != 'rating_%d' %(i+1) and table2.columns[2*i+1] != 'item_top%d' %(i+1) and table2.columns[2*i+2] != 'rating_top%d' %(i+1):
+    columns = []
+    for i in range(int(len(table2.columns) / 2)):
+        if table2.columns[2 * i + 1] != 'item_%d' % (i + 1) and table2.columns[2 * i + 2] != 'rating_%d' % (i + 1) and table2.columns[2 * i + 1] != 'item_top%d' % (i + 1) and table2.columns[2 * i + 2] != 'rating_top%d' % (i + 1):
             raise_runtime_error("topN-list data schema should consist of [user_name, item_top1, rating_top1, .... item_topN, rating_topN]")
-        columns.append(table2.columns[2*i+1])
+        columns.append(table2.columns[2 * i + 1])
     recommend_table = table2[columns].values
     for i in range(len(recommend_table)):
         recommend_table[i] = item_encoder.transform(recommend_table[i])
     result = []
-    num_users=len(user_encoder.classes_)
+    num_users = len(user_encoder.classes_)
     if k_values is not None:
         if 'prec' in evaluation_measure:
             for k_value in k_values:
-                result.append(['precision_{}'.format(k_value),_precision_k(k_value, num_users, documents, recommend_table)])
+                result.append(['precision_{}'.format(k_value), _precision_k(k_value, num_users, documents, recommend_table)])
         if 'ndcg' in evaluation_measure:
             for k_value in k_values:
-                result.append(['ndcg_{}'.format(k_value),_ndcg_k(k_value, num_users, documents, recommend_table)])
+                result.append(['ndcg_{}'.format(k_value), _ndcg_k(k_value, num_users, documents, recommend_table)])
     if 'map' in evaluation_measure:
-        result.append(['meanAveragePrecision',_map(num_users, documents, recommend_table)])
-    result = pd.DataFrame(result, columns=['measure','value'])
+        result.append(['meanAveragePrecision', _map(num_users, documents, recommend_table)])
+    result = pd.DataFrame(result, columns=['measure', 'value'])
     return {'out_table':result}

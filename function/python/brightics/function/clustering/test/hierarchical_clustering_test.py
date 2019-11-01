@@ -11,7 +11,6 @@
     limitations under the License.
 """
 
-
 import unittest
 from brightics.common.datasets import load_iris
 from brightics.function.extraction.extraction import add_row_number

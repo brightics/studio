@@ -61,7 +61,7 @@ def _mean_shift_samples_plot(table, input_cols, n_samples, cluster_centers, colo
     for idx in sample.index:
         plt.plot(x, sample.transpose()[idx], color='grey', linewidth=1)
     for idx, centers in enumerate(cluster_centers):
-        plt.plot(x, centers, "o-", linewidth=2, color=colors[idx])
+        plt.plot(x, centers, "o-", linewidth=4, color=colors[idx])
     plt.tight_layout()
     fig_samples = plt2MD(plt)
     plt.clf()
@@ -100,7 +100,6 @@ def _mean_shift(table, input_cols, prediction_col='prediction', bandwidth=None, 
     ms = MeanShift(bandwidth=bandwidth, bin_seeding=bin_seeding, min_bin_freq=min_bin_freq, cluster_all=cluster_all, n_jobs=1)
     
     ms.fit(inputarr)
-    
 
     label_name = {
         'bandwidth': 'Bandwidth',
@@ -123,7 +122,7 @@ def _mean_shift(table, input_cols, prediction_col='prediction', bandwidth=None, 
         pca2 = pca2_model.transform(inputarr)
     
     fig_centers = _mean_shift_centers_plot(input_cols, cluster_centers, colors)
-    fig_samples = _mean_shift_samples_plot(table, input_cols, 100,cluster_centers, colors) if len(table.index) > 100 else _mean_shift_samples_plot(table, input_cols, None, cluster_centers, colors)
+    fig_samples = _mean_shift_samples_plot(table, input_cols, 100, cluster_centers, colors) if len(table.index) > 100 else _mean_shift_samples_plot(table, input_cols, None, cluster_centers, colors)
     
     if len(input_cols) > 1:
         fig_pca = _mean_shift_pca_plot(labels, cluster_centers, pca2_model, pca2, colors)

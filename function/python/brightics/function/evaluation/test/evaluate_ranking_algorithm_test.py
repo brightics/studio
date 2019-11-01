@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 from brightics.function.evaluation import evaluate_ranking_algorithm
 from brightics.function.recommendation.als import als_recommend
 from brightics.common.datasets import load_iris
@@ -30,18 +29,18 @@ class EvaluateRankingAlgorithm(unittest.TestCase):
     def setUp(self):
         print("*** Evaluate Ranking Algorithm UnitTest Start ***")
         data = dict()
-        np.random.seed(3) ; data['user']= np.random.randint(10,size=100)
-        np.random.seed(10) ; data['item']= np.random.randint(10,size=100)
-        np.random.seed(5) ; data['rating'] = np.random.randint(5,size=100)
+        np.random.seed(3) ; data['user'] = np.random.randint(10, size=100)
+        np.random.seed(10) ; data['item'] = np.random.randint(10, size=100)
+        np.random.seed(5) ; data['rating'] = np.random.randint(5, size=100)
         self.testdata = data
 
     def tearDown(self):
         print("*** Evaluate Ranking Algorithm UnitTest End ***")
 
     def test(self):
-        recommend_result = als_recommend(self.testdata, user_col = 'user', item_col = 'item', rating_col = 'rating', filter=False, seed = 5)['out_table']
-        result = evaluate_ranking_algorithm(table1 = pd.DataFrame(self.testdata), table2=recommend_result, user_col ='user', item_col ='item', evaluation_measure=['prec','ndcg','map'], k_values=[1])
-        np.testing.assert_array_almost_equal(result['out_table'].value[:3], [1.0,1.0,0.5424142162951686], 10)
+        recommend_result = als_recommend(self.testdata, user_col='user', item_col='item', rating_col='rating', filter=False, seed=5)['out_table']
+        result = evaluate_ranking_algorithm(table1=pd.DataFrame(self.testdata), table2=recommend_result, user_col='user', item_col='item', evaluation_measure=['prec', 'ndcg', 'map'], k_values=[1])
+        np.testing.assert_array_almost_equal(result['out_table'].value[:3], [1.0, 1.0, 0.5424142162951686], 10)
 
 
 if __name__ == '__main__':

@@ -23,6 +23,7 @@ from brightics.common.validation import raise_runtime_error
 from brightics.common.validation import validate, greater_than, greater_than_or_equal_to
 from brightics.common.classify_input_type import check_col_type
 
+from sklearn import preprocessing
 import matplotlib.pyplot as plt
 from scipy.cluster.hierarchy import dendrogram, linkage, fcluster, leaders
 import scipy.spatial.distance as ssd
@@ -173,16 +174,38 @@ def hierarchical_clustering_post(model, **params):
         return _hierarchical_clustering_post(model, **params)
 
 
-def _hierarchical_clustering_post(model, num_clusters, cluster_col='cluster'): 
-    Z = model['model']
-    mode = model['input_mode']
-    out_table = model['linkage_matrix']
-    
-    predict = fcluster(Z, t=num_clusters, criterion='maxclust')
-    if mode == 'original':
-        prediction_table = model['table']
-    elif mode == 'matrix':
-        prediction_table = model['dist_matrix'][['name']]
+def _change_name(a, length, encoder):
+    tmp = a.split("_")
+    if tmp[0] != 'CL':
+        return encoder.transform([a])[0]
+    else:
+        return 2 * length - float(tmp[1]) - 1
+
+
+def _hierarchical_clustering_post(model, num_clusters, cluster_col='cluster'):
+    if 'linkage_matrix' not in model:
+        model_table = model['table_1']
+        length = len(model_table) + 1
+        tmp_table = model_table[['clusters_joined1','clusters_joined2','height','frequency']]
+        
+        tmp=[i for i in tmp_table[['clusters_joined1','clusters_joined2']].values.flatten() if i.split("_")[0]!='CL']
+        label_encoder = preprocessing.LabelEncoder().fit(tmp)
+        tmp_table['clusters_joined2']= tmp_table['clusters_joined2'].apply(_change_name,length=length,encoder=label_encoder)
+        tmp_table['clusters_joined1']= tmp_table['clusters_joined1'].apply(_change_name,length=length,encoder=label_encoder)
+        Z = tmp_table.values
+        predict = fcluster(Z, t=num_clusters, criterion='maxclust')
+        data_names = ['pt_' + str(i) for i in range(length)]
+        prediction_table = pd.DataFrame()
+        prediction_table['name'] = data_names
+    else:
+        Z = model['model']
+        mode = model['input_mode']
+        out_table = model['linkage_matrix']
+        predict = fcluster(Z, t=num_clusters, criterion='maxclust')
+        if mode == 'original':
+            prediction_table = model['table']
+        elif mode == 'matrix':
+            prediction_table = model['dist_matrix'][['name']]
     if num_clusters == 1:
         prediction_table[cluster_col] = [1 for _ in range(len(prediction_table.index))]
     else:
@@ -190,16 +213,20 @@ def _hierarchical_clustering_post(model, num_clusters, cluster_col='cluster'):
     
     L, M = leaders(Z, predict)
     which_cluster = []
-    for leader in L:
-        if leader in Z[:, 0]:
-            select_indices = np.where(Z[:, 0] == leader)[0][0]
-            which_cluster.append(out_table['joined column1'][select_indices])
-        elif leader in Z[:, 1]:
-            select_indices = np.where(Z[:, 1] == leader)[0][0]
-            which_cluster.append(out_table['joined column2'][select_indices])
+    if 'linkage_matrix' not in model:
+        for leader in L:
+            which_cluster.append('CL_' + str(2 * length - 1 - leader))
+    else:
+        for leader in L:
+            if leader in Z[:, 0]:
+                select_indices = np.where(Z[:, 0] == leader)[0][0]
+                which_cluster.append(out_table['joined column1'][select_indices])
+            elif leader in Z[:, 1]:
+                select_indices = np.where(Z[:, 1] == leader)[0][0]
+                which_cluster.append(out_table['joined column2'][select_indices])
     
     clusters_info_table = pd.DataFrame([])
-    if num_clusters == 1:
+    if num_clusters == 1 and 'linkage_matrix' in model:
         clusters_info_table[cluster_col] = [1]
         clusters_info_table['name of clusters'] = [out_table['name of clusters'][len(Z) - 1]]
         clusters_info_table['number of entities'] = [out_table['number of original'][len(Z) - 1]]
@@ -210,20 +237,29 @@ def _hierarchical_clustering_post(model, num_clusters, cluster_col='cluster'):
         cluster_count = np.bincount(prediction_table[cluster_col])
         cluster_count = cluster_count[cluster_count != 0]
         clusters_info_table['number of entities'] = list(cluster_count)
-    
-    rb = BrtcReprBuilder()
-    rb.addMD(strip_margin("""# Hierarchical Clustering Post Process Result"""))
-    rb.addMD(strip_margin("""
-    |### Parameters
-    |
-    |{display_params}
-    |
-    |### Clusters Information
-    |
-    |{clusters_info_table}
-    |
-    """.format(display_params=dict2MD(model['parameters']), clusters_info_table=pandasDF2MD(clusters_info_table, num_rows=len(clusters_info_table.index) + 1))))
-
+    if 'linkage_matrix' in model:
+        rb = BrtcReprBuilder()
+        rb.addMD(strip_margin("""# Hierarchical Clustering Post Process Result"""))
+        rb.addMD(strip_margin("""
+        |### Parameters
+        |
+        |{display_params}
+        |
+        |### Clusters Information
+        |
+        |{clusters_info_table}
+        |
+        """.format(display_params=dict2MD(model['parameters']), clusters_info_table=pandasDF2MD(clusters_info_table, num_rows=len(clusters_info_table.index) + 1))))
+    else:
+        rb = BrtcReprBuilder()
+        rb.addMD(strip_margin("""# Hierarchical Clustering Post Process Result"""))
+        rb.addMD(strip_margin("""
+        |
+        |### Clusters Information
+        |
+        |{clusters_info_table}
+        |
+        """.format(clusters_info_table=pandasDF2MD(clusters_info_table, num_rows=len(clusters_info_table.index) + 1))))
     model = _model_dict('hierarchical_clustering_post_process')
     model['clusters_info'] = clusters_info_table
     model['_repr_brtc_'] = rb.get()

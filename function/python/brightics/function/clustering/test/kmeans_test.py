@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-
 import unittest
 from brightics.function.clustering.kmeans import kmeans_train_predict, kmeans_predict
 from brightics.common.datasets import load_iris
@@ -23,6 +22,7 @@ import os
 
 
 class KMeansTest(unittest.TestCase):
+
     def setUp(self):
         print("*** KMeans UnitTest Start ***")
         self.iris = load_iris()
