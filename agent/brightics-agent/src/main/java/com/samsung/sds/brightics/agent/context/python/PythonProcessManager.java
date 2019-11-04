@@ -48,7 +48,11 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import com.samsung.sds.brightics.agent.context.python.calcitepython.Sql2Pandas;
+
 public class PythonProcessManager {
+    
+	private final Sql2Pandas sql2pd = new Sql2Pandas();
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
@@ -338,6 +342,10 @@ public class PythonProcessManager {
         return logger;
     }
 
+    public Sql2Pandas getSql2Pandas() {
+    	return this.sql2pd;
+    }
+    
     public String getDefaultFsPath() {
         return DEFAULT_FS_PATH;
     }
