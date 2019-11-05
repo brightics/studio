@@ -49,7 +49,28 @@ def datetime_formatter(table, **params):
     check_required_parameters(_datetime_formatter, params, ['table'])
     return _datetime_formatter(table, **params)
 
+def linux_window_change(s):
+    if s == "en_US":
+        result = "en"
+    elif s == "fr_FR":
+        result = "fr"
+    elif s == "de_DE":
+        result = "de"
+    elif s == "it_IT":
+        result = "it"
+    elif s == "ja_JP":
+        result = "ja"
+    elif s == "ko_KR":
+        result = "ko"
+    elif s == "zh_CN":
+        result = "zh"
+    return result
+
 def _datetime_formatter(table, input_cols, display_mode='replace', in_format="%Y%m%d%H%M%S", out_format="%Y-%m-%d %H:%M:%S", in_language="en_US", out_language="en_US"):
+    import platform
+    if platform.system()[:3].lower() == 'win':
+        in_language = linux_window_change(in_language)
+        out_language = linux_window_change(out_language)
     _in_format = format_dict[in_format]
     _out_format = format_dict[out_format]
     out_table = table.copy()
