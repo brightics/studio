@@ -37,7 +37,7 @@ from .word2vec import word2vec_model
 from .doc2vec import doc2vec
 from .doc2vec import doc2vec_model
 #from .doc_summarize import doc_summarizer_kor
-#from .doc_summarize import doc_summarizer_eng
+from .doc_summarize import doc_summarizer_eng
 from .extract_senti_words import extract_senti_words
 #from .split_sentences import split_sentences
 from .search import search
