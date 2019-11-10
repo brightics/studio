@@ -116,10 +116,6 @@ The purpose of personal use for commercial or non-commercial is allowed but only
 See [the documentation about this license](BRIGHTICS_VA_LICENSE) for more details.<br>
 We are working hard to solve these issues and soon it will be public.
 
-## Roadmap
-
-<img src="docs/images/roadmap.png" width="960px" height="481px" alt="Brightics Studio"></img>
-
 ## Contact us
 If you like to use Brightics Studio, please let us know your usage and feedback.<br>
 Or you have questions while using Brightics Studio, don't hesitate and feel free to contact brightics@samsung.com
