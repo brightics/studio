@@ -1,4 +1,4 @@
-Brightics Studio
+Brightics Studio v1.1
 ================
 
 <img src="docs/images/brightics_sample.png" width="960px" height="468px" alt="Brightics Studio"></img>
