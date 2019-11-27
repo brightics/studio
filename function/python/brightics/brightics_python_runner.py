@@ -124,8 +124,8 @@ class BrighticsPythonRunner(object):
 
                 with redirect_stderr():
 
-                    exec(exec_code_object, globals())
-                    exec(interactive_code_object, globals())
+                    exec(exec_code_object, globals(), locals())
+                    exec(interactive_code_object, globals(), locals())
             except BrighticsCoreException as bce:
                 raise bce
             except BrighticsFunctionException as bfe:
