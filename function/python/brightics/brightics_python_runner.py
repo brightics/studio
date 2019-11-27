@@ -46,23 +46,6 @@ from brightics.brightics_java_gateway import brtc_java_gateway
 from brightics.common.exception import BrighticsCoreException
 from brightics.common.exception import BrighticsFunctionException
 
-import brightics.brightics_data_api as data_api
-import brightics.common.data.utils as data_util
-from brightics.common.utils import check_required_parameters
-make_data_path_from_key=data_util.make_data_path_from_key
-get_data_info= data_api.get_data_info
-get_data_status= data_api.get_data_status
-get_data= data_api.get_data
-list_status= data_api.list_status
-view_data= data_api.view_data
-view_schema= data_api.view_schema
-write_data= data_api.write_data
-delete_data= data_api.delete_data
-put_data= data_api.put_data
-read_parquet= data_api.read_parquet
-read_redis= data_api.read_redis
-
-
 
 @contextmanager
 def redirect_stderr():
@@ -77,15 +60,30 @@ def redirect_stderr():
 class BrighticsPythonRunner(object):
     NO_EXCEPTION = (False, "")
 
-    def __init__(self):
+    def __init__(self, use_spark=False):
         self._stdout = StringIO()
         self._is_exception = self.NO_EXCEPTION
         self._init_executer()
-
+        self._use_spark = use_spark
         import brightics.brightics_data_api as data_api
         import brightics.common.data.utils as data_util
         from brightics.common.utils import check_required_parameters
 
+        self._globals = {
+            'make_data_path_from_key': data_util.make_data_path_from_key,
+            'get_data_info': data_api.get_data_info,
+            'get_data_status': data_api.get_data_status,
+            'get_data': data_api.get_data,
+            'list_status': data_api.list_status,
+            'view_data': data_api.view_data,
+            'view_schema': data_api.view_schema,
+            'write_data': data_api.write_data,
+            'delete_data': data_api.delete_data,
+            'put_data': data_api.put_data,
+            'read_parquet': data_api.read_parquet,
+            'read_redis': data_api.read_redis,
+            'check_required_parameters': check_required_parameters
+        }
 
         signal.signal(signal.SIGINT, self._interrupt_handler)
 
@@ -121,11 +119,14 @@ class BrighticsPythonRunner(object):
 
                 exec_code_object = compile(ast.Module(exec_code), '<string>', 'exec')
                 interactive_code_object = compile(ast.Interactive(single_code), '<string>', 'single')
-
+                globals = self._globals.copy()
+                if self._use_spark:
+                    globals['sc'] = sc
+                    globals['spark'] = sparkSession
+                    globals['sqlContext'] = sqlContext
                 with redirect_stderr():
-
-                    exec(exec_code_object, globals())
-                    exec(interactive_code_object, globals())
+                    exec(exec_code_object, globals)
+                    exec(interactive_code_object, globals)
             except BrighticsCoreException as bce:
                 raise bce
             except BrighticsFunctionException as bfe:
@@ -160,7 +161,6 @@ if __name__ == '__main__':
     argv[1] : use spark context
     argv[2] : gateway server port
     """
-   
     use_spark_context = True if sys.argv[1] == 'true' else False
     gateway_port = int(sys.argv[2]) if len(sys.argv) > 2 else None
 
@@ -170,9 +170,7 @@ if __name__ == '__main__':
         brtc_java_gateway.logger.info("[Python] Start to initialize BrighticsPythonRunner")
         if use_spark_context:
             sc, spark, sqlContext = brtc_java_gateway.init_spark_context()
-
-        runner = BrighticsPythonRunner()
-
+        runner = BrighticsPythonRunner(use_spark_context)
         runner.run("from brightics.common import *")
         runner.run("from brightics.function import *")
 
