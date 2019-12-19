@@ -9,8 +9,8 @@ import lombok.Data;
 @Data
 public class ColumnFilterParameter {
 
-	private int start = 0;
-	private int end = 0;
+	private int start = -1;
+	private int end = -1;
 	private int[] selectedColumns = new int[0];
 	
 	private int[] filteredColumns;
@@ -23,12 +23,13 @@ public class ColumnFilterParameter {
 	}
 
 	private int[] generateSelectedColumns(int start, int end, int[] selectedColumns) {
-		if (start < 0 || end <= 0) {
-			return new int[0];
-		}
-		Stream<Integer> range = IntStream.range(start, end + 1).boxed();
 		Stream<Integer> selected = Arrays.stream(selectedColumns).boxed();
-		return Stream.concat(range, selected).distinct().sorted().mapToInt(i -> i).toArray();
+		if(start >= 0 && end >= 0 && end - start >= 0) {
+			Stream<Integer> range = IntStream.range(start, end + 1).boxed();
+			return Stream.concat(range, selected).distinct().sorted().mapToInt(i -> i).toArray();
+		} else {
+			return selected.mapToInt(i -> i).toArray();
+		}
 	}
 
 }
