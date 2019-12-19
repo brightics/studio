@@ -17,8 +17,8 @@
 package com.samsung.sds.brightics.common.data.parquet.reader.util;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,16 +39,21 @@ import org.apache.parquet.schema.MessageType;
 import org.apache.parquet.schema.OriginalType;
 import org.apache.parquet.schema.Type;
 import org.apache.parquet.schema.Type.Repetition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.samsung.sds.brightics.common.data.parquet.reader.BrighticsParquetReadSupport;
 import com.samsung.sds.brightics.common.data.parquet.reader.DefaultRecord;
+import com.samsung.sds.brightics.common.data.parquet.reader.info.ColumnFilterParameter;
 import com.samsung.sds.brightics.common.data.parquet.reader.info.FileIndex;
 import com.samsung.sds.brightics.common.data.parquet.reader.info.ParquetInformation;
 import com.samsung.sds.brightics.common.data.view.Column;
 
 public class BrighticsParquetUtils {
-    
-    public static ParquetInformation getParquetInformation(Path path, Configuration conf) throws IOException {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger("ParquetClient");
+	
+	public static ParquetInformation getParquetInformation(Path path, Configuration conf, ColumnFilterParameter filterParam) throws IOException {
         FileStatus directory = FileSystem.get(conf).getFileStatus(path);
         List<Footer> footers = ParquetFileReader.readFooters(conf, directory, false);
         long previousTotalCount = 0l;
@@ -61,16 +66,10 @@ public class BrighticsParquetUtils {
             ParquetMetadata meta = footer.getParquetMetadata();
             if (schema == null) {
                 // set schema if it is null
-                List<Column> schemaBuffer = new ArrayList<>(); 
                 FileMetaData fileMetaData = meta.getFileMetaData();
                 MessageType s = fileMetaData.getSchema();
                 List<Type> fields = s.getFields();
-                for (Type t : fields) {
-                    String colName = t.getName();
-                    String typeName = convertTypeName(t);
-                    schemaBuffer.add(new Column(colName,typeName));
-                }
-                schema = schemaBuffer.toArray(new Column[schemaBuffer.size()]);
+                schema = columnGenerator(fields, filterParam);
             }
             Iterator<BlockMetaData> currentBlockIterator = meta.getBlocks().iterator();
             long currentCount = 0l;
@@ -84,6 +83,49 @@ public class BrighticsParquetUtils {
         }
         return new ParquetInformation(schema, previousTotalCount, totalBytes, buf);
     }
+	
+    public static ParquetInformation getParquetInformation(Path path, Configuration conf) throws IOException {
+    	return getParquetInformation(path, conf, new ColumnFilterParameter());
+    }
+    
+    public static Column[] columnGenerator(List<Type> fields, ColumnFilterParameter filterParam) {
+		long start = filterParam.getStart();
+		long end = filterParam.getEnd();
+		int[] selectedColumns = filterParam.getSelectedColumns();
+		if ((start >= 0 && end > 0) && (end - start) > 0) {
+			LOGGER.debug("Apply range filter to column");
+			return fields.stream().skip(start).limit(end - start).map(c -> new Column(c.getName(), convertTypeName(c)))
+					.toArray(Column[]::new);
+		} else if (selectedColumns.length > 0) {
+			LOGGER.debug("Apply selected column filter to column");
+			Column[] columns = new Column[selectedColumns.length];
+			for (int i = 0; i < selectedColumns.length; i++) {
+				Type type = fields.get(selectedColumns[i]);
+				columns[i] = new Column(type.getName(), convertTypeName(type));
+			}
+			return columns;
+		} else {
+			return fields.stream().map(c -> new Column(c.getName(), convertTypeName(c))).toArray(Column[]::new);
+		}
+	}
+
+	public static Object[] rowGenerator(Object[] row, ColumnFilterParameter filterParam) {
+		long start = filterParam.getStart();
+		long end = filterParam.getEnd();
+		int[] selectedColumns = filterParam.getSelectedColumns();
+		if ((start >= 0 && end > 0) && (end - start) > 0) {
+			return Arrays.stream(row).skip(start).limit(end - start).toArray(Object[]::new);
+		} else if (selectedColumns.length > 0) {
+			Object[] refineRow = new Column[selectedColumns.length];
+			for (int i = 0; i < selectedColumns.length; i++) {
+				Object value = row[selectedColumns[i]];
+				refineRow[i] = value;
+			}
+			return refineRow;
+		} else {
+			return row;
+		}
+	}
 
     private static String convertTypeName(Type t) {
         OriginalType originalType = t.getOriginalType();

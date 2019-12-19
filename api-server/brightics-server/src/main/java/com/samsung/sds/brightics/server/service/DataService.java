@@ -37,6 +37,7 @@ import com.samsung.sds.brightics.common.core.exception.AbsBrighticsException;
 import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
 import com.samsung.sds.brightics.common.core.exception.BrighticsUncodedException;
 import com.samsung.sds.brightics.common.core.util.JsonUtil;
+import com.samsung.sds.brightics.common.data.parquet.reader.info.ColumnFilterParameter;
 import com.samsung.sds.brightics.common.network.proto.FailResult;
 import com.samsung.sds.brightics.common.network.proto.MessageStatus;
 import com.samsung.sds.brightics.common.network.proto.SuccessResult;
@@ -107,6 +108,10 @@ public class DataService {
         return getData(getDataKey(mid, tid), min, max);
     }
 
+	public Object getData(String mid, String tid, long min, long max, ColumnFilterParameter columnFilterParameter) {
+		return getData(getDataKey(mid, tid), min, max, columnFilterParameter);
+	}
+
     /**
      * Retrieves the contents of the stored data.
      *
@@ -115,7 +120,21 @@ public class DataService {
      * @param max maximum row number
      */
     public Object getData(String key, long min, long max) {
-        String param = ParameterBuilder.newBuild().addProperty("min", min).addProperty("max", max).build();
+    	return getData(key, min, max, new ColumnFilterParameter());
+    }
+    
+    /**
+     * Retrieves the contents of the stored data.
+     *
+     * @param key data key
+     * @param min minimum row number
+     * @param max maximum row number
+     * @param columnFilterParameter column filter parameter
+     */
+    private Object getData(String key, long min, long max, ColumnFilterParameter filterParam ) {
+        String param = ParameterBuilder.newBuild().addProperty("min", min).addProperty("max", max)
+        		.addProperty("column_start", filterParam.getStart()).addProperty("column_end", filterParam.getEnd())
+        		.addProperty("selected_columns", JsonUtil.toJson(filterParam.getSelectedColumns())).build();
         ResultDataMessage result = messageManagerProvider.metadataManager()
             .sendManipulateData(ExecuteDataMessage.newBuilder().setUser(AuthenticationUtil.getRequestUserId())
                 .setActionType(DataActionType.DATA).setKey(key).setParameters(param).build());
@@ -376,4 +395,5 @@ public class DataService {
 
         return ResultMapUtil.success(dataResultParser(messageManagerProvider.metadataManager().sendRemoveDataAlias(message)));
     }
+
 }

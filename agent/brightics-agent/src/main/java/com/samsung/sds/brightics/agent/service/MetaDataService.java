@@ -35,17 +35,18 @@ import org.slf4j.LoggerFactory;
 import com.google.protobuf.Any;
 import com.samsung.sds.brightics.agent.context.ContextManager;
 import com.samsung.sds.brightics.agent.util.DataKeyUtil;
-import com.samsung.sds.brightics.common.core.util.SystemEnvUtil;
 import com.samsung.sds.brightics.agent.util.ThreadUtil;
 import com.samsung.sds.brightics.common.core.acl.Permission;
 import com.samsung.sds.brightics.common.core.exception.AbsBrighticsException;
 import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
 import com.samsung.sds.brightics.common.core.util.JsonUtil;
 import com.samsung.sds.brightics.common.core.util.JsonUtil.JsonParam;
+import com.samsung.sds.brightics.common.core.util.SystemEnvUtil;
 import com.samsung.sds.brightics.common.data.DataStatus;
 import com.samsung.sds.brightics.common.data.client.FileClient;
 import com.samsung.sds.brightics.common.data.client.KVStoreClient;
 import com.samsung.sds.brightics.common.data.client.ParquetClient;
+import com.samsung.sds.brightics.common.data.parquet.reader.info.ColumnFilterParameter;
 import com.samsung.sds.brightics.common.data.view.DataViewJson;
 import com.samsung.sds.brightics.common.network.proto.ContextType;
 import com.samsung.sds.brightics.common.network.proto.FailResult;
@@ -272,9 +273,13 @@ public class MetaDataService {
             String user = ThreadUtil.getCurrentUser();
             DataStatus ds = ContextManager.getCurrentUserContextSession().getDataStatus(request.getKey());
             ContextType contextType = ds.contextType;
-            if (contextType == ContextType.FILESYSTEM) {
-                return getSuccessResult(ParquetClient.readParquet(ds.path, min, max));
-            } else if (contextType == ContextType.KV_STORE) {
+			if (contextType == ContextType.FILESYSTEM) {
+				long columnStart = params.getOrDefault("column_start", -1L).longValue();
+				long columnEnd = params.getOrDefault("column_end", -1L).longValue();
+				int[] selectedColumns = JsonUtil.fromJson(params.getOrDefault("selected_columns", "[]"), int[].class);
+				return getSuccessResult(ParquetClient.readParquet(ds.path, min, max,
+						new ColumnFilterParameter(columnStart, columnEnd, selectedColumns)));
+			} else if (contextType == ContextType.KV_STORE) {
                 return getSuccessResult(DataViewJson.fromRawJsonData(ds.typeName,
                         Optional.ofNullable(KVStoreClient.getInstance().getJsonForClientView(ds.key)).orElseThrow(() -> new BrighticsCoreException("4406"))));
             } else {

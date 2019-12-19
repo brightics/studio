@@ -37,13 +37,13 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.samsung.sds.brightics.common.core.util.SystemEnvUtil;
 import com.samsung.sds.brightics.common.data.parquet.reader.DefaultRecord;
+import com.samsung.sds.brightics.common.data.parquet.reader.info.ColumnFilterParameter;
 import com.samsung.sds.brightics.common.data.parquet.reader.info.FileIndex;
 import com.samsung.sds.brightics.common.data.parquet.reader.info.ParquetInformation;
 import com.samsung.sds.brightics.common.data.parquet.reader.util.BrighticsParquetUtils;
 import com.samsung.sds.brightics.common.data.parquet.writer.CsvParquetWriterBuilder;
 import com.samsung.sds.brightics.common.data.util.DelimiterUtil;
 import com.samsung.sds.brightics.common.data.view.Column;
-import com.samsung.sds.brightics.common.data.view.JsonTable;
 import com.samsung.sds.brightics.common.data.view.ObjectTable;
 import com.samsung.sds.brightics.common.data.view.Table;
 
@@ -57,7 +57,6 @@ public class ParquetClient {
     static final Logger LOGGER = LoggerFactory.getLogger("ParquetClient");
     static FileSystem fileSystem;
     public static CompressionCodecName CODEC = CompressionCodecName.SNAPPY;
-    private final static ObjectMapper MAPPER = new ObjectMapper();
 
     static synchronized FileSystem getFileSystem() {
         if (fileSystem == null) {
@@ -116,8 +115,8 @@ public class ParquetClient {
                 .build();
     }
 
-    public static ObjectTable readParquet(String path, long min, long max) throws IllegalArgumentException, IOException {
-        ParquetInformation info = BrighticsParquetUtils.getParquetInformation(new Path(path), new Configuration());
+    public static ObjectTable readParquet(String path, long min, long max, ColumnFilterParameter filterParam) throws IllegalArgumentException, IOException {
+        ParquetInformation info = BrighticsParquetUtils.getParquetInformation(new Path(path), new Configuration(), filterParam);
         List<FileIndex> indexes = info.getLimitedFiles(min, max);
 
         List<Object[]> data = new ArrayList<>();
@@ -145,7 +144,7 @@ public class ParquetClient {
                 }
                 DefaultRecord record;
                 while ((record = reader.read()) != null && numRowCount > 0) {
-                    data.add(record.getValues());
+                    data.add(BrighticsParquetUtils.rowGenerator(record.getValues(), filterParam));
                     numRowCount--;
                 }
 
@@ -158,6 +157,10 @@ public class ParquetClient {
 
         Column[] schema = info.getSchema();
         return new ObjectTable(info.getCount(), data.size(), schema, data);
+    }
+    
+    public static ObjectTable readParquet(String path, long min, long max) throws IllegalArgumentException, IOException {
+    	return readParquet(path, min, max, new ColumnFilterParameter());
     }
     
     public static Table readSchema(String path) throws IllegalArgumentException, IOException {
