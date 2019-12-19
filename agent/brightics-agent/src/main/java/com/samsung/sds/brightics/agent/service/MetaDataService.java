@@ -274,8 +274,8 @@ public class MetaDataService {
             DataStatus ds = ContextManager.getCurrentUserContextSession().getDataStatus(request.getKey());
             ContextType contextType = ds.contextType;
 			if (contextType == ContextType.FILESYSTEM) {
-				long columnStart = params.getOrDefault("column_start", -1L).longValue();
-				long columnEnd = params.getOrDefault("column_end", -1L).longValue();
+				int columnStart = params.getOrDefault("column_start", 0).intValue();
+				int columnEnd = params.getOrDefault("column_end", 0).intValue();
 				int[] selectedColumns = JsonUtil.fromJson(params.getOrDefault("selected_columns", "[]"), int[].class);
 				return getSuccessResult(ParquetClient.readParquet(ds.path, min, max,
 						new ColumnFilterParameter(columnStart, columnEnd, selectedColumns)));

@@ -105,7 +105,7 @@ public class DataController {
 	@RequestMapping(value = "/data/view/{mid}/{tid}", method = RequestMethod.POST)
 	public Object viewDataWithFilter(@PathVariable String mid, @PathVariable String tid,
 			@RequestParam(required = true) long offset, @RequestParam(required = true) long limit,
-			@RequestBody ColumnFilterParameter ColumnFilterParameter,	HttpServletRequest req, HttpServletResponse res) throws Exception {
+			@RequestBody(required = false) ColumnFilterParameter ColumnFilterParameter,	HttpServletRequest req, HttpServletResponse res) throws Exception {
 		return dataService.getData(mid, tid, offset, offset + limit, ColumnFilterParameter);
 	}
 

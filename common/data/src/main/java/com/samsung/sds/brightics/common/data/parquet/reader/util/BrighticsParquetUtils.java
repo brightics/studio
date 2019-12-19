@@ -18,7 +18,6 @@ package com.samsung.sds.brightics.common.data.parquet.reader.util;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -88,42 +87,32 @@ public class BrighticsParquetUtils {
     	return getParquetInformation(path, conf, new ColumnFilterParameter());
     }
     
-    public static Column[] columnGenerator(List<Type> fields, ColumnFilterParameter filterParam) {
-		long start = filterParam.getStart();
-		long end = filterParam.getEnd();
-		int[] selectedColumns = filterParam.getSelectedColumns();
-		if ((start >= 0 && end > 0) && (end - start) > 0) {
-			LOGGER.debug("Apply range filter to column");
-			return fields.stream().skip(start).limit(end - start).map(c -> new Column(c.getName(), convertTypeName(c)))
-					.toArray(Column[]::new);
-		} else if (selectedColumns.length > 0) {
-			LOGGER.debug("Apply selected column filter to column");
-			Column[] columns = new Column[selectedColumns.length];
-			for (int i = 0; i < selectedColumns.length; i++) {
-				Type type = fields.get(selectedColumns[i]);
+	public static Column[] columnGenerator(List<Type> fields, ColumnFilterParameter filterParam) {
+		int[] filteredColumns = filterParam.getFilteredColumns();
+		if(filteredColumns.length == 0) {
+			return fields.stream().map(c -> new Column(c.getName(), convertTypeName(c))).toArray(Column[]::new);
+		} else {
+			LOGGER.debug("Apply filter to column");
+			Column[] columns = new Column[filteredColumns.length];
+			for (int i = 0; i < filteredColumns.length; i++) {
+				Type type = fields.get(filteredColumns[i]);
 				columns[i] = new Column(type.getName(), convertTypeName(type));
 			}
 			return columns;
-		} else {
-			return fields.stream().map(c -> new Column(c.getName(), convertTypeName(c))).toArray(Column[]::new);
 		}
 	}
 
 	public static Object[] rowGenerator(Object[] row, ColumnFilterParameter filterParam) {
-		long start = filterParam.getStart();
-		long end = filterParam.getEnd();
-		int[] selectedColumns = filterParam.getSelectedColumns();
-		if ((start >= 0 && end > 0) && (end - start) > 0) {
-			return Arrays.stream(row).skip(start).limit(end - start).toArray(Object[]::new);
-		} else if (selectedColumns.length > 0) {
-			Object[] refineRow = new Column[selectedColumns.length];
-			for (int i = 0; i < selectedColumns.length; i++) {
-				Object value = row[selectedColumns[i]];
+		int[] filteredColumns = filterParam.getFilteredColumns();
+		if(filteredColumns.length == 0) {
+			return row;
+		} else {
+			Object[] refineRow = new Object[filteredColumns.length];
+			for (int i = 0; i < filteredColumns.length; i++) {
+				Object value = row[filteredColumns[i]];
 				refineRow[i] = value;
 			}
 			return refineRow;
-		} else {
-			return row;
 		}
 	}
 
