@@ -89,7 +89,7 @@ public class BrighticsParquetUtils {
     
 	public static Column[] columnGenerator(List<Type> fields, ColumnFilterParameter filterParam) {
 		int[] filteredColumns = filterParam.getFilteredColumns();
-		if(filteredColumns.length == 0) {
+		if (filteredColumns.length == 0 || filteredColumns.length > fields.size()) {
 			return fields.stream().map(c -> new Column(c.getName(), convertTypeName(c))).toArray(Column[]::new);
 		} else {
 			LOGGER.debug("Apply filter to column");
@@ -104,7 +104,7 @@ public class BrighticsParquetUtils {
 
 	public static Object[] rowGenerator(Object[] row, ColumnFilterParameter filterParam) {
 		int[] filteredColumns = filterParam.getFilteredColumns();
-		if(filteredColumns.length == 0) {
+		if (filteredColumns.length == 0 || filteredColumns.length > row.length) {
 			return row;
 		} else {
 			Object[] refineRow = new Object[filteredColumns.length];
