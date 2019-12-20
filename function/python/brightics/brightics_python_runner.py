@@ -28,9 +28,6 @@ import json
 import matplotlib
 matplotlib.use("agg")
 
-# Fix some problems when import numpy cython. 
-import numpy as np
-np.linalg.inv([[np.log(i)+np.log(j) for i in range(20)] for j in range(20)])
 
 try:
     from StringIO import StringIO
