@@ -28,7 +28,6 @@ import json
 import matplotlib
 matplotlib.use("agg")
 
-
 try:
     from StringIO import StringIO
 except ImportError:
@@ -205,7 +204,7 @@ if __name__ == '__main__':
 
                 brtc_java_gateway.notify_python_process_finished(result, is_exception[0], is_exception[1])
             except BrighticsFunctionException as bfe:
-                brtc_java_gateway.notify_brightics_function_exception(traceback.format_exc(), json.dumps(bfe.errors) )
+                brtc_java_gateway.notify_brightics_function_exception(traceback.format_exc(), json.dumps(bfe.errors))
                 brtc_java_gateway.logger.info("[Python] " + traceback.format_exc())
             except BrighticsCoreException as bce:
                 brtc_java_gateway.notify_brightics_core_exception(traceback.format_exc(), str(bce.code), bce.message)
