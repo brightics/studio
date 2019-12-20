@@ -119,10 +119,8 @@ class BrighticsPythonRunner(object):
                 interactive_code_object = compile(ast.Interactive(single_code), '<string>', 'single')
 
                 with redirect_stderr():
-                    tmp_globals=self._globals
-                    tmp_globals.update(globals())
-                    exec(exec_code_object, tmp_globals)
-                    exec(interactive_code_object, tmp_globals)
+                    exec(exec_code_object, self._globals)
+                    exec(interactive_code_object, self._globals)
             except BrighticsCoreException as bce:
                 raise bce
             except BrighticsFunctionException as bfe:
