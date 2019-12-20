@@ -28,7 +28,6 @@ import json
 import matplotlib
 matplotlib.use("agg")
 
-
 try:
     from StringIO import StringIO
 except ImportError:
@@ -42,22 +41,6 @@ os.chdir(brightics_python_root_dir)
 from brightics.brightics_java_gateway import brtc_java_gateway
 from brightics.common.exception import BrighticsCoreException
 from brightics.common.exception import BrighticsFunctionException
-
-import brightics.brightics_data_api as data_api
-import brightics.common.data.utils as data_util
-from brightics.common.utils import check_required_parameters
-make_data_path_from_key=data_util.make_data_path_from_key
-get_data_info= data_api.get_data_info
-get_data_status= data_api.get_data_status
-get_data= data_api.get_data
-list_status= data_api.list_status
-view_data= data_api.view_data
-view_schema= data_api.view_schema
-write_data= data_api.write_data
-delete_data= data_api.delete_data
-put_data= data_api.put_data
-read_parquet= data_api.read_parquet
-read_redis= data_api.read_redis
 
 
 
@@ -82,6 +65,22 @@ class BrighticsPythonRunner(object):
         import brightics.brightics_data_api as data_api
         import brightics.common.data.utils as data_util
         from brightics.common.utils import check_required_parameters
+
+        self._globals = {
+            'make_data_path_from_key': data_util.make_data_path_from_key,
+            'get_data_info': data_api.get_data_info,
+            'get_data_status': data_api.get_data_status,
+            'get_data': data_api.get_data,
+            'list_status': data_api.list_status,
+            'view_data': data_api.view_data,
+            'view_schema': data_api.view_schema,
+            'write_data': data_api.write_data,
+            'delete_data': data_api.delete_data,
+            'put_data': data_api.put_data,
+            'read_parquet': data_api.read_parquet,
+            'read_redis': data_api.read_redis,
+            'check_required_parameters': check_required_parameters
+        }
 
 
         signal.signal(signal.SIGINT, self._interrupt_handler)
@@ -120,8 +119,8 @@ class BrighticsPythonRunner(object):
                 interactive_code_object = compile(ast.Interactive(single_code), '<string>', 'single')
 
                 with redirect_stderr():
-                    exec(exec_code_object, globals())
-                    exec(interactive_code_object)
+                    exec(exec_code_object, self._globals)
+                    exec(interactive_code_object, self._globals)
             except BrighticsCoreException as bce:
                 raise bce
             except BrighticsFunctionException as bfe:
@@ -156,10 +155,9 @@ if __name__ == '__main__':
     argv[1] : use spark context
     argv[2] : gateway server port
     """
-   
+
     use_spark_context = True if sys.argv[1] == 'true' else False
     gateway_port = int(sys.argv[2]) if len(sys.argv) > 2 else None
-
     try:
         brtc_java_gateway.start(gateway_port)
 
@@ -198,7 +196,7 @@ if __name__ == '__main__':
 
                 brtc_java_gateway.notify_python_process_finished(result, is_exception[0], is_exception[1])
             except BrighticsFunctionException as bfe:
-                brtc_java_gateway.notify_brightics_function_exception(traceback.format_exc(),json.dumps(bfe.errors) )
+                brtc_java_gateway.notify_brightics_function_exception(traceback.format_exc(), json.dumps(bfe.errors))
                 brtc_java_gateway.logger.info("[Python] " + traceback.format_exc())
             except BrighticsCoreException as bce:
                 brtc_java_gateway.notify_brightics_core_exception(traceback.format_exc(), str(bce.code), bce.message)
