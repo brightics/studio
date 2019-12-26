@@ -129,7 +129,7 @@ class BrighticsPythonRunner(object):
                     try:
                         exec(exec_code_object)
                         exec(interactive_code_object)
-                    except:
+                    except NameError:
                         exec(exec_code_object, globals())
                         exec(interactive_code_object, globals())
             except BrighticsCoreException as bce:
