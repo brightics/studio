@@ -30,22 +30,42 @@ from brightics.common.validation import raise_runtime_error
 from brightics.brightics_data_api import _write_dataframe
 import brightics.common.data.utils as data_utils
 from brightics.common.utils import check_required_parameters
+import brightics.common.data.table_data_reader as table_reader
+import brightics.common.data.utils as util
 
 
-def unload(table, partial_path):
+def unload(table, partial_path, mode="overwrite"):
     path = data_utils.make_data_path_from_key(partial_path[0])
     if os.path.isdir(path):
         shutil.rmtree(path)
-    _write_dataframe(table, path)
+    if mode=="append":
+        try:
+            old_frame = table_reader.read_parquet(
+                util.make_data_path_from_key(partial_path[0])
+            )
+            new_frame = pd.concat([old_frame, table], axis=0, ignore_index=True)
+            _write_dataframe(new_frame, path)
+        except:
+            _write_dataframe(table, path)
+    else:
+        _write_dataframe(table, path)
 
 
-def write_csv(table, path):
+def write_csv(table, path, mode='overwrite'):
     dir_data = os.getcwd() + '/data'
     path = os.path.join(dir_data, path)
     dir_ = os.path.dirname(path)
     if not os.path.exists(dir_):
         os.makedirs(dir_)
-    table.to_csv(path, index=False)
+    if mode=='append':
+        try:
+            old_frame = pd.read_csv(path)
+            new_frame = pd.concat([old_frame, table], axis=0, ignore_index=True)
+            new_frame.to_csv(path, index=False)
+        except:
+            table.to_csv(path, index=False)
+    else:
+        table.to_csv(path, index=False)
 
 
 def _change_capital_to_under_bar(a):
