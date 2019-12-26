@@ -22,6 +22,8 @@ from urllib.parse import urlparse
 
 import matplotlib
 import pandas as pd
+from pandas.core.dtypes.missing import isna
+import numpy as np
 import py4j.java_gateway as status_gateway
 import pyarrow as pa
 import pyarrow.parquet as pq
@@ -77,13 +79,63 @@ def view_data(key):
     data = data_info['data']
     type_name = status_gateway.get_field(data_info['status'], 'typeName')
     if isinstance(data, pd.DataFrame):
+        def schema_map(df):
+            _dtypemap = {
+                'int': 'long',
+                'int32': 'int',
+                'int64': 'long',
+                'float64': 'double',
+                'U': 'string',
+                'S': 'string',
+                'object': 'string',
+                'string': 'string',
+                'bool': 'boolean',
+                'boolean': 'boolean',
+                'array(double)': 'array(double)',
+                'array(int)': 'array(int)',
+                'array(long)': 'array(long)',
+                'array(string)': 'array(string)',
+                'array(boolean)': 'array(string)'
+            }
+
+            def col_dtype(col):
+                for elem in col:
+                    if isinstance(elem, np.ndarray):
+                        if elem.dtype.kind in {'S', 'U'}:
+                            return 'array(string)'
+                        else:
+                            return 'array(' + _dtypemap[elem.dtype.name] + ')'
+                    elif isinstance(elem, list):
+                        return 'array(' + col_dtype(elem) + ')'
+                    else:
+                        if not isna(elem):
+                            if isinstance(elem, str):
+                                return 'string'
+                            elif isinstance(elem, bool):
+                                return 'boolean'
+                            elif isinstance(elem, int):
+                                return 'long'
+                            elif isinstance(elem, float):
+                                return 'double'
+                return 'object'
+
+            for colname, dtype in zip(df.columns, df.dtypes):
+                dt = col_dtype(df[colname]) \
+                    if dtype.name == 'object' else dtype.name
+                yield {'column-name': colname, 'column-type': _dtypemap[dt]}
+
+        def ensure_none(df):
+            val = df.values
+            val[isna(df.values)] = None
+            return val
+
         return data_json.to_json({
             'type': 'table',
             'data': {
                 'count': data.shape[0],
                 'bytes': -1,
-                'schema': [{'column-name': c, 'column-type': data.dtypes[c].name} for c in data.columns.to_series()],
-                'data': [[d[col_name] for col_name in data.columns] for index, d in data.iterrows()]
+                'schema': list(schema_map(data)),
+                'data': ensure_none(data)
             }
         })
     elif psdf and isinstance(data, psdf.DataFrame):

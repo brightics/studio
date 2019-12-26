@@ -35,7 +35,7 @@ class BrighticsJavaGateway(object):
 
         try:
             self._gateway = JavaGateway(gateway_parameters=gateway_params)
-
+            
             self.logger = self._gateway.entry_point.getLogger()
             self._gateway.entry_point.setUserToThreadLocalContext()
 
@@ -46,7 +46,6 @@ class BrighticsJavaGateway(object):
             self.ContextType = self._gateway.jvm.com.samsung.sds.brightics.common.network.proto.ContextType
 
             self.sql2Pandas = self._gateway.entry_point.getSql2Pandas()
-            
         except:
             self._gateway.shutdown()
             raise Exception('Failed to start java gateway')
