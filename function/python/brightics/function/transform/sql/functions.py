@@ -26,6 +26,48 @@ import re
 constants 
 """
 
+"""
+Trigonometric functions
+"""
+def sin(x):
+    return np.math.sin(x)
+
+
+def cos(x):
+    return np.math.cos(x)
+
+
+def tan(x):
+    return np.math.tan(x)
+
+
+def cot(x):
+    if tan(x)==0:
+        return np.nan
+    return 1 / tan(x)
+
+
+def asin(x):
+    if x < -1 or x > 1:
+        return np.nan
+    return np.math.asin(x)
+
+
+def acos(x):
+    if x < -1 or x > 1:
+        return np.nan
+    return np.math.acos(x)
+
+
+def atan(x):
+    return np.math.atan(x)
+
+
+def acot(x):
+    if (x==0):
+        return pi()/2
+    return atan(1/x)
+
 
 def e():
     return np.math.e

@@ -20,30 +20,28 @@ import numpy as np
 from ..calcite2pd_utils.rand_util import gen_colname
 from ..calcite2pd_utils.rexnode_util import RexNodeTool
 
+# pandas seems to have an issue regarding missing values;
+# pandas merge operation matches NaN and None.
+# see:
+#     https://stackoverflow.com/questions/53688988/why-does-pandas-merge-on-nan
+#     https://github.com/pandas-dev/pandas/issues/22491
+#     https://github.com/pandas-dev/pandas/issues/22618
+#
+# a simple remedy is to use 'right.dropna(subset=[rightRefCol])'
 
-    # pandas seems to have an issue regarding missing values;
-    # pandas merge operation matches NaN and None.
-    # see:
-    #     https://stackoverflow.com/questions/53688988/why-does-pandas-merge-on-nan
-    #     https://github.com/pandas-dev/pandas/issues/22491
-    #     https://github.com/pandas-dev/pandas/issues/22618
-    #
-    # a simple remedy is to use 'right.dropna(subset=[rightRefCol])'
-
-    # There is no direct method in pandas to implement sql join with condition:
-    #   ex) "select df1.A, df1.g2, df2.GG, df2.GGG
-    #        from df1 left join df2 on df1.g2 > df2.ggg"
-    # For the time being, we implement the method __conditional_join
-    # using pandas merge method with query,
-    # however, the method __conditional_join in still incomplete.
-    # the method __conditional_join is memory inefficient
-    # and cannot be used for large table.
-    # the method should be re-written using cython
-    # for performance and integrity in later versions.
+# There is no direct method in pandas to implement sql join with condition:
+#   ex) "select df1.A, df1.g2, df2.GG, df2.GGG
+#        from df1 left join df2 on df1.g2 > df2.ggg"
+# For the time being, we implement the method __conditional_join
+# using pandas merge method with query,
+# however, the method __conditional_join in still incomplete.
+# the method __conditional_join is memory inefficient
+# and cannot be used for large table.
+# the method should be re-written using cython
+# for performance and integrity in later versions.
 
 
 # TODO: rewrite __conditional_join using cython so that the method covers all join condntions uniformly.
-
 
 
 def __check_cross_join(condition, join_type):
@@ -66,6 +64,7 @@ def __cross_join(left, right):
 
     try:
         tmp_field = [f'c{i}' for i in range(len(df.columns))]
+
     except:
         tmp_field = ['c'+str(i) for i in range(len(df.columns))]
 
@@ -95,7 +94,6 @@ def __simple_eqcond_join(left, right, field, join_type,
             right.dropna(subset=[right_on]),
             left_on=left_on,
             right_on=right_on,
-            suffixes=('L', 'R'),
             how=join_type.lower())
 
     elif join_type == 'RIGHT':
@@ -103,7 +101,6 @@ def __simple_eqcond_join(left, right, field, join_type,
             right,
             left_on=left_on,
             right_on=right_on,
-            suffixes=('L', 'R'),
             how='right')
 
     elif join_type == 'FULL':
@@ -112,18 +109,27 @@ def __simple_eqcond_join(left, right, field, join_type,
             right.dropna(subset=[right_on]),
             left_on=left_on,
             right_on=right_on,
-            suffixes=('L', 'R'),
             how='left')
 
         _rset = left.dropna(subset=[left_on]).merge(
             right,
             left_on=left_on,
             right_on=right_on,
-            suffixes=('L', 'R'),
             how='right')
 
+        if _lset.shape[0] < _rset.shape[0]:
+            oprd = _lset[right_on].values
+            _lset = _lset.loc[
+                np.array([x is None or (isinstance(x, float) and np.isnan(x))
+                          for x in oprd])]
+
+        else:
+            oprd = _rset[left_on].values
+            _rset = _rset.loc[
+                np.array([x is None or (isinstance(x, float) and np.isnan(x))
+                          for x in oprd])]
+
         merged = pd.concat([_lset, _rset])
-        merged.drop_duplicates(inplace=True)
 
     else:
         raise ValueError('unknown join_type')
@@ -139,6 +145,7 @@ def __conditional_join(left, right, field, join_type, condition):
         _table = __cross_join(left, right)
         RexNodeTool.clear()
         condition_exp = RexNodeTool.unparse(condition, _table.columns.tolist())
+
     else:
         raise ValueError('unsupported join condition')
 
@@ -163,15 +170,15 @@ def logical_join(rel, table_space, field_space):
         simple_col_ref = __check_simple_cond(condition)
 
         if simple_col_ref:
-            field_left = left.columns.tolist()
-            field_right = right.columns.tolist()
-            left_on = field_left[simple_col_ref[0]]
-            right_col_ref = simple_col_ref[1]-len(left.columns)
-            right_on = next(
-                gen_colname(20, 1, set(field_left).union(set(field_right))))
-            right.rename(
-                columns={field_right[right_col_ref]: right_on},
-                inplace=True)
+
+            tmp_fields = list(gen_colname(25, left.shape[1] + right.shape[1]))
+
+            left_on = tmp_fields[simple_col_ref[0]]
+            right_on = tmp_fields[simple_col_ref[1]]
+
+            left.columns = tmp_fields[0:left.shape[1]]
+            right.columns = tmp_fields[
+                left.shape[1]:left.shape[1] + right.shape[1]]
 
             join_table = __simple_eqcond_join(
                 left, right, field, join_type, left_on, right_on)
