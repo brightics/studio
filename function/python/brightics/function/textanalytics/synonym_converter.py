@@ -31,9 +31,11 @@ def synonym_converter_user_dict(table, **params):
 
 def _synonym_converter(table, input_cols, hold_cols=None, default_dict=False, synonym_list=None, prefix='synonym', user_dict=None):
     
-    hold_table = pd.DataFrame()    
     if hold_cols is not None:
+        hold_table = pd.DataFrame()
         hold_table[hold_cols] = table[hold_cols]
+    else:
+        hold_table = table.copy()
     
     # initial dictionary
     synonym_dict = dict()

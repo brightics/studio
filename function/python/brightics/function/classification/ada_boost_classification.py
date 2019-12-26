@@ -28,6 +28,7 @@ from brightics.common.utils import check_required_parameters
 from brightics.common.validation import validate, greater_than_or_equal_to, greater_than
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.function.utils import _model_dict
+from brightics.common.classify_input_type import check_col_type
 
 
 def ada_boost_classification_train(table, group_by=None, **params):
@@ -66,7 +67,7 @@ def _plot_feature_importance(feature_cols, classifier):
 def _ada_boost_classification_train(table, feature_cols, label_col, max_depth=1,
                                     n_estimators=50, learning_rate=1.0, algorithm='SAMME.R', random_state=None):
     
-    x_train = table[feature_cols]
+    feature_names, x_train = check_col_type(table, feature_cols)
     y_train = table[label_col]
 
     base_estimator = DecisionTreeClassifier(max_depth=max_depth)
@@ -89,7 +90,7 @@ def _ada_boost_classification_train(table, feature_cols, label_col, max_depth=1,
     model['classifier'] = classifier
     model['params'] = params
 
-    fig_feature_importance = _plot_feature_importance(feature_cols, classifier)
+    fig_feature_importance = _plot_feature_importance(feature_names, classifier)
     params = dict2MD(get_param)
 
     rb = BrtcReprBuilder()
@@ -108,7 +109,7 @@ def _ada_boost_classification_train(table, feature_cols, label_col, max_depth=1,
 
     model['_repr_brtc_'] = rb.get()
     feature_importance = classifier.feature_importances_
-    feature_importance_table = pd.DataFrame([[feature_cols[i], feature_importance[i]] for i in range(len(feature_cols))], columns=['feature_name', 'importance'])
+    feature_importance_table = pd.DataFrame([[feature_names[i], feature_importance[i]] for i in range(len(feature_names))], columns=['feature_name', 'importance'])
     model['feature_importance_table'] = feature_importance_table
     return {'model': model}
 
@@ -124,7 +125,7 @@ def ada_boost_classification_predict(table, model, **params):
 def _ada_boost_classification_predict(table, model, pred_col_name='prediction', prob_col_prefix='probability', suffix='index'):
     out_table = table.copy()
     classifier = model['classifier']
-    test_data = table[model['params']['feature_cols']]
+    _, test_data = check_col_type(table, model['params']['feature_cols'])
     
     out_table[pred_col_name] = classifier.predict(test_data)   
     

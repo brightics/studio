@@ -90,6 +90,8 @@ def get_table(model, **params):
 
 
 def _get_table(model, key_list, index_column=False, index_column_name='index'):
+    if not key_list:
+        raise Exception('Key is a required parameter.')
     table = get_element_from_dict(model, key_list)
     if not isinstance(table, pd.DataFrame):
         raise Exception('item is not a DataFrame.')

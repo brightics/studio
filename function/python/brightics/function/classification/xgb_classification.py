@@ -21,7 +21,9 @@ from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate
 from brightics.common.validation import greater_than_or_equal_to
+from brightics.common.classify_input_type import check_col_type
 
+from random import randint
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -52,10 +54,14 @@ def _make_sample_weight(label, class_weight):
 def _xgb_classification_train(table, feature_cols, label_col, max_depth=3, learning_rate=0.1, n_estimators=100,
             silent=True, objective='binary:logistic', booster='gbtree', n_jobs=1, nthread=None, gamma=0, min_child_weight=1,
             max_delta_step=0, subsample=1, colsample_bytree=1, colsample_bylevel=1, reg_alpha=0, reg_lambda=1,
-            scale_pos_weight=1, base_score=0.5, random_state=0, seed=None, missing=None, importance_type='gain',
+            scale_pos_weight=1, base_score=0.5, random_state=None, seed=None, missing=None, importance_type='gain',
             class_weight=None, eval_set=None, eval_metric=None, early_stopping_rounds=None, verbose=True,
             xgb_model=None, sample_weight_eval_set=None):
-    
+    feature_names, features = check_col_type(table, feature_cols)
+    features = np.array(features)
+
+    if random_state is None:
+        random_state = randint(-2**31, 2**31-1)
     y_train = table[label_col]
     class_labels = sorted(set(y_train))
     if class_weight is None:
@@ -90,7 +96,7 @@ def _xgb_classification_train(table, feature_cols, label_col, max_depth=3, learn
                                missing=missing,
                                importance_type=importance_type)
     
-    classifier.fit(table[feature_cols], table[label_col],
+    classifier.fit(features, table[label_col],
                    sample_weight, eval_set, eval_metric, early_stopping_rounds, verbose,
                    xgb_model, sample_weight_eval_set)
     
@@ -129,7 +135,7 @@ def _xgb_classification_train(table, feature_cols, label_col, max_depth=3, learn
 #         temp = [key, value]
 #         get_param_list.append(temp)
 #     get_param_df = pd.DataFrame(data=get_param_list, columns=['parameter', 'value'])
-    feature_importance_df = pd.DataFrame(data=feature_importance, index=feature_cols).T
+    feature_importance_df = pd.DataFrame(data=feature_importance, index=feature_names).T
     
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
@@ -149,7 +155,7 @@ def _xgb_classification_train(table, feature_cols, label_col, max_depth=3, learn
                list_parameters=params            
                )))     
     model['_repr_brtc_'] = rb.get() 
-    feature_importance_table = pd.DataFrame([[feature_cols[i], feature_importance[i]] for i in range(len(feature_cols))], columns=['feature_name', 'importance'])
+    feature_importance_table = pd.DataFrame([[feature_names[i], feature_importance[i]] for i in range(len(feature_names))], columns=['feature_name', 'importance'])
     model['feature_importance_table'] = feature_importance_table
     return {'model' : model}
 
@@ -169,7 +175,7 @@ def _xgb_classification_predict(table, model, prediction_col='prediction', proba
     classifier = model['classifier']
 
     # prediction = classifier.predict(table[feature_cols], output_margin, ntree_limit)
-    
+    _, features = check_col_type(table, feature_cols)
     classes = classifier.classes_
     len_classes = len(classes)
     is_binary = len_classes == 2
@@ -182,7 +188,7 @@ def _xgb_classification_predict(table, model, prediction_col='prediction', proba
         else:
             thresholds = np.array(thresholds)
     
-    prob = classifier.predict_proba(table[feature_cols], ntree_limit)
+    prob = classifier.predict_proba(features, ntree_limit)
     prediction = classes[np.argmax(prob / thresholds, axis=1)]
     
     if suffix == 'index':

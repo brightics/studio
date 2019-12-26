@@ -20,6 +20,7 @@ from brightics.common.validation import validate
 from brightics.common.validation import greater_than_or_equal_to
 from brightics.common.validation import raise_error
 import sklearn.utils as sklearn_utils
+from brightics.common.classify_input_type import check_col_type
 
 from sklearn.neighbors import KNeighborsClassifier 
 import pandas as pd
@@ -39,9 +40,9 @@ def knn_classification(train_table, test_table, **params):
 
 def _knn_classification(train_table, test_table, feature_cols, label_col, k=5, algorithm='auto', leaf_size=30, p=2, pred_col_name='prediction', prob_col_prefix='probability', suffix='index'):
     
-    X_train = train_table[feature_cols]
+    _, X_train = check_col_type(train_table, feature_cols)
     y_train = train_table[label_col]
-    X_test = test_table[feature_cols]
+    _, X_test = check_col_type(test_table, feature_cols)
     
     if(sklearn_utils.multiclass.type_of_target(y_train) == 'continuous'):
         raise_error('0718', 'label_col')

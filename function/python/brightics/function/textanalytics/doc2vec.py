@@ -42,26 +42,25 @@ def doc2vec(table, **params):
     return _doc2vec(table, **params)
 
 
-def _doc2vec(table, input_col, dm=1, vector_size=100, window=10, min_count=1, max_vocab_size=None,
-            train_epoch=100, workers=1, alpha=0.025, min_alpha=0.025, seed=None,
-            hs=1, negative=5, ns_exponent=0.75, hashfxn=hash):
-    
+def _doc2vec(table, input_col, dm=1, vector_size=100, window=10, min_count=1,
+             max_vocab_size=None, train_epoch=100, workers=1, alpha=0.025,
+             min_alpha=0.025, seed=None, hs=1, negative=5, ns_exponent=0.75,
+             hashfxn=hash):
+
     if seed is None:
         random_state = seed
         seed = randint(0, 0xffffffff)
     else:
         random_state = seed
-        
+
     docs = table[input_col]
     tagged_docs = [TaggedDocument(doc, [i]) for i, doc in enumerate(docs)]
-    
-    if dm == "1":
-        dm = 1
-        algo = 'PV-DM'
-    else:
-        dm = 0
-        algo = 'PV-DBOW'
-    
+
+    # hs = 1 if hs is True else 0
+    if isinstance(dm, str):
+        dm = int(dm)
+    algo = {1: 'PV-DM', 0: 'PV_DBOW'}[dm]
+
     d2v = Doc2Vec(documents=tagged_docs,
                   dm=dm,
                   vector_size=vector_size,
@@ -77,9 +76,9 @@ def _doc2vec(table, input_col, dm=1, vector_size=100, window=10, min_count=1, ma
                   negative=negative,
                   ns_exponent=ns_exponent,
                   hashfxn=hashfxn)
-    
+
     vocab = d2v.wv.vocab
-        
+
     params = {'Input column': input_col,
               'Training algorithm': algo,
               'Dimension of Vectors': vector_size,
@@ -94,7 +93,7 @@ def _doc2vec(table, input_col, dm=1, vector_size=100, window=10, min_count=1, ma
               'Hierarchical softmax': hs,
               'Negative': negative,
               'Negative sampling exponent': ns_exponent}
-    
+
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## Doc2Vec Result
@@ -102,17 +101,20 @@ def _doc2vec(table, input_col, dm=1, vector_size=100, window=10, min_count=1, ma
     | ### Parameters
     | {params}
     """.format(params=dict2MD(params))))
-    
+
     model = _model_dict('doc2vec_model')
     model['params'] = params
     model['d2v'] = d2v
     model['_repr_brtc_'] = rb.get()
-    
+    model['hash_val(Brightics)'] = hashfxn('Brightics')
+
     out_table1 = table.copy()
-    out_table1['document_vectors'] = [d2v.infer_vector(doc.words).tolist() for doc in tagged_docs]
-    out_table2 = pd.DataFrame({'words': d2v.wv.index2word, 'word_vectors': d2v.wv[vocab].tolist()})
-    
-    return {'model': model, 'doc_table': out_table1, 'word_table': out_table2}  
+    out_table1['document_vectors'] = [
+        d2v.infer_vector(doc.words).tolist() for doc in tagged_docs]
+    out_table2 = pd.DataFrame(
+        {'words': d2v.wv.index2word, 'word_vectors': d2v.wv[vocab].tolist()})
+
+    return {'model': model, 'doc_table': out_table1, 'word_table': out_table2}
 
 
 def doc2vec_model(table, model, **params):

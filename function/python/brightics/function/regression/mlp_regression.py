@@ -36,6 +36,7 @@ from brightics.common.validation import validate
 from brightics.common.validation import greater_than, require_param
 from brightics.common.validation import greater_than_or_equal_to
 from brightics.common.utils import get_default_from_parameters_if_required
+from brightics.common.classify_input_type import check_col_type
 
 
 def mlp_regression_train(table, group_by=None, **params):
@@ -61,7 +62,7 @@ def mlp_regression_train(table, group_by=None, **params):
 
     
 def _mlp_regression_train(table, feature_cols, label_col, hidden_layer_sizes=(100, ), activation='relu', solver='adam', alpha=0.0001, batch_size_auto=True, batch_size='auto', learning_rate='constant', learning_rate_init=0.001, max_iter=200, random_state=None, tol=0.0001):
-    features = table[feature_cols]
+    _, features = check_col_type(table, feature_cols)
     label = table[label_col]
 
     mlp_model = MLPRegressor(hidden_layer_sizes=hidden_layer_sizes, activation=activation, solver=solver, alpha=alpha, batch_size=batch_size, learning_rate=learning_rate, learning_rate_init=learning_rate_init, max_iter=max_iter, shuffle=True, random_state=random_state, tol=tol)
@@ -144,7 +145,7 @@ def _mlp_regression_predict(table, model, prediction_col='prediction'):
 
     result = table.copy()
     feature_cols = model['features']
-    features = result[feature_cols]
+    _, features = check_col_type(result, feature_cols)
 
     mlp_model_fit = model['mlp_model']
 

@@ -14,6 +14,7 @@
     limitations under the License.
 """
 
+from random import randint
 import pandas as pd
 import matplotlib.pyplot as plt
 from xgboost import XGBRegressor
@@ -45,10 +46,13 @@ def xgb_regression_train(table, group_by=None, **params):
 def _xgb_regression_train(table, feature_cols, label_col, max_depth=3, learning_rate=0.1, n_estimators=100,
             silent=True, objectibe='reg:linear', booster='gbtree', n_jobs=1, nthread=None, gamma=0, min_child_weight=1,
             max_delta_step=0, subsample=1, colsample_bytree=1, colsample_bylevel=1, reg_alpha=0, reg_lambda=1,
-            scale_pos_weight=1, base_score=0.5, random_state=0, seed=None, missing=None,
+            scale_pos_weight=1, base_score=0.5, random_state=None, seed=None, missing=None,
             sample_weight=None, eval_set=None, eval_metric=None, early_stopping_rounds=None, verbose=True,
             xgb_model=None, sample_weight_eval_set=None, importance_type='gain'):
-        
+
+    if random_state is None:
+        random_state = randint(-2**31, 2**31-1)
+
     regressor = XGBRegressor(max_depth=max_depth,
                                learning_rate=learning_rate,
                                n_estimators=n_estimators,

@@ -30,20 +30,26 @@ from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate
 from brightics.common.validation import greater_than_or_equal_to, greater_than, all_elements_greater_than, raise_runtime_error
 from brightics.common.repr import pandasDF2MD
+from brightics.common.classify_input_type import check_col_type
 
 
 def _spectral_clustering_samples_plot(labels, table, input_cols, n_samples, n_clusters, colors):
-    sum_len_cols = np.sum([len(col) for col in input_cols])
     sample = table[input_cols].sample(n=n_samples) if n_samples is not None else table[input_cols]
-    x = range(len(input_cols))
+    feature_names, sample = check_col_type(sample, input_cols)
+    sum_len_cols = np.sum([len(col) for col in input_cols])
+    x = range(len(feature_names))
     if sum_len_cols >= 512:
-        plt.xticks(x, input_cols, rotation='vertical')
+        plt.xticks(x, feature_names, rotation='vertical')
     elif sum_len_cols >= 64:
-        plt.xticks(x, input_cols, rotation=45, ha='right')
+        plt.xticks(x, feature_names, rotation=45, ha='right')
     else:
-        plt.xticks(x, input_cols)
-    for idx in sample.index:
-        plt.plot(x, sample.transpose()[idx], color=colors[labels[idx]], linewidth=1)
+        plt.xticks(x, feature_names)
+    if feature_names == input_cols:
+        for idx in sample.index:
+            plt.plot(x, sample.transpose()[idx], color='grey', linewidth=1)
+    else:
+        for idx in range(len(sample)):
+            plt.plot(x, sample[idx], color='grey', linewidth=1)
     plt.tight_layout()
     fig_samples = plt2MD(plt)
     plt.clf()
@@ -73,7 +79,7 @@ def spectral_clustering(table, group_by=None, **params):
     
 
 def _spectral_clustering(table, input_cols, prediction_col='prediction', n_clusters=8, eigen_solver=None, random_state=None, n_init=10, gamma=1.0, affinity='rbf', n_neighbors=10, eigen_tol=0.0, assign_labels='kmeans', degree=3, coef0=1):
-    inputarr = table[input_cols]
+    feature_names, inputarr = check_col_type(table, input_cols)
         
     _eigen_solver = None if eigen_solver == 'None' else eigen_solver
     sc = SpectralClustering(n_clusters=n_clusters, eigen_solver=_eigen_solver, random_state=random_state, n_init=n_init, gamma=gamma, affinity=affinity, n_neighbors=n_neighbors, eigen_tol=eigen_tol, assign_labels=assign_labels, degree=degree, coef0=coef0)
@@ -103,12 +109,12 @@ def _spectral_clustering(table, input_cols, prediction_col='prediction', n_clust
     labels = sc.labels_
     colors = cm.nipy_spectral(np.arange(n_clusters).astype(float) / n_clusters)
     
-    if len(input_cols) > 1:
+    if len(feature_names) > 1:
         pca2_model = PCA(n_components=2).fit(inputarr)
         pca2 = pca2_model.transform(inputarr)
     fig_samples = _spectral_clustering_samples_plot(labels, table, input_cols, 100, n_clusters, colors) if len(table.index) > 100 else _spectral_clustering_samples_plot(labels, table, input_cols, None, n_clusters, colors)
     
-    if len(input_cols) > 1:
+    if len(feature_names) > 1:
         fig_pca = _spectral_clustering_pca_plot(labels, pca2_model, pca2, n_clusters, colors)
         rb = BrtcReprBuilder()
         rb.addMD(strip_margin("""

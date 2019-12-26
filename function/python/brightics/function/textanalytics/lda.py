@@ -21,11 +21,72 @@ from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import raise_runtime_error
 from brightics.common.validation import validate, greater_than_or_equal_to, greater_than, from_to
+from brightics.common.exception import BrighticsFunctionException
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
 import numpy as np
 import pandas as pd
+
+
+def lda3(table, group_by=None, **params):
+    check_required_parameters(_lda3, params, ['table'])
+    params = get_default_from_parameters_if_required(params, _lda3)
+    param_validation_check = [greater_than_or_equal_to(params, 2, 'num_voca'),
+                              greater_than_or_equal_to(params, 2, 'num_topic'),
+                              from_to(
+                                  params, 2, params['num_voca'], 'num_topic_word'),
+                              greater_than_or_equal_to(params, 1, 'max_iter'),
+                              greater_than(params, 1.0, 'learning_offset')]
+
+    validate(*param_validation_check)
+    if group_by is not None:
+        return _function_by_group(_lda3, table, group_by=group_by, **params)
+    else:
+        return _lda3(table, **params)
+
+
+def _lda3(table, input_col, topic_name='topic', num_voca=1000, num_topic=3, num_topic_word=3, max_iter=20, learning_method='online', learning_offset=10., random_state=None):
+    corpus = np.array(table[input_col])
+    if isinstance(corpus[0], np.ndarray):
+        tf_vectorizer = CountVectorizer(
+            preprocessor=' '.join, stop_words='english', max_df=0.95, min_df=2, max_features=num_voca)
+    else:
+        tf_vectorizer = CountVectorizer(
+            max_df=0.95, min_df=2, max_features=num_voca, stop_words='english')
+    term_count = tf_vectorizer.fit_transform(corpus)
+    tf_feature_names = tf_vectorizer.get_feature_names()
+
+    if learning_method == 'online':
+        lda_model = LatentDirichletAllocation(n_components=num_topic, max_iter=max_iter, learning_method=learning_method,
+                                              learning_offset=learning_offset, random_state=random_state).fit(term_count)
+    elif learning_method == 'batch':
+        lda_model = LatentDirichletAllocation(
+            n_components=num_topic, max_iter=max_iter, learning_method=learning_method, random_state=random_state).fit(term_count)
+    else:
+        raise_runtime_error("Please check 'learning_method'.")
+    voca_weights_list = []
+    for weights in lda_model.components_:
+        pairs = []
+        for term_idx, value in enumerate(weights):
+            pairs.append((abs(value), tf_feature_names[term_idx]))
+        pairs.sort(key=lambda x: x[0], reverse=True)
+        voca_weights = []
+        for pair in pairs[:num_topic_word]:
+            voca_weights.append("{}: {}".format(pair[1], pair[0]))
+        voca_weights_list.append(voca_weights)
+
+    doc_topic = lda_model.transform(term_count)
+    out_table = pd.DataFrame.copy(table, deep=True)
+    if topic_name in table.columns:
+        raise BrighticsFunctionException.from_errors(
+            [{'0100': "Existing table contains Topic Column Name. Please choose again."}])
+    out_table[topic_name] = [doc_topic[i].argmax() for i in range(len(corpus))]
+    weight_list = []
+    for ind in out_table[topic_name]:
+        weight_list.append(voca_weights_list[ind])
+    out_table['topic_vocabularies'] = weight_list
+    return {'out_table': out_table}
 
 
 def lda2(table, group_by=None, **params):
@@ -79,7 +140,7 @@ def _lda2(table, input_col, num_voca=1000, num_topic=3, num_topic_word=3, max_it
     doc_topic = lda_model.transform(term_count)
 
     out_table = pd.DataFrame({'documents':[doc for doc in corpus],
-                              'top topic': ["Topic {}".format(doc_topic[i].argmax()) for i in range(len(corpus))]})
+                              'top_topic': ["Topic {}".format(doc_topic[i].argmax()) for i in range(len(corpus))]})
     
     params = {
         'Input Column': input_col,

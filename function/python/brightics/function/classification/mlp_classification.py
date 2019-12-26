@@ -63,7 +63,7 @@ def mlp_classification_train(table, group_by=None, **params):
 
 def _mlp_classification_train(table, feature_cols, label_col, hidden_layer_sizes=(100,), activation='relu', solver='adam', alpha=0.0001, batch_size_auto=True, batch_size='auto', learning_rate='constant', learning_rate_init=0.001, max_iter=200, random_state=None, tol=0.0001):
 
-    feature_names, features = check_col_type(table, feature_cols)
+    _, features = check_col_type(table, feature_cols)
     label = table[label_col]
 
     if(sklearn_utils.multiclass.type_of_target(label) == 'continuous'):
@@ -154,7 +154,7 @@ def _mlp_classification_predict(table, model, prediction_col='prediction', prob_
                                  output_log_prob=False, log_prob_prefix='log_probability', thresholds=None,
                                  suffix='index'):
     feature_cols = model['features']
-    feature_names, features = check_col_type(table, feature_cols)
+    _, features = check_col_type(table, feature_cols)
     mlp_model = model['mlp_model']
     classes = mlp_model.classes_
     len_classes = len(classes)

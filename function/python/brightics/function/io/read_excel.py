@@ -14,29 +14,9 @@
     limitations under the License.
 """
 
-from .load import read_csv
-from .unload import write_csv
-from .read_excel import read_excel
+import pandas as pd
 
-from .load import load_model
-from .unload import unload_model
 
-from .load import read_from_s3
-from .unload import write_to_s3
-from .load import read_from_s3_2
-from .unload import write_to_s3_2
-
-from .load import read_from_db
-from .unload import write_to_db
-
-# for cell function
-from .load import read_parquet_or_csv
-
-from .load import load
-
-from .unload import unload
-
-from .create_table import create_table
-from .create_table import set_data
-
-from .image import image_load
+def read_excel(path, sheet_index=0):
+    table = pd.read_excel(path, sheet_name=sheet_index)
+    return {"table": table}

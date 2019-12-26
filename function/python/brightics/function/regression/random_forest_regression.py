@@ -30,6 +30,7 @@ from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate
 from brightics.common.validation import greater_than_or_equal_to
+from brightics.common.classify_input_type import check_col_type
 
 
 def random_forest_regression_train(table, group_by=None, **params):
@@ -73,7 +74,7 @@ def _random_forest_regression_train(table, feature_cols, label_col,
                                  min_weight_fraction_leaf=0, max_features="None",
                                  max_leaf_nodes=None, min_impurity_decrease=0, random_state=None):   
     
-    X_train = table[feature_cols]
+    feature_names, X_train = check_col_type(table, feature_cols)
     y_train = table[label_col]   
     
     if max_features == "None":
@@ -108,7 +109,7 @@ def _random_forest_regression_train(table, feature_cols, label_col,
     model['regressor'] = regressor
     model['params'] = params
 
-    fig_feature_importances = _plot_feature_importances(feature_cols, regressor)
+    fig_feature_importances = _plot_feature_importances(feature_names, regressor)
            
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
@@ -121,7 +122,7 @@ def _random_forest_regression_train(table, feature_cols, label_col,
         
     model['_repr_brtc_'] = rb.get()   
     feature_importance = regressor.feature_importances_
-    feature_importance_table = pd.DataFrame([[feature_cols[i],feature_importance[i]] for i in range(len(feature_cols))],columns = ['feature_name','importance'])
+    feature_importance_table = pd.DataFrame([[feature_names[i],feature_importance[i]] for i in range(len(feature_names))],columns = ['feature_name','importance'])
     model['feature_importance_table'] = feature_importance_table
     return {'model' : model}
 
@@ -189,12 +190,13 @@ def _random_forest_regression_predict(table, model, prediction_col='prediction')
     out_table = table.copy()
     if 'regressor' in model:
         regressor = model['regressor']
-        test_data = table[model['params']['feature_cols']]
+        _, test_data = check_col_type(table, model['params']['feature_cols'])
+        test_data = np.array(test_data)
         out_table[prediction_col] = regressor.predict(test_data)
     else:
         if model['_type'] == 'random_forest_model':
             feature_cols = model['feature_cols']
-            test_data = table[feature_cols]
+            _, test_data = check_col_type(table, feature_cols)
             model_table = model['table_1']
             tree_indices = model_table.reset_index().groupby('tree_id').agg({'index':['min','max']}).values
             node_id_full = model_table.node_id.values
