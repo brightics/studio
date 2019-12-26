@@ -37,9 +37,11 @@ def _list_diff(first, second):
 
 def _stopwords_remover(table, input_cols, hold_cols=None, default_dict=False, stop_words=None, prefix='stopwords', user_dict=None):
     
-    hold_table = pd.DataFrame()    
     if hold_cols is not None:
-        hold_table[hold_cols] = table[hold_cols]        
+        hold_table = pd.DataFrame()
+        hold_table[hold_cols] = table[hold_cols]
+    else:
+        hold_table = table.copy()
 
     # initial dictionary
     if stop_words is not None:

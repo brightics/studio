@@ -38,7 +38,7 @@ def normality_test(table, group_by=None, **params):
         return _normality_test(table, **params)
 
 
-def _normality_test(table, input_cols, method=['kstest', 'jarque_bera', 'anderson']):
+def _normality_test(table, input_cols, sig_level=0, method=['kstest', 'jarque_bera', 'anderson']):
     result = dict()
     rb = BrtcReprBuilder()
     rb.addMD("""## Normality test Result""")
@@ -91,10 +91,10 @@ def _normality_test(table, input_cols, method=['kstest', 'jarque_bera', 'anderso
         result['anderson'] = dict()
         for input_col in input_cols:
             stats, critical_val, significance_lvl = anderson(table[input_col], dist='norm')
-            stats_res['data'] += [input_col] * len(critical_val)
-            stats_res['estimates'] += [stats] * len(critical_val)
-            stats_res['critical value'] += list(critical_val)
-            stats_res['significance level'] += list(significance_lvl)
+            stats_res['data'] += [input_col]
+            stats_res['estimates'] += [stats]
+            stats_res['critical value'] += [critical_val[sig_level]]
+            stats_res['significance level'] += [significance_lvl[sig_level]]
             result['anderson'][input_col] = {'estimates':[stats] * len(critical_val), 'critical value':list(critical_val), 'significance level':list(significance_lvl)}
         rb.addMD(strip_margin("""
         | ## {method} result
