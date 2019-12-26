@@ -29,6 +29,7 @@ from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate
 from brightics.common.validation import greater_than_or_equal_to, greater_than, all_elements_greater_than, raise_runtime_error
 from brightics.common.repr import pandasDF2MD
+from brightics.common.classify_input_type import check_col_type
 
 
 def _mean_shift_centers_plot(input_cols, cluster_centers, colors):
@@ -49,17 +50,23 @@ def _mean_shift_centers_plot(input_cols, cluster_centers, colors):
 
 
 def _mean_shift_samples_plot(table, input_cols, n_samples, cluster_centers, colors):
-    sum_len_cols = np.sum([len(col) for col in input_cols])
-    sample = table[input_cols].sample(n=n_samples) if n_samples is not None else table[input_cols]
-    x = range(len(input_cols))
+    sample = table[input_cols].sample(
+        n=n_samples) if n_samples is not None else table[input_cols]
+    feature_names, sample = check_col_type(sample, input_cols)
+    sum_len_cols = np.sum([len(col) for col in feature_names])
+    x = range(len(feature_names))
     if sum_len_cols >= 512:
-        plt.xticks(x, input_cols, rotation='vertical')
+        plt.xticks(x, feature_names, rotation='vertical')
     elif sum_len_cols >= 64:
-        plt.xticks(x, input_cols, rotation=45, ha='right')
+        plt.xticks(x, feature_names, rotation=45, ha='right')
     else:
-        plt.xticks(x, input_cols)
-    for idx in sample.index:
-        plt.plot(x, sample.transpose()[idx], color='grey', linewidth=1)
+        plt.xticks(x, feature_names)
+    if feature_names == input_cols:
+        for idx in sample.index:
+            plt.plot(x, sample.transpose()[idx], color='grey', linewidth=1)
+    else:
+        for idx in range(len(sample)):
+            plt.plot(x, sample[idx], color='grey', linewidth=1)
     for idx, centers in enumerate(cluster_centers):
         plt.plot(x, centers, "o-", linewidth=4, color=colors[idx])
     plt.tight_layout()
@@ -95,7 +102,7 @@ def mean_shift(table, group_by=None, **params):
     
 
 def _mean_shift(table, input_cols, prediction_col='prediction', bandwidth=None, bin_seeding=False, min_bin_freq=1, cluster_all=True):
-    inputarr = table[input_cols]
+    feature_names, inputarr = check_col_type(table, input_cols)
         
     ms = MeanShift(bandwidth=bandwidth, bin_seeding=bin_seeding, min_bin_freq=min_bin_freq, cluster_all=cluster_all, n_jobs=1)
     
@@ -117,14 +124,14 @@ def _mean_shift(table, input_cols, prediction_col='prediction', bandwidth=None, 
     colors = cm.nipy_spectral(np.arange(n_clusters).astype(float) / n_clusters)
     labels = ms.labels_
     
-    if len(input_cols) > 1:
+    if len(feature_names) > 1:
         pca2_model = PCA(n_components=2).fit(inputarr)
         pca2 = pca2_model.transform(inputarr)
     
-    fig_centers = _mean_shift_centers_plot(input_cols, cluster_centers, colors)
+    fig_centers = _mean_shift_centers_plot(feature_names, cluster_centers, colors)
     fig_samples = _mean_shift_samples_plot(table, input_cols, 100, cluster_centers, colors) if len(table.index) > 100 else _mean_shift_samples_plot(table, input_cols, None, cluster_centers, colors)
     
-    if len(input_cols) > 1:
+    if len(feature_names) > 1:
         fig_pca = _mean_shift_pca_plot(labels, cluster_centers, pca2_model, pca2, colors)
         rb = BrtcReprBuilder()
         rb.addMD(strip_margin("""
@@ -170,7 +177,8 @@ def mean_shift_predict(table, model, **params):
 def _mean_shift_predict(table, model, prediction_col='prediction'):
     ms = model['model']
     input_cols = model['input_cols']
-    predict = ms.predict(table[input_cols])
+    _, inputarr = check_col_type(table, input_cols)
+    predict = ms.predict(inputarr)
     out_table = table.copy()
     out_table[prediction_col] = predict
     

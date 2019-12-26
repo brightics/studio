@@ -22,6 +22,7 @@ from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate
 from brightics.common.validation import greater_than_or_equal_to
 from brightics.common.validation import greater_than
+from brightics.common.classify_input_type import check_col_type
 
 import numpy as np
 import pandas as pd
@@ -47,7 +48,7 @@ def _gaussian_mixture_train(table, input_cols, number_of_components=1, covarianc
 
     gmm = GaussianMixture(n_components=number_of_components, covariance_type=covariance_type, tol=tolerance, \
                           reg_covar=regularize_covariance, max_iter=max_iteration, init_params=initial_params, random_state=seed)
-    X_train = table[input_cols]
+    feature_names, X_train = check_col_type(table, input_cols)
     gmm.fit(X_train)
     
     out_table = pd.DataFrame()
@@ -71,7 +72,7 @@ def _gaussian_mixture_train(table, input_cols, number_of_components=1, covarianc
     
     rb = BrtcReprBuilder()
     params = { 
-        'Input Columns': input_cols,
+        'Input Columns': feature_names,
         'Number of Components': number_of_components,
         'Covariance Type': covariance_type,
         'Tolerance': tolerance,
@@ -119,7 +120,8 @@ def gaussian_mixture_predict(table, model, **params):
 def _gaussian_mixture_predict(table, model, display_probability, prediction_col_name='prediction'):
     
     out_table = table.copy()
-    out_table[prediction_col_name] = model['gmm'].predict(table[model['input_cols']])
+    _, inputarr = check_col_type(table, model['input_cols'])
+    out_table[prediction_col_name] = model['gmm'].predict(inputarr)
     if display_probability == True:
         for i in range (0, model['number_of_components']):
             out_table['probability_' + str(i)] = pd.DataFrame(model['gmm'].predict_proba(table[model['input_cols']]))[i]        
