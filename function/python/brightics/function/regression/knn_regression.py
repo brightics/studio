@@ -20,6 +20,7 @@ from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate
 from brightics.common.validation import greater_than_or_equal_to
+from brightics.common.classify_input_type import check_col_type
 
 
 def knn_regression(train_table, test_table, **params):
@@ -36,9 +37,9 @@ def knn_regression(train_table, test_table, **params):
 
 def _knn_regression(train_table, test_table, feature_cols, label_col, k=5, algorithm='auto', leaf_size=30, p=2, pred_col_name='prediction'):
     
-    X_train = train_table[feature_cols]
+    _, X_train = check_col_type(train_table, feature_cols)
     y_train = train_table[label_col]
-    X_test = test_table[feature_cols]
+    _, X_test = check_col_type(test_table, feature_cols)
 
     knn = KNeighborsRegressor (n_neighbors=k, algorithm=algorithm, leaf_size=leaf_size, p=p)
     

@@ -28,6 +28,7 @@ from brightics.common.utils import check_required_parameters
 from brightics.common.validation import validate, greater_than_or_equal_to, greater_than
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.function.utils import _model_dict
+from brightics.common.classify_input_type import check_col_type
 #from inspect import isclass
 
 def ada_boost_regression_train(table, group_by=None, **params):
@@ -66,7 +67,7 @@ def _plot_feature_importance(feature_cols, classifier):
 def _ada_boost_regression_train(table, feature_cols, label_col, max_depth=3,
                                 n_estimators=50, learning_rate=1.0, loss='linear', random_state=None):
     
-    x_train = table[feature_cols]
+    feature_names, x_train = check_col_type(table, feature_cols)
     y_train = table[label_col]
 
     base_estimator = DecisionTreeRegressor(max_depth=max_depth)
@@ -88,7 +89,7 @@ def _ada_boost_regression_train(table, feature_cols, label_col, max_depth=3,
     model['regressor'] = regressor
     model['params'] = params
 
-    fig_feature_importance = _plot_feature_importance(feature_cols, regressor)
+    fig_feature_importance = _plot_feature_importance(feature_names, regressor)
     params = dict2MD(get_param)
 
     rb = BrtcReprBuilder()
@@ -106,7 +107,7 @@ def _ada_boost_regression_train(table, feature_cols, label_col, max_depth=3,
         
     model['_repr_brtc_'] = rb.get()   
     feature_importance = regressor.feature_importances_
-    feature_importance_table = pd.DataFrame([[feature_cols[i],feature_importance[i]] for i in range(len(feature_cols))],columns = ['feature_name','importance'])
+    feature_importance_table = pd.DataFrame([[feature_names[i],feature_importance[i]] for i in range(len(feature_names))],columns = ['feature_name','importance'])
     model['feature_importance_table'] = feature_importance_table
     return {'model': model}
 
@@ -122,7 +123,7 @@ def ada_boost_regression_predict(table, model, **params):
 def _ada_boost_regression_predict(table, model, pred_col_name='prediction'):
     out_table = table.copy()
     regressor = model['regressor']
-    test_data = table[model['params']['feature_cols']]
+    _, test_data = check_col_type(table, model['params']['feature_cols'])
 
     out_table[pred_col_name] = regressor.predict(test_data)
     return {'out_table': out_table}

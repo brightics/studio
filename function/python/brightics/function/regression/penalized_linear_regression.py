@@ -159,13 +159,10 @@ def _penalized_linear_regression_train(table, feature_cols, label_col, regressio
     | ### Model Parameters
     | {out_table1}
     |
-    | ### Prediction and Residual
-    | {out_table2}
-    |
     | ### Regression Score
     | {score}
     |
-    """.format(params=dict2MD(params), out_table1=pandasDF2MD(out_table1), out_table2=pandasDF2MD(out_table, num_rows=len(out_table) + 1), score=dict2MD(score))))
+    """.format(params=dict2MD(params), out_table1=pandasDF2MD(out_table1), score=dict2MD(score))))
     rb.addMD(strip_margin("""
     |
     | ### Predicted vs Actual

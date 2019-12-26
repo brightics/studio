@@ -34,3 +34,5 @@ from .ada_boost_regression import ada_boost_regression_predict
 from .regression_predict import regression_predict
 from .isotonic_regression import isotonic_regression_train
 from .isotonic_regression import isotonic_regression_predict
+from .pls_regression import pls_regression_train
+from .pls_regression import pls_regression_predict
