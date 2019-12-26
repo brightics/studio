@@ -47,16 +47,14 @@ def word2vec(table, **params):
     return _word2vec(table, **params)
 
 
-def _word2vec(table, input_col, sg="1", size=100, window=5, min_count=1, max_vocab_size=None,
-              train_epoch=100, workers=4, alpha=0.025, min_alpha=0.025, seed=None,
-              hs=1, negative=5, ns_exponent=0.75, topn=30, hashfxn=hash): 
-    
-    if sg == "1":
-        sg = 1
-        algo = 'Skip-gram'
-    else:
-        sg = 0        
-        algo = 'CBOW'
+def _word2vec(table, input_col, sg=1, size=100, window=5, min_count=1,
+              max_vocab_size=None, train_epoch=100, workers=1, alpha=0.025,
+              min_alpha=0.025, seed=None, hs=1, negative=5, ns_exponent=0.75,
+              topn=30, hashfxn=hash):
+
+    if isinstance(sg, str):
+        sg = int(sg)
+    algo = {1: 'Skip-gram', 0: 'CBOW'}[sg]
         
     tagged_sents = table[input_col].apply(list).tolist()
     w2v = Word2Vec(sentences=tagged_sents,
@@ -74,6 +72,7 @@ def _word2vec(table, input_col, sg="1", size=100, window=5, min_count=1, max_voc
                    negative=negative,
                    ns_exponent=ns_exponent,
                    hashfxn=hashfxn)
+
     w2v.init_sims(replace=True)
     vocab = w2v.wv.vocab 
     
