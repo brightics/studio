@@ -114,7 +114,7 @@ class BrighticsPythonRunner(object):
                 def_code = []
                 other_code = []
                 for i in code_tree.body:
-                    if isinstance(i, ast.FunctionDef) or isinstance(i, ast.ClassDef) or isinstance(i, ast.Import):
+                    if isinstance(i, ast.FunctionDef) or isinstance(i, ast.ClassDef) or isinstance(i, ast.Import) or isinstance(i, ast.ImportFrom):
                         def_code.append(i)
                     else:
                         other_code.append(i)
