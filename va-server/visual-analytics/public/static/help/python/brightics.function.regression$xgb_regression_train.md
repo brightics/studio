@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.regression import xgb_regression_train
-res = xgb_regression_train(table = ,feature_cols = ,label_col = ,max_depth = ,learning_rate = ,n_estimators = ,importance_type = ,random_state = ,group_by = )
+res = xgb_regression_train(table = ,feature_cols = ,label_col = ,objectibe = ,max_depth = ,learning_rate = ,n_estimators = ,importance_type = ,subsample = ,random_state = ,group_by = )
 res['model']
 ```
 
@@ -21,25 +21,29 @@ The gradient boosted trees has been around for a while, and there are a lot of m
    - Allowed column type : Integer, Long, Float, Double, Double[]
 2. **Label Column**<b style="color:red">*</b>: Columns to select as label
    - Allowed column type : Integer, Long, Double, Float
-3. **Max Depth**: Maximum tree depth for base learners.
+3. **Objective**: The learning task and the corresponding learning objective
+4. **Max Depth**: Maximum tree depth for base learners.
    - Value type : Integer
    - Default : 3 (1 <= value)
-4. **Learning Rate**: 
+5. **Learning Rate**: 
    - Value type : Double
    - Default : 0.1 (0 <= value)
-5. **Number of Trees**: 
+6. **Number of Trees**: 
    - Value type : Integer
    - Default : 100 (1 <= value)
-6. **Importance Type**: Importance Type is a feature importance type property.
+7. **Importance Type**: Importance Type is a feature importance type property.
    - Available items
       - Gain (default)
       - Weight
       - Cover
       - Total Gain
       - Total Cover
-7. **Seed**: The seed used by the random number generator.
+8. **Fraction of Samples**: The fraction of samples to be used for fitting the individual base learners. If smaller than 1.0 this results in Stochastic Gradient Boosting. Fraction of Subsample interacts with the parameter Number of Trees. Choosing Fraction of Subsample < 1.0 leads to a reduction of variance and an increase in bias.
+   - Value type : Double
+   - Default : 1.0 (0 < value <= 1.0)
+9. **Seed**: The seed used by the random number generator.
    - Value type : Integer
-8. **Group By**: Columns to group by
+10. **Group By**: Columns to group by
 
 #### Outputs: model
 
@@ -51,25 +55,29 @@ The gradient boosted trees has been around for a while, and there are a lot of m
    - Allowed column type : Integer, Long, Float, Double, Double[]
 2. **label_col**<b style="color:red">*</b>: Columns to select as label
    - Allowed column type : Integer, Long, Double, Float
-3. **max_depth**: Maximum tree depth for base learners.
+3. **objectibe**: The learning task and the corresponding learning objective
+4. **max_depth**: Maximum tree depth for base learners.
    - Value type : Integer
    - Default : 3 (1 <= value)
-4. **learning_rate**: 
+5. **learning_rate**: 
    - Value type : Double
    - Default : 0.1 (0 <= value)
-5. **n_estimators**: 
+6. **n_estimators**: 
    - Value type : Integer
    - Default : 100 (1 <= value)
-6. **importance_type**: Importance Type is a feature importance type property.
+7. **importance_type**: Importance Type is a feature importance type property.
    - Available items
       - gain (default)
       - weight
       - cover
       - total_gain
       - total_cover
-7. **random_state**: The seed used by the random number generator.
+8. **subsample**: The fraction of samples to be used for fitting the individual base learners. If smaller than 1.0 this results in Stochastic Gradient Boosting. Fraction of Subsample interacts with the parameter Number of Trees. Choosing Fraction of Subsample < 1.0 leads to a reduction of variance and an increase in bias.
+   - Value type : Double
+   - Default : 1.0 (0 < value <= 1.0)
+9. **random_state**: The seed used by the random number generator.
    - Value type : Integer
-8. **group_by**: Columns to group by
+10. **group_by**: Columns to group by
 
 #### Outputs: model
 

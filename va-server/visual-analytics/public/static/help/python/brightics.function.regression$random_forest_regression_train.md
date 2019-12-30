@@ -21,7 +21,7 @@ Reference:
 
 #### Parameters
 1. **Feature Columns**<b style="color:red">*</b>: Columns to select as features
-   - Allowed column type : Integer, Long, Float, Double
+   - Allowed column type : Integer, Long, Float, Double, Double[]
 2. **Label Column**<b style="color:red">*</b>: Columns to select as label
    - Allowed column type : Integer, Long, Float, Double
 3. **Number of Trees**: The number of trees in the forest.
@@ -63,7 +63,7 @@ If None, then max_features=n_features.
 
 #### Parameters
 1. **feature_cols**<b style="color:red">*</b>: Columns to select as features
-   - Allowed column type : Integer, Long, Float, Double
+   - Allowed column type : Integer, Long, Float, Double, Double[]
 2. **label_col**<b style="color:red">*</b>: Columns to select as label
    - Allowed column type : Integer, Long, Float, Double
 3. **n_estimators**: The number of trees in the forest.

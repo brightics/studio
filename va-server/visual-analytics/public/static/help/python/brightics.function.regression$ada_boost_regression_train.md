@@ -20,7 +20,7 @@ Reference:
 
 #### Parameters
 1. **Feature Columns**<b style="color:red">*</b>: Columns to select as features
-   - Allowed column type : Integer, Long, Float, Double, Boolean
+   - Allowed column type : Integer, Long, Float, Double, Boolean, Double[]
 2. **Label Column**<b style="color:red">*</b>: Columns to select as label
    - Allowed column type : Integer, Long, Float, Double, String, Boolean
 3. **Maximum Depth**: The max_depth of the base_estimator's DecisionTreeRegressor.
@@ -48,7 +48,7 @@ Reference:
 
 #### Parameters
 1. **feature_cols**<b style="color:red">*</b>: Columns to select as features
-   - Allowed column type : Integer, Long, Float, Double, Boolean
+   - Allowed column type : Integer, Long, Float, Double, Boolean, Double[]
 2. **label_col**<b style="color:red">*</b>: Columns to select as label
    - Allowed column type : Integer, Long, Float, Double, String, Boolean
 3. **max_depth**: The max_depth of the base_estimator's DecisionTreeRegressor.
