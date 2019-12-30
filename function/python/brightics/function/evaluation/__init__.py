@@ -30,7 +30,6 @@ from brightics.common.validation import validate, greater_than, greater_than_or_
     less_than_or_equal_to, raise_runtime_error
 from sklearn import preprocessing
 from brightics.common.validation import raise_runtime_error
-from .representative_evaluation_value import representative_evaluation_value
 
 
 def evaluate_regression(table, group_by=None, **params):
