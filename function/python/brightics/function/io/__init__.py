@@ -16,7 +16,6 @@
 
 from .load import read_csv
 from .unload import write_csv
-from .read_excel import read_excel
 
 from .load import load_model
 from .unload import unload_model
