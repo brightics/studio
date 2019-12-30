@@ -17,7 +17,7 @@ Fit a MLP classification model. MLP is a class of feedforward artificial neural 
 
 #### Parameters
 1. **Feature Columns**<b style="color:red">*</b>: Columns to select as features
-   - Allowed column type : Integer, Long, Float, Double
+   - Allowed column type : Integer, Long, Float, Double, Double[]
 2. **Label Column**<b style="color:red">*</b>: Columns to select as label
    - Allowed column type : String, Integer, Long, Double, Float
 3. **Hidden Layer Sizes**: The ith element represents the number of neurons in the ith hidden layer
@@ -64,7 +64,7 @@ Fit a MLP classification model. MLP is a class of feedforward artificial neural 
 
 #### Parameters
 1. **feature_cols**<b style="color:red">*</b>: Columns to select as features
-   - Allowed column type : Integer, Long, Float, Double
+   - Allowed column type : Integer, Long, Float, Double, Double[]
 2. **label_col**<b style="color:red">*</b>: Columns to select as label
    - Allowed column type : String, Integer, Long, Double, Float
 3. **hidden_layer_sizes**: The ith element represents the number of neurons in the ith hidden layer

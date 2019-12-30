@@ -18,7 +18,7 @@ In multivariate statistics and the clustering of data, spectral clustering techn
 
 #### Parameters
 1. **Input Columns**<b style="color:red">*</b>: Columns to select as input
-   - Allowed column type : Integer, Long, Double, Float
+   - Allowed column type : Integer, Long, Double, Float, Double[]
 2. **Prediction Column Name**: Column name for prediction
    - Value type : String
    - Default : prediction
@@ -74,7 +74,7 @@ In multivariate statistics and the clustering of data, spectral clustering techn
 
 #### Parameters
 1. **input_cols**<b style="color:red">*</b>: Columns to select as input
-   - Allowed column type : Integer, Long, Double, Float
+   - Allowed column type : Integer, Long, Double, Float, Double[]
 2. **prediction_col**: Column name for prediction
    - Value type : String
    - Default : prediction
