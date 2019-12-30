@@ -20,7 +20,7 @@ Reference:
 
 #### Parameters
 1. **Input Columns**<b style="color:red">*</b>: Columns to select as input
-   - Allowed column type : Integer, Long, Float, Double
+   - Allowed column type : Integer, Long, Float, Double, Double[]
 2. **Number of Components**: The number of mixture components.
    - Value type : Integer
    - Default : 1 (value >= 1)
@@ -62,7 +62,7 @@ Reference:
 
 #### Parameters
 1. **input_cols**<b style="color:red">*</b>: Columns to select as input
-   - Allowed column type : Integer, Long, Float, Double
+   - Allowed column type : Integer, Long, Float, Double, Double[]
 2. **number_of_components**: The number of mixture components.
    - Value type : Integer
    - Default : 1 (value >= 1)

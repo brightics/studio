@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.statistics import normality_test
-res = normality_test(table = ,input_cols = ,method = ,group_by = )
+res = normality_test(table = ,input_cols = ,method = ,sig_level = ,group_by = )
 res['result']
 ```
 
@@ -23,7 +23,8 @@ A normality test is used to determine whether sample data has been drawn from a 
       - Kolmogorov-Smirnov test (default)
       - Jarque-Bera test (default)
       - Anderson-Darling test (default)
-3. **Group By**: Columns to group by
+3. **Significance level selection**: Significance level selection
+4. **Group By**: Columns to group by
 
 #### Outputs: model
 
@@ -38,7 +39,8 @@ A normality test is used to determine whether sample data has been drawn from a 
       - kstest (default)
       - jarque_bera (default)
       - anderson (default)
-3. **group_by**: Columns to group by
+3. **sig_level**: Significance level selection
+4. **group_by**: Columns to group by
 
 #### Outputs: model
 

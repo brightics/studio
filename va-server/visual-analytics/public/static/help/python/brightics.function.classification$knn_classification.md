@@ -20,7 +20,7 @@ Reference:
 
 #### Parameters
 1. **Feature Columns**<b style="color:red">*</b>: Columns to select as features
-   - Allowed column type : Integer, Long, Float, Double
+   - Allowed column type : Integer, Long, Float, Double, Double[]
 2. **Label Column**<b style="color:red">*</b>: Columns to select as label
    - Allowed column type : String, Integer, Long, Float, Double
 3. **Number of Neighbors**: Number of neighbors. (default=5)
@@ -61,7 +61,7 @@ Reference:
 
 #### Parameters
 1. **feature_cols**<b style="color:red">*</b>: Columns to select as features
-   - Allowed column type : Integer, Long, Float, Double
+   - Allowed column type : Integer, Long, Float, Double, Double[]
 2. **label_col**<b style="color:red">*</b>: Columns to select as label
    - Allowed column type : String, Integer, Long, Float, Double
 3. **k**: Number of neighbors. (default=5)
