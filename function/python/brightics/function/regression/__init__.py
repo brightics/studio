@@ -32,3 +32,5 @@ from .mlp_regression import mlp_regression_predict
 from .ada_boost_regression import ada_boost_regression_train
 from .ada_boost_regression import ada_boost_regression_predict
 from .regression_predict import regression_predict
+from .isotonic_regression import isotonic_regression_train
+from .isotonic_regression import isotonic_regression_predict
