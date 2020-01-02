@@ -16,6 +16,7 @@ public class ColumnFilterParameter {
 	private int[] filteredColumns;
 
 	public ColumnFilterParameter() {
+		filteredColumns = new int[0];
 	}
 
 	public ColumnFilterParameter(int start, int end, int[] selectedColumns) {
