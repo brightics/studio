@@ -24,6 +24,9 @@ public class ColumnFilterParameter {
 	}
 
 	private int[] generateSelectedColumns(int start, int end, int[] selectedColumns) {
+		if(selectedColumns == null) {
+			selectedColumns = new int[0];
+		}
 		Stream<Integer> selected = Arrays.stream(selectedColumns).boxed();
 		if(start >= 0 && end >= 0 && end - start >= 0) {
 			Stream<Integer> range = IntStream.range(start, end + 1).boxed();

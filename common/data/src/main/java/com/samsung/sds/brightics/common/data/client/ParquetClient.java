@@ -27,14 +27,13 @@ import java.util.UUID;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.parquet.hadoop.BrighticsParquetReader;
 import org.apache.parquet.hadoop.ParquetFileWriter.Mode;
-import org.apache.parquet.hadoop.ParquetReader;
 import org.apache.parquet.hadoop.ParquetWriter;
 import org.apache.parquet.hadoop.metadata.CompressionCodecName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.samsung.sds.brightics.common.core.util.SystemEnvUtil;
 import com.samsung.sds.brightics.common.data.parquet.reader.DefaultRecord;
 import com.samsung.sds.brightics.common.data.parquet.reader.info.ColumnFilterParameter;
@@ -114,58 +113,63 @@ public class ParquetClient {
                 .withDictionaryEncoding(false)
                 .build();
     }
-
-    public static ObjectTable readParquet(String path, long min, long max, ColumnFilterParameter filterParam) throws IllegalArgumentException, IOException {
-        ParquetInformation info = BrighticsParquetUtils.getParquetInformation(new Path(path), new Configuration(), filterParam);
-        List<FileIndex> indexes = info.getLimitedFiles(min, max);
-
-        List<Object[]> data = new ArrayList<>();
-        for (FileIndex index : indexes) {
-            ParquetReader<DefaultRecord> reader = null;
-            try {
-                long leftSkip = 0l;
-                long rightSkip = 0l;
-                
-                long startIndex = index.getStartIndex();
-                long endIndex = index.getEndIndex();
-                String filePath = index.getFilePath();
-                
-                if (min > startIndex) {
-                    leftSkip = min - startIndex;
-                }
-                if (max < endIndex) {
-                    rightSkip = endIndex - max;
-                }
-                long numRowCount = endIndex - startIndex - leftSkip - rightSkip;
-                reader = BrighticsParquetUtils.getReader(new Path(filePath));
-                while (leftSkip > 0) {
-                    reader.read();
-                    leftSkip--;
-                }
-                DefaultRecord record;
-                while ((record = reader.read()) != null && numRowCount > 0) {
-                    data.add(BrighticsParquetUtils.rowGenerator(record.getValues(), filterParam));
-                    numRowCount--;
-                }
-
-            } finally {
-                if (reader != null)
-                    reader.close();
-            }
-
-        }
-
-        Column[] schema = info.getSchema();
-        return new ObjectTable(info.getCount(), data.size(), schema, data);
-    }
-    
-    public static ObjectTable readParquet(String path, long min, long max) throws IllegalArgumentException, IOException {
-    	return readParquet(path, min, max, new ColumnFilterParameter());
-    }
     
     public static Table readSchema(String path) throws IllegalArgumentException, IOException {
         ParquetInformation info = BrighticsParquetUtils.getParquetInformation(new Path(path), new Configuration());
         Column[] schema = info.getSchema();
         return new Table(info.getCount(),info.getBytes(), schema);
     }
+
+	public static ObjectTable readParquet(String path, long min, long max, ColumnFilterParameter filterParam)
+			throws IllegalArgumentException, IOException {
+		ParquetInformation info = BrighticsParquetUtils.getParquetInformation(new Path(path), new Configuration(),
+				filterParam);
+		List<FileIndex> indexes = info.getLimitedFiles(min, max);
+		int[] filteredColumns = filterParam.getFilteredColumns();
+
+		List<Object[]> data = new ArrayList<>();
+		for (FileIndex index : indexes) {
+			BrighticsParquetReader<DefaultRecord> reader = null;
+			try {
+				long leftSkip = 0l;
+				long rightSkip = 0l;
+
+				long startIndex = index.getStartIndex();
+				long endIndex = index.getEndIndex();
+				String filePath = index.getFilePath();
+
+				if (min > startIndex) {
+					leftSkip = min - startIndex;
+				}
+				if (max < endIndex) {
+					rightSkip = endIndex - max;
+				}
+				long numRowCount = endIndex - startIndex - leftSkip - rightSkip;
+				reader = (BrighticsParquetReader<DefaultRecord>) BrighticsParquetUtils.getReader(new Path(filePath),
+						filteredColumns);
+				while (leftSkip > 0) {
+					reader.read(filteredColumns);
+					leftSkip--;
+				}
+				DefaultRecord record;
+				while ((record = reader.read(filteredColumns)) != null && numRowCount > 0) {
+					data.add(record.getValues());
+					numRowCount--;
+				}
+
+			} finally {
+				if (reader != null)
+					reader.close();
+			}
+
+		}
+
+		Column[] schema = info.getSchema();
+		return new ObjectTable(info.getCount(), data.size(), schema, data);
+	}
+    
+    public static ObjectTable readParquet(String path, long min, long max) throws IllegalArgumentException, IOException {
+    	return readParquet(path, min, max, new ColumnFilterParameter());
+    }
+
 }

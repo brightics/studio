@@ -21,13 +21,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
-import java.util.List;
+import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.apache.parquet.hadoop.BrighticsParquetReader;
 import org.apache.parquet.hadoop.ParquetFileReader;
 import org.apache.parquet.hadoop.ParquetFileWriter.Mode;
 import org.apache.parquet.hadoop.ParquetReader;
@@ -42,7 +43,6 @@ import com.samsung.sds.brightics.common.data.parquet.reader.BrighticsParquetRead
 import com.samsung.sds.brightics.common.data.parquet.reader.DefaultRecord;
 import com.samsung.sds.brightics.common.data.parquet.writer.CsvParquetWriterBuilder;
 import com.samsung.sds.brightics.common.data.util.NumberParser;
-import com.samsung.sds.brightics.common.data.view.JsonTable;
 import com.samsung.sds.brightics.common.data.view.ObjectTable;
 
 public class ParquetClientTest {
@@ -232,4 +232,23 @@ sqlContext.createDataFrame(sc.parallelize(1 to 1000,10).map(i => Row.fromSeq(Seq
             }
         }
     }
+    
+    @Test
+	public void brighticsParquetReaderTest() {
+		BrighticsParquetReader<DefaultRecord> reader = null;
+		try {
+			int[] selectedColumns = { 0, 1, 4 };
+			Configuration conf = new Configuration();
+			Path hadoopPath = new Path(path);
+			reader = new BrighticsParquetReader<DefaultRecord>(conf, hadoopPath,
+					new BrighticsParquetReadSupport(selectedColumns));
+			DefaultRecord record;
+			while ((record = reader.read(selectedColumns)) != null) {
+				System.out.println(Arrays.toString(record.getValues()));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+	}
+    
 }
