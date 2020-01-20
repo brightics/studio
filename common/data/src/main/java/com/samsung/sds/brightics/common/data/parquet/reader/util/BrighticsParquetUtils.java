@@ -43,6 +43,7 @@ import org.apache.parquet.schema.OriginalType;
 import org.apache.parquet.schema.Type;
 import org.apache.parquet.schema.Type.Repetition;
 
+import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
 import com.samsung.sds.brightics.common.data.parquet.reader.BrighticsParquetReadSupport;
 import com.samsung.sds.brightics.common.data.parquet.reader.DefaultRecord;
 import com.samsung.sds.brightics.common.data.parquet.reader.info.FileIndex;
@@ -192,6 +193,10 @@ public class BrighticsParquetUtils {
 	public static List<Type> getFilteredColumns(MessageType schema, int[] filteredColumns) {
         List<Type> copyFields = new ArrayList<Type>();
         //if filteredColumns is null or 0. pass filtering
+        if(schema.getColumns().size() < filteredColumns.length) {
+        	throw new BrighticsCoreException("3102", "The column size used in the query is larger than the number of existing data columns.");
+        }
+        
         if (filteredColumns != null && filteredColumns.length > 0) {
             for (int i : filteredColumns) {
                 copyFields.add(schema.getType(i));
