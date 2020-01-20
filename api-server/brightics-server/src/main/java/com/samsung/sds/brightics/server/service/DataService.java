@@ -21,6 +21,8 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
@@ -37,7 +39,6 @@ import com.samsung.sds.brightics.common.core.exception.AbsBrighticsException;
 import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
 import com.samsung.sds.brightics.common.core.exception.BrighticsUncodedException;
 import com.samsung.sds.brightics.common.core.util.JsonUtil;
-import com.samsung.sds.brightics.common.data.parquet.reader.info.ColumnFilterParameter;
 import com.samsung.sds.brightics.common.network.proto.FailResult;
 import com.samsung.sds.brightics.common.network.proto.MessageStatus;
 import com.samsung.sds.brightics.common.network.proto.SuccessResult;
@@ -108,19 +109,21 @@ public class DataService {
         return getData(getDataKey(mid, tid), min, max);
     }
 
-	public Object getData(String mid, String tid, long min, long max, ColumnFilterParameter columnFilterParameter) {
-		return getData(getDataKey(mid, tid), min, max, columnFilterParameter);
-	}
+    public Object getData(String key, long min, long max) {
+        return getData(key, min, max, new HashMap());
+    }
 
     /**
      * Retrieves the contents of the stored data.
      *
-     * @param key data key
-     * @param min minimum row number
-     * @param max maximum row number
+     * @param mid model id
+     * @param tid source data name(tid)
+     * @param min 0-base minimum row number(inclusive)
+     * @param max 0-base maximum row number(exclusive)
+     * @param columnFilterMap column filter information map (start, end, selected index)
      */
-    public Object getData(String key, long min, long max) {
-    	return getData(key, min, max, new ColumnFilterParameter());
+    public Object getData(String mid, String tid, long min, long max, Map<String, Object> columnFilterMap) {
+        return getData(getDataKey(mid, tid), min, max, columnFilterMap);
     }
     
     /**
@@ -131,13 +134,16 @@ public class DataService {
      * @param max maximum row number
      * @param columnFilterParameter column filter parameter
      */
-    private Object getData(String key, long min, long max, ColumnFilterParameter filterParam ) {
-        String param = ParameterBuilder.newBuild().addProperty("min", min).addProperty("max", max)
-        		.addProperty("column_start", filterParam.getStart()).addProperty("column_end", filterParam.getEnd())
-        		.addProperty("selected_columns", JsonUtil.toJson(filterParam.getSelectedColumns())).build();
+    public Object getData(String key, long min, long max, Map<String, Object> columnFilterMap) {
+        ParameterBuilder parameterBuilder = ParameterBuilder.newBuild().addProperty("min", min).addProperty("max", max);
+        if (columnFilterMap != null && !columnFilterMap.isEmpty()) {
+            parameterBuilder.addProperty("column_filter_information", columnFilterMap);
+        }
+        String param = parameterBuilder.build();
         ResultDataMessage result = messageManagerProvider.metadataManager()
-            .sendManipulateData(ExecuteDataMessage.newBuilder().setUser(AuthenticationUtil.getRequestUserId())
-                .setActionType(DataActionType.DATA).setKey(key).setParameters(param).build());
+                .sendManipulateData(ExecuteDataMessage.newBuilder().setUser(AuthenticationUtil.getRequestUserId())
+                        .setActionType(DataActionType.DATA).setKey(key).setParameters(param).build());
+        logger.info("[Data service] Success to get data by user :{} and key :{}", AuthenticationUtil.getRequestUserId(), key);
         return dataResultParser(result);
     }
 
