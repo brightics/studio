@@ -21,6 +21,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gson.JsonObject;
+import com.samsung.sds.brightics.common.core.exception.AbsBrighticsException;
+import com.samsung.sds.brightics.common.core.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -159,5 +162,36 @@ public class TaskService {
         resultMap.put("errorInfo", exceptionInfoList);
         resultMap.put("duration", duration);
         return resultMap;
+    }
+
+    public  Map<String, Object> executeCommonTask(String type, String name, Object requestBody) {
+        logger.info("Execute common task. type : {}, name : {}, body : {}", type, name , requestBody);
+        JsonObject attributes = new JsonObject();
+        attributes.addProperty("mid", "unused");
+        String parameterJson = StringUtils.EMPTY;
+        if (type.equals("dl-script")) {
+            parameterJson = JsonUtil.toJson(requestBody);
+        } else if (type.equals("script")) {
+            parameterJson = ParameterBuilder.newBuild().addProperty("script", requestBody).build();
+        } else {
+            //TODO do function.
+            attributes.addProperty("persist", false);
+            attributes.addProperty("label", name);
+        }
+        Map<String, Object> map = new HashMap<String, Object>();
+        try {
+            map.put("status" , JobRepository.STATE_SUCCESS);
+            map.put("result", messageManager.taskManager().sendSyncTask(ExecuteTaskMessage.newBuilder().setUser(AuthenticationUtil.getRequestUserId())
+                    .setTaskId(IdGenerator.getSimpleId()).setName(name).setAttributes(attributes.toString()).setParameters(parameterJson).build()));
+        } catch (AbsBrighticsException e) {
+            map.put("status" , JobRepository.STATE_FAIL);
+            map.put("message", e.message);
+            map.put("detailedCause", e.detailedCause);
+        } catch (Exception e) {
+            map.put("status" , JobRepository.STATE_FAIL);
+            map.put("message", e.getMessage());
+            map.put("detailedCause", ExceptionUtils.getStackTrace(e));
+        }
+        return map;
     }
 }

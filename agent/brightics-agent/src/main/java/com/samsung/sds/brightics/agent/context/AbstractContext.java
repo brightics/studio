@@ -38,7 +38,7 @@ public abstract class AbstractContext {
     }
 
     // init contextRunner
-    abstract public void init();
+    abstract public void init(String contextType);
 
     // function task run.
     abstract public String runFunction(TaskMessageWrapper message) throws Exception;
