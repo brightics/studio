@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import com.samsung.sds.brightics.common.data.parquet.reader.info.ColumnFilterParameter;
 import com.samsung.sds.brightics.common.network.proto.metadata.DataStatusType;
 import com.samsung.sds.brightics.server.model.param.DataLinkParam;
 import com.samsung.sds.brightics.server.model.param.DataPermissionParam;
