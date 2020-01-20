@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
 
 import com.samsung.sds.brightics.common.core.util.SystemEnvUtil;
 import com.samsung.sds.brightics.common.data.parquet.reader.DefaultRecord;
-import com.samsung.sds.brightics.common.data.parquet.reader.info.ColumnFilterParameter;
 import com.samsung.sds.brightics.common.data.parquet.reader.info.FileIndex;
 import com.samsung.sds.brightics.common.data.parquet.reader.info.ParquetInformation;
 import com.samsung.sds.brightics.common.data.parquet.reader.util.BrighticsParquetUtils;
@@ -120,12 +119,12 @@ public class ParquetClient {
         return new Table(info.getCount(),info.getBytes(), schema);
     }
 
-	public static ObjectTable readParquet(String path, long min, long max, ColumnFilterParameter filterParam)
+	public static ObjectTable readParquet(String path, long min, long max, int[] filteredColumns)
 			throws IllegalArgumentException, IOException {
 		ParquetInformation info = BrighticsParquetUtils.getParquetInformation(new Path(path), new Configuration(),
-				filterParam);
+				filteredColumns);
 		List<FileIndex> indexes = info.getLimitedFiles(min, max);
-		int[] filteredColumns = filterParam.getFilteredColumns();
+		Column[] schema = info.getSchema();
 
 		List<Object[]> data = new ArrayList<>();
 		for (FileIndex index : indexes) {
@@ -163,13 +162,12 @@ public class ParquetClient {
 			}
 
 		}
-
-		Column[] schema = info.getSchema();
-		return new ObjectTable(info.getCount(), data.size(), schema, data);
+		//send filtered schema and row data information with total count and byte
+        return new ObjectTable(info.getCount(), info.getBytes(), schema, data);
 	}
     
     public static ObjectTable readParquet(String path, long min, long max) throws IllegalArgumentException, IOException {
-    	return readParquet(path, min, max, new ColumnFilterParameter());
+    	return readParquet(path, min, max, new int[0]);
     }
 
 }

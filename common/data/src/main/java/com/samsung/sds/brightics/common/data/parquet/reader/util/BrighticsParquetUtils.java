@@ -18,9 +18,12 @@ package com.samsung.sds.brightics.common.data.parquet.reader.util;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
@@ -42,7 +45,6 @@ import org.apache.parquet.schema.Type.Repetition;
 
 import com.samsung.sds.brightics.common.data.parquet.reader.BrighticsParquetReadSupport;
 import com.samsung.sds.brightics.common.data.parquet.reader.DefaultRecord;
-import com.samsung.sds.brightics.common.data.parquet.reader.info.ColumnFilterParameter;
 import com.samsung.sds.brightics.common.data.parquet.reader.info.FileIndex;
 import com.samsung.sds.brightics.common.data.parquet.reader.info.ParquetInformation;
 import com.samsung.sds.brightics.common.data.view.Column;
@@ -51,7 +53,7 @@ public class BrighticsParquetUtils {
 	
 //	private static final Logger LOGGER = LoggerFactory.getLogger("ParquetClient");
 	
-	public static ParquetInformation getParquetInformation(Path path, Configuration conf, ColumnFilterParameter filterParam) throws IOException {
+	public static ParquetInformation getParquetInformation(Path path, Configuration conf, int[] filteredColumnIndex) throws IOException {
         FileStatus directory = FileSystem.get(conf).getFileStatus(path);
         List<Footer> footers = ParquetFileReader.readFooters(conf, directory, false);
         long previousTotalCount = 0l;
@@ -65,7 +67,7 @@ public class BrighticsParquetUtils {
 		
         // set schema
         FileMetaData fileMetaData = footers.get(0).getParquetMetadata().getFileMetaData();
-        List<Type> filteredColumns = getFilteredColumns(fileMetaData.getSchema(), filterParam.getFilteredColumns());
+        List<Type> filteredColumns = getFilteredColumns(fileMetaData.getSchema(), filteredColumnIndex);
         Column[] schema = filteredColumns.stream().map(c -> new Column(c.getName(), convertTypeName(c))).toArray(Column[]::new);
         
         //set count, buffer size
@@ -87,21 +89,8 @@ public class BrighticsParquetUtils {
     }
 	
     public static ParquetInformation getParquetInformation(Path path, Configuration conf) throws IOException {
-    	return getParquetInformation(path, conf, new ColumnFilterParameter());
+    	return getParquetInformation(path, conf, new int[0]);
     }
-	
-	public static List<Type> getFilteredColumns(MessageType schema, int[] filteredColumns) {
-		List<Type> copyFields = new ArrayList<Type>();
-		if (filteredColumns != null && filteredColumns.length > 0) {
-			for (int i : filteredColumns) {
-				copyFields.add(schema.getType(i));
-			}
-			return copyFields;
-		} else {
-			return schema.getFields();
-
-		}
-	}
 
     private static String convertTypeName(Type t) {
         OriginalType originalType = t.getOriginalType();
@@ -199,4 +188,35 @@ public class BrighticsParquetUtils {
 				new BrighticsParquetReadSupport(filteredColumns));
 
 	}
+	
+	public static List<Type> getFilteredColumns(MessageType schema, int[] filteredColumns) {
+        List<Type> copyFields = new ArrayList<Type>();
+        //if filteredColumns is null or 0. pass filtering
+        if (filteredColumns != null && filteredColumns.length > 0) {
+            for (int i : filteredColumns) {
+                copyFields.add(schema.getType(i));
+            }
+            return copyFields;
+        } else {
+            return schema.getFields();
+        }
+    }
+
+    public static int[] combineFilteredColumnIndexArray(int start, int end, int[] selectedColumns) {
+        if (selectedColumns == null) {
+            selectedColumns = new int[0];
+        }
+        if (end < start) {
+            return new int[0];
+        }
+
+        Stream<Integer> selected = Arrays.stream(selectedColumns).boxed();
+        if (start >= 0 && end >= 0 && end - start >= 0) {
+            Stream<Integer> range = IntStream.range(start, end + 1).boxed();
+            return Stream.concat(range, selected).distinct().sorted().mapToInt(i -> i).toArray();
+        } else {
+            return selected.mapToInt(i -> i).toArray();
+        }
+    }
+	
 }
