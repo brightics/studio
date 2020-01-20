@@ -74,7 +74,7 @@ public class PythonContextTest {
         ThreadLocalContext.put("user", "test_user");
 
         runner = new PythonContext("test_user");
-        runner.init();
+        runner.init("PYTHON");
 
         pythonVersion = Integer.parseInt(runner.runScript(makePythonScript("import sys\nprint(sys.version_info.major)")));
     }
@@ -96,7 +96,7 @@ public class PythonContextTest {
     @Test
     public void testMultiplePythonRunner() {
         PythonContext runner2 = new PythonContext("test_session");
-        runner2.init();
+        runner2.init("PYTHON");
 
         TaskMessageWrapper scriptMessage1 = makePythonScript("print('Hello, runner1')");
         TaskMessageWrapper scriptMessage2 = makePythonScript("print('Hello, runner2')");
