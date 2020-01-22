@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import com.samsung.sds.brightics.server.service.TaskService;
 
 @RestController
-@RequestMapping("/api/core/v2")
+@RequestMapping("/api/core")
 public class TaskController {
 
     @Autowired
@@ -38,12 +38,12 @@ public class TaskController {
      * GET    /api/core/v3/task/execute/{type}?name={name}  	: execute common task (type : script, function)
      */
 
-    @RequestMapping(value = "/task/{jid}/{fid}", method = RequestMethod.GET)
+    @RequestMapping(value = "/v2/task/{jid}/{fid}", method = RequestMethod.GET)
     public Object getV2TaskResult(@PathVariable String jid, @PathVariable String fid) {
         return taskService.getTaskResult(jid, fid);
     }
 
-    @RequestMapping(value = "/task/script/{language}", method = RequestMethod.POST)
+    @RequestMapping(value = "/v2/task/script/{language}", method = RequestMethod.POST)
     public Object executeSyncScript(@PathVariable String language, @RequestBody Map<String, Object> body) throws Exception {
         String script = body.get("body").toString();
         return taskService.executeSyncScript(language, script);
