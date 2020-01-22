@@ -71,6 +71,7 @@
     </dependencies>
 
     <build>
+        <sourceDirectory>src/main/kotlin</sourceDirectory>
         <finalName>brightics-deeplearning</finalName>
         <plugins>
             <plugin>
@@ -106,6 +107,55 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <version>${kotlin.version}</version>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <args>
+                        <arg>-Xjsr305=strict</arg>
+                    </args>
+                    <compilerPlugins>
+                        <plugin>jpa</plugin>
+                        <plugin>spring</plugin>
+                        <plugin>all-open</plugin>
+                    </compilerPlugins>
+                    <pluginOptions>
+                        <option>all-open:annotation=javax.persistence.Entity</option>
+                        <option>all-open:annotation=javax.persistence.Embeddable</option>
+                        <option>all-open:annotation=javax.persistence.MappedSuperclass</option>
+                    </pluginOptions>
+                    <jvmTarget>1.8</jvmTarget>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.jetbrains.kotlin</groupId>
+                        <artifactId>kotlin-maven-noarg</artifactId>
+                        <version>${kotlin.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.jetbrains.kotlin</groupId>
+                        <artifactId>kotlin-maven-allopen</artifactId>
+                        <version>${kotlin.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
