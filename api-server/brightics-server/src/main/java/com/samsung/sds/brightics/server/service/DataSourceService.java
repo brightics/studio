@@ -114,7 +114,7 @@ public class DataSourceService {
     }
 
     public void insertDatasource(BrtcDatasources brtcDatasources) {
-        if(brtcDatasourcesRepository.exists(brtcDatasources.getDatasourceName())){
+        if(brtcDatasourcesRepository.existsById(brtcDatasources.getDatasourceName())){
             throw new BrighticsCoreException("3002", "datasource name");
         }
         brtcDatasourcesRepository.save(brtcDatasources);
@@ -125,8 +125,8 @@ public class DataSourceService {
     }
 
     public void deleteDatasource(String datasourceName) {
-        if (brtcDatasourcesRepository.exists(datasourceName)) {
-            brtcDatasourcesRepository.delete(datasourceName);
+        if (brtcDatasourcesRepository.existsById(datasourceName)) {
+            brtcDatasourcesRepository.deleteById(datasourceName);
         } else {
         	throw new BrighticsCoreException("3002", "datasource name");
         }

@@ -99,7 +99,7 @@ public class AgentService {
 	}
 
 	public Map<String, Object> checkAgentExists(String agentId) {
-		if (brighticsAgentRepository.exists(agentId)) {
+		if (brighticsAgentRepository.existsById(agentId)) {
 			throw new BrighticsCoreException("3002", "agent");
 		}
 		return ResultMapUtil.success("AgentID is not duplicate.");
