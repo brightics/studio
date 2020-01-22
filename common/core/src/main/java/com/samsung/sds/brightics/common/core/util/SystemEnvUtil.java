@@ -42,7 +42,8 @@ public class SystemEnvUtil {
     public static String BRIGHTICS_SERVER_HOME;
     public static String PID_PATH;
     public static int IDLE_TIME_MIN;
-    
+    public static String BRTC_DL_WORKSPACE;
+
     public static void refresh(){
         BRIGHTICS_DATA_ROOT = getEnvOrPropOrElse("BRIGHTICS_DATA_ROOT", "brightics.data.root", "");
         ARRAY_LIMIT = getEnvOrPropOrElse("ARRAY_LIMIT", "brightics.array.limit", "100");
@@ -60,6 +61,8 @@ public class SystemEnvUtil {
         BRIGHTICS_SERVER_HOME = SystemEnvUtil.getEnvOrPropOrElse("BRIGHTICS_SERVER_HOME", "brightics.server.home", ".");
         PID_PATH = SystemEnvUtil.getEnvOrPropOrElse("PID_PATH", "brightics.agent.pidPath",BRIGHTICS_AGENT_HOME + "/pid");
         IDLE_TIME_MIN = Integer.parseInt(SystemEnvUtil.getEnvOrPropOrElse("IDLE_TIME_MIN", "brightics.agent.idleTimeMin","60"));
+
+        BRTC_DL_WORKSPACE = SystemEnvUtil.getEnvOrPropOrElse("BRTC_DL_WORKSPACE", "brightics.dl.workspace","./workspace");
     }
     
     static {

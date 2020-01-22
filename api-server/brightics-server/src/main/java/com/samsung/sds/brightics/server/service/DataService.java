@@ -398,27 +398,11 @@ public class DataService {
     }
 
     public void downloadModel(String path, HttpServletResponse response, String check) {
-        OutputStream output;
         try {
             if (Boolean.valueOf(check)) {
-                DownloadMessage message = DownloadMessage.newBuilder()
-                        .setUser(AuthenticationUtil.getRequestUserId())
-                        .setPath(path)
-                        .build();
-                ResultMessage resultMessage = messageManagerProvider.streamManager().download(message);
-                String result = "";
-                try {
-                    if (resultMessage.getMessageStatus() == MessageStatus.SUCCESS) {
-                        result = resultMessage.getResult().unpack(SuccessResult.class).getResult();
-                    } else {
-                        FailResult failResult;
-                        failResult = resultMessage.getResult().unpack(FailResult.class);
-                        throw new BrighticsUncodedException(failResult.getMessage(), failResult.getDetailMessage());
-                    }
-                } catch (InvalidProtocolBufferException e) {
-                    logger.error("Cannot parse result.", e);
-                    throw new BrighticsCoreException("3001").addDetailMessage(ExceptionUtils.getStackTrace(e));
-                }
+                DownloadMessage message = DownloadMessage.newBuilder().setUser(AuthenticationUtil.getRequestUserId())
+                        .setPath(path).build();
+                String result = getDownloadResult(message);
                 response.setContentType("application/json");
                 response.setCharacterEncoding("UTF-8");
                 response.setStatus(200);
@@ -428,13 +412,12 @@ public class DataService {
             } else {
                 ReadCheckpointMessage checkpointMessage = ReadCheckpointMessage.newBuilder()
                         .setUser(AuthenticationUtil.getRequestUserId())
-                        .setPath(path)
-                        .build();
+                        .setPath(path).build();
                 String encodeFileName = URLEncoder.encode("model_" + System.currentTimeMillis() + ".zip", "UTF-8");
                 response.setContentType("application/octet-stream");
                 response.setCharacterEncoding("UTF-8");
                 response.setHeader("Content-Disposition", "attachment; filename=" + encodeFileName);
-                output = response.getOutputStream();
+                OutputStream output = response.getOutputStream();
                 messageManagerProvider.streamManager().receiveCheckpoint(checkpointMessage, output);
                 output.close();
             }
@@ -447,6 +430,20 @@ public class DataService {
         }
     }
 
+    private String getDownloadResult(DownloadMessage message) {
+        ResultMessage resultMessage = messageManagerProvider.streamManager().download(message);
+        try {
+            if (resultMessage.getMessageStatus() == MessageStatus.SUCCESS) {
+                return resultMessage.getResult().unpack(SuccessResult.class).getResult();
+            } else {
+                FailResult failResult = resultMessage.getResult().unpack(FailResult.class);
+                throw new BrighticsUncodedException(failResult.getMessage(), failResult.getDetailMessage());
+            }
+        } catch (InvalidProtocolBufferException e) {
+            logger.error("Cannot parse result.", e);
+            throw new BrighticsCoreException("3001").addDetailMessage(ExceptionUtils.getStackTrace(e));
+        }
+    }
 
 
 }
