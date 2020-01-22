@@ -88,7 +88,7 @@ def _decision_tree_classification_train(table, feature_cols, label_col,  # fig_s
         import pydotplus
         dot_data = StringIO()
         export_graphviz(classifier, out_file=dot_data,
-                        feature_names=feature_names, class_names=table[label_col].astype('str').unique(),
+                        feature_names=feature_names, class_names=classifier.classes_.astype(np.str),
                         filled=True, rounded=True,
                         special_characters=True)
         graph = pydotplus.graph_from_dot_data(dot_data.getvalue())
