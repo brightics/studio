@@ -43,10 +43,14 @@ public class BrighticsCommonRestTemplate {
     @Value("${brightics.common.server.port:9097}")
     private String commonServerPort;
 
-    public HttpHeaders makeTrustedAppHeaders(String userName) {
+    @Value("${brightics.local.token}")
+    private String accessToken;
+
+    private static final String AUTH_HEADER_START_WITH = "Bearer";
+
+    public HttpHeaders makeTrustedAppHeaders() {
         HttpHeaders trustedAppHeaders = new HttpHeaders();
-        // TODO
-        // trustedAppHeaders.add(HttpHeaders.AUTHORIZATION, getTrustedAppHeaderValue(userName));
+        trustedAppHeaders.add(HttpHeaders.AUTHORIZATION, AUTH_HEADER_START_WITH + " " + accessToken);
         trustedAppHeaders.setContentType(MediaType.APPLICATION_JSON);
         return trustedAppHeaders;
     }
@@ -65,11 +69,10 @@ public class BrighticsCommonRestTemplate {
     }
 
     public Map<String, Object> post(String apiUrl, Map<String, String> pathParams, Map<String, String> queryParams, JsonObject body, String requestUser) {
-
         return getRT().exchange(
                 getFullUrl(apiUrl, pathParams, queryParams),
                 HttpMethod.POST,
-                new HttpEntity<>(body.toString(), makeTrustedAppHeaders(requestUser)),
+                new HttpEntity<>(body.toString(), makeTrustedAppHeaders()),
                 Map.class).getBody();
     }
 
@@ -85,7 +88,7 @@ public class BrighticsCommonRestTemplate {
         return getRT().exchange(
                 getFullUrl(apiUrl, pathParams, queryParams),
                 method,
-                new HttpEntity<>(makeTrustedAppHeaders(requestUser)),
+                new HttpEntity<>(makeTrustedAppHeaders()),
                 Map.class).getBody();
     }
 
