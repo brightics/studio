@@ -17,6 +17,8 @@
 package com.samsung.sds.brightics.server.controller;
 
 import java.io.InputStream;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
@@ -72,6 +74,8 @@ public class DataController {
      * DELETE 	/api/core/v2/data/links							: remove data links
      *
      * GET	 	/api/core/v2/data/download?key=""&delimiter=""&filename=""		: download data.
+	 *
+	 * GET	 	/api/core/v2/data/download/model	         	: download.
      */
     
 	@RequestMapping(value = "/data/list/table", method = RequestMethod.GET)
@@ -191,4 +195,9 @@ public class DataController {
         DataLinkParamValidator.validateForDelete(dataLinkParam);
         return dataService.removeDataLinks(dataLinkParam);
     }
+
+	@RequestMapping(value = "/data/download/model", method = RequestMethod.GET)
+	public void downloadModel(@RequestParam String path, @RequestParam(required = false, defaultValue = "false") String check, HttpServletResponse response) throws Exception{
+		dataService.downloadModel(URLDecoder.decode(path, StandardCharsets.UTF_8.toString()), response, check);
+	}
 }

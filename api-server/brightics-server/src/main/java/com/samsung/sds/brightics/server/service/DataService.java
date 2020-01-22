@@ -17,6 +17,8 @@
 package com.samsung.sds.brightics.server.service;
 
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -25,6 +27,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.samsung.sds.brightics.common.network.proto.stream.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,8 +55,6 @@ import com.samsung.sds.brightics.common.network.proto.metadata.ImportDataMessage
 import com.samsung.sds.brightics.common.network.proto.metadata.ImportDataMessage.ImportActionType;
 import com.samsung.sds.brightics.common.network.proto.metadata.RemoveDataAliasMessage;
 import com.samsung.sds.brightics.common.network.proto.metadata.ResultDataMessage;
-import com.samsung.sds.brightics.common.network.proto.stream.ReadMessage;
-import com.samsung.sds.brightics.common.network.proto.stream.WriteMessage;
 import com.samsung.sds.brightics.common.network.util.ParameterBuilder;
 import com.samsung.sds.brightics.server.common.message.MessageManagerProvider;
 import com.samsung.sds.brightics.server.common.util.AuthenticationUtil;
@@ -395,5 +396,57 @@ public class DataService {
 
         return ResultMapUtil.success(dataResultParser(messageManagerProvider.metadataManager().sendRemoveDataAlias(message)));
     }
+
+    public void downloadModel(String path, HttpServletResponse response, String check) {
+        OutputStream output;
+        try {
+            if (Boolean.valueOf(check)) {
+                DownloadMessage message = DownloadMessage.newBuilder()
+                        .setUser(AuthenticationUtil.getRequestUserId())
+                        .setPath(path)
+                        .build();
+                ResultMessage resultMessage = messageManagerProvider.streamManager().download(message);
+                String result = "";
+                try {
+                    if (resultMessage.getMessageStatus() == MessageStatus.SUCCESS) {
+                        result = resultMessage.getResult().unpack(SuccessResult.class).getResult();
+                    } else {
+                        FailResult failResult;
+                        failResult = resultMessage.getResult().unpack(FailResult.class);
+                        throw new BrighticsUncodedException(failResult.getMessage(), failResult.getDetailMessage());
+                    }
+                } catch (InvalidProtocolBufferException e) {
+                    logger.error("Cannot parse result.", e);
+                    throw new BrighticsCoreException("3001").addDetailMessage(ExceptionUtils.getStackTrace(e));
+                }
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.setStatus(200);
+                PrintWriter writer = response.getWriter();
+                writer.print(result);
+                writer.close();
+            } else {
+                ReadCheckpointMessage checkpointMessage = ReadCheckpointMessage.newBuilder()
+                        .setUser(AuthenticationUtil.getRequestUserId())
+                        .setPath(path)
+                        .build();
+                String encodeFileName = URLEncoder.encode("model_" + System.currentTimeMillis() + ".zip", "UTF-8");
+                response.setContentType("application/octet-stream");
+                response.setCharacterEncoding("UTF-8");
+                response.setHeader("Content-Disposition", "attachment; filename=" + encodeFileName);
+                output = response.getOutputStream();
+                messageManagerProvider.streamManager().receiveCheckpoint(checkpointMessage, output);
+                output.close();
+            }
+        } catch (AbsBrighticsException e) {
+            logger.error("Cannot download file", e);
+            throw e;
+        } catch (Exception e) {
+            logger.error("Cannot download file", e);
+            throw new BrighticsCoreException("3402", e.getMessage()).addDetailMessage(ExceptionUtils.getStackTrace(e));
+        }
+    }
+
+
 
 }
