@@ -74,39 +74,21 @@ public class PythonContext extends AbstractContext {
 
     @Override
     public String runScript(TaskMessageWrapper message) {
+        PythonScriptType type = PythonScriptType.getType(message);
+
         if (processManager == null || !processManager.isAlive()) {
             logger.info("Python process terminated. Try to init python process again.");
             processManager = new PythonProcessManager(id);
-            processManager.init(this.contextType);
+            processManager.init(contextType);
         }
-
-        PythonScriptType type = PythonScriptType.getType(message);
 
         try {
             return processManager.run(type.getSource(message));
         } catch (AbsBrighticsException be) {
-            if (type == PythonScriptType.DLPythonScript) {
-                writeDLErrorFile(message, ExceptionUtils.getStackTrace(be.getCause()));
-            }
             throw be;
         } catch (Exception e) {
-            if (type == PythonScriptType.DLPythonScript) {
-                writeDLErrorFile(message, ExceptionUtils.getStackTrace(e.getCause()));
-            }
-            throw new BrighticsCoreException(EXCEPTION_SCRIPT_ERROR, e.getMessage()).initCause(e.getCause());
-        }
-    }
-
-    private void writeDLErrorFile(TaskMessageWrapper message, String errMessage) {
-        String logPath = message.params.getOrException("logPath");
-        String logName = message.params.getOrException("logName");
-
-        Path path = Paths.get(logPath, logName + ".err");
-
-        try {
-            Files.write(path, errMessage.getBytes(), StandardOpenOption.CREATE_NEW);
-        } catch (IOException e) {
-            logger.error("Error occurred while write Deep Learning error message");
+            throw new BrighticsCoreException(EXCEPTION_SCRIPT_ERROR, e.getMessage()).initCause(e.getCause())
+                    .addDetailMessage(ExceptionUtils.getStackTrace(e));
         }
     }
 
