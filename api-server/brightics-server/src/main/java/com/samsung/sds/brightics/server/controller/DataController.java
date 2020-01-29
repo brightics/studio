@@ -18,6 +18,7 @@ package com.samsung.sds.brightics.server.controller;
 
 import java.io.InputStream;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,7 +34,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import com.samsung.sds.brightics.common.data.parquet.reader.info.ColumnFilterParameter;
 import com.samsung.sds.brightics.common.network.proto.metadata.DataStatusType;
 import com.samsung.sds.brightics.server.model.param.DataLinkParam;
 import com.samsung.sds.brightics.server.model.param.DataPermissionParam;
@@ -105,8 +105,8 @@ public class DataController {
 	@RequestMapping(value = "/data/view/{mid}/{tid}", method = RequestMethod.POST)
 	public Object viewDataWithFilter(@PathVariable String mid, @PathVariable String tid,
 			@RequestParam(required = true) long offset, @RequestParam(required = true) long limit,
-			@RequestBody(required = false) ColumnFilterParameter ColumnFilterParameter,	HttpServletRequest req, HttpServletResponse res) throws Exception {
-		return dataService.getData(mid, tid, offset, offset + limit, ColumnFilterParameter);
+			@RequestBody(required = false) Map<String, Object> ColumnFilterMap) throws Exception {
+		return dataService.getData(mid, tid, offset, offset + limit, ColumnFilterMap);
 	}
 
 	@RequestMapping(value = "/data", method = RequestMethod.DELETE)
