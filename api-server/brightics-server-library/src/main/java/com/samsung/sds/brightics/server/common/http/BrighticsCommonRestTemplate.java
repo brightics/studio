@@ -25,7 +25,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -43,26 +42,15 @@ public class BrighticsCommonRestTemplate {
     @Value("${brightics.common.server.port:9097}")
     private String commonServerPort;
 
-    @Value("${brightics.local.token}")
-    private String accessToken;
-
-    private static final String AUTH_HEADER_START_WITH = "Bearer";
-
-    public HttpHeaders makeTrustedAppHeaders() {
-        HttpHeaders trustedAppHeaders = new HttpHeaders();
-        trustedAppHeaders.add(HttpHeaders.AUTHORIZATION, AUTH_HEADER_START_WITH + " " + accessToken);
-        trustedAppHeaders.setContentType(MediaType.APPLICATION_JSON);
-        return trustedAppHeaders;
-    }
-
     private static RestTemplate RT;
-    private static RestTemplate getRT(){
-        if(RT == null){
+
+    private static RestTemplate getRT() {
+        if (RT == null) {
             HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-            factory.setConnectTimeout(30*1000);
+            factory.setConnectTimeout(30 * 1000);
             factory.setReadTimeout(0);
             factory.setHttpClient(
-                HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build()).build());
+                    HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build()).build());
             RT = new RestTemplate(factory);
         }
         return RT;
@@ -72,7 +60,7 @@ public class BrighticsCommonRestTemplate {
         return getRT().exchange(
                 getFullUrl(apiUrl, pathParams, queryParams),
                 HttpMethod.POST,
-                new HttpEntity<>(body.toString(), makeTrustedAppHeaders()),
+                new HttpEntity<>(body.toString()),
                 Map.class).getBody();
     }
 
@@ -88,19 +76,19 @@ public class BrighticsCommonRestTemplate {
         return getRT().exchange(
                 getFullUrl(apiUrl, pathParams, queryParams),
                 method,
-                new HttpEntity<>(makeTrustedAppHeaders()),
+                new HttpEntity<>(new HttpHeaders()),
                 Map.class).getBody();
     }
 
     public URI getFullUrl(String apiUrl, Map<String, String> pathParams, Map<String, String> queryParams) {
-        if(pathParams == null){
+        if (pathParams == null) {
             pathParams = Collections.EMPTY_MAP;
         }
-        if(queryParams == null){
+        if (queryParams == null) {
             queryParams = Collections.EMPTY_MAP;
         }
 
-        String url = "http://"+commonServerAddress + ":" + commonServerPort + apiUrl;
+        String url = "http://" + commonServerAddress + ":" + commonServerPort + apiUrl;
 
         // Query parameters
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);

@@ -28,10 +28,8 @@ import com.samsung.sds.brightics.deeplearning.model.param.Metric
 import com.samsung.sds.brightics.deeplearning.model.param.TrainedModelParam
 import com.samsung.sds.brightics.deeplearning.model.param.TrainingJobParam
 import com.samsung.sds.brightics.server.common.http.BrighticsCommonRestTemplate
-import com.samsung.sds.brightics.server.common.util.AuthenticationUtil
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.slf4j.LoggerFactory
-import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.io.BufferedInputStream
@@ -227,13 +225,9 @@ class TrainedModelService(private var trainingJobService: TrainingJobService
     fun downloadModel(modelId: String, check: String, response: HttpServletResponse) {
         try {
             val targetModel = trainedModelRepository.findOne(modelId)
-            // TODO
-            // val authHeader = brighticsCommonRestTemplate.getTrustedAppHeaderValue(AuthenticationUtil.getRequestUserId())
-            val authHeader = null
             val url = brighticsCommonRestTemplate.getFullUrl("/api/core/v2/data/download/model", null, mapOf("path" to URLEncoder.encode(targetModel.modelPath, StandardCharsets.UTF_8.toString()), "check" to check)).toURL()
             val con = url.openConnection() as HttpURLConnection
             con.setRequestMethod("GET")
-            con.setRequestProperty(HttpHeaders.AUTHORIZATION, authHeader)
             val responseCode = con.responseCode
             if (responseCode > 299) {
                 val content = con.errorStream.bufferedReader().use(BufferedReader::readText)

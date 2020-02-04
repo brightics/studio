@@ -17,10 +17,12 @@
         <dist.home>target/dist</dist.home>
 		<target.studio.path>${dist.home}/brightics-studio</target.studio.path>
 		<target.server.path>${target.studio.path}/brightics-server</target.server.path>
+		<target.dl.path>${target.studio.path}/brightics-deeplearning</target.dl.path>
 		<target.functions.path>${target.server.path}/functions/python</target.functions.path>
 		<target.lib.path>${target.studio.path}/lib</target.lib.path>
 		<target.va.path>${target.studio.path}/visual-analytics</target.va.path>
 		<origin.server.path>../api-server/brightics-server</origin.server.path>
+		<origin.dl.path>../api-server/brightics-deeplearning</origin.dl.path>
 		<origin.functions.path>../function/python</origin.functions.path>
         <origin.lib.path>../lib</origin.lib.path>
         <origin.bin.path>../bin</origin.bin.path>
@@ -81,6 +83,17 @@
 								<copy todir= "${target.va.path}">
 									<fileset dir="${origin.va.path}"/>
 								</copy>
+
+								<!-- copy brightics deeplearning jar -->
+								<copy file="${origin.dl.path}/target/brightics-deeplearning.jar" tofile = "${target.studio.path}/brightics-deeplearning.jar"/>
+								<unzip src="${target.studio.path}/brightics-deeplearning.jar" dest="${target.dl.path}"/>
+								<delete file="${target.studio.path}/brightics-deeplearning.jar"/>
+
+								<!--  move properties files -->
+								<copy todir= "${target.dl.path}">
+									<fileset dir="${origin.dl.path}/bin"/>
+								</copy>
+								<chmod file="${target.dl.path}/*.sh" perm="+x"/>
 							</tasks>
 						</configuration>
 						<goals>
@@ -101,7 +114,7 @@
 					<installDirectory>${target.lib.path}</installDirectory>
 					<workingDirectory>${target.va.path}</workingDirectory>
 				</configuration>
-				
+
 				<executions>
 					<execution>
 						<id>init-node-install</id>
@@ -112,7 +125,7 @@
 							<nodeVersion>v8.9.4</nodeVersion>
 							<npmVersion>5.6.0</npmVersion>
 							<nodeDownloadRoot>http://nodejs.org/dist/</nodeDownloadRoot>
-							<npmDownloadRoot>http://registry.npmjs.org/npm/-/</npmDownloadRoot>				
+							<npmDownloadRoot>http://registry.npmjs.org/npm/-/</npmDownloadRoot>
 						</configuration>
 					</execution>
 					<execution>
@@ -128,7 +141,7 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>			
+			</plugin>
 		</plugins>
 	</build>
 </project>

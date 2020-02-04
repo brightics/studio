@@ -45,6 +45,7 @@ public class OAuth2Configuration extends ResourceServerConfigurerAdapter {
 
     @Autowired
     private TokenExtractor tokenExtractor;
+
     @Autowired
     private ResourceServerTokenServices tokenService;
 
@@ -82,7 +83,7 @@ public class OAuth2Configuration extends ResourceServerConfigurerAdapter {
         }, AbstractPreAuthenticatedProcessingFilter.class);
 
         http.authorizeRequests()
-            .anyRequest().permitAll()
+            .anyRequest().authenticated()
             .and().securityContext().securityContextRepository(new HttpSessionSecurityContextRepository())
             .and().sessionManagement()
             .and().csrf().disable();

@@ -58,6 +58,6 @@ public class OAuth2TokenExtractor extends BearerTokenExtractor {
                 basicToken = value;
             }
         }
-        return basicToken;
+        return "ACCESS_TOKEN";
     }
 }
