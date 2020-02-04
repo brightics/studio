@@ -25,6 +25,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -44,6 +45,12 @@ public class BrighticsCommonRestTemplate {
 
     private static RestTemplate RT;
 
+    public HttpHeaders makeHttpHeaders() {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return httpHeaders;
+    }
+
     private static RestTemplate getRT() {
         if (RT == null) {
             HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
@@ -60,7 +67,7 @@ public class BrighticsCommonRestTemplate {
         return getRT().exchange(
                 getFullUrl(apiUrl, pathParams, queryParams),
                 HttpMethod.POST,
-                new HttpEntity<>(body.toString()),
+                new HttpEntity<>(body.toString(), makeHttpHeaders()),
                 Map.class).getBody();
     }
 
@@ -76,7 +83,7 @@ public class BrighticsCommonRestTemplate {
         return getRT().exchange(
                 getFullUrl(apiUrl, pathParams, queryParams),
                 method,
-                new HttpEntity<>(new HttpHeaders()),
+                new HttpEntity<>(makeHttpHeaders()),
                 Map.class).getBody();
     }
 
