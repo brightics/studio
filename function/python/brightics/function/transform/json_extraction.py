@@ -83,18 +83,21 @@ def get_element_from_dict(d, key_list):
 
 def get_table(model, **params):
     check_required_parameters(_get_table, params, ['model'])
-    if '_grouped_data' in model:
+    if '_grouped_data' in model and params['group_only'] is False:
         return _function_by_group(_get_table, model=model, **params)
     else:
         return _get_table(model=model, **params)    
 
 
-def _get_table(model, key_list, index_column=False, index_column_name='index'):
+def _get_table(model, key_list, index_column=False, index_column_name=None, group_only=False):
     if not key_list:
         raise Exception('Key is a required parameter.')
     table = get_element_from_dict(model, key_list)
     if not isinstance(table, pd.DataFrame):
         raise Exception('item is not a DataFrame.')
     if index_column:
-        table.insert(0, index_column_name, table.index)
+        table = table.reset_index()
+        if index_column_name is not None:
+            table.rename(columns={'index': index_column_name}, inplace=True)
     return {'table': table}
+
