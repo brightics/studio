@@ -98,4 +98,3 @@ def _get_table(model, key_list, index_column=False, index_column_name='index'):
     if index_column:
         table.insert(0, index_column_name, table.index)
     return {'table': table}
-
