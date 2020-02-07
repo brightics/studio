@@ -25,6 +25,7 @@ import com.samsung.sds.brightics.deeplearning.model.param.*
 import com.samsung.sds.brightics.server.common.http.BrighticsCommonRestTemplate
 import com.samsung.sds.brightics.server.common.util.AuthenticationUtil
 import org.apache.commons.lang3.exception.ExceptionUtils
+import org.apache.commons.text.StringEscapeUtils
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
@@ -49,7 +50,7 @@ class BrighticsDLRestTemplate(private var brighticsCommonRestTemplate: Brightics
                 , jsonBody, user)
         if (responseBody.containsKey("status") && responseBody["status"] == "SUCCESS") {
             if (responseBody.containsKey("result")) {
-                val resultString = responseBody["result"].toString()
+                val resultString = StringEscapeUtils.unescapeJava(responseBody["result"].toString().replace("^'|'$".toRegex(), ""))
                 logger.debug("result : {}", resultString)
                 return JsonUtil.jsonToObject(resultString)
             } else {
