@@ -4,6 +4,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.samsung.sds.brightics.agent.service.task.TaskMessageWrapper;
 import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
+import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.StringJoiner;
 
@@ -11,206 +13,217 @@ public class DLPythonScriptBuilder {
 
     private static final String SCRIPT_DELIM = "\n";
 
-    static String getExecutionType(JsonObject param) {
-        if (!param.has("execution_type")) {
-            return "default";
-        } else {
-            JsonElement scriptEm = param.get("execution_type");
-            return scriptEm.getAsJsonPrimitive().getAsString();
-        }
-    }
-
     static String getActionType(JsonObject param) {
         if (!param.has("action_type")) {
             return "trainingJob";
         } else {
-            JsonElement scriptEm = param.get("action_type");
-            return scriptEm.getAsJsonPrimitive().getAsString();
+            return param.get("action_type").getAsJsonPrimitive().getAsString();
         }
     }
 
-    static JsonObject getContent(JsonObject param) {
-        if (!param.has("content")) {
-            throw new BrighticsCoreException("3109", "'deep learning content'");
-        }
-        JsonElement scriptEm = param.get("content");
-        return scriptEm.getAsJsonObject();
-    }
-
-    static String getStringValueFromParams(TaskMessageWrapper message, String key) {
-        if (!message.params.internalData.has(key)) {
-            throw new BrighticsCoreException("3109", "'deep learning " + key + "'");
-        }
-        JsonElement scriptEm = message.params.internalData.get(key);
-        return scriptEm.getAsJsonPrimitive().getAsString();
-    }
-
-    static String getJobId(TaskMessageWrapper message){
-        return getStringValueFromParams(message,"jobId");
-    }
-
-    static String getHtmlPath(TaskMessageWrapper message) { return getStringValueFromParams(message,"htmlPath"); }
-
-    static String getOutputPath(TaskMessageWrapper message) { return getStringValueFromParams(message,"outputPath"); }
-
-    static StringJoiner getStringJoiner(){
-        return new StringJoiner(SCRIPT_DELIM);
-    }
-
-    public static String script(TaskMessageWrapper message){
-        String executionType = getExecutionType(message.params.internalData);
+    public static String script(TaskMessageWrapper message) {
+        StringJoiner script = new StringJoiner(SCRIPT_DELIM);
         String actionType = getActionType(message.params.internalData);
-        return ScriptBuilder.script(message, actionType, executionType);
+        if (EnumUtils.isValidEnum(DLScriptFactory.class, StringUtils.upperCase(actionType))) {
+            return EnumUtils.getEnum(DLScriptFactory.class, StringUtils.upperCase(actionType)).getScript(script, message);
+        } else {
+            throw new BrighticsCoreException("3008", actionType);
+        }
     }
 
-    static class ScriptBuilder{
-        public static String script(TaskMessageWrapper message, String actionType, String executionType) {
-            StringJoiner script = getStringJoiner();
-            // import every time
-            initImports(script);
-            if (actionType.startsWith("job_execute")) {
-                JobExecuteScript(script, actionType, message, executionType);
-            } else if (actionType.startsWith("job_status")) {
-                getJobStatusScript(script, actionType, getJobId(message), executionType);
-            } else if (actionType.startsWith("job_text")) {
-                getJobTextScript(script, actionType, getJobId(message), executionType);
-            } else if (actionType.startsWith("job_log")){
-                getJobLogScript(script, actionType, getJobId(message), executionType);
-            } else if (actionType.startsWith("job_html")) {
-                getJobHtmlScript(script, actionType,getHtmlPath(message));
-            } else if (actionType.startsWith("job_tensorboard")) {
-                getTensorboardUrl(script, actionType,getOutputPath(message));
-            } else if (actionType.startsWith("job_metrics")) {
-                getJobMetricsScript(script, actionType,getJobId(message));
-            } else if (actionType.startsWith("job_stop")) {
-                stopJobScript(script, actionType,getJobId(message), executionType);
-            } else if (actionType.startsWith("preview")) {
-                previewScript(script, actionType, getJobId(message), message);
-            } else if (actionType.startsWith("script_runner")){
-                scriptRunnerScript(script, actionType, getJobId(message), message);
-            } else {
-                throw new BrighticsCoreException("3008", actionType);
-            }
-            return script.toString();
-        }
-
-        private static void initImports(StringJoiner script) {
-            script.add("from brightics.deeplearning.runner.job_runner_class import JobRunner");
-        }
-
-        private static void JobExecuteScript(StringJoiner script, String actionType, TaskMessageWrapper message, String executionType) {
-
-            if (actionType.equals("job_execute_training")) {
-                JsonObject content = getContent(message.params.internalData);
-                script.add("json_str = " + String.format("r\"\"\"%s\"\"\"", content.toString()));
-                script.add(String.format("execution_type = '%s'", executionType));
+    //TODO move this class to common library for sharing with brightics-DL server.
+    enum DLScriptFactory {
+        JOB_EXECUTE_TRAINING {
+            @Override
+            public String getSource(StringJoiner script, TaskMessageWrapper message) {
+                script.add("json_str = " + String.format("r\"\"\"%s\"\"\"", getContent(message)));
+                script.add(String.format("execution_type = '%s'", getExecutionType(message)));
                 script.add(String.format("JobRunner().run(json_str, execution_type)"));
-            } else if (actionType.equals("job_execute_inference")) {
-                JsonObject content = getContent(message.params.internalData);
-                script.add("json_str = " + String.format("r\"\"\"%s\"\"\"", content.toString()));
-                script.add(String.format("execution_type = '%s'", executionType));
-                script.add(String.format("JobRunner().inference_job_run(json_str, execution_type)"));
-            } else {
-                throw new BrighticsCoreException("3008", actionType);
+                return script.toString();
             }
-        }
-
-        private static void getJobStatusScript(StringJoiner script, String actionType, String jobId, String executionType) {
-            if (actionType.equals("job_status_training")) {
-                script.add(String.format("JobRunner().get_job_status('%s', '%s')", jobId, executionType));
-            } else if (actionType.equals("job_status_inference")) {
-                script.add(String.format("JobRunner().get_inference_job_status('%s', '%s')", jobId, executionType));
-            } else {
-                throw new BrighticsCoreException("3008", actionType);
+        },
+        JOB_EXECUTE_INFERENCE {
+            @Override
+            public String getSource(StringJoiner script, TaskMessageWrapper message) {
+                script.add("json_str = " + String.format("r\"\"\"%s\"\"\"", getContent(message)));
+                script.add(String.format("execution_type = '%s'", getExecutionType(message)));
+                script.add(String.format("JobRunner().inference_job_run(json_str,  execution_type)"));
+                return script.toString();
             }
-        }
-
-        private static void getJobTextScript(StringJoiner script, String actionType, String jobId, String executionType) {
-            if (actionType.equals("job_text_training")) {
-                script.add(String.format("JobRunner().get_job_text('%s', '%s')", jobId, executionType));
-            } else if (actionType.equals("job_text_inference")) {
-                script.add(String.format("JobRunner().get_inference_job_text('%s', '%s')", jobId, executionType));
-            } else {
-                throw new BrighticsCoreException("3008", actionType);
+        },
+        JOB_STATUS_TRAINING {
+            @Override
+            public String getSource(StringJoiner script, TaskMessageWrapper message) {
+                script.add(String.format("JobRunner().get_job_status('%s', '%s')", getJobId(message), getExecutionType(message)));
+                return script.toString();
             }
-        }
-
-        private static void getJobLogScript(StringJoiner script, String actionType, String jobId, String executionType){
-            if(actionType.equals("job_log_training")){
-                script.add(String.format(("JobRunner().get_job_log('%s','%s')"), jobId, executionType));
-            } else if(actionType.equals("job_log_inference")){
-                script.add(String.format(("JobRunner().get_job_inference_log('%s','%s')"), jobId, executionType));
-            } else {
-                throw new BrighticsCoreException("3008", actionType);
+        },
+        JOB_STATUS_INFERENCE {
+            @Override
+            public String getSource(StringJoiner script, TaskMessageWrapper message) {
+                script.add(String.format("JobRunner().get_inference_job_status('%s', '%s')", getJobId(message), getExecutionType(message)));
+                return script.toString();
             }
-        }
-
-        private static void getJobHtmlScript(StringJoiner script, String actionType, String htmlPath) {
-            if (actionType.equals("job_html_inference")) {
-                script.add(String.format("JobRunner().get_job_html('%s')", htmlPath));
-            } else {
-                throw new BrighticsCoreException("3008", actionType);
+        },
+        JOB_TEXT_TRAINING {
+            @Override
+            public String getSource(StringJoiner script, TaskMessageWrapper message) {
+                script.add(String.format("JobRunner().get_job_text('%s', '%s')", getJobId(message), getExecutionType(message)));
+                return script.toString();
             }
-        }
-
-        private static void getTensorboardUrl(StringJoiner script, String actionType, String outputPath) {
-            if (actionType.equals("job_tensorboard_url")) {
-                script.add(String.format("JobRunner().get_tensorboard_url('%s')", outputPath));
-            } else {
-                throw new BrighticsCoreException("3008", actionType);
+        },
+        JOB_TEXT_INFERENCE {
+            @Override
+            public String getSource(StringJoiner script, TaskMessageWrapper message) {
+                script.add(String.format("JobRunner().get_inference_job_text('%s', '%s')", getJobId(message), getExecutionType(message)));
+                return script.toString();
             }
-        }
-
-        private static void getJobMetricsScript(StringJoiner script, String actionType, String jobId) {
-            script.add("from brightics.deeplearning.event import EventParser");
-            if (actionType.equals("job_metrics_training")) {
-                script.add(String.format("EventParser('%s').get_all()", jobId));
-            } else {
-                throw new BrighticsCoreException("3008", actionType);
+        },
+        JOB_LOG_TRAINING {
+            @Override
+            public String getSource(StringJoiner script, TaskMessageWrapper message) {
+                script.add(String.format(("JobRunner().get_job_log('%s','%s')"), getJobId(message), getExecutionType(message)));
+                return script.toString();
             }
-        }
-
-        private static void stopJobScript(StringJoiner script, String actionType, String jobId, String executionType) {
-            if (actionType.equals("job_stop_training")) {
-                script.add(String.format("JobRunner().stop_job('%s', '%s')", jobId, executionType));
-            } else if (actionType.equals("job_stop_inference")) {
-                script.add(String.format("JobRunner().inference_stop_job('%s', '%s')", jobId, executionType));
-            } else {
-                throw new BrighticsCoreException("3008", actionType);
+        },
+        JOB_LOG_INFERENCE {
+            @Override
+            public String getSource(StringJoiner script, TaskMessageWrapper message) {
+                script.add(String.format(("JobRunner().get_job_inference_log('%s','%s')"), getJobId(message), getExecutionType(message)));
+                return script.toString();
             }
+        },
+        JOB_HTML_INFERENCE {
+            @Override
+            public String getSource(StringJoiner script, TaskMessageWrapper message) {
+                script.add(String.format("JobRunner().get_job_html('%s')", getHtmlPath(message)));
+                return script.toString();
+            }
+        },
+        JOB_TENSORBOARD_URL {
+            @Override
+            public String getSource(StringJoiner script, TaskMessageWrapper message) {
+                script.add(String.format("JobRunner().get_tensorboard_url('%s')", getOutputPath(message)));
+                return script.toString();
+            }
+        },
+        JOB_METRICS_TRAINING {
+            @Override
+            public String getSource(StringJoiner script, TaskMessageWrapper message) {
+                script.add(String.format("EventParser('%s').get_all()", getJobId(message)));
+                return script.toString();
+            }
+        },
+        JOB_STOP_TRAINING {
+            @Override
+            public String getSource(StringJoiner script, TaskMessageWrapper message) {
+                script.add(String.format("JobRunner().stop_job('%s', '%s')", getJobId(message), getExecutionType(message)));
+                return script.toString();
+            }
+        },
+        JOB_STOP_INFERENCE {
+            @Override
+            public String getSource(StringJoiner script, TaskMessageWrapper message) {
+                script.add(String.format("JobRunner().inference_stop_job('%s', '%s')", getJobId(message), getExecutionType(message)));
+                return script.toString();
+            }
+        },
+        PREVIEW_CREATE {
+            @Override
+            public String getSource(StringJoiner script, TaskMessageWrapper message) {
+                script.add("json_str = " + String.format("r\"\"\"%s\"\"\"", getContent(message)));
+                script.add(String.format("PreviewerManager.create_previewer(json_str, '%s')", getJobId(message)));
+                return script.toString();
+            }
+        },
+        PREVIEW_NEXT {
+            @Override
+            public String getSource(StringJoiner script, TaskMessageWrapper message) {
+                script.add("json_str = " + String.format("r\"\"\"%s\"\"\"", getContent(message)));
+                script.add(String.format("PreviewerManager.get_next('%s', json_str)", getJobId(message)));
+                return script.toString();
+            }
+        },
+        PREVIEW_DELETE {
+            @Override
+            public String getSource(StringJoiner script, TaskMessageWrapper message) {
+                script.add(String.format("PreviewerManager.delete_previewer('%s')", getJobId(message)));
+                return script.toString();
+            }
+        },
+        SCRIPT_RUNNER_CREATE {
+            @Override
+            public String getSource(StringJoiner script, TaskMessageWrapper message) {
+                script.add("json_str = " + String.format("r\"\"\"%s\"\"\"", getContent(message)));
+                script.add(String.format("script_runner.create_script('%s', json_str)", getJobId(message)));
+                return script.toString();
+            }
+        },
+        SCRIPT_RUNNER_RESULT {
+            @Override
+            public String getSource(StringJoiner script, TaskMessageWrapper message) {
+                script.add(String.format("script_runner.get_result('%s')", getJobId(message)));
+                return script.toString();
+            }
+        },
+        SCRIPT_RUNNER_DELETE {
+            @Override
+            public String getSource(StringJoiner script, TaskMessageWrapper message) {
+                script.add(String.format("script_runner.delete_script('%s')", getJobId(message)));
+                return script.toString();
+            }
+        };
 
-        }
-
-        private static void previewScript(StringJoiner script, String actionType, String jobId, TaskMessageWrapper message) {
+        public String getScript(StringJoiner script, TaskMessageWrapper message) {
+            // import base package.
+            script.add("from brightics.deeplearning.runner.job_runner_class import JobRunner");
             script.add("from brightics.deeplearning.input_function.previewer import PreviewerManager");
-            if (actionType.equals("preview_create")) {
-                JsonObject content = getContent(message.params.internalData);
-                script.add("json_str = " + String.format("r\"\"\"%s\"\"\"", content.toString()));
-                script.add(String.format("PreviewerManager.create_previewer(json_str, '%s')", jobId));
-            } else if (actionType.equals("preview_next")) {
-                JsonObject content = getContent(message.params.internalData);
-                script.add("json_str = " + String.format("r\"\"\"%s\"\"\"", content.toString()));
-                script.add(String.format("PreviewerManager.get_next('%s', json_str)", jobId));
-            } else if (actionType.equals("preview_delete")) {
-                script.add(String.format("PreviewerManager.delete_previewer('%s')", jobId));
+            script.add("from brightics.deeplearning.event import EventParser");
+            script.add("from brightics.deeplearning.runner import script_runner");
+            //get script by action type
+            return getSource(script, message);
+        }
+
+        public abstract String getSource(StringJoiner script, TaskMessageWrapper message);
+
+        String getContent(TaskMessageWrapper message) {
+            return getJsonEmFromParams(message, "content");
+        }
+
+        String getJobId(TaskMessageWrapper message) {
+            return getJsonEmFromParams(message, "jobId");
+        }
+
+        String getHtmlPath(TaskMessageWrapper message) {
+            return getJsonEmFromParams(message, "htmlPath");
+        }
+
+        String getOutputPath(TaskMessageWrapper message) {
+            return getJsonEmFromParams(message, "outputPath");
+        }
+
+        String getExecutionType(TaskMessageWrapper message) {
+            if (!message.params.internalData.has("execution_type")) {
+                return "default";
             } else {
-                throw new BrighticsCoreException("3008", actionType);
+                JsonElement scriptEm = message.params.internalData.get("execution_type");
+                return scriptEm.getAsJsonPrimitive().getAsString();
             }
         }
 
-        private static void scriptRunnerScript(StringJoiner script, String actionType, String jobId, TaskMessageWrapper message) {
-            script.add("from brightics.deeplearning.runner import script_runner");
-            if (actionType.equals("script_runner_create")) {
-                JsonObject content = getContent(message.params.internalData);
-                script.add("json_str = " + String.format("r\"\"\"%s\"\"\"", content.toString()));
-                script.add(String.format("script_runner.create_script('%s', json_str)", jobId));
-            } else if (actionType.equals("script_runner_result")) {
-                script.add(String.format("script_runner.get_result('%s')", jobId));
-            } else if (actionType.equals("script_runner_delete")) {
-                script.add(String.format("script_runner.delete_script('%s')", jobId));
+        private String getJsonEmFromParams(TaskMessageWrapper message, String key) {
+            if (!message.params.internalData.has(key)) {
+                throw new BrighticsCoreException("3109", "'deep learning " + key + "'");
+            }
+            JsonElement jsonElement = message.params.internalData.get(key);
+            if (jsonElement.isJsonPrimitive()) {
+                return jsonElement.getAsJsonPrimitive().getAsString();
             } else {
-                throw new BrighticsCoreException("3008", actionType);
+                return jsonElement.getAsJsonObject().toString();
             }
         }
+
+
     }
+
 }
