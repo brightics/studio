@@ -24,6 +24,8 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import java.io.File
 import java.io.FileInputStream
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 import java.util.*
 
 object BuiltInPropertiesUtil {
@@ -41,7 +43,7 @@ object BuiltInPropertiesUtil {
 
         try {
             val classLoader = Thread.currentThread().contextClassLoader
-            val builtInFolder = File(classLoader.getResource(PATH_BUILTIN)!!.file)
+            val builtInFolder = File(URLDecoder.decode(classLoader.getResource(PATH_BUILTIN)!!.file, StandardCharsets.UTF_8.toString()))
 
             for (typeFolder in builtInFolder.listFiles()!!) {
                 val moduleType = typeFolder.name
