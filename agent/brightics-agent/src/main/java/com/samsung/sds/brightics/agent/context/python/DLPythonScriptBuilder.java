@@ -15,7 +15,7 @@ public class DLPythonScriptBuilder {
 
     static String getActionType(JsonObject param) {
         if (!param.has("action_type")) {
-            return "trainingJob";
+            throw new BrighticsCoreException("3109", "'deep learning action_type'");
         } else {
             return param.get("action_type").getAsJsonPrimitive().getAsString();
         }
