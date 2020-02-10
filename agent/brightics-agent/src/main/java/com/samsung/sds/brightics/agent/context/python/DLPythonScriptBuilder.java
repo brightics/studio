@@ -36,140 +36,133 @@ public class DLPythonScriptBuilder {
         JOB_EXECUTE_TRAINING {
             @Override
             public String getSource(StringJoiner script, TaskMessageWrapper message) {
-                script.add("json_str = " + String.format("r\"\"\"%s\"\"\"", getContent(message)));
-                script.add(String.format("execution_type = '%s'", getExecutionType(message)));
-                script.add(String.format("JobRunner().run(json_str, execution_type)"));
+                script.add(String.format("JobRunner().run(%s, %s)", getContent(message), getExecutionType(message)));
                 return script.toString();
             }
         },
         JOB_EXECUTE_INFERENCE {
             @Override
             public String getSource(StringJoiner script, TaskMessageWrapper message) {
-                script.add("json_str = " + String.format("r\"\"\"%s\"\"\"", getContent(message)));
-                script.add(String.format("execution_type = '%s'", getExecutionType(message)));
-                script.add(String.format("JobRunner().inference_job_run(json_str,  execution_type)"));
+                script.add(String.format("JobRunner().inference_job_run(%s,  %s)", getContent(message), getExecutionType(message)));
                 return script.toString();
             }
         },
         JOB_STATUS_TRAINING {
             @Override
             public String getSource(StringJoiner script, TaskMessageWrapper message) {
-                script.add(String.format("JobRunner().get_job_status('%s', '%s')", getJobId(message), getExecutionType(message)));
+                script.add(String.format("JobRunner().get_job_status(%s, %s)", getJobId(message), getExecutionType(message)));
                 return script.toString();
             }
         },
         JOB_STATUS_INFERENCE {
             @Override
             public String getSource(StringJoiner script, TaskMessageWrapper message) {
-                script.add(String.format("JobRunner().get_inference_job_status('%s', '%s')", getJobId(message), getExecutionType(message)));
+                script.add(String.format("JobRunner().get_inference_job_status(%s, %s)", getJobId(message), getExecutionType(message)));
                 return script.toString();
             }
         },
         JOB_TEXT_TRAINING {
             @Override
             public String getSource(StringJoiner script, TaskMessageWrapper message) {
-                script.add(String.format("JobRunner().get_job_text('%s', '%s')", getJobId(message), getExecutionType(message)));
+                script.add(String.format("JobRunner().get_job_text(%s, %s)", getJobId(message), getExecutionType(message)));
                 return script.toString();
             }
         },
         JOB_TEXT_INFERENCE {
             @Override
             public String getSource(StringJoiner script, TaskMessageWrapper message) {
-                script.add(String.format("JobRunner().get_inference_job_text('%s', '%s')", getJobId(message), getExecutionType(message)));
+                script.add(String.format("JobRunner().get_inference_job_text(%s, %s)", getJobId(message), getExecutionType(message)));
                 return script.toString();
             }
         },
         JOB_LOG_TRAINING {
             @Override
             public String getSource(StringJoiner script, TaskMessageWrapper message) {
-                script.add(String.format(("JobRunner().get_job_log('%s','%s')"), getJobId(message), getExecutionType(message)));
+                script.add(String.format(("JobRunner().get_job_log(%s, %s)"), getJobId(message), getExecutionType(message)));
                 return script.toString();
             }
         },
         JOB_LOG_INFERENCE {
             @Override
             public String getSource(StringJoiner script, TaskMessageWrapper message) {
-                script.add(String.format(("JobRunner().get_job_inference_log('%s','%s')"), getJobId(message), getExecutionType(message)));
+                script.add(String.format(("JobRunner().get_job_inference_log(%s, %s)"), getJobId(message), getExecutionType(message)));
                 return script.toString();
             }
         },
         JOB_HTML_INFERENCE {
             @Override
             public String getSource(StringJoiner script, TaskMessageWrapper message) {
-                script.add(String.format("JobRunner().get_job_html('%s')", getHtmlPath(message)));
+                script.add(String.format("JobRunner().get_job_html(%s)", getHtmlPath(message)));
                 return script.toString();
             }
         },
         JOB_TENSORBOARD_URL {
             @Override
             public String getSource(StringJoiner script, TaskMessageWrapper message) {
-                script.add(String.format("JobRunner().get_tensorboard_url('%s')", getOutputPath(message)));
+                script.add(String.format("JobRunner().get_tensorboard_url(%s)", getOutputPath(message)));
                 return script.toString();
             }
         },
         JOB_METRICS_TRAINING {
             @Override
             public String getSource(StringJoiner script, TaskMessageWrapper message) {
-                script.add(String.format("EventParser('%s').get_all()", getJobId(message)));
+                script.add(String.format("EventParser(%s).get_all()", getJobId(message)));
                 return script.toString();
             }
         },
         JOB_STOP_TRAINING {
             @Override
             public String getSource(StringJoiner script, TaskMessageWrapper message) {
-                script.add(String.format("JobRunner().stop_job('%s', '%s')", getJobId(message), getExecutionType(message)));
+                script.add(String.format("JobRunner().stop_job(%s, %s)", getJobId(message), getExecutionType(message)));
                 return script.toString();
             }
         },
         JOB_STOP_INFERENCE {
             @Override
             public String getSource(StringJoiner script, TaskMessageWrapper message) {
-                script.add(String.format("JobRunner().inference_stop_job('%s', '%s')", getJobId(message), getExecutionType(message)));
+                script.add(String.format("JobRunner().inference_stop_job(%s, %s)", getJobId(message), getExecutionType(message)));
                 return script.toString();
             }
         },
         PREVIEW_CREATE {
             @Override
             public String getSource(StringJoiner script, TaskMessageWrapper message) {
-                script.add("json_str = " + String.format("r\"\"\"%s\"\"\"", getContent(message)));
-                script.add(String.format("PreviewerManager.create_previewer(json_str, '%s')", getJobId(message)));
+                script.add(String.format("PreviewerManager.create_previewer(%s, %s)", getContent(message), getJobId(message)));
                 return script.toString();
             }
         },
         PREVIEW_NEXT {
             @Override
             public String getSource(StringJoiner script, TaskMessageWrapper message) {
-                script.add("json_str = " + String.format("r\"\"\"%s\"\"\"", getContent(message)));
-                script.add(String.format("PreviewerManager.get_next('%s', json_str)", getJobId(message)));
+                script.add(String.format("PreviewerManager.get_next(%s, %s)", getJobId(message), getContent(message)));
                 return script.toString();
             }
         },
         PREVIEW_DELETE {
             @Override
             public String getSource(StringJoiner script, TaskMessageWrapper message) {
-                script.add(String.format("PreviewerManager.delete_previewer('%s')", getJobId(message)));
+                script.add(String.format("PreviewerManager.delete_previewer(%s)", getJobId(message)));
                 return script.toString();
             }
         },
         SCRIPT_RUNNER_CREATE {
             @Override
             public String getSource(StringJoiner script, TaskMessageWrapper message) {
-                script.add("json_str = " + String.format("r\"\"\"%s\"\"\"", getContent(message)));
-                script.add(String.format("script_runner.create_script('%s', json_str)", getJobId(message)));
+                script.add(String.format("script_runner.create_script(%s, %s)", getJobId(message), getContent(message)));
                 return script.toString();
             }
         },
         SCRIPT_RUNNER_RESULT {
             @Override
             public String getSource(StringJoiner script, TaskMessageWrapper message) {
-                script.add(String.format("script_runner.get_result('%s')", getJobId(message)));
+                script.add(String.format("script_runner.get_result(%s)", getJobId(message)));
                 return script.toString();
             }
         },
         SCRIPT_RUNNER_DELETE {
             @Override
             public String getSource(StringJoiner script, TaskMessageWrapper message) {
-                script.add(String.format("script_runner.delete_script('%s')", getJobId(message)));
+                script.add(String.format("script_runner.delete_script(%s)", getJobId(message)));
                 return script.toString();
             }
         };
@@ -203,12 +196,7 @@ public class DLPythonScriptBuilder {
         }
 
         String getExecutionType(TaskMessageWrapper message) {
-            if (!message.params.internalData.has("execution_type")) {
-                return "default";
-            } else {
-                JsonElement scriptEm = message.params.internalData.get("execution_type");
-                return scriptEm.getAsJsonPrimitive().getAsString();
-            }
+            return getJsonEmFromParams(message, "execution_type");
         }
 
         private String getJsonEmFromParams(TaskMessageWrapper message, String key) {
@@ -217,12 +205,15 @@ public class DLPythonScriptBuilder {
             }
             JsonElement jsonElement = message.params.internalData.get(key);
             if (jsonElement.isJsonPrimitive()) {
-                return jsonElement.getAsJsonPrimitive().getAsString();
+                return rawString(jsonElement.getAsJsonPrimitive().getAsString());
             } else {
-                return jsonElement.getAsJsonObject().toString();
+                return rawString(jsonElement.getAsJsonObject().toString());
             }
         }
 
+        private String rawString(String str) {
+            return String.format("r\"\"\"%s\"\"\"", str);
+        }
 
     }
 
