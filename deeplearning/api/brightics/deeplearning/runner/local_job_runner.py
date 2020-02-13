@@ -148,14 +148,11 @@ class LocalJobRunner(ParentJobRunner):
             model_params['data_params'] = self.data_params
 
             if self.num_cores == 0 or self.num_cores is None:
-                cpu_counts = os.cpu_count()/2
+                cpu_counts = psutil.cpu_count(logical=False) / 2
             else:
                 cpu_counts = self.num_cores
 
             sess_config = tf.ConfigProto(intra_op_parallelism_threads= int(cpu_counts), inter_op_parallelism_threads=2, allow_soft_placement = True)
-            train_logger.info("cpu_counts:{}".format(cpu_counts))
-            train_logger.info("cpu_counts:{}".format(cpu_counts))
-            train_logger.info("cpu_counts:{}".format(cpu_counts))
             run_config = tf.estimator.RunConfig(save_summary_steps=self.summary_save_frequency,
                                                 save_checkpoints_steps=self.checkpoint_frequency_in_steps,
                                                 session_config=sess_config

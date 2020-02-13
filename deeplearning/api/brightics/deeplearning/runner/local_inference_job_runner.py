@@ -185,7 +185,7 @@ class LocalInferenceJobRunner(ParentJobRunner):
             inference_logger.debug('inference_dir : {}'.format(inference_dir))
 
             if self.num_cores == 0:
-                cpu_counts = os.cpu_count()/2
+                cpu_counts = psutil.cpu_count(logical=False) / 2
             else:
                 cpu_counts = self.num_cores
 
