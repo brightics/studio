@@ -7,7 +7,7 @@ from brightics.deeplearning import config
 
 DEFAULT_LOG_FILENAME = 'brightics-deeplearning.log'
 
-LOG_FILEPATH = config.get('Logging', 'FilePath', os.path.join(config.get_workspace_path(), 'logs'))
+LOG_FILEPATH = config.get('Logging', 'FilePath', os.path.join(os.getenv('BRIGHTICS_DEEPLEARNING_HOME', config.get_workspace_path()), 'logs'))
 LOG_FILENAME = config.get('Logging', 'FileName', DEFAULT_LOG_FILENAME)
 LOG_LEVEL = config.get('Logging', 'Level', 'INFO')
 LOG_BACKUP_COUNT = int(config.get('Logging', 'Count', 10))
