@@ -150,7 +150,7 @@ class LocalInferenceJobRunner(ParentJobRunner):
             job_scheduler.set_job(self.experiment_name)
 
             resources_path = os.path.join(inference_dir, RESOURCES_DIR)
-            with open(os.path.join(resources_path, SPEC_FILENAME)) as job_spec_file:
+            with open(os.path.join(resources_path, SPEC_FILENAME), 'rt', encoding='utf-8') as job_spec_file:
                 self.make_inf_run_param(job_spec_file.read())
 
             # Select available gpu or cpu env when it is not found
