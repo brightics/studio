@@ -16,7 +16,7 @@ PIDFILE=brightics-server.pid
 
 GC_OPTS="-XX:+UseConcMarkSweepGC -verbose:gc -XX:+PrintGCTimeStamps -Xloggc:$appdir/gc.out -XX:+CMSClassUnloadingEnabled "
 
-JAVA_OPTS="-Xms1g -Xmx2g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError -Djava.net.preferIPv4Stack=true -Djava.io.tmpdir=$BRIGHTICS_SERVER_HOME/tmp -Dbrightics.local.user=$1 -Dbrightics.local.token=$2"
+JAVA_OPTS="-Xms1g -Xmx2g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError -Djava.net.preferIPv4Stack=true -Djava.io.tmpdir=$BRIGHTICS_SERVER_HOME/tmp -Dbrightics.local.user=$1 -Dbrightics.local.token=$2 -Dfile.encoding=utf-8"
 
 DEBUG_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=6007"
 

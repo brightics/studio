@@ -291,8 +291,8 @@
                     _this.$elements[itemKey].on('change', changeHandler);
                 }
                 var checked = [];
-                for (var j in items) {
-                    itemKey = 'check-box.' + items[j].value;
+                for (var i in items) {
+                    itemKey = 'check-box.' + items[i].value;
                     checked.push(_this.$elements[itemKey].data('tag'));
                 }
                 var command = _this.createSetParameterValueCommand('check-box', checked);

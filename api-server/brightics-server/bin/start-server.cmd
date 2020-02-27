@@ -21,7 +21,7 @@ if "%ACCESS_TOKEN%"=="" (
 )
 
 SET GC_OPTS=-XX:+UseConcMarkSweepGC -verbose:gc --Xloggc:"%BRIGHTICS_SERVER_HOME%gc.out" -XX:+CMSClassUnloadingEnabled
-SET JAVA_OPTS=-Xms1g -Xmx2g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError -Djava.net.preferIPv4Stack=true -Djava.io.tmpdir="%BRIGHTICS_SERVER_HOME%tmp" -Dbrightics.local.token=%ACCESS_TOKEN% -Dbrightics.local.user=%USER_ID% 
+SET JAVA_OPTS=-Xms1g -Xmx2g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError -Djava.net.preferIPv4Stack=true -Djava.io.tmpdir="%BRIGHTICS_SERVER_HOME%tmp" -Dbrightics.local.token=%ACCESS_TOKEN% -Dbrightics.local.user=%USER_ID% -Dfile.encoding=utf-8
 SET MAIN=org.springframework.boot.loader.JarLauncher -Dspring.config.location="%BRIGHTICS_SERVER_HOME%BOOT-INF\classes\" 
 
 IF EXIST "%BRIGHTICS_SERVER_HOME%tmp" (
