@@ -110,7 +110,6 @@ class LocalJobRunner(ParentJobRunner):
             # update experiment name from model_dir
             path = os.path.normpath(model_dir)
             self.experiment_name = path.split(os.sep)[-1]
-            job_scheduler.set_job(self.experiment_name)
 
             resources_path = os.path.join(model_dir, RESOURCES_DIR)
             with open(os.path.join(resources_path, SPEC_FILENAME), 'rt', encoding='utf-8') as job_spec_file:
@@ -118,7 +117,12 @@ class LocalJobRunner(ParentJobRunner):
 
             # Select available gpu or cpu env when it is not found
             self.avail_gpu = []
+            device_type, device_id = "CPU", "0"
+
             if self.use_gpu:
+                
+                job_scheduler.set_job(self.experiment_name)
+
                 # It can an get 2 or more gpus here, only 1 gpu implemented.
                 if job_scheduler.get_gpu() == 'no_gpu' or not tf.test.is_built_with_cuda():
                     job_scheduler.close_listener()
@@ -131,6 +135,7 @@ class LocalJobRunner(ParentJobRunner):
                         if gpu_id != '' and self.experiment_name in job:
                             gpu_id = job_scheduler.pop_gpu()
                             self.avail_gpu.append(gpu_id)
+                            device_type, device_id = "GPU", gpu_id
 
                         time.sleep(1)
                     
@@ -141,6 +146,9 @@ class LocalJobRunner(ParentJobRunner):
                     with open(os.path.join(model_dir, ASSIGNED_GPUS_FILENAME), 'w') as f:
                         f.write(visible_gpus)
 
+            else:
+                os.environ['CUDA_VISIBLE_DEVICES'] = "-1"
+            
             sys.path.append(resources_path)
             import input_function, model_function
 
@@ -152,10 +160,18 @@ class LocalJobRunner(ParentJobRunner):
             else:
                 cpu_counts = self.num_cores
 
-            sess_config = tf.ConfigProto(intra_op_parallelism_threads= int(cpu_counts), inter_op_parallelism_threads=2, allow_soft_placement = True)
+            sess_config = tf.ConfigProto(intra_op_parallelism_threads= int(cpu_counts), 
+                                        inter_op_parallelism_threads=2, 
+                                        allow_soft_placement = True
+                                        )
+
+            #selected_device = "/"+ device_type  + ":" + device_id
+            selected_device = ":".join(["/device", device_type, device_id])
+            strategy = tf.contrib.distribute.OneDeviceStrategy(device=selected_device)
             run_config = tf.estimator.RunConfig(save_summary_steps=self.summary_save_frequency,
                                                 save_checkpoints_steps=self.checkpoint_frequency_in_steps,
-                                                session_config=sess_config
+                                                session_config=sess_config,
+                                                train_distribute=strategy
                                                 )
 
             if self.warm_start_setting:

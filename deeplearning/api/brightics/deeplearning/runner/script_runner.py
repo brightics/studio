@@ -37,7 +37,7 @@ def create_script(script_id, json_spec):
         f.write(str(start_time))
 
     child_env = os.environ.copy()
-    child_env['CUDA_VISIBLE_DEVICES'] = ''
+    child_env['CUDA_VISIBLE_DEVICES'] = '-1'
 
     python_exec = os.getenv('BRIGHTICS_DL_PYTHON_PATH', 'python')
 
