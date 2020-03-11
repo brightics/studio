@@ -30,14 +30,14 @@ _SIMULATION_JOB_CONFS = [
     'local_simulation_grad_cam']
 
 TF_LOG_NAME = 'tensorflow'
-RESOURCES_DIR = 'resources' 
+RESOURCES_DIR = 'resources'
 INPUT_FUNCTION_FILENAME = 'input_function.py'
 OUTPUT_FUNCTION_FILENAME = 'output_function.py'
 MODEL_FUNCTION_FILENAME = 'model_function.py'
 SPEC_FILENAME = 'spec.json'
 ASSIGNED_GPUS_FILENAME = 'assigned_gpus'
 STATUS_PREFIX = 'STATUS.'
-
+PYTHON_PROCESS_NAME = 'python'
 
 class LocalInferenceJobRunner(ParentJobRunner):
 
@@ -147,7 +147,8 @@ class LocalInferenceJobRunner(ParentJobRunner):
             # update experiment name from model_dir
             path = os.path.normpath(inference_dir)
             self.experiment_name = path.split(os.sep)[-1]
-            
+            job_scheduler.set_job(self.experiment_name)
+
             resources_path = os.path.join(inference_dir, RESOURCES_DIR)
             with open(os.path.join(resources_path, SPEC_FILENAME), 'rt', encoding='utf-8') as job_spec_file:
                 self.make_inf_run_param(job_spec_file.read())
@@ -157,8 +158,6 @@ class LocalInferenceJobRunner(ParentJobRunner):
             device_type, device_id = "CPU", "0"
 
             if self.use_gpu:
-
-                job_scheduler.set_job(self.experiment_name)
 
                 # It can an get 2 or more gpus here, only 1 gpu implemented.
                 if job_scheduler.get_gpu() == 'no_gpu' or not tf.test.is_built_with_cuda():
@@ -185,6 +184,7 @@ class LocalInferenceJobRunner(ParentJobRunner):
                     f.write(visible_gpus)
             else:
                 os.environ['CUDA_VISIBLE_DEVICES'] = "-1"
+                job = job_scheduler.remove_job(self.experiment_name)
 
             sys.path.append(resources_path)
             import input_function, output_function, model_function
@@ -197,7 +197,7 @@ class LocalInferenceJobRunner(ParentJobRunner):
                 cpu_counts = self.num_cores
 
             sess_config = tf.ConfigProto(intra_op_parallelism_threads= int(cpu_counts), inter_op_parallelism_threads=2, allow_soft_placement = True)
-            
+
             selected_device = "/"+ device_type  + ":" + device_id
             strategy = tf.contrib.distribute.OneDeviceStrategy(device=selected_device)
             run_config = tf.estimator.RunConfig(session_config=sess_config,
@@ -299,10 +299,11 @@ class LocalInferenceJobRunner(ParentJobRunner):
 
         if status == 'Running':
             assigned_gpus = os.path.join(inference_dir, ASSIGNED_GPUS_FILENAME)
-            with open(assigned_gpus, 'r') as f:
-                for gpu_id in f.read().split(','):
-                    if gpu_id != '':
-                        job_scheduler.set_gpu(gpu_id)
+            if os.path.exists(assigned_gpus):
+                with open(assigned_gpus, 'r') as f:
+                    for gpu_id in f.read().split(','):
+                        if gpu_id != '':
+                            job_scheduler.set_gpu(gpu_id)
 
         if status == 'Waiting':
             job_scheduler.remove_job(experiment_name)
@@ -562,8 +563,7 @@ class LocalInferenceJobRunner(ParentJobRunner):
                     pid = f.read()
                 ps = psutil.Process(int(pid))
                 logger.debug('Inference Process running pid : %s', pid)
-                process_name = ['python', 'python.exe']
-                return True if ps.name() in process_name and ps.status() is not 'zombie' else False
+                return True if PYTHON_PROCESS_NAME in ps.name() and ps.status() is not 'zombie' else False
             else:
                 return False
         except:

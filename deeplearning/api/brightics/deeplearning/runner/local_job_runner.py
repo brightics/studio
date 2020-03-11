@@ -28,6 +28,7 @@ MODEL_FUNCTION_FILENAME = 'model_function.py'
 SPEC_FILENAME = 'spec.json'
 ASSIGNED_GPUS_FILENAME = 'assigned_gpus'
 STATUS_PREFIX = 'STATUS.'
+PYTHON_PROCESS_NAME = 'python'
 
 class LocalJobRunner(ParentJobRunner):
 
@@ -110,6 +111,7 @@ class LocalJobRunner(ParentJobRunner):
             # update experiment name from model_dir
             path = os.path.normpath(model_dir)
             self.experiment_name = path.split(os.sep)[-1]
+            job_scheduler.set_job(self.experiment_name)
 
             resources_path = os.path.join(model_dir, RESOURCES_DIR)
             with open(os.path.join(resources_path, SPEC_FILENAME), 'rt', encoding='utf-8') as job_spec_file:
@@ -120,8 +122,6 @@ class LocalJobRunner(ParentJobRunner):
             device_type, device_id = "CPU", "0"
 
             if self.use_gpu:
-                
-                job_scheduler.set_job(self.experiment_name)
 
                 # It can an get 2 or more gpus here, only 1 gpu implemented.
                 if job_scheduler.get_gpu() == 'no_gpu' or not tf.test.is_built_with_cuda():
@@ -138,7 +138,7 @@ class LocalJobRunner(ParentJobRunner):
                             device_type, device_id = "GPU", gpu_id
 
                         time.sleep(1)
-                    
+
                     visible_gpus = ','.join(self.avail_gpu)
                     job = job_scheduler.pop_job()
 
@@ -148,7 +148,8 @@ class LocalJobRunner(ParentJobRunner):
 
             else:
                 os.environ['CUDA_VISIBLE_DEVICES'] = "-1"
-            
+                job = job_scheduler.remove_job(self.experiment_name)
+
             sys.path.append(resources_path)
             import input_function, model_function
 
@@ -160,10 +161,10 @@ class LocalJobRunner(ParentJobRunner):
             else:
                 cpu_counts = self.num_cores
 
-            sess_config = tf.ConfigProto(intra_op_parallelism_threads= int(cpu_counts), 
-                                        inter_op_parallelism_threads=2, 
-                                        allow_soft_placement = True
-                                        )
+            sess_config = tf.ConfigProto(intra_op_parallelism_threads= int(cpu_counts),
+                                         inter_op_parallelism_threads=2,
+                                         allow_soft_placement = True
+                                         )
 
             #selected_device = "/"+ device_type  + ":" + device_id
             selected_device = ":".join(["/device", device_type, device_id])
@@ -356,10 +357,11 @@ class LocalJobRunner(ParentJobRunner):
 
         if status == 'Running':
             assigned_gpus = os.path.join(model_dir, ASSIGNED_GPUS_FILENAME)
-            with open(assigned_gpus, 'r') as f:
-                for gpu_id in f.read().split(','):
-                    if gpu_id != '':
-                        job_scheduler.set_gpu(gpu_id)
+            if os.path.exists(assigned_gpus):
+                with open(assigned_gpus, 'r') as f:
+                    for gpu_id in f.read().split(','):
+                        if gpu_id != '':
+                            job_scheduler.set_gpu(gpu_id)
 
         if status == 'Waiting':
             job_scheduler.remove_job(experiment_name)
@@ -438,8 +440,7 @@ class LocalJobRunner(ParentJobRunner):
 
                 ps = psutil.Process(pid)
                 logger.debug('Training Process running pid : %s', pid)
-                process_name = ['python', 'python.exe']
-                return True if ps.name() in process_name and ps.status() is not 'zombie' else False
+                return True if PYTHON_PROCESS_NAME in ps.name() and ps.status() is not 'zombie' else False
             else:
                 return False
         except:
