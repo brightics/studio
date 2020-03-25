@@ -155,7 +155,7 @@ class LocalInferenceJobRunner(ParentJobRunner):
 
             # Select available gpu or cpu env when it is not found
             self.avail_gpu = []
-            device_type, device_id = "CPU", "0"
+            device_count = {}
 
             if self.use_gpu:
 
@@ -163,6 +163,7 @@ class LocalInferenceJobRunner(ParentJobRunner):
                 if job_scheduler.get_gpu() == 'no_gpu' or not tf.test.is_built_with_cuda():
                     job_scheduler.close_listener()
                     inference_logger.warn("You have selected the GPU usage option. Since the current environment cannot use the GPU, the job is executed by the CPU.")
+                    self.use_gpu = False
                 else:
                     while len(self.avail_gpu) == 0:
                         gpu_id = job_scheduler.get_gpu()
@@ -171,7 +172,6 @@ class LocalInferenceJobRunner(ParentJobRunner):
                         if gpu_id != '' and self.experiment_name in job:
                             gpu_id = job_scheduler.pop_gpu()
                             self.avail_gpu.append(gpu_id)
-                            device_type, device_id = "GPU", gpu_id
                             job = job_scheduler.pop_job()
 
                         time.sleep(1)
@@ -191,17 +191,16 @@ class LocalInferenceJobRunner(ParentJobRunner):
 
             inference_logger.debug('inference_dir : {}'.format(inference_dir))
 
-            if self.num_cores == 0:
-                cpu_counts = psutil.cpu_count(logical=False) / 2
-            else:
-                cpu_counts = self.num_cores
+            cpu_counts = psutil.cpu_count(logical=False) / 2 if self.num_cores == 0 else self.num_cores
+            device_count['GPU'] = 1 if self.use_gpu else 0
 
-            sess_config = tf.ConfigProto(intra_op_parallelism_threads= int(cpu_counts), inter_op_parallelism_threads=2, allow_soft_placement = True)
-
-            selected_device = "/"+ device_type  + ":" + device_id
-            strategy = tf.contrib.distribute.OneDeviceStrategy(device=selected_device)
-            run_config = tf.estimator.RunConfig(session_config=sess_config,
-                                                train_distribute=strategy)
+            sess_config = tf.ConfigProto(intra_op_parallelism_threads=int(cpu_counts),
+                                         inter_op_parallelism_threads=2,
+                                         allow_soft_placement=True,
+                                         device_count=device_count,
+                                         gpu_options=tf.GPUOptions(allow_growth=True)
+                                         )
+            run_config = tf.estimator.RunConfig(session_config=sess_config)
 
             warm_start_settings = self.model_warm_start.get_warm_start_settings(
                 input_fn=input_function.brightics_inference_input_fn,

@@ -119,7 +119,7 @@ class LocalJobRunner(ParentJobRunner):
 
             # Select available gpu or cpu env when it is not found
             self.avail_gpu = []
-            device_type, device_id = "CPU", "0"
+            device_count = {}
 
             if self.use_gpu:
 
@@ -127,6 +127,7 @@ class LocalJobRunner(ParentJobRunner):
                 if job_scheduler.get_gpu() == 'no_gpu' or not tf.test.is_built_with_cuda():
                     job_scheduler.close_listener()
                     train_logger.warn("You have selected the GPU usage option. Since the current environment cannot use the GPU, the job is executed by the CPU.")
+                    self.use_gpu = False
                 else:
                     while len(self.avail_gpu) == 0:
                         gpu_id = job_scheduler.get_gpu()
@@ -135,7 +136,6 @@ class LocalJobRunner(ParentJobRunner):
                         if gpu_id != '' and self.experiment_name in job:
                             gpu_id = job_scheduler.pop_gpu()
                             self.avail_gpu.append(gpu_id)
-                            device_type, device_id = "GPU", gpu_id
 
                         time.sleep(1)
 
@@ -156,23 +156,19 @@ class LocalJobRunner(ParentJobRunner):
             model_params = copy.deepcopy(self.model_hparams)
             model_params['data_params'] = self.data_params
 
-            if self.num_cores == 0 or self.num_cores is None:
-                cpu_counts = psutil.cpu_count(logical=False) / 2
-            else:
-                cpu_counts = self.num_cores
+            cpu_counts = psutil.cpu_count(logical=False) / 2 if self.num_cores == 0 else self.num_cores
+            device_count['GPU'] = 1 if self.use_gpu else 0
 
-            sess_config = tf.ConfigProto(intra_op_parallelism_threads= int(cpu_counts),
+            sess_config = tf.ConfigProto(intra_op_parallelism_threads=int(cpu_counts),
                                          inter_op_parallelism_threads=2,
-                                         allow_soft_placement = True
+                                         allow_soft_placement=True,
+                                         device_count=device_count,
+                                         gpu_options=tf.GPUOptions(allow_growth=True)
                                          )
 
-            #selected_device = "/"+ device_type  + ":" + device_id
-            selected_device = ":".join(["/device", device_type, device_id])
-            strategy = tf.contrib.distribute.OneDeviceStrategy(device=selected_device)
             run_config = tf.estimator.RunConfig(save_summary_steps=self.summary_save_frequency,
                                                 save_checkpoints_steps=self.checkpoint_frequency_in_steps,
-                                                session_config=sess_config,
-                                                train_distribute=strategy
+                                                session_config=sess_config
                                                 )
 
             if self.warm_start_setting:
@@ -447,7 +443,6 @@ class LocalJobRunner(ParentJobRunner):
             logger.info('No process')
             return False
 
-
 def on_terminate(proc, logger_=None):
     if logger_ is None:
         logger_ = logger
@@ -457,3 +452,4 @@ def on_terminate(proc, logger_=None):
 def path_type_chk(dir):
     from brightics.deeplearning.util.path import path_type_chk as _path_type_chk
     return _path_type_chk(dir)
+
