@@ -191,11 +191,10 @@ class LocalInferenceJobRunner(ParentJobRunner):
 
             inference_logger.debug('inference_dir : {}'.format(inference_dir))
 
-            cpu_counts = psutil.cpu_count(logical=False) / 2 if self.num_cores == 0 else self.num_cores
             device_count['GPU'] = 1 if self.use_gpu else 0
 
-            sess_config = tf.ConfigProto(intra_op_parallelism_threads=int(cpu_counts),
-                                         inter_op_parallelism_threads=2,
+            sess_config = tf.ConfigProto(intra_op_parallelism_threads=self.intra_op_parallelism_threads,
+                                         inter_op_parallelism_threads=self.inter_op_parallelism_threads,
                                          allow_soft_placement=True,
                                          device_count=device_count,
                                          gpu_options=tf.GPUOptions(allow_growth=True)

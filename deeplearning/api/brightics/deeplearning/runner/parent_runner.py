@@ -54,7 +54,8 @@ class ParentJobRunner:
         self.checkpoint_frequency_in_steps = 100
         self.warm_start_setting = None
         self.early_stopping_code = None
-        self.num_cores = 0
+        self.intra_op_parallelism_threads = 0
+        self.inter_op_parallelism_threads  = 0
 
     def init_inference_default_param(self):
         # Inference Param
@@ -69,7 +70,8 @@ class ParentJobRunner:
         self.inf_conf_params = None
         self.encoding = 'utf-8'
         self.serializer = 'json'
-        self.num_cores = 0
+        self.intra_op_parallelism_threads = 0
+        self.inter_op_parallelism_threads  = 0
 
     def make_run_param(self, job_spec_jsonstr):
         # Training Job - Default Value Setting
@@ -116,7 +118,8 @@ class ParentJobRunner:
         self.no_of_workers = run_configuration.get('no_of_workers', 1)
         self.summary_save_frequency = run_configuration.get('summary_save_frequency', 10)
         self.use_gpu = run_configuration.get('use_gpu', False)
-        self.num_cores = run_configuration.get('num_cores', 0)
+        self.intra_op_parallelism_threads = run_configuration.get('intra_op_parallelism_threads', 0)
+        self.inter_op_parallelism_threads  = run_configuration.get('inter_op_parallelism_threads', 0)
         self.checkpoint_frequency_in_steps = run_configuration.get('checkpoint_frequency_in_steps', 100)
 
         self.warm_start_setting = get_python_object_from_spec_obj(run_configuration.get('warm_start_setting', None))
@@ -236,7 +239,8 @@ class ParentJobRunner:
 
         self.config = config
         self.use_gpu = inf_conf_params['use_gpu']
-        self.num_cores = inf_conf_params.get('num_cores', 0)
+        self.intra_op_parallelism_threads = inf_conf_params.get('intra_op_parallelism_threads', 0)
+        self.inter_op_parallelism_threads  = inf_conf_params.get('inter_op_parallelism_threads', 0)
         self.yield_single_examples = inf_conf_params.get('yield_single_examples', False)
         self.model_dir = output_dir
         self.model_path = trained_model_path
