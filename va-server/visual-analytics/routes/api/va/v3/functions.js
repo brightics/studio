@@ -1,6 +1,6 @@
 const locations = {
     js: ['./public/js/va/functions/',
-        './public/js/va/addonfunctions/'],
+        './public/js/va/addonfunctions/']
     // json: [ './public/js/va/functions/json/',
     //     './public/js/va/addonfunctions/json/'],
 };
@@ -90,6 +90,30 @@ const JSONLoader = async (req, res) => {
     return await getFileContentsViaCorePromise(req, res);
 }
 
+const getFileContentViaCorePromise = (req, res) => new Promise((resolve, reject) => {
+    const options = __BRTC_CORE_SERVER.createRequestOptions('GET', '/api/core/v3/function/meta/' + req.params.func);
+    __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
+    request(options, function (error, response) {
+        if (error) {
+            reject(response);
+        } else {
+            if (response.statusCode == 200) {
+                if(response.body != "") {
+                    resolve(JSON.parse(response.body));
+                } else {
+                    resolve({});
+                }
+            } else {
+                reject(response.statusCode);
+            }
+        }
+    })
+});
+
+const JSONLoaderbyFunction = async (req, res) => {
+    return await getFileContentViaCorePromise(req, res);
+}
+
 // returning value : Promise
 const makeCustomPalette = async (req, res, palette) => {
     const list = Object
@@ -138,3 +162,10 @@ exports.listFunctions = function (req, res) {
             res.send(s.map(e => e.specJson))
         })
 };
+
+exports.getFunctionbyFunc = function (req, res) {
+    Promise.resolve(JSONLoaderbyFunction(req, res))
+        .then(s => {
+            res.send(s.specJson)
+        })
+}
