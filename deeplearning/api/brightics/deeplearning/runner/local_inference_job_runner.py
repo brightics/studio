@@ -172,16 +172,16 @@ class LocalInferenceJobRunner(ParentJobRunner):
                         if gpu_id != '' and self.experiment_name in job:
                             gpu_id = job_scheduler.pop_gpu()
                             self.avail_gpu.append(gpu_id)
-                            job = job_scheduler.pop_job()
+
 
                         time.sleep(1)
 
-                visible_gpus = ','.join(self.avail_gpu)
-                job = job_scheduler.pop_job()
+                    visible_gpus = ','.join(self.avail_gpu)
+                    job = job_scheduler.pop_job()
 
-                os.environ['CUDA_VISIBLE_DEVICES'] = visible_gpus
-                with open(os.path.join(inference_dir, ASSIGNED_GPUS_FILENAME), 'w') as f:
-                    f.write(visible_gpus)
+                    os.environ['CUDA_VISIBLE_DEVICES'] = visible_gpus
+                    with open(os.path.join(inference_dir, ASSIGNED_GPUS_FILENAME), 'w') as f:
+                        f.write(visible_gpus)
             else:
                 os.environ['CUDA_VISIBLE_DEVICES'] = "-1"
                 job = job_scheduler.remove_job(self.experiment_name)
