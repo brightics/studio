@@ -21,10 +21,6 @@ logger = common_logging.get_logger(__name__)
 
 
 def _get_image_common_dataflow(input_fn_spec):
-    assert isinstance(input_fn_spec, dict) or isinstance(input_fn_spec, str)
-    if isinstance(input_fn_spec, str):
-        input_fn_spec = json.loads(input_fn_spec)
-
     assert 'loader' in input_fn_spec
     assert 'transformer' in input_fn_spec
 
@@ -46,7 +42,7 @@ def _get_image_common_dataflow(input_fn_spec):
     batch_size = transform_params.get('batch_size', 32)
     remainder = transform_params.get('remainder', False)
 
-    dataflow_runner_spec = transform_params.get('dataflow_runner', None)
+    # dataflow_runner_spec = transform_params.get('dataflow_runner', None)
     mapdata_spec = transform_params.get('mapdata_func', {})
 
     '''
@@ -70,8 +66,8 @@ def _get_image_common_dataflow(input_fn_spec):
     df = mapdata_func(ds=df, map_func=partial(augment, augmenters=augmenters + post_processors))
 
     df = mapdata_func(ds=df, map_func=partial(postprocess_transform, max_anns=max_anns))
-    if dataflow_runner_spec:
-        df = get_python_object_from_spec_obj(dataflow_runner_spec)(df)
+    # if dataflow_runner_spec:
+    #     df = get_python_object_from_spec_obj(dataflow_runner_spec)(df)
 
     df = MapData(ds=df, func=tuple)
     df = BatchData(df, batch_size, remainder=remainder)
@@ -82,6 +78,13 @@ def _get_image_common_dataflow(input_fn_spec):
 
 
 def get_image_common_input_fn(input_fn_spec):
+    assert isinstance(input_fn_spec, dict) or isinstance(input_fn_spec, str)
+    if isinstance(input_fn_spec, str):
+        input_fn_spec = json.loads(input_fn_spec)
+
+    transform_params = input_fn_spec['transformer']['params']['parameters']['params']
+    prefetch_buffer_size = transform_params.get('prefetch_buffer_size', None)
+
     def _input_fn():
         for handler in tensorpack_logging._logger.handlers:
             if isinstance(handler, logging.StreamHandler):
@@ -91,8 +94,12 @@ def get_image_common_input_fn(input_fn_spec):
         try:
             df.reset_state()
         except AssertionError as ass_err:
+            logger.warn(ass_err)
             pass
+
         tf_dataset = tf.data.Dataset.from_generator(df.get_data, output_types)
+        if prefetch_buffer_size:
+            tf_dataset = tf_dataset.prefetch(prefetch_buffer_size)
 
         return tf_dataset
 
