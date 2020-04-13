@@ -31,7 +31,7 @@ IF EXIST "%BRIGHTICS_SERVER_HOME%tmp" (
 
 mkdir "%BRIGHTICS_SERVER_HOME%tmp"
 
-java %JAVA_OPTS% -classpath . %MAIN% 
+"%JAVA_HOME%\bin\java" %JAVA_OPTS% -classpath . %MAIN%
 
 :usage
 echo Usage: %~n0 USER_ID
