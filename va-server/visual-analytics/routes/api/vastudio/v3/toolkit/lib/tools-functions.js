@@ -26,7 +26,7 @@ var createToolsFunction = function (req, res) {
             if (result.length < 100) {
                 var opt = {
                     tools_project_id: req.params.tpid,
-                    // id: req.body.id,
+                    id: IDGenerator.func.id(),
                     label: req.body.label,
                     contents: req.body.contents,
                     description: __BRTC_TOOLS_SANITIZE_HTML.sanitizeHtml(req.body.description),
