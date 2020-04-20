@@ -331,13 +331,23 @@ const downloadExampleModelJson = function(req, res) {
   var modelName = req.params.fileName;
   var models = [];
   var modelContents = "";
-  getPalette(req, res).then(({ palette, fileContents }) => {
+  getPalette(req, res).then(({ palette, fileContents, dbContents  }) => {
     for (var fc in fileContents) {
       if (fileContents[fc].specJson.func === func) {
         models = fileContents[fc].exampleModels;
         break;
       }
     }
+    if (models.length === 0){
+      for (var dc in dbContents) {
+        let dbContentsSpec = JSON.parse(dbContents[dc].contents)
+        if (dbContentsSpec.func === func) {
+          models = dbContents[dc].example_models ? JSON.parse(dbContents[dc].example_models): [];
+          break;
+        }
+      }
+    }
+
     for (var model in models) {
       if (models[model].fileName === modelName) {
         modelContents = models[model].contents;
@@ -357,11 +367,20 @@ const getBase64SampleImage = function(req, res) {
   var imageName = req.params.fileName;
   var images = [];
   var base64Image = "";
-  getPalette(req, res).then(({ palette, fileContents }) => {
+  getPalette(req, res).then(({ palette, fileContents, dbContents }) => {
     for (let fc in fileContents) {
       if (fileContents[fc].specJson.func === func) {
         images = fileContents[fc].sampleImages;
         break;
+      }
+    }
+    if (images.length === 0) {
+      for (let dc in dbContents) {
+        let dbContentsSpec = JSON.parse(dbContents[dc].contents)
+        if (dbContentsSpec.func === func) {
+          images = dbContents[dc].sample_images ? JSON.parse(dbContents[dc].sample_images) : [];
+          break;
+        }
       }
     }
     for (var img in images) {
