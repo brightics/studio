@@ -41,19 +41,22 @@ const DDL_CREATE_ADDON_FUNCTION_TABLE_SQLITE = '' +
     '    updater character varying(40),                       ' +
     '    update_time timestamp without time zone,             ' +
     '    markdown text,                                       ' +
+    '    example_models text,                                 ' +
+    '    sample_images text,                                  ' +
+    '    script_examples text,                                ' +
     '    CONSTRAINT brtc_addon_function_pkey PRIMARY KEY (id) ' +
     ')                                                        ';
 
 const ADDON_FUNCTION_SELECT_ALL_DEFAULT = 'SELECT * FROM brtc_addon_function ORDER BY create_time desc, label ';
 const ADDON_FUNCTION_SELECT_BY_ID_DEFAULT = 'SELECT * FROM brtc_addon_function where id = $1 ';
 const ADDON_FUNCTION_CREATE_DEFAULT = '' +
-    'INSERT INTO brtc_addon_function (id, label, version, type, contents, script_id, description, resource_id, creator, create_time, markdown) ' +
-    '       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, now(), $10)';
+    'INSERT INTO brtc_addon_function (id, label, version, type, contents, script_id, description, resource_id, creator, create_time, markdown, example_models, sample_images, script_examples) ' +
+    '       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, now(), $10, $11, $12, $13)';
 
 const ADDON_FUNCTION_CREATE_SQLITE = `
     INSERT INTO brtc_addon_function
-        (id, label, version, type, contents, script_id, description, resource_id, creator, create_time, markdown)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, datetime('now'), $10)
+        (id, label, version, type, contents, script_id, description, resource_id, creator, create_time, markdown, example_models, sample_images, script_examples)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, datetime('now'), $10, $11, $12, $13)
 `;
 
 const ADDON_FUNCTION_DELETE_BY_ID_DEFAULT = 'DELETE FROM brtc_addon_function WHERE id=$1 ';
@@ -100,6 +103,9 @@ module.exports = {
                         columns[result[i].column_name] = true;
                     }
                     if (!columns['markdown']) query('ALTER TABLE brtc_addon_function ADD COLUMN markdown text', errCallback);
+                    if (!columns['example_models']) query('ALTER TABLE brtc_addon_function ADD COLUMN example_models text', errCallback);
+                    if (!columns['sample_images']) query('ALTER TABLE brtc_addon_function ADD COLUMN sample_images text', errCallback);
+                    if (!columns['script_examples']) query('ALTER TABLE brtc_addon_function ADD COLUMN script_examples text', errCallback);
                     if (doneCallback) doneCallback(result.rows, result, DDL_CHECK_TABLE, ['brtc_addon_function']);
                 }
             });
@@ -111,7 +117,7 @@ module.exports = {
             query(ADDON_FUNCTION_SELECT_BY_ID, [opt.id], errCallback, doneCallback);
         },
         create: function (opt, errCallback, doneCallback) {
-            query(ADDON_FUNCTION_CREATE, [opt.id, opt.label, '1.0', opt.type, opt.contents, opt.scriptId, opt.description, null, opt.userId, opt.markdown], errCallback, doneCallback);
+            query(ADDON_FUNCTION_CREATE, [opt.id, opt.label, '1.0', opt.type, opt.contents, opt.scriptId, opt.description, null, opt.userId, opt.markdown, opt.example_models, opt.sample_images, opt.script_examples], errCallback, doneCallback);
         },
         deleteById: function (opt, errCallback, doneCallback) {
             query(ADDON_FUNCTION_DELETE_BY_ID, [opt.id], errCallback, doneCallback);
