@@ -11,25 +11,30 @@
 
     <script src="js/plugins/babel-polyfill/polyfill.js"></script>
     <script src="js/plugins/css.escape/css.escape.js"></script>
-    
+
     <link type="text/css" rel="stylesheet" href="css/plugins/bootstrap-3.3.7/bootstrap.min.css">
     <link type="text/css" rel="stylesheet" href="css/plugins/bootstrap-3.3.7/bootstrap-theme.min.css">
     <link type="text/css" rel="stylesheet" href="css/plugins/docs-assets/docs.css">
     <link type="text/css" rel="stylesheet" href="css/plugins/documentation/documentation.css">
 
     <!-- Handsontable css -->
-    <link type="text/css" rel='stylesheet' href='/css/plugins/handsontable/handsontable.full.min.css'/>
-
+    <link type="text/css" rel='stylesheet' href='css/plugins/handsontable/handsontable.full.min.css'/>
+    <link type="text/css" rel="stylesheet" href="css/plugins/aui-package/aui-widgets-1.16.8.css">
+    <link type="text/css" rel='stylesheet' href='css/plugins/aui-package/aui-widgets-1.9.0.office.css'/>
     <style>
         .nav.bs-sidenav.bs-theme-brtc {
-            max-height: 600px;
+            max-height: 650px;
             overflow: auto;
         }
 
-        .panel-body ul li
-        {
+        .panel-body ul li {
             margin-bottom: 5px;
             list-style-type: decimal;
+        }
+
+        .language {
+            float: right;
+            font-size: 12px;
         }
     </style>
 
@@ -37,6 +42,7 @@
 <body>
 <div class="bs-header bs-theme-brtc" id="content">
     <div class="container">
+        <div class="language"></div>
         <h2>Function Reference</h2>
         <p>The functions, as given by the document strings. The documents expected types and allowed features for all
             functions, and all parameters available for the algorithms.</p>
@@ -55,7 +61,7 @@
                         <input class="form-control" placeholder="Search Functions"></input>
                     </div>
                     <% for(var i in palette) { if (!palette[i].visible) continue; %>
-                    <li class="<%= palette[i].key%>">
+                    <li class="<%= palette[i].key %>">
 
                         <a><%= palette[i].label %></a>
                         <ul class="nav">
@@ -77,14 +83,24 @@
                 <div class="panel-heading"><h3 class="panel-title"><strong>Note</strong></h3></div>
                 <div class="panel-body">
                     <ul>
-                        <li>A significant digit is 10 digits for all analytic functions. We ignore the differences between each value of outputs from analytic function results and help pages in case more than 10 significant digits are the same.</li>
+                        <li>A significant digit is 10 digits for all analytic functions. We ignore the differences
+                            between each value of outputs from analytic function results and help pages in case more
+                            than 10 significant digits are the same.
+                        </li>
                         <% if ( version ) { %>
-                        <li>When you use train and predict functions, the order and the number of columns should be the same for both functions.</li>
+                            <li>When you use train and predict functions, the order and the number of columns should be
+                                the same for both functions.
+                            </li>
                         <% } %>
-                        <li>We recommend you to preprocess abnormal values such as NaN or null beforehand. You can use Brightics preprocessing functions before analyzing data.</li>
-                        <li>The result of the function may vary depending on the system even if the same seed is used.</li>
+                        <li>We recommend you to preprocess abnormal values such as NaN or null beforehand. You can use
+                            Brightics preprocessing functions before analyzing data.
+                        </li>
+                        <li>The result of the function may vary depending on the system even if the same seed is used.
+                        </li>
                         <% if ( version ) { %>
-                        <li>The results of Spark and Python functions may differ even if you use the same function because of the internal algorithms are different.</li>
+                            <li>The results of Spark and Python functions may differ even if you use the same function
+                                due to the different internal algorithms.
+                            </li>
                         <% } %>
                     </ul>
                 </div>
@@ -123,19 +139,19 @@
 <script src="js/va/brightics-va-core.min.js"></script>
 
 <!-- Bcharts -->
-<script src="js/plugins/bcharts/bcharts-all.js"></script>
-<script src="js/plugins/bcharts/bcharts-adonis-all.js"></script>
-<script src="js/plugins/bcharts/bcharts-module-all.js"></script>
+<!--<script src="js/plugins/bcharts/bcharts-all.js"></script>-->
+<!--<script src="js/plugins/bcharts/bcharts-adonis-all.js"></script>-->
+<!--<script src="js/plugins/bcharts/bcharts-module-all.js"></script>-->
 
 <!-- Brightics Modules -->
 <script src="js/va/brightics-va-functions.min.js"></script>
 <script src="js/va/brightics-va-dataflow.min.js"></script>
-<!-- <script src="js/va/brightics-va-controlflow.min.js"></script> -->
-<!-- <script src="js/va/brightics-va-realtime.min.js"></script> -->
-<!-- <script src="js/va/brightics-va-etlflow.min.js"></script> -->
-<script src="js/va/brightics-va-visual.min.js"></script>
+<!-- <script src="js/va/brightics-va-controlflow.js"></script> -->
+<!-- <script src="js/va/brightics-va-realtime.js"></script> -->
+<!-- <script src="js/va/brightics-va-etlflow.js"></script> -->
+<!--<script src="js/va/brightics-va-visual.min.js"></script>-->
 <script src="js/va/brightics-va-script.min.js"></script>
-<script src="js/va/brightics-va-deeplearning.min.js"></script>
+<!-- <script src="js/va/brightics-va-deeplearning.js"></script> -->
 
 <script>
 
@@ -154,31 +170,31 @@
         });
     };
 
-    var _render_format = function () {
-        // TODO: python tab 추가
-        var $formatDiv = $('<div></div>');
-        var $formatHeader = $('.bs-docs-section.bs-theme-brtc h2:contains("Format")')
-        var $formatContents = $formatHeader.nextUntil('h2');
-        $formatDiv.append($formatContents);
-        var $form_text = $formatDiv.find('h3:contains("Scala")').length > 0 ? 'Scala' : 'Python'
-        var $form_scala_header = $formatDiv.find('h3:contains("Scala")').length > 0 ?
-               $formatDiv.find('h3:contains("Scala")') : $formatDiv.find('h3:contains("Python")');
-        var $form_scala_contents = $form_scala_header.nextUntil('h3');
-        if (!$form_scala_contents.length) return;
-
-        var $tabPanel = $('' +
-                '<div role="tabpanel">' +
-                '   <ul class="nav nav-tabs" role="tablist">' +
-                '       <li role="presentation" class="active"><a href="#format_scala" role="tab" data-toggle="tab">'+ $form_text +'</a></li>' +
-                '   </ul>' +
-                '   <div class="tab-content">' +
-                '       <div role="tabpanel" class="tab-pane active" id="format_scala"></div>' +
-                '   </div>' +
-                '</div>');
-
-        $tabPanel.find('div#format_scala').append($form_scala_contents);
-        $formatHeader.after($tabPanel);
-    };
+    // var _render_format = function () {
+    //     // TODO: python tab 추가
+    //     var $formatDiv = $('<div></div>');
+    //     var $formatHeader = $('.bs-docs-section.bs-theme-brtc h2:contains("Format")')
+    //     var $formatContents = $formatHeader.nextUntil('h2');
+    //     $formatDiv.append($formatContents);
+    //     var $form_text = $formatDiv.find('h3:contains("Scala")').length > 0 ? 'Scala' : 'Python'
+    //     var $form_scala_header = $formatDiv.find('h3:contains("Scala")').length > 0 ?
+    //            $formatDiv.find('h3:contains("Scala")') : $formatDiv.find('h3:contains("Python")');
+    //     var $form_scala_contents = $form_scala_header.nextUntil('h3');
+    //     if (!$form_scala_contents.length) return;
+    //
+    //     var $tabPanel = $('' +
+    //             '<div role="tabpanel">' +
+    //             '   <ul class="nav nav-tabs" role="tablist">' +
+    //             '       <li role="presentation" class="active"><a href="#format_scala" role="tab" data-toggle="tab">'+ $form_text +'</a></li>' +
+    //             '   </ul>' +
+    //             '   <div class="tab-content">' +
+    //             '       <div role="tabpanel" class="tab-pane active" id="format_scala"></div>' +
+    //             '   </div>' +
+    //             '</div>');
+    //
+    //     $tabPanel.find('div#format_scala').append($form_scala_contents);
+    //     $formatHeader.after($tabPanel);
+    // };
 
     var _render_description = function () {
         var $descDiv = $('<div></div>');
@@ -195,12 +211,12 @@
             var $desc_scala_contents = $desc_scala_header.nextUntil('h3');
 
             var $tabPanel = $('' +
-                    '<div role="tabpanel">' +
-                    '   <ul class="nav nav-tabs" role="tablist">' +
-                    '   </ul>' +
-                    '   <div class="tab-content">' +
-                    '   </div>' +
-                    '</div>');
+                '<div role="tabpanel">' +
+                '   <ul class="nav nav-tabs" role="tablist">' +
+                '   </ul>' +
+                '   <div class="tab-content">' +
+                '   </div>' +
+                '</div>');
 
             if ($desc_va_header.length) {
                 $tabPanel.find('.nav.nav-tabs').append($('<li role="presentation"><a href="#description_va" role="tab" data-toggle="tab">VA</a></li>'));
@@ -240,12 +256,12 @@
             var $prop_scala_contents = $prop_scala_header.nextUntil('h3');
 
             var $tabPanel = $('' +
-                    '<div role="tabpanel">' +
-                    '   <ul class="nav nav-tabs" role="tablist">' +
-                    '   </ul>' +
-                    '   <div class="tab-content">' +
-                    '   </div>' +
-                    '</div>');
+                '<div role="tabpanel">' +
+                '   <ul class="nav nav-tabs" role="tablist">' +
+                '   </ul>' +
+                '   <div class="tab-content">' +
+                '   </div>' +
+                '</div>');
 
             if ($prop_va_header.length) {
                 $tabPanel.find('.nav.nav-tabs').append($('<li role="presentation"><a href="#properties_va" role="tab" data-toggle="tab">VA</a></li>'));
@@ -282,12 +298,12 @@
             var $const_scala_contents = $const_scala_header.nextUntil('h3');
 
             var $tabPanel = $('' +
-                    '<div role="tabpanel">' +
-                    '   <ul class="nav nav-tabs" role="tablist">' +
-                    '   </ul>' +
-                    '   <div class="tab-content">' +
-                    '   </div>' +
-                    '</div>');
+                '<div role="tabpanel">' +
+                '   <ul class="nav nav-tabs" role="tablist">' +
+                '   </ul>' +
+                '   <div class="tab-content">' +
+                '   </div>' +
+                '</div>');
 
             if ($const_va_header.length) {
                 $tabPanel.find('.nav.nav-tabs').append($('<li role="presentation"><a href="#constraint_va" role="tab" data-toggle="tab">VA</a></li>'));
@@ -339,12 +355,12 @@
                 var $tableArea = $tableStart.prev().nextAll();
 
                 var $examTab = $('' +
-                        '<div role="tabpanel">' +
-                        '   <ul class="nav nav-tabs" role="tablist">' +
-                        '   </ul>' +
-                        '   <div class="tab-content">' +
-                        '   </div>' +
-                        '</div>');
+                    '<div role="tabpanel">' +
+                    '   <ul class="nav nav-tabs" role="tablist">' +
+                    '   </ul>' +
+                    '   <div class="tab-content">' +
+                    '   </div>' +
+                    '</div>');
 
                 if ($exam_va_header.length) {
                     $examTab.find('.nav.nav-tabs').append($('<li role="presentation"><a href="#' + exam_id + '_va" role="tab" data-toggle="tab">VA</a></li>'));
@@ -422,7 +438,7 @@
             };
             $.ajax(addonfunctionOpt).done(function (functions) {
                 var func2spec = {}
-                functions.forEach(function(spec) {
+                functions.forEach(function (spec) {
                     func2spec[spec.func] = spec
                 })
                 $('.nav.bs-sidenav > li').each(function (index, el) {
@@ -460,11 +476,15 @@
 
                         var qs = [
                             ['type', type],
-                            ['context', context]
+                            ['context', context],
+                            ['func', func]
                         ].map(function (x) {
                             return x.join('=');
                         }).join('&');
-
+                        var language = $.cookie('language');
+                        if (language !== 'en') {
+                            qs += '&lang=' + language
+                        }
                         $(element).attr('id', operator);
                         $(element).addClass(context);
                         $(element).append('<a func-anchor="true" href="/api/va/v2/help/function/' + operator + '?' + qs + '">' + label + '</a>');
@@ -480,10 +500,14 @@
                             var helperSpec = Brightics.VA.Implementation[modelType].Helpers[helperNm];
                             var helperLabel = helperSpec.label || helperNm;
                             var helperOperator = helperSpec.operation || helperNm;
+                            var helperFunc = helperSpec.func || helperNm;
                             var helperContext = helperSpec.context || 'scala';
                             $helperPage.find('li').attr('id', helperOperator);
-                            $helperPage.find('li').append('<a func-anchor="true" href="/api/va/v2/help/function/' +
-                                helperOperator + '?type=' + type + '&context=' + helperContext + '">' + helperLabel + '</a>');
+                            var url = '/api/va/v2/help/function/' + helperOperator + '?type=' + type + '&context=' + helperContext + '&func=' + helperFunc;
+                            if (language !== 'en') {
+                                url += '&lang=' + language
+                            }
+                            $helperPage.find('li').append('<a func-anchor="true" href="' + url + '">' + helperLabel + '</a>');
                         }
                     });
                 })
@@ -491,13 +515,13 @@
                     url: 'api/va/v3/ws/udfs',
                     type: 'GET',
                     blocking: false,
-                    complete: function() {
+                    complete: function () {
                         _select_sidebar();
                     }
                 };
                 $.ajax(udfOpt).done(function (functions) {
                     var func2udf = {};
-                    functions.forEach(function(element) {
+                    functions.forEach(function (element) {
                         var func = element.id;
                         try {
                             func2udf[func] = JSON.parse(element.contents);
@@ -505,7 +529,7 @@
                             func2udf[func] = {};
                         }
                     })
-                    $('.nav.bs-sidenav > li.udf').each(function (index, el) {
+                    $('.nav.bs-sidenav > li').each(function (index, el) {
                         $(el).find('ul > li').each(function (index, element) {
                             var context = 'scala';
                             var func = $(element).attr('func');
@@ -514,18 +538,25 @@
                             else if (type === 'deeplearning') modelType = 'DeepLearning';
 
                             funcSpec = func2udf[func];
+                            if(!funcSpec) return;
                             operator = func
+                            context = funcSpec.context
                             label = funcSpec.label;
 
                             var qs = [
                                 ['type', type],
-                                ['context', context]
+                                ['context', context],
+                                ['func', func]
                             ].map(function (x) {
                                 return x.join('=');
                             }).join('&');
 
-                            $(element).attr('id', 'udf_'+operator);
+                            $(element).attr('id', 'udf_' + operator);
                             $(element).addClass(context);
+                            var language = $.cookie('language');
+                            if (language !== 'en') {
+                                qs += '&lang=' + language
+                            }
                             $(element).append('<div class="docs-icon"></div><a func-anchor="true" href="/api/va/v2/help/function/udf_' + operator + '?' + qs + '">' + label + '</a>');
 
                             var helperNm = $(element).attr('helper');
@@ -539,10 +570,14 @@
                                 var helperSpec = Brightics.VA.Implementation[modelType].Helpers[helperNm];
                                 var helperLabel = helperSpec.label || helperNm;
                                 var helperOperator = helperSpec.operation || helperNm;
+                                var helperFunc = helperSpec.func || helperNm;
                                 var helperContext = helperSpec.context || 'scala';
+                                var url = '/api/va/v2/help/function/' + helperOperator + '?type=' + type + '&context=' + helperContext + '&func=' + helperFunc;
+                                if (language !== 'en') {
+                                    url += '&lang=' + language
+                                }
                                 $helperPage.find('li').attr('id', helperOperator);
-                                $helperPage.find('li').append('<a func-anchor="true" href="/api/va/v2/help/function/' +
-                                    helperOperator + '?type=' + type + '&context=' + helperContext + '">' + helperLabel + '</a>');
+                                $helperPage.find('li').append('<a func-anchor="true" href="' + url + '">' + helperLabel + '</a>');
                             }
                         });
                     });
@@ -562,7 +597,7 @@
             } else {
                 var selector = (function (str) {
                     var value = '';
-                    for(var i = 0 ; i < str.length ; i++) {
+                    for (var i = 0; i < str.length; i++) {
                         if (str[i] === '.' || str[i] === ',' || str[i] === '$')
                             value += '\\' + str[i];
                         else
@@ -573,13 +608,13 @@
                 $('.nav.bs-sidenav.bs-theme-brtc #' + selector).addClass('active');
                 $('.nav.bs-sidenav.bs-theme-brtc #' + selector).parentsUntil('.nav.bs-sidenav', 'li').addClass('active');
 
-                label = $('.nav.bs-sidenav.bs-theme-brtc #' + selector + ' > a').text();
+                label = $('.nav.bs-sidenav.bs-theme-brtc #' + selector + ' > a').html();
             }
 
             if (label) {
                 var $formatHeader = $('.bs-docs-section.bs-theme-brtc > h2:contains("Format")');
                 if ($formatHeader.length) $formatHeader.replaceWith('<h1>' + label + '</h1>');
-                else $('.bs-docs-section.bs-theme-brtc > h2:first').before($('<h1>' + label + '</h1>'));
+                // else $('.bs-docs-section.bs-theme-brtc > h2:first').before($('<h1>' + label + '</h1>'));
             }
         }
 
@@ -604,11 +639,78 @@
         });
     };
 
+    var _render_language = function () {
+        var language = $.cookie('language');
+        var source = [{text: "Global/English", value: 'en'}, {text: "Korean/한국어", value: "kr"}];
+        var selectedIndex = 0;
+        for (sIdx in source) {
+            if (source[sIdx].value === language) {
+                selectedIndex = sIdx
+            }
+        }
+        $('.language').jqxDropDownList({
+            source: source,
+            selectedIndex: selectedIndex,
+            checkboxes: false,
+            width: 120,
+            height: 25,
+            dropDownHeight: 52,
+            openDelay: 0,
+            closeDelay: 0,
+            displayMember: 'text',
+            valueMember: 'value'
+        });
+
+        function getUrlParams() {
+            var params = {};
+            window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (str, key, value) {
+                params[key] = value;
+            });
+            return params;
+        }
+
+        function queryStr(originParam){
+            return Object.entries(originParam).map(function (param) {
+                return param[0] + '=' + param[1]
+            }).join('&')
+        }
+
+        var originParam = getUrlParams();
+
+        $('.language').on('select', function (event) {
+            var args = event.args;
+            var item = $('.language').jqxDropDownList('getItem', args.index);
+            if (item != null) {
+                if (item.value === 'kr') {
+                    originParam.lang = item.value;
+                } else {
+                    delete originParam.lang;
+                }
+                $.cookie('language', item.value)
+                window.location.href = window.location.pathname + '?' +  queryStr(originParam);
+            }
+        });
+
+        //초기 Cookie 값으로 redirect 하기 위한 로직
+        if (language === 'kr') {
+            if (!originParam.lang) {
+                originParam.lang = language;
+                window.location.href = window.location.pathname + '?' + queryStr(originParam);
+            }
+        } else {
+            if (originParam.lang) {
+                delete originParam.lang;
+                window.location.href = window.location.pathname + '?' + queryStr(originParam);
+            }
+        }
+    }
+
     window.onload = function () {
+        _render_language();
         _render_docs_section();
         _render_external_link();
         _render_table();
-        _render_format();
+        // _render_format();
         _render_description();
         _render_properties();
         _render_constraint();

@@ -1,4 +1,5 @@
 var router = __REQ_express.Router();
+var IDGenerator = require('../../../../../../lib/tools/idgenerator');
 
 var listToolsFunctions = function (req, res) {
     var task = function (permissions) {
@@ -25,12 +26,12 @@ var createToolsFunction = function (req, res) {
             if (result.length < 100) {
                 var opt = {
                     tools_project_id: req.params.tpid,
-                    // id: req.body.id,
+                    id: IDGenerator.func.id(),
                     label: req.body.label,
                     contents: req.body.contents,
                     description: __BRTC_TOOLS_SANITIZE_HTML.sanitizeHtml(req.body.description),
                     creator: req.apiUserId || 'brightics@samsung.com',
-                    type: req.body.contents.category || 'udf'
+                    type: req.body.fnType
                 };
 
                 __BRTC_DAO.tools_project.updateTime({id: req.params.tpid}, function () {
@@ -43,7 +44,7 @@ var createToolsFunction = function (req, res) {
                             __BRTC_ERROR_HANDLER.sendServerError(res, err)
                         }
                     }, function (result) {
-                        res.sendStatus(200)
+                        res.status(200).json(opt.id)
                     })
                 })
             } else {
@@ -64,10 +65,6 @@ var getToolsFunction = function (req, res) {
         __BRTC_DAO.tools_function.selectById(opt, function (err) {
             __BRTC_ERROR_HANDLER.sendServerError(res, err)
         }, function (result) {
-            // for (var i in result) {
-            //   result[i].contents = JSON.parse(result[i].contents)
-            //   _migrate(result[i].contents.functions)
-            // }
             res.json(result)
         })
     };

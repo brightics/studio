@@ -30,5 +30,8 @@ public class FunctionMetaParam {
 	private Map<String, Object> script;
 	private Map<String, Object> specJson;
 	private Object md;
+	private Object exampleModels;
+	private Object sampleImages;
+	private Object scriptExamples;
 
 }
