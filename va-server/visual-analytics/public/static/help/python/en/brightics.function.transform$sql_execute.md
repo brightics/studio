@@ -1,18 +1,9 @@
 ## Format
-### Python
-```python
-from brightics.function.transform import sql_execute
-res = sql_execute(tables = ,query = )
-res['out_table']
-```
+
+This function returns value for executed SQL Query. 
 
 ## Description
-This function returns value for executed SQL Query. For a description of core functions, see <https://www.sqlite.org/index.html>. UDF(User defined function)s are introduced in 'Summary' part of the help page.
-
----
-
-## Summary
-
+This function returns value for executed SQL Query. For a description of core functions, see <https://www.sqlite.org/index.html>. UDF(User defined function)s are introduced below: 
 
 ### Aggregate Functions
 
@@ -159,19 +150,58 @@ This function returns value for executed SQL Query. For a description of core fu
 
 ---
 
+
 ## Properties
 ### VA
-#### Inputs: tables
+#### INPUT
+1. **table**<b style="color:red">*</b>: (Table) Tables to execute a query.
+#### OUTPUT
+1. **out_table**: (Table) Sql query result.
+#### PARAMETER
+2. **SQL**<b style="color:red">*</b>: SQL statement 
 
-#### Parameters
-1. **SQL**<b style="color:red">*</b>: SQL Query
-
-#### Outputs: table
 
 ### Python
-#### Inputs: tables
+#### USAGE
+```
+from brightics.function.transform import sql_execute
+res = sql_execute(tables = ,query = )
+res['out_table']
+```
 
-#### Parameters
-1. **query**<b style="color:red">*</b>: SQL Query
-      
-#### Outputs: table
+#### OUTPUT
+1. **out_table**: (Table) Sql query result.
+#### PARAMETER
+1. **tables**<b style="color:red">*</b>: Tables to execute a query.
+    * Value type : *list[Table]*<br><br>
+    
+2. **SQL**<b style="color:red">*</b>: SQL statement 
+    * Value type : *str*
+
+
+## Example
+### VA
+
+**<a href="/static/help/python/sample_model/query_executor.json" download>[Sample Model]</a>**
+
+<img src="/static/help/python/sample_model_img/query_executor.PNG"  width="800px" style="border: 1px solid gray" >
+
+<br>In this tutorial workflow, we executed the following SQL query statememt in sample iris table.
+<br> """select species, count(*), max(sepal_length), max(sepal_width) from #{DF(0)}
+        where sepal_length > 3 group by #{DF(0)}.species"""
+
+
+### Python
+```
+from brightics.function.transform import sql_execute2
+stmt = """select species, count(*), max(sepal_length), max(sepal_width) from #{DF(0)}
+          where sepal_length > 3 group by #{DF(0)}.species"""
+res = sql_execute(tables=[inputs[0]], query=stmt)
+table = res['out_table']
+```
+
+<br>In this Python script, we executed the following SQL query statememt in sample iris table.
+<br> """select species, count(*), max(sepal_length), max(sepal_width) from #{DF(0)}
+        where sepal_length > 3 group by #{DF(0)}.species"""
+
+

@@ -1,16 +1,11 @@
-## Format
-### Python
-```python
-from brightics.function.transform import sql_execute2
-res = sql_execute2(tables = ,query = )
-res['out_table']
-```
+# Fast Query Executor
+This function returns a SQL Query result.
 
 ## Description
 This function returns a SQL Query result. 
 
 - The function is currently under development. Implemented SQL Syntax and functions are listed below. 
-- Currently, we have some SQL-parsing issues due to the low version of the package: apache-calcite. Most of the bugs will be resolved later by upgrading the package to a higher version.
+- Currently, we have some SQL-parsing issues due to the low version of the package 'apache-calcite'. Most of the bugs will be resolved later by upgrading the package to a higher version.
 
 - group by column issue
   - For the remedy, please state group by columns with its table name.
@@ -21,6 +16,52 @@ This function returns a SQL Query result.
   - For the remedy, please state an input table name with from clause even if the table is irrelevant to operation.
   - do: select 4 as a, 4/3, 4/3.0 as c, 4+7 as d, 5-2 from #{DF(0)}
   - not: select 4 as a, 4/3, 4/3.0 as c, 4+7 as d, 5-2
+
+
+## Properties
+### VA
+#### INPUT
+1. **table**<b style="color:red">*</b>: (Table) Tables to execute a query.
+#### OUTPUT
+1. **out_table**: (Table) Sql query result.
+#### PARAMETER
+2. **SQL**<b style="color:red">*</b>: SQL statement 
+
+
+### Python
+#### USAGE
+```
+from brightics.function.transform import sql_execute2
+res = sql_execute2(tables, query)
+table = res['out_table']
+```
+
+## Example
+### VA
+
+**<a href="/static/help/python/sample_model/Fast_Query_Executor.json" download>[Sample Model]</a>**
+
+<img src="/static/help/python/sample_model_img/fast_query_executor.PNG"  width="800px" style="border: 1px solid gray" >
+
+<br>In this tutorial workflow, we executed the following SQL query statememt in sample iris table.
+<br> """select species, count(*), max(sepal_length), max(sepal_width) from #{DF(0)}
+        where sepal_length > 3 group by #{DF(0)}.species"""
+
+
+### Python
+```
+from brightics.function.transform import sql_execute2
+stmt = """select species, count(*), max(sepal_length), max(sepal_width) from #{DF(0)}
+          where sepal_length > 3 group by #{DF(0)}.species"""
+res = sql_execute2(tables=[inputs[0]], query=stmt)
+table = res['out_table']
+```
+
+<br>In this Python script, we executed the following SQL query statememt in sample iris table.
+<br> """select species, count(*), max(sepal_length), max(sepal_width) from #{DF(0)}
+        where sepal_length > 3 group by #{DF(0)}.species"""
+
+
 
 ## List of implemented Syntax and functions.
 
@@ -105,21 +146,3 @@ This function returns a SQL Query result.
 - ex: select count(*), count(g), max(c), min(c), avg(c) from #{DF(0)}
 
 
----
-
-## Properties
-### VA
-#### Inputs: tables
-
-#### Parameters
-1. **SQL**<b style="color:red">*</b>: SQL Query
-
-#### Outputs: table
-
-### Python
-#### Inputs: tables
-
-#### Parameters
-1. **query**<b style="color:red">*</b>: SQL Query
-      
-#### Outputs: table

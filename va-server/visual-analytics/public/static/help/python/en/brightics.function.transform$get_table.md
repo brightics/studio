@@ -2,7 +2,7 @@
 ### Python
 ```python
 from brightics.function.transform import get_table
-res = get_table(model = ,key_list = ,index_column = ,index_column_name = )
+res = get_table(model, key_list, index_column, index_column_name)
 res['table']
 ```
 
