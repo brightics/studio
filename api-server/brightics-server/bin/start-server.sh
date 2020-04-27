@@ -12,6 +12,13 @@ export appdir
 export BRIGHTICS_SERVER_HOME=$appdir
 export BRIGHTICS_DATA_ROOT=$BRIGHTICS_SERVER_HOME/data
 
+export BRIGHTICS_PYTHON_PATH=$BRIGHTICS_SERVER_HOME/../lib/brightics_python_env/bin/python
+export BRTC_DL_HOME=$BRIGHTICS_SERVER_HOME/../brightics-deeplearning
+export BRIGHTICS_DL_PYTHON_PATH=$BRIGHTICS_SERVER_HOME/../lib/python_dl/bin/python
+export BRTC_DL_WORKSPACE=$BRTC_DL_HOME/workspace
+export BRIGHTICS_FUNCTION_HOME=$BRIGHTICS_SERVER_HOME/functions
+export PYTHONPATH=$BRIGHTICS_FUNCTION_HOME/python
+
 PIDFILE=brightics-server.pid
 
 GC_OPTS="-XX:+UseConcMarkSweepGC -verbose:gc -XX:+PrintGCTimeStamps -Xloggc:$appdir/gc.out -XX:+CMSClassUnloadingEnabled "
