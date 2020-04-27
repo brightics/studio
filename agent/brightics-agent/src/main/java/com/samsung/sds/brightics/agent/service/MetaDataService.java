@@ -32,6 +32,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonObject;
 import com.google.protobuf.Any;
 import com.samsung.sds.brightics.agent.context.ContextManager;
 import com.samsung.sds.brightics.agent.util.DataKeyUtil;
@@ -46,7 +47,7 @@ import com.samsung.sds.brightics.common.data.DataStatus;
 import com.samsung.sds.brightics.common.data.client.FileClient;
 import com.samsung.sds.brightics.common.data.client.KVStoreClient;
 import com.samsung.sds.brightics.common.data.client.ParquetClient;
-import com.samsung.sds.brightics.common.data.parquet.reader.info.ColumnFilterParameter;
+import com.samsung.sds.brightics.common.data.parquet.reader.util.BrighticsParquetUtils;
 import com.samsung.sds.brightics.common.data.view.DataViewJson;
 import com.samsung.sds.brightics.common.network.proto.ContextType;
 import com.samsung.sds.brightics.common.network.proto.FailResult;
@@ -274,11 +275,8 @@ public class MetaDataService {
             DataStatus ds = ContextManager.getCurrentUserContextSession().getDataStatus(request.getKey());
             ContextType contextType = ds.contextType;
 			if (contextType == ContextType.FILESYSTEM) {
-				int columnStart = params.getOrDefault("column_start", -1).intValue();
-				int columnEnd = params.getOrDefault("column_end", -1).intValue();
-				int[] selectedColumns = JsonUtil.fromJson(params.getOrDefault("selected_columns", "[]"), int[].class);
-				return getSuccessResult(ParquetClient.readParquet(ds.path, min, max,
-						new ColumnFilterParameter(columnStart, columnEnd, selectedColumns)));
+				int[] filteredColumns = getFilteredColumnFromParam(params);
+				return getSuccessResult(ParquetClient.readParquet(ds.path, min, max, filteredColumns));
 			} else if (contextType == ContextType.KV_STORE) {
                 return getSuccessResult(DataViewJson.fromRawJsonData(ds.typeName,
                         Optional.ofNullable(KVStoreClient.getInstance().getJsonForClientView(ds.key)).orElseThrow(() -> new BrighticsCoreException("4406"))));
@@ -291,6 +289,25 @@ public class MetaDataService {
         } catch (Throwable e) {
             logger.error("cannot get data.", e);
             return getFailResult(new BrighticsCoreException("4406").addDetailMessage(ExceptionUtils.getStackTrace(e)));
+        }
+    }
+    
+    /**
+     * validate column filter information.
+     * if information is empty. return empty filtered array [], and empty array skip column filter logic.
+     * @param params
+     * @return
+     */
+    private static int[] getFilteredColumnFromParam(JsonParam params) {
+        String colFilterObjStr = params.getOrDefault("column_filter_information", StringUtils.EMPTY);
+        if(StringUtils.isEmpty(colFilterObjStr)){
+            return new int[0];
+        } else {
+            JsonObject colFilterObj = JsonUtil.jsonToObject(colFilterObjStr);
+            int columnStart = colFilterObj.getAsJsonPrimitive("start") == null ? -1 : colFilterObj.getAsJsonPrimitive("start").getAsInt();
+            int columnEnd = colFilterObj.getAsJsonPrimitive("end") == null ? -1 : colFilterObj.getAsJsonPrimitive("end").getAsInt();
+            int[] selectedColumns = colFilterObj.getAsJsonArray("selectedColumns") == null ? new int[0] : JsonUtil.fromJson(colFilterObj.getAsJsonArray("selectedColumns"), int[].class);
+            return BrighticsParquetUtils.combineFilteredColumnIndexArray(columnStart, columnEnd, selectedColumns);
         }
     }
 

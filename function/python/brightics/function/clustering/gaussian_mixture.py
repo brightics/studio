@@ -68,7 +68,8 @@ def _gaussian_mixture_train(table, input_cols, number_of_components=1, covarianc
     out_table['component_number'] = comp_num_arr
     out_table['weight'] = gmm.weights_
     out_table['mean_coordinate'] = mean_arr
-    out_table['covariance_matrix'] = covar_arr
+    # temporary string type to covar_arr because it is array(array(array(double))) which is not supported so it causes problems
+    out_table['covariance_matrix'] = str(covar_arr)
     
     rb = BrtcReprBuilder()
     params = { 

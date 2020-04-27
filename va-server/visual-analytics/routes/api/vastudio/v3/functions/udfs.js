@@ -74,7 +74,11 @@ var createFunction = function (req, res) {
             markdown: toolSpec.md || '',
             scriptId: specJson.scriptId,
             description: specJson.description,
-            userId: userId
+            userId: userId,
+            example_models: toolSpec.exampleModels ? JSON.stringify(toolSpec.exampleModels) : '',
+            sample_images: toolSpec.sampleImages ? JSON.stringify(toolSpec.sampleImages) : '',
+            script_examples: toolSpec.scriptExamples ? JSON.stringify(toolSpec.scriptExamples) : ''
+
         };
 
         __BRTC_DAO.addon_function.create(specOpt, function (err) {
