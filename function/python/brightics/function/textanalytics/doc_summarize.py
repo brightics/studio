@@ -20,7 +20,6 @@ from brightics.common.validation import validate
 from brightics.common.validation import greater_than, greater_than_or_equal_to, over_under
 import pandas as pd
 import numpy as np
-import kss
 from nltk import tokenize
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.preprocessing import normalize
@@ -68,8 +67,15 @@ def _tokenizer_kor(texts, normalization=True, stemming=True, pos_extraction=None
 def _tokenize_for_summarize(text):
    
     # Sentence separator
-    splitted_array = kss.split_sentences(text)
-    
+    import platform
+    os = platform.system()
+    if os == 'Linux':
+        import kss
+        splitted_array = kss.split_sentences(text)
+    else:
+        from brightics.function.textanalytics.pykss import pykss
+        splitted_array = pykss.split_sentences(text)
+
     # Tokenizer
     tokenized_table = _tokenizer_kor(texts=splitted_array, pos_extraction=['Noun'])
     len_doc = len(tokenized_table)
