@@ -16,7 +16,6 @@
 
 from brightics.common.utils import check_required_parameters
 from nltk import tokenize
-import kss
 import pandas as pd
 import numpy as np
 
@@ -31,7 +30,14 @@ def _split_sentences(table, input_col, language='kor'):
     doc_col = table[input_col].values    
 
     if (language == 'kor'):
-        sent_tokenizer = kss.split_sentences
+        import platform
+        os = platform.system()
+        if os == 'Linux':
+            import kss
+            splitted_array = kss.split_sentences(text)
+        else:
+            from brightics.function.textanalytics.pykss import pykss
+            splitted_array = pykss.split_sentences(text)
     elif (language == 'eng'):
         sent_tokenizer = tokenize.sent_tokenize
     
