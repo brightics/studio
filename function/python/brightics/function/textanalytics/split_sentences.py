@@ -34,10 +34,10 @@ def _split_sentences(table, input_col, language='kor'):
         os = platform.system()
         if os == 'Linux':
             import kss
-            splitted_array = kss.split_sentences(text)
+            sent_tokenizer = kss.split_sentences
         else:
             from brightics.function.textanalytics.pykss import pykss
-            splitted_array = pykss.split_sentences(text)
+            sent_tokenizer = pykss.split_sentences
     elif (language == 'eng'):
         sent_tokenizer = tokenize.sent_tokenize
     
