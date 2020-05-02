@@ -17,7 +17,7 @@ Please visit our web site http://www.brightics.ai
 
 ## Getting started
 ### Prerequisite
-* macOS users have to install [graphviz](http://graphviz.org/download/) using [Homebrew](https://brew.sh/) to plot tree figures of Decision Tree. However if it is not easy to install it, just skip it.
+* macOS users have to install [graphviz](http://graphviz.org/download/) using [Homebrew](https://brew.sh/) to plot tree figures of Decision Tree. However if it is not easy to install it just skip it.
 ```
 brew install graphviz
 ```
