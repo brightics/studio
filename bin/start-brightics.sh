@@ -12,6 +12,16 @@ echo
 echo '> Brightics for *NIX'
 echo
 
+AU=$(python lib/etc/updater.py cu 2>/dev/null)
+if [ "$AU" == "ua" ]; then
+  read -p "There is an update available. Do you want to update now? " -n 1 -r
+  echo
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    python lib/etc/updater.py d 2>/dev/null
+    rm -rf ./tmp
+  fi
+fi
+
 USER_ID=brightics@samsung.com
 ACCESS_TOKEN=ACCESS_TOKEN
 BRIGHTICS_PACKAGES_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
