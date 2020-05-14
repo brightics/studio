@@ -24,7 +24,6 @@ brew install graphviz
 * Some functions which interact with database need client libraries such as [Oracle Instant Client](http://www.oracle.com/technetwork/database/database-technologies/instant-client/overview/index.html)
 
 ### Download
-In the beta phase, the releases and patches will probably be updated every week.<br>
 Download release files are available from github release or our web site http://www.brightics.ai/downloads
 
 ### Installation
