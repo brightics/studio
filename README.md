@@ -43,6 +43,7 @@ Details of the directory is as follows:
 You don't need to prepare anything before running it. Our releases contain all requirements in a package itself.<br>
 Go to unzipped directory and run.
 
+	Brightics-Studio-Launcher.exe : Launcher for windows
 	start-brightics.cmd : for windows
 	start-brightics.sh : for linux and mac
 
