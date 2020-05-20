@@ -16,6 +16,9 @@ Charts and report generators are also provided to visualize data in various ways
 Please visit our web site http://www.brightics.ai
 
 ## Getting started
+### Docker Image
+The Brightics Studio Docker image is available on [Docker Hub](https://hub.docker.com/r/brightics/studio).
+
 ### Prerequisite
 * macOS users have to install [graphviz](http://graphviz.org/download/) using [Homebrew](https://brew.sh/) to plot tree figures of Decision Tree. However if it is not easy to install it just skip it.
 ```
