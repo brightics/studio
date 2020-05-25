@@ -1,3 +1,19 @@
+/*
+    Copyright 2019 Samsung SDS
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+        http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
+
 package com.samsung.sds.brightics.common.network.proto.stream;
 
 import static io.grpc.MethodDescriptor.generateFullMethodName;
@@ -60,38 +76,6 @@ public final class StreamServiceGrpc {
      return getWriteStreaminitializerMethod;
   }
   @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
-  @java.lang.Deprecated // Use {@link #getWriteStreamMethod()} instead. 
-  public static final io.grpc.MethodDescriptor<com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage,
-      com.samsung.sds.brightics.common.network.proto.stream.WriteMessage> METHOD_WRITE_STREAM = getWriteStreamMethod();
-
-  private static volatile io.grpc.MethodDescriptor<com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage,
-      com.samsung.sds.brightics.common.network.proto.stream.WriteMessage> getWriteStreamMethod;
-
-  @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
-  public static io.grpc.MethodDescriptor<com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage,
-      com.samsung.sds.brightics.common.network.proto.stream.WriteMessage> getWriteStreamMethod() {
-    io.grpc.MethodDescriptor<com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage, com.samsung.sds.brightics.common.network.proto.stream.WriteMessage> getWriteStreamMethod;
-    if ((getWriteStreamMethod = StreamServiceGrpc.getWriteStreamMethod) == null) {
-      synchronized (StreamServiceGrpc.class) {
-        if ((getWriteStreamMethod = StreamServiceGrpc.getWriteStreamMethod) == null) {
-          StreamServiceGrpc.getWriteStreamMethod = getWriteStreamMethod = 
-              io.grpc.MethodDescriptor.<com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage, com.samsung.sds.brightics.common.network.proto.stream.WriteMessage>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.BIDI_STREAMING)
-              .setFullMethodName(generateFullMethodName(
-                  "com.samsung.sds.brightics.common.network.proto.stream.StreamService", "writeStream"))
-              .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.samsung.sds.brightics.common.network.proto.stream.WriteMessage.getDefaultInstance()))
-                  .setSchemaDescriptor(new StreamServiceMethodDescriptorSupplier("writeStream"))
-                  .build();
-          }
-        }
-     }
-     return getWriteStreamMethod;
-  }
-  @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
   @java.lang.Deprecated // Use {@link #getReadStreamMethod()} instead. 
   public static final io.grpc.MethodDescriptor<com.samsung.sds.brightics.common.network.proto.stream.ReadMessage,
       com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage> METHOD_READ_STREAM = getReadStreamMethod();
@@ -124,100 +108,36 @@ public final class StreamServiceGrpc {
      return getReadStreamMethod;
   }
   @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
-  @java.lang.Deprecated // Use {@link #getReadStreamDoneMethod()} instead. 
-  public static final io.grpc.MethodDescriptor<com.samsung.sds.brightics.common.network.proto.stream.ReadMessage,
-      com.samsung.sds.brightics.common.network.proto.stream.ReadMessage> METHOD_READ_STREAM_DONE = getReadStreamDoneMethod();
+  @java.lang.Deprecated // Use {@link #getWriteStreamMethod()} instead. 
+  public static final io.grpc.MethodDescriptor<com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage,
+      com.samsung.sds.brightics.common.network.proto.stream.WriteMessage> METHOD_WRITE_STREAM = getWriteStreamMethod();
 
-  private static volatile io.grpc.MethodDescriptor<com.samsung.sds.brightics.common.network.proto.stream.ReadMessage,
-      com.samsung.sds.brightics.common.network.proto.stream.ReadMessage> getReadStreamDoneMethod;
+  private static volatile io.grpc.MethodDescriptor<com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage,
+      com.samsung.sds.brightics.common.network.proto.stream.WriteMessage> getWriteStreamMethod;
 
   @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
-  public static io.grpc.MethodDescriptor<com.samsung.sds.brightics.common.network.proto.stream.ReadMessage,
-      com.samsung.sds.brightics.common.network.proto.stream.ReadMessage> getReadStreamDoneMethod() {
-    io.grpc.MethodDescriptor<com.samsung.sds.brightics.common.network.proto.stream.ReadMessage, com.samsung.sds.brightics.common.network.proto.stream.ReadMessage> getReadStreamDoneMethod;
-    if ((getReadStreamDoneMethod = StreamServiceGrpc.getReadStreamDoneMethod) == null) {
+  public static io.grpc.MethodDescriptor<com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage,
+      com.samsung.sds.brightics.common.network.proto.stream.WriteMessage> getWriteStreamMethod() {
+    io.grpc.MethodDescriptor<com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage, com.samsung.sds.brightics.common.network.proto.stream.WriteMessage> getWriteStreamMethod;
+    if ((getWriteStreamMethod = StreamServiceGrpc.getWriteStreamMethod) == null) {
       synchronized (StreamServiceGrpc.class) {
-        if ((getReadStreamDoneMethod = StreamServiceGrpc.getReadStreamDoneMethod) == null) {
-          StreamServiceGrpc.getReadStreamDoneMethod = getReadStreamDoneMethod = 
-              io.grpc.MethodDescriptor.<com.samsung.sds.brightics.common.network.proto.stream.ReadMessage, com.samsung.sds.brightics.common.network.proto.stream.ReadMessage>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+        if ((getWriteStreamMethod = StreamServiceGrpc.getWriteStreamMethod) == null) {
+          StreamServiceGrpc.getWriteStreamMethod = getWriteStreamMethod = 
+              io.grpc.MethodDescriptor.<com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage, com.samsung.sds.brightics.common.network.proto.stream.WriteMessage>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.BIDI_STREAMING)
               .setFullMethodName(generateFullMethodName(
-                  "com.samsung.sds.brightics.common.network.proto.stream.StreamService", "readStreamDone"))
+                  "com.samsung.sds.brightics.common.network.proto.stream.StreamService", "writeStream"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.samsung.sds.brightics.common.network.proto.stream.ReadMessage.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.samsung.sds.brightics.common.network.proto.stream.ReadMessage.getDefaultInstance()))
-                  .setSchemaDescriptor(new StreamServiceMethodDescriptorSupplier("readStreamDone"))
-                  .build();
-          }
-        }
-     }
-     return getReadStreamDoneMethod;
-  }
-  @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
-  @java.lang.Deprecated // Use {@link #getReadCheckpointMethod()} instead. 
-  public static final io.grpc.MethodDescriptor<com.samsung.sds.brightics.common.network.proto.stream.ReadCheckpointMessage,
-      com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage> METHOD_READ_CHECKPOINT = getReadCheckpointMethod();
-
-  private static volatile io.grpc.MethodDescriptor<com.samsung.sds.brightics.common.network.proto.stream.ReadCheckpointMessage,
-      com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage> getReadCheckpointMethod;
-
-  @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
-  public static io.grpc.MethodDescriptor<com.samsung.sds.brightics.common.network.proto.stream.ReadCheckpointMessage,
-      com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage> getReadCheckpointMethod() {
-    io.grpc.MethodDescriptor<com.samsung.sds.brightics.common.network.proto.stream.ReadCheckpointMessage, com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage> getReadCheckpointMethod;
-    if ((getReadCheckpointMethod = StreamServiceGrpc.getReadCheckpointMethod) == null) {
-      synchronized (StreamServiceGrpc.class) {
-        if ((getReadCheckpointMethod = StreamServiceGrpc.getReadCheckpointMethod) == null) {
-          StreamServiceGrpc.getReadCheckpointMethod = getReadCheckpointMethod = 
-              io.grpc.MethodDescriptor.<com.samsung.sds.brightics.common.network.proto.stream.ReadCheckpointMessage, com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
-              .setFullMethodName(generateFullMethodName(
-                  "com.samsung.sds.brightics.common.network.proto.stream.StreamService", "readCheckpoint"))
-              .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.samsung.sds.brightics.common.network.proto.stream.ReadCheckpointMessage.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage.getDefaultInstance()))
-                  .setSchemaDescriptor(new StreamServiceMethodDescriptorSupplier("readCheckpoint"))
-                  .build();
-          }
-        }
-     }
-     return getReadCheckpointMethod;
-  }
-  @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
-  @java.lang.Deprecated // Use {@link #getDownloadMethod()} instead. 
-  public static final io.grpc.MethodDescriptor<com.samsung.sds.brightics.common.network.proto.stream.DownloadMessage,
-      com.samsung.sds.brightics.common.network.proto.stream.ResultMessage> METHOD_DOWNLOAD = getDownloadMethod();
-
-  private static volatile io.grpc.MethodDescriptor<com.samsung.sds.brightics.common.network.proto.stream.DownloadMessage,
-      com.samsung.sds.brightics.common.network.proto.stream.ResultMessage> getDownloadMethod;
-
-  @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
-  public static io.grpc.MethodDescriptor<com.samsung.sds.brightics.common.network.proto.stream.DownloadMessage,
-      com.samsung.sds.brightics.common.network.proto.stream.ResultMessage> getDownloadMethod() {
-    io.grpc.MethodDescriptor<com.samsung.sds.brightics.common.network.proto.stream.DownloadMessage, com.samsung.sds.brightics.common.network.proto.stream.ResultMessage> getDownloadMethod;
-    if ((getDownloadMethod = StreamServiceGrpc.getDownloadMethod) == null) {
-      synchronized (StreamServiceGrpc.class) {
-        if ((getDownloadMethod = StreamServiceGrpc.getDownloadMethod) == null) {
-          StreamServiceGrpc.getDownloadMethod = getDownloadMethod = 
-              io.grpc.MethodDescriptor.<com.samsung.sds.brightics.common.network.proto.stream.DownloadMessage, com.samsung.sds.brightics.common.network.proto.stream.ResultMessage>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(
-                  "com.samsung.sds.brightics.common.network.proto.stream.StreamService", "download"))
-              .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.samsung.sds.brightics.common.network.proto.stream.DownloadMessage.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.samsung.sds.brightics.common.network.proto.stream.ResultMessage.getDefaultInstance()))
-                  .setSchemaDescriptor(new StreamServiceMethodDescriptorSupplier("download"))
+                  com.samsung.sds.brightics.common.network.proto.stream.WriteMessage.getDefaultInstance()))
+                  .setSchemaDescriptor(new StreamServiceMethodDescriptorSupplier("writeStream"))
                   .build();
           }
         }
      }
-     return getDownloadMethod;
+     return getWriteStreamMethod;
   }
 
   /**
@@ -256,13 +176,6 @@ public final class StreamServiceGrpc {
 
     /**
      */
-    public io.grpc.stub.StreamObserver<com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage> writeStream(
-        io.grpc.stub.StreamObserver<com.samsung.sds.brightics.common.network.proto.stream.WriteMessage> responseObserver) {
-      return asyncUnimplementedStreamingCall(getWriteStreamMethod(), responseObserver);
-    }
-
-    /**
-     */
     public void readStream(com.samsung.sds.brightics.common.network.proto.stream.ReadMessage request,
         io.grpc.stub.StreamObserver<com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage> responseObserver) {
       asyncUnimplementedUnaryCall(getReadStreamMethod(), responseObserver);
@@ -270,23 +183,9 @@ public final class StreamServiceGrpc {
 
     /**
      */
-    public void readStreamDone(com.samsung.sds.brightics.common.network.proto.stream.ReadMessage request,
-        io.grpc.stub.StreamObserver<com.samsung.sds.brightics.common.network.proto.stream.ReadMessage> responseObserver) {
-      asyncUnimplementedUnaryCall(getReadStreamDoneMethod(), responseObserver);
-    }
-
-    /**
-     */
-    public void readCheckpoint(com.samsung.sds.brightics.common.network.proto.stream.ReadCheckpointMessage request,
-        io.grpc.stub.StreamObserver<com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage> responseObserver) {
-      asyncUnimplementedUnaryCall(getReadCheckpointMethod(), responseObserver);
-    }
-
-    /**
-     */
-    public void download(com.samsung.sds.brightics.common.network.proto.stream.DownloadMessage request,
-        io.grpc.stub.StreamObserver<com.samsung.sds.brightics.common.network.proto.stream.ResultMessage> responseObserver) {
-      asyncUnimplementedUnaryCall(getDownloadMethod(), responseObserver);
+    public io.grpc.stub.StreamObserver<com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage> writeStream(
+        io.grpc.stub.StreamObserver<com.samsung.sds.brightics.common.network.proto.stream.WriteMessage> responseObserver) {
+      return asyncUnimplementedStreamingCall(getWriteStreamMethod(), responseObserver);
     }
 
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
@@ -299,13 +198,6 @@ public final class StreamServiceGrpc {
                 com.samsung.sds.brightics.common.network.proto.stream.WriteMessage>(
                   this, METHODID_WRITE_STREAMINITIALIZER)))
           .addMethod(
-            getWriteStreamMethod(),
-            asyncBidiStreamingCall(
-              new MethodHandlers<
-                com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage,
-                com.samsung.sds.brightics.common.network.proto.stream.WriteMessage>(
-                  this, METHODID_WRITE_STREAM)))
-          .addMethod(
             getReadStreamMethod(),
             asyncServerStreamingCall(
               new MethodHandlers<
@@ -313,26 +205,12 @@ public final class StreamServiceGrpc {
                 com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage>(
                   this, METHODID_READ_STREAM)))
           .addMethod(
-            getReadStreamDoneMethod(),
-            asyncUnaryCall(
+            getWriteStreamMethod(),
+            asyncBidiStreamingCall(
               new MethodHandlers<
-                com.samsung.sds.brightics.common.network.proto.stream.ReadMessage,
-                com.samsung.sds.brightics.common.network.proto.stream.ReadMessage>(
-                  this, METHODID_READ_STREAM_DONE)))
-          .addMethod(
-            getReadCheckpointMethod(),
-            asyncServerStreamingCall(
-              new MethodHandlers<
-                com.samsung.sds.brightics.common.network.proto.stream.ReadCheckpointMessage,
-                com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage>(
-                  this, METHODID_READ_CHECKPOINT)))
-          .addMethod(
-            getDownloadMethod(),
-            asyncUnaryCall(
-              new MethodHandlers<
-                com.samsung.sds.brightics.common.network.proto.stream.DownloadMessage,
-                com.samsung.sds.brightics.common.network.proto.stream.ResultMessage>(
-                  this, METHODID_DOWNLOAD)))
+                com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage,
+                com.samsung.sds.brightics.common.network.proto.stream.WriteMessage>(
+                  this, METHODID_WRITE_STREAM)))
           .build();
     }
   }
@@ -365,14 +243,6 @@ public final class StreamServiceGrpc {
 
     /**
      */
-    public io.grpc.stub.StreamObserver<com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage> writeStream(
-        io.grpc.stub.StreamObserver<com.samsung.sds.brightics.common.network.proto.stream.WriteMessage> responseObserver) {
-      return asyncBidiStreamingCall(
-          getChannel().newCall(getWriteStreamMethod(), getCallOptions()), responseObserver);
-    }
-
-    /**
-     */
     public void readStream(com.samsung.sds.brightics.common.network.proto.stream.ReadMessage request,
         io.grpc.stub.StreamObserver<com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage> responseObserver) {
       asyncServerStreamingCall(
@@ -381,26 +251,10 @@ public final class StreamServiceGrpc {
 
     /**
      */
-    public void readStreamDone(com.samsung.sds.brightics.common.network.proto.stream.ReadMessage request,
-        io.grpc.stub.StreamObserver<com.samsung.sds.brightics.common.network.proto.stream.ReadMessage> responseObserver) {
-      asyncUnaryCall(
-          getChannel().newCall(getReadStreamDoneMethod(), getCallOptions()), request, responseObserver);
-    }
-
-    /**
-     */
-    public void readCheckpoint(com.samsung.sds.brightics.common.network.proto.stream.ReadCheckpointMessage request,
-        io.grpc.stub.StreamObserver<com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage> responseObserver) {
-      asyncServerStreamingCall(
-          getChannel().newCall(getReadCheckpointMethod(), getCallOptions()), request, responseObserver);
-    }
-
-    /**
-     */
-    public void download(com.samsung.sds.brightics.common.network.proto.stream.DownloadMessage request,
-        io.grpc.stub.StreamObserver<com.samsung.sds.brightics.common.network.proto.stream.ResultMessage> responseObserver) {
-      asyncUnaryCall(
-          getChannel().newCall(getDownloadMethod(), getCallOptions()), request, responseObserver);
+    public io.grpc.stub.StreamObserver<com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage> writeStream(
+        io.grpc.stub.StreamObserver<com.samsung.sds.brightics.common.network.proto.stream.WriteMessage> responseObserver) {
+      return asyncBidiStreamingCall(
+          getChannel().newCall(getWriteStreamMethod(), getCallOptions()), responseObserver);
     }
   }
 
@@ -436,28 +290,6 @@ public final class StreamServiceGrpc {
       return blockingServerStreamingCall(
           getChannel(), getReadStreamMethod(), getCallOptions(), request);
     }
-
-    /**
-     */
-    public com.samsung.sds.brightics.common.network.proto.stream.ReadMessage readStreamDone(com.samsung.sds.brightics.common.network.proto.stream.ReadMessage request) {
-      return blockingUnaryCall(
-          getChannel(), getReadStreamDoneMethod(), getCallOptions(), request);
-    }
-
-    /**
-     */
-    public java.util.Iterator<com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage> readCheckpoint(
-        com.samsung.sds.brightics.common.network.proto.stream.ReadCheckpointMessage request) {
-      return blockingServerStreamingCall(
-          getChannel(), getReadCheckpointMethod(), getCallOptions(), request);
-    }
-
-    /**
-     */
-    public com.samsung.sds.brightics.common.network.proto.stream.ResultMessage download(com.samsung.sds.brightics.common.network.proto.stream.DownloadMessage request) {
-      return blockingUnaryCall(
-          getChannel(), getDownloadMethod(), getCallOptions(), request);
-    }
   }
 
   /**
@@ -485,30 +317,11 @@ public final class StreamServiceGrpc {
       return futureUnaryCall(
           getChannel().newCall(getWriteStreaminitializerMethod(), getCallOptions()), request);
     }
-
-    /**
-     */
-    public com.google.common.util.concurrent.ListenableFuture<com.samsung.sds.brightics.common.network.proto.stream.ReadMessage> readStreamDone(
-        com.samsung.sds.brightics.common.network.proto.stream.ReadMessage request) {
-      return futureUnaryCall(
-          getChannel().newCall(getReadStreamDoneMethod(), getCallOptions()), request);
-    }
-
-    /**
-     */
-    public com.google.common.util.concurrent.ListenableFuture<com.samsung.sds.brightics.common.network.proto.stream.ResultMessage> download(
-        com.samsung.sds.brightics.common.network.proto.stream.DownloadMessage request) {
-      return futureUnaryCall(
-          getChannel().newCall(getDownloadMethod(), getCallOptions()), request);
-    }
   }
 
   private static final int METHODID_WRITE_STREAMINITIALIZER = 0;
   private static final int METHODID_READ_STREAM = 1;
-  private static final int METHODID_READ_STREAM_DONE = 2;
-  private static final int METHODID_READ_CHECKPOINT = 3;
-  private static final int METHODID_DOWNLOAD = 4;
-  private static final int METHODID_WRITE_STREAM = 5;
+  private static final int METHODID_WRITE_STREAM = 2;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -534,18 +347,6 @@ public final class StreamServiceGrpc {
         case METHODID_READ_STREAM:
           serviceImpl.readStream((com.samsung.sds.brightics.common.network.proto.stream.ReadMessage) request,
               (io.grpc.stub.StreamObserver<com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage>) responseObserver);
-          break;
-        case METHODID_READ_STREAM_DONE:
-          serviceImpl.readStreamDone((com.samsung.sds.brightics.common.network.proto.stream.ReadMessage) request,
-              (io.grpc.stub.StreamObserver<com.samsung.sds.brightics.common.network.proto.stream.ReadMessage>) responseObserver);
-          break;
-        case METHODID_READ_CHECKPOINT:
-          serviceImpl.readCheckpoint((com.samsung.sds.brightics.common.network.proto.stream.ReadCheckpointMessage) request,
-              (io.grpc.stub.StreamObserver<com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage>) responseObserver);
-          break;
-        case METHODID_DOWNLOAD:
-          serviceImpl.download((com.samsung.sds.brightics.common.network.proto.stream.DownloadMessage) request,
-              (io.grpc.stub.StreamObserver<com.samsung.sds.brightics.common.network.proto.stream.ResultMessage>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -612,11 +413,8 @@ public final class StreamServiceGrpc {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
               .setSchemaDescriptor(new StreamServiceFileDescriptorSupplier())
               .addMethod(getWriteStreaminitializerMethod())
-              .addMethod(getWriteStreamMethod())
               .addMethod(getReadStreamMethod())
-              .addMethod(getReadStreamDoneMethod())
-              .addMethod(getReadCheckpointMethod())
-              .addMethod(getDownloadMethod())
+              .addMethod(getWriteStreamMethod())
               .build();
         }
       }
