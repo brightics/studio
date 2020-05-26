@@ -75,12 +75,16 @@ def get_result(script_id):
         pid = f.readline()
         pid = int(pid)
 
-    if osname == ['Linux','Darwin'] and psutil.pid_exists(pid):
+    if osname in 'Linux' and psutil.pid_exists(pid):
         proc = psutil.Process(pid)
         if len(proc.cmdline()) == 0:
             _change_status(temp_dir, 'Success')
     elif osname in 'Windows' and psutil.pid_exists(pid) is False:
         _change_status(temp_dir, 'Success')
+    elif osname in 'Darwin' and psutil.pid_exists(pid):
+        proc = psutil.Process(pid)
+        if proc.status() in 'zombie':
+            _change_status(temp_dir, 'Success')
 
     status = _get_status(temp_dir)
 

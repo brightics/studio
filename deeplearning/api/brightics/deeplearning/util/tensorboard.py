@@ -15,6 +15,7 @@ logger = common_logging.get_logger(__name__)
 board_config = common_config.get_section('Tensorboard')
 try_max_sec = int(board_config.get("StartupTimeoutSec", "10"))
 PROC_NAME = 'tensorboard.main'
+hostname_open='0.0.0.0'
 
 def run(log_dir):
     hostname = socket.gethostname()
@@ -26,7 +27,7 @@ def run(log_dir):
         python_path = child_env['BRIGHTICS_DL_PYTHON_PATH']
 
         logger.info(f'tensorboard_exec_command : {python_path} -m {PROC_NAME} --logdir={log_dir} --port={port} --host={hostname}')
-        p = psutil.Popen([python_path,'-m', PROC_NAME, f'--logdir={log_dir}', f'--port={port}', f'--host={hostname}'],
+        p = psutil.Popen([python_path,'-m', PROC_NAME, f'--logdir={log_dir}', f'--port={port}', f'--host={hostname_open}'],
                         env=child_env, stdout=open(os.devnull, 'w'), stderr=open(os.devnull, 'w'))
         
         # port check 
@@ -124,4 +125,4 @@ def result_by_ostype(hostname, port):
     if osname == 'Windows':
         return {'url' : 'http://{}:{}'.format(hostname, port)}
     else:
-        return {'url': '{}/{}/{}/'.format('tensorboard', hostname, port)}
+        return {'url': 'http://{}:{}'.format(hostname, port)}
