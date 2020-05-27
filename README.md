@@ -16,15 +16,17 @@ Charts and report generators are also provided to visualize data in various ways
 Please visit our web site http://www.brightics.ai
 
 ## Getting started
+### Docker Image
+The Brightics Studio Docker image is available on [Docker Hub](https://hub.docker.com/r/brightics/studio).
+
 ### Prerequisite
-* macOS users have to install [graphviz](http://graphviz.org/download/) using [Homebrew](https://brew.sh/)
+* macOS users have to install [graphviz](http://graphviz.org/download/) using [Homebrew](https://brew.sh/) to plot tree figures of Decision Tree. However if it is not easy to install it just skip it.
 ```
 brew install graphviz
 ```
 * Some functions which interact with database need client libraries such as [Oracle Instant Client](http://www.oracle.com/technetwork/database/database-technologies/instant-client/overview/index.html)
 
 ### Download
-In the beta phase, the releases and patches will probably be updated every week.<br>
 Download release files are available from github release or our web site http://www.brightics.ai/downloads
 
 ### Installation
@@ -43,6 +45,7 @@ Details of the directory is as follows:
 You don't need to prepare anything before running it. Our releases contain all requirements in a package itself.<br>
 Go to unzipped directory and run.
 
+	Brightics-Studio-Launcher.exe : Launcher for windows
 	start-brightics.cmd : for windows
 	start-brightics.sh : for linux and mac
 
