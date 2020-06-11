@@ -32,10 +32,13 @@ import brightics.common.data.utils as data_utils
 from brightics.common.utils import check_required_parameters
 import brightics.common.data.table_data_reader as table_reader
 import brightics.common.data.utils as util
+from brightics.brightics_java_gateway import brtc_java_gateway as gateway
 
 
 def unload(table, partial_path, mode="overwrite"):
     path = data_utils.make_data_path_from_key(partial_path[0])
+    if path == gateway.data_root or path == gateway.data_root + '/':
+        raise_runtime_error('Please check a path String and a type of path. Cannot use a root of directory for the path.')
     if os.path.isdir(path):
         shutil.rmtree(path)
     if mode=="append":
