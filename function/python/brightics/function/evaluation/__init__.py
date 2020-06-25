@@ -140,7 +140,7 @@ def _evaluate_classification(table, label_col, prediction_col, average="weighted
         all_df = pd.DataFrame(all_dict_list)
         all_df = all_df.transpose()
         all_df.columns = ['f1', 'precision', 'recall']
-        all_df['label'] = set(label)
+        all_df['label'] = class_names
         all_df = all_df[['label'] + all_df.columns[:-1].tolist()]
     summary['metrics'] = all_df
             
@@ -369,8 +369,10 @@ def _ndcg_k(k_value, num_users, documents, recommend_table):
 
 
 def evaluate_ranking_algorithm(table1, table2, user_col, item_col, evaluation_measure, rating_col=None, rating_edge=None, k_values=None):
+    none_str = 'None'
     item_encoder = preprocessing.LabelEncoder()
-    tmp_table_item_col = table1[item_col]
+    tmp_table_item_col = table1[item_col].values.tolist()
+    tmp_table_item_col.append(none_str)
     item_encoder.fit(tmp_table_item_col)
     if table2.columns[0] != 'user_name' and table2.columns[0] != 'user':
         raise_runtime_error("topN-list data schema should consist of [user_name, item_top1, rating_top1, .... item_topN, rating_topN]")
@@ -395,7 +397,7 @@ def evaluate_ranking_algorithm(table1, table2, user_col, item_col, evaluation_me
         if table2.columns[2 * i + 1] != 'item_%d' % (i + 1) and table2.columns[2 * i + 2] != 'rating_%d' % (i + 1) and table2.columns[2 * i + 1] != 'item_top%d' % (i + 1) and table2.columns[2 * i + 2] != 'rating_top%d' % (i + 1):
             raise_runtime_error("topN-list data schema should consist of [user_name, item_top1, rating_top1, .... item_topN, rating_topN]")
         columns.append(table2.columns[2 * i + 1])
-    recommend_table = table2[columns].values
+    recommend_table = table2[columns].replace('', none_str).fillna(none_str).values
     for i in range(len(recommend_table)):
         recommend_table[i] = item_encoder.transform(recommend_table[i])
     result = []

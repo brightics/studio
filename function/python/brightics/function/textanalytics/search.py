@@ -139,7 +139,8 @@ def _search2(table, input_cols, hold_cols=None, bool_search="or", keyword_dict=N
         raise ValueError('At least one of Search Words and User Dictionary must be included.')
     
     input_table = table[input_cols]
-    
+    columns = table.columns
+
     if hold_cols is None:
         hold_table = table.drop(input_cols, axis=1)
         length_ht = len(table.columns) - len(input_cols)
@@ -166,5 +167,8 @@ def _search2(table, input_cols, hold_cols=None, bool_search="or", keyword_dict=N
         out_table = pd.concat([input_table[cond], hold_table], axis=1).dropna(thresh=length_ht + 1).reset_index(drop=True)
     else:
         out_table = pd.concat([input_table[cond], hold_table], axis=1)
-    
+
+    if hold_cols is None:
+        out_table = out_table[columns]
+
     return {'out_table': out_table}

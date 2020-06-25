@@ -21,6 +21,7 @@ from .kmeans import kmeans_silhouette_train_predict
 from .hierarchical_clustering import hierarchical_clustering
 from .hierarchical_clustering import hierarchical_clustering_post
 from .gaussian_mixture import gaussian_mixture_train
+from .gaussian_mixture import gaussian_mixture_train2
 from .gaussian_mixture import gaussian_mixture_predict
 from .mean_shift import mean_shift
 from .mean_shift import mean_shift_predict

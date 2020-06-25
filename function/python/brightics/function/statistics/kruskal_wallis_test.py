@@ -47,21 +47,27 @@ def _kruskal_wallis_test(table, response_cols, factor_col, nan_policy='propagate
     for name, group in table.groupby(factor_col):
         groups[name] = group
         
+    group_name = []
+    df = [len(groups) - 1] * len(response_cols)
+    stats = []
+    pvals = []
     for response_col in response_cols:
-        stats, pval = kruskal(*[x[response_col] for x in groups.values()])
-        rb.addMD(strip_margin("""
-        | ## {response_col} by {factor_col}
-        |
-        | ### Statistics value: {stats}
-        |
-        | ### P value: {pval}
-        """.format(response_col=response_col, factor_col=factor_col, stats=stats, pval=pval)))
+        stat, pval = kruskal(*[x[response_col] for x in groups.values()])
+        group_name.append(response_col + ' by ' + factor_col)
+        stats.append(stat)
+        pvals.append(pval)
             
         name = response_col + '_' + factor_col
         result[name] = dict()
-        result[name]['Statistics'] = stats
+        result[name]['Statistics'] = stat
         result[name]['P value'] = pval
         
+    rb.addMD(strip_margin("""
+    | {table}
+    """.format(table=pandasDF2MD(pd.DataFrame({'': group_name, 
+                                                'Degree of Freedom': df, 
+                                                'Test Statistics': stats, 
+                                                'P value': pvals})))))
     result['_repr_brtc_'] = rb.get()
         
     return {'result': result}

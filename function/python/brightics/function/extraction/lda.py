@@ -25,7 +25,7 @@ from brightics.common.utils import check_required_parameters
 from brightics.common.validation import validate, greater_than_or_equal_to, less_than_or_equal_to
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.exception import BrighticsFunctionException
-
+from sklearn.utils.multiclass import unique_labels
 
 def lda(table, group_by=None, **params):
     check_required_parameters(_lda, params, ['table'])
@@ -71,10 +71,11 @@ def _lda(table, feature_cols, label_col, new_column_name='projected_', solver='s
          tol=1.0e-4):
 
     num_feature_cols = len(feature_cols)
-    if n_components is not None and n_components >= num_feature_cols - 1:
-        n_components = num_feature_cols - 2
-    if n_components is None or n_components < 1:
-        n_components = 1
+    num_classes = unique_labels(table[label_col])
+    tmp_components = min(len(num_classes) - 1, num_feature_cols)
+
+    if n_components is None or n_components > tmp_components:
+        n_components = tmp_components
 
     #validate(greater_than_or_equal_to(n_components, 1, 'n_components'))
 
@@ -121,7 +122,11 @@ def _lda(table, feature_cols, label_col, new_column_name='projected_', solver='s
     res_xbar = lda_model.xbar_ if hasattr(lda_model, 'xbar_') else None
     res_classes = lda_model.classes_ if hasattr(lda_model, 'classes_') else None
     res_get_param = lda_model.get_params()
-
+    res_get_param['covariance'] = res_covariance
+    res_get_param['means'] = res_mean
+    res_get_param['coef'] = res_coef
+    res_get_param['xbar'] = res_xbar
+    
     # visualization
     plt.figure()
     fig_scree = _screeplot(res_explained_variance_ratio, n_components)

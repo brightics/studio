@@ -29,8 +29,9 @@ def _extract_senti_words(table, input_col, user_dict=None, hold_cols=None):
     
     len_text = len(table)
     if hold_cols is None:
-        hold_cols = [input_col]
-    out_table = table[hold_cols]
+        out_table = table.copy()
+    else:
+        out_table = table[hold_cols]
     text_data = table[input_col].values
     
     basic_dict = dict(pd.read_csv('brightics/function/textanalytics/data/senti_words_basic_dict_kor.csv').values)

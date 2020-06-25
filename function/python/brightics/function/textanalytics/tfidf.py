@@ -27,6 +27,107 @@ import numpy as np
 from operator import itemgetter
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+
+def tfidf3(table, group_by=None, **params):
+    check_required_parameters(_tfidf3, params, ['table'])
+    params = get_default_from_parameters_if_required(params, _tfidf3)
+    param_validation_check = [greater_than_or_equal_to(params, 0, 'min_df'),
+                              greater_than_or_equal_to(params, 2, 'max_features'),
+                              greater_than(params, 0, 'max_df')]
+    validate(*param_validation_check)
+    if group_by is not None:
+        return _function_by_group(_tfidf3, table, group_by=group_by, **params)
+    else:
+        return _tfidf3(table, **params)
+
+
+def _tfidf3(table, input_col, res_type='sparse',
+           analyzer='word', binary=False,
+           decode_error='strict', dtype=np.int64,
+           encoding='utf-8', input='content',
+           lowercase=True, max_df=1.0,
+           max_features=100, min_df=1,
+           ngram_range=(1, 1), norm='l2',
+           preprocessor=None, smooth_idf=True,
+           stop_words=None, strip_accents=None,
+           sublinear_tf=False, token_pattern='(?u)\\b\\w\\w+\\b',
+           tokenizer=None, use_idf=True, vocabulary=None):
+
+    corpus = np.array(table[input_col])
+
+    if isinstance(corpus[0], np.ndarray):
+        preprocessor = ' '.join
+
+    vectorizer = TfidfVectorizer(
+        analyzer=analyzer, binary=binary, decode_error=decode_error,
+        dtype=dtype, encoding=encoding, input=input, lowercase=lowercase,
+        max_df=max_df, max_features=max_features, min_df=min_df,
+        ngram_range=ngram_range, norm=norm, preprocessor=preprocessor,
+        smooth_idf=smooth_idf, stop_words=stop_words, strip_accents=strip_accents,
+        sublinear_tf=sublinear_tf, token_pattern=token_pattern,
+        tokenizer=tokenizer, use_idf=use_idf, vocabulary=vocabulary)
+
+    tfidf = vectorizer.fit(corpus)
+    tfidf_csr = tfidf.transform(corpus)
+
+    vocab_idx = tfidf.vocabulary_
+    vocab = sorted(vocab_idx, key=lambda k: vocab_idx[k])
+
+    if res_type == 'sparse':
+        indptr = tfidf_csr.indptr
+        indices = tfidf_csr.indices
+        data = tfidf_csr.data
+
+        idx2word = {idx: word for idx, word in enumerate(vocab)}
+        vocab_col = [idx2word[k] for k in indices]
+
+        if use_idf is True:
+            idf = tfidf.idf_
+            idx2val = {idx: val for idx, val in enumerate(idf)}
+            idf_col = [idx2val[k] for k in indices]
+        else:
+            idf_col = [1] * len(indices)
+
+        num_doc = len(corpus)
+        repeat_num = [indptr[i + 1] - indptr[i] for i in range(num_doc)]
+        docid_col = np.repeat(range(num_doc), repeat_num)
+        doc_col = np.repeat(corpus, repeat_num)
+
+        res_dict = {'document_id': docid_col, input_col: doc_col, 'term': vocab_col, 'idf': idf_col, 'tfidf': data}
+        out_table = pd.DataFrame(res_dict, columns=res_dict.keys())
+
+    elif res_type == 'dense':
+        out_table = pd.DataFrame(tfidf_csr.toarray(), columns=vocab)
+
+    params = {
+        'Input Column': input_col,
+        'Max DF': max_df,
+        'Min DF': min_df,
+        'Maximum Number of Vocabularies': max_features,
+        'Using IDF': use_idf,
+        'Norm': norm,
+        'Smooth IDF': smooth_idf,
+        'Sublinear TF': sublinear_tf,
+        'Result Type': res_type
+    }
+
+    rb = BrtcReprBuilder()
+    rb.addMD(strip_margin("""
+    | ## TF-IDF Result
+    |
+    | ### Parameters
+    |
+    | {params}
+    """.format(params=dict2MD(params))))
+
+    model = _model_dict('tfidf')
+    model['vectorizer'] = vectorizer
+    model['params'] = params
+    model['_repr_brtc_'] = rb.get()
+
+    return {'out_table': out_table, 'model': model}
 
 
 def tfidf(table, group_by=None, **params):  # This will be deprecated.

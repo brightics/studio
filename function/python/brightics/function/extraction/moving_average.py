@@ -37,7 +37,7 @@ def ewma(table, group_by=None, **params):
         return _ewma(table, **params)
 
 
-def _ewma(table, input_cols, ratio_type, custom_ratio=0.5, period_number=1):
+def _ewma(table, input_cols, ratio_type='custom', custom_ratio=0.5, period_number=1):
     out_table = table.copy()
 
     def ewma_col(column):

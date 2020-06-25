@@ -30,7 +30,7 @@ def string_split(table, **params):
 
     
 def _string_split(table, input_col, hold_cols=None, delimiter=',', output_col_name='split', output_col_cnt=3, output_col_type='double', start_pos=0, end_pos=0):
-    out_table = pd.DataFrame()
+    out_table = table.copy()
     
     output_arr = [x[start_pos:-end_pos].split(delimiter, output_col_cnt) \
                     if not pd.isnull(x) \

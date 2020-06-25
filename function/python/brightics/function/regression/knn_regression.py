@@ -36,7 +36,10 @@ def knn_regression(train_table, test_table, **params):
 
 
 def _knn_regression(train_table, test_table, feature_cols, label_col, k=5, algorithm='auto', leaf_size=30, p=2, pred_col_name='prediction'):
-    
+    if (test_table.shape[0] == 0):
+        new_cols = test_table.columns.tolist() + [pred_col_name]
+        out_table = pd.DataFrame(columns=new_cols)
+        return {'out_table': out_table}
     _, X_train = check_col_type(train_table, feature_cols)
     y_train = train_table[label_col]
     _, X_test = check_col_type(test_table, feature_cols)

@@ -53,21 +53,23 @@ def _friedman_test(table, response_cols, factor_col):
             samples[name] = groups[name]
         else:
             samples[name] = groups[name].sample(n=min_length)
+    group_name = []
+    stats = []
+    pvals = []
     for response_col in response_cols:
-        stats, pval = friedmanchisquare(*[x[response_col] for x in samples.values()])
-        rb.addMD(strip_margin("""
-        | ## {response_col} by {factor_col}
-        |
-        | ### Statistics value: {stats}
-        |
-        | ### P value: {pval}
-        """.format(response_col=response_col, factor_col=factor_col, stats=stats, pval=pval)))
+        stat, pval = friedmanchisquare(*[x[response_col] for x in samples.values()])
+        group_name.append(response_col + ' by ' + factor_col)
+        stats.append(stat)
+        pvals.append(pval)
             
         name = response_col + '_' + factor_col
         result[name] = dict()
-        result[name]['Statistics'] = stats
+        result[name]['Statistics'] = stat
         result[name]['P value'] = pval
         
+    rb.addMD(strip_margin("""
+    | {table}
+    """.format(table=pandasDF2MD(pd.DataFrame({'': group_name, 'Test Statistics': stats, 'P Value': pvals})))))
     result['_repr_brtc_'] = rb.get()
         
     return {'result': result}

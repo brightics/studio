@@ -16,6 +16,7 @@
 
 import pandas as pd
 import numpy as np
+from string import punctuation
 
 from brightics.common.groupby import _function_by_group
 from brightics.common.validation import raise_runtime_error
@@ -173,6 +174,12 @@ def pivot2(table, values, aggfunc, index=None, columns=None):  # TODO
         for name in out_table.columns.tolist()[len(index):]:
             name_list.append(name[0][1:] + "_" + "_".join(str(i) for i in name[1:]))
         out_table.columns = index + name_list
+    
+    special_char = str(punctuation) + ' '
+
+    for char in special_char:
+            out_table.columns = out_table.columns.str.replace(char, '_')
+            
     return {'out_table':out_table}
 
 

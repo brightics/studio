@@ -9,7 +9,7 @@
         "name": "brightics.function.io$read_csv",
         "context": "python",
         "label": "Read CSV",
-        "description": "This function imports from a local storage a table-like data saved as .csv format. The CSV file needs to include headers in the top row and the data should be properly formatted with a prescribed delimiter.\n\nReference\n- <https://en.wikipedia.org/wiki/Comma-separated_values>",
+        "description": "This function reads a csv file into a table.",
         "tags": [],
         "version": "3.6",
         "outputs": {
@@ -17,22 +17,21 @@
         },
         "meta": {
             "table": {
-                "type": "table",
-                "desc": "Table filled with values from the csv file."
+                "type": "table"
             }
         },
         "params": [
             {
                 "id": "path",
                 "label": "Path",
-                "description": "path to a .csv file to be imported.",
-                "visibleOption": [],
-                "control": "InputBox",
-                "validation": [],
+                "description": "csv file path.",
                 "mandatory": true,
                 "items": [],
+                "visibleOption": [],
                 "globalVariable": false,
+                "control": "InputBox",
                 "columnType": [],
+                "validation": [],
                 "targetTable": [],
                 "placeHolder": "",
                 "type": "String"
@@ -41,9 +40,6 @@
                 "id": "engine",
                 "label": "Engine",
                 "description": "Parser engine to use. The C engine is faster while the python engine is currently more feature-complete.",
-                "visibleOption": [],
-                "control": "RadioButton",
-                "validation": [],
                 "mandatory": false,
                 "items": [
                     {
@@ -57,20 +53,23 @@
                         "default": false
                     }
                 ],
+                "visibleOption": [],
+                "control": "RadioButton",
                 "columnType": [],
+                "validation": [],
                 "targetTable": []
             },
             {
                 "id": "delimiter",
                 "label": "Delimiter",
-                "description": "Delimiter to seperate values.",
-                "visibleOption": [],
-                "control": "InputBox",
-                "validation": [],
+                "description": "Choose Delimiter to split",
                 "mandatory": false,
                 "items": [],
+                "visibleOption": [],
                 "globalVariable": false,
+                "control": "InputBox",
                 "columnType": [],
+                "validation": [],
                 "targetTable": [],
                 "placeHolder": ",",
                 "type": "String"
@@ -78,28 +77,28 @@
             {
                 "id": "na_filter",
                 "label": "Null Filtering",
-                "description": "Choose whether or not detect missing values. If the data does not have any missing values set this option to false to improve the performance.",
-                "visibleOption": [],
-                "control": "BooleanRadio",
-                "validation": [],
+                "description": "Detect missing value markers (empty strings and the value of na_values). In data without any NAs, passing Null Filtering=False can improve the performance of reading a large file",
                 "mandatory": false,
                 "items": [],
+                "visibleOption": [],
                 "globalVariable": false,
+                "control": "BooleanRadio",
                 "columnType": [],
+                "validation": [],
                 "targetTable": [],
                 "defaultValue": false
             },
             {
                 "id": "quoting",
                 "label": "Quote",
-                "description": "Control field quoting behavior. If this option is set to true then a field enclosed with quotation marks will be recognized as a single value.",
-                "visibleOption": [],
-                "control": "BooleanRadio",
-                "validation": [],
+                "description": "Control field quoting behavior per csv.QUOTE_* constants. If False, quotation mark will be survived.",
                 "mandatory": false,
                 "items": [],
+                "visibleOption": [],
                 "globalVariable": false,
+                "control": "BooleanRadio",
                 "columnType": [],
+                "validation": [],
                 "targetTable": [],
                 "defaultValue": false
             },
@@ -107,9 +106,6 @@
                 "id": "encoding",
                 "label": "Encoding",
                 "description": "Encoding to use for UTF when reading/writing.",
-                "visibleOption": [],
-                "control": "RadioButton",
-                "validation": [],
                 "mandatory": false,
                 "items": [
                     {
@@ -133,338 +129,27 @@
                         "default": false
                     }
                 ],
+                "visibleOption": [],
+                "control": "RadioButton",
                 "columnType": [],
+                "validation": [],
                 "targetTable": []
             },
             {
                 "id": "strip_col",
                 "label": "Strip White Space in Column Name",
                 "description": "Strip white space in column name",
-                "visibleOption": [],
-                "control": "BooleanRadio",
-                "validation": [],
                 "mandatory": false,
                 "items": [],
+                "visibleOption": [],
                 "globalVariable": false,
+                "control": "BooleanRadio",
                 "columnType": [],
+                "validation": [],
                 "targetTable": [],
                 "defaultValue": false
             }
-        ],
-        "summary": "Imports a table-like data saved as .csv format from a local storage."
+        ]
     },
-    "md": "# Read CSV\r\nImports a table-like data saved as .csv format from a local storage.\r\n\r\n## Description\r\nThis function imports from a local storage a table-like data saved as .csv format. The CSV file needs to include headers in the top row and the data should be properly formatted with a prescribed delimiter.\r\n\r\nReference\r\n- <https://en.wikipedia.org/wiki/Comma-separated_values>\r\n\r\n\r\n## Properties\r\n### VA\r\n#### INPUT\r\n\r\n#### OUTPUT\r\n1. **table**: (Table) \r\n#### PARAMETER\r\n1. **Path**<b style=\"color:red\">*</b>: path to a .csv file to be imported.\r\n\r\n2. **Engine**: Parser engine to use. The C engine is faster while the python engine is currently more feature-complete.\r\n\r\n3. **Delimiter**: Delimiter to seperate values.\r\n\r\n4. **Null Filtering**: Choose whether or not detect missing values. If the data does not have any missing values set this option to false to improve the performance.\r\n\r\n\t* Default value: false \r\n5. **Quote**: Control field quoting behavior. If this option is set to true then a field enclosed with quotation marks will be recognized as a single value.\r\n\r\n\t* Default value: false \r\n6. **Encoding**: Encoding to use for UTF when reading/writing.\r\n\r\n7. **Strip White Space in Column Name**: Strip white space in column name\r\n\r\n\t* Default value: false \r\n\r\n### Python\r\n#### USAGE\r\n\r\n```\r\nfrom brightics.function.io import read_csv\r\nres = read_csv(path, engine='python', delimiter=',', na_filter=false,\r\n               quoting=false, encoding='UTF-8', strip_col=false)\r\nres['table']\r\n```\r\n\r\n#### INPUT\r\n\r\n#### OUTPUT\r\n1. **table**: (Table) Table filled with values from the csv file.\r\n\r\n#### PARAMETER\r\n1. **path**<b style=\"color:red\">*</b>: path to a .csv file to be imported.\r\n\t* Type: *\r\n2. **engine**: Parser engine to use. The C engine is faster while the python engine is currently more feature-complete.\r\n\t* Type: *str*\r\n\t* Default / Range: python ( python | c )\r\n3. **delimiter**: Delimiter to seperate values.\r\n\t* Type: *\r\n4. **na_filter**: Choose whether or not detect missing values. If the data does not have any missing values set this option to false to improve the performance.\r\n\t* Type: *\r\n\t* Default value: false \r\n5. **quoting**: Control field quoting behavior. If this option is set to true then a field enclosed with quotation marks will be recognized as a single value.\r\n\t* Type: *\r\n\t* Default value: false \r\n6. **encoding**: Encoding to use for UTF when reading/writing.\r\n\t* Type: *str*\r\n\t* Default / Range: utf-8 ( utf-8 | utf-8-sig | euckr | ms949 )\r\n7. **strip_col**: Strip white space in column name\r\n\t* Type: *\r\n\t* Default value: false \r\n\r\n\r\n## Example\r\n### VA\r\n\r\n**<a href=\"/api/va/v2/help/downloads/brightics.function.io$read_csv97059/example-model/Read_CSV.json\" download>[Sample Model]</a>**\r\n\r\n\r\n<img src=\"/api/va/v2/help/images/brightics.function.io$read_csv97059/Read_CSV.png\"  width=\"800px\" style=\"border: 1px solid gray\" >\r\n\r\n<br> In this tutorial workflow, the file 'd:\\iris.csv' is imported with the parameter settings listed below.\r\n\r\n++Parameters++\r\n1. **Path**<b style=\"color:red\">*</b>: d:\\iris.csv\r\n2. **Engine**: Python\r\n3. **Delimiter**: ,\r\n4. **Null Filtering**: false\r\n5. **Quote**: false\r\n6. **Encoding**: UTF-8\r\n7. **Strip White Space in Column Name**: false\r\n\r\n\r\n### Python\r\n\r\n```\r\nfrom brightics.function.io import read_csv\r\nres = read_csv(path='D:\\iris.csv', engine='python', delimiter=',',\r\n               na_filter=False, quoting=False, encoding='UTF-8',\r\n               strip_col=False)\r\nres = res['table']\r\n```\r\n\r\n<br> In this Python script, the file 'd:\\iris.csv' is imported with the specified parameter settings.",
-    "exampleModels": [
-        {
-            "fileName": "Read_CSV.json",
-            "label": "Read_CSV",
-            "contents": {
-                "type": "files",
-                "data": [
-                    {
-                        "type": "file",
-                        "data": {
-                            "id": "mf8n57msnnqt8w43",
-                            "project_id": "pjtzek3byq2sg4v7",
-                            "label": "Read_CSV",
-                            "contents": {
-                                "mid": "mf8n57msnnqt8w43",
-                                "type": "data",
-                                "title": "Read_CSV",
-                                "functions": [
-                                    {
-                                        "persist-mode": "auto",
-                                        "func": "brightics.function.io$read_csv97059",
-                                        "name": "brightics.function.io$read_csv",
-                                        "param": {
-                                            "engine": "python",
-                                            "na_filter": false,
-                                            "quoting": false,
-                                            "encoding": "utf-8",
-                                            "strip_col": false,
-                                            "path": "C:\\iris.csv",
-                                            "delimiter": ""
-                                        },
-                                        "display": {
-                                            "label": "Read CSV",
-                                            "diagram": {
-                                                "position": {
-                                                    "x": 270,
-                                                    "y": 120
-                                                }
-                                            },
-                                            "sheet": {
-                                                "out": {
-                                                    "partial": [
-                                                        {
-                                                            "panel": [
-                                                                {
-                                                                    "id": "default-1585535154061",
-                                                                    "chartOption": {
-                                                                        "colorSet": [
-                                                                            "#FD026C",
-                                                                            "#4682B8",
-                                                                            "#A5D22D",
-                                                                            "#F5CC0A",
-                                                                            "#FE8C01",
-                                                                            "#6B9494",
-                                                                            "#B97C46",
-                                                                            "#84ACD0",
-                                                                            "#C2E173",
-                                                                            "#F9DD5B",
-                                                                            "#FE569D",
-                                                                            "#FEB356",
-                                                                            "#9CB8B8",
-                                                                            "#D0A884",
-                                                                            "#2E6072",
-                                                                            "#6D8C1E",
-                                                                            "#A48806",
-                                                                            "#A90148",
-                                                                            "#A95E01",
-                                                                            "#476363",
-                                                                            "#7B532F"
-                                                                        ],
-                                                                        "title": {
-                                                                            "show": true,
-                                                                            "text": "",
-                                                                            "subtext": "",
-                                                                            "rotate": 0,
-                                                                            "textStyle": {
-                                                                                "color": "#000000",
-                                                                                "fontSize": 12,
-                                                                                "fontFamily": ""
-                                                                            },
-                                                                            "subtextStyle": {
-                                                                                "color": "#000000",
-                                                                                "fontSize": 12,
-                                                                                "fontFamily": ""
-                                                                            },
-                                                                            "left": "50%",
-                                                                            "top": "0px"
-                                                                        },
-                                                                        "toolbar": {
-                                                                            "show": false,
-                                                                            "right": "8px",
-                                                                            "top": "8px",
-                                                                            "orientation": "horizontal",
-                                                                            "menu": {}
-                                                                        },
-                                                                        "chart": {
-                                                                            "border": "1px #000000 none",
-                                                                            "background": "rgba(255, 255, 255,1)",
-                                                                            "animationDuration": 1000,
-                                                                            "type": "table"
-                                                                        },
-                                                                        "tooltip": {
-                                                                            "triggerOn": "mousemove"
-                                                                        },
-                                                                        "grid": {
-                                                                            "left": "10%",
-                                                                            "right": "10%",
-                                                                            "top": "60px",
-                                                                            "bottom": "60px",
-                                                                            "width": "auto",
-                                                                            "height": "auto"
-                                                                        },
-                                                                        "xAxis": [
-                                                                            {
-                                                                                "selected": [],
-                                                                                "title": {
-                                                                                    "show": true,
-                                                                                    "text": "",
-                                                                                    "subtext": "",
-                                                                                    "rotate": 0,
-                                                                                    "textStyle": {
-                                                                                        "color": "#000000",
-                                                                                        "fontSize": 12,
-                                                                                        "fontFamily": ""
-                                                                                    },
-                                                                                    "subtextStyle": {
-                                                                                        "color": "#000000",
-                                                                                        "fontSize": 12,
-                                                                                        "fontFamily": ""
-                                                                                    },
-                                                                                    "left": "50%",
-                                                                                    "bottom": "5px"
-                                                                                },
-                                                                                "axisTick": {
-                                                                                    "show": true
-                                                                                },
-                                                                                "axisLine": {
-                                                                                    "onZero": false
-                                                                                },
-                                                                                "scale": true,
-                                                                                "axisLabel": {
-                                                                                    "show": true,
-                                                                                    "rotate": 0,
-                                                                                    "textStyle": {
-                                                                                        "color": "#000000",
-                                                                                        "fontSize": 12,
-                                                                                        "fontFamily": ""
-                                                                                    }
-                                                                                },
-                                                                                "zlevel": 1
-                                                                            }
-                                                                        ],
-                                                                        "yAxis": [
-                                                                            {
-                                                                                "selected": [],
-                                                                                "title": {
-                                                                                    "show": true,
-                                                                                    "text": "",
-                                                                                    "subtext": "",
-                                                                                    "rotate": -90,
-                                                                                    "textStyle": {
-                                                                                        "color": "#000000",
-                                                                                        "fontSize": 12,
-                                                                                        "fontFamily": ""
-                                                                                    },
-                                                                                    "subtextStyle": {
-                                                                                        "color": "#000000",
-                                                                                        "fontSize": 12,
-                                                                                        "fontFamily": ""
-                                                                                    },
-                                                                                    "left": "8px",
-                                                                                    "top": "50%"
-                                                                                },
-                                                                                "axisTick": {
-                                                                                    "show": true
-                                                                                },
-                                                                                "axisLine": {
-                                                                                    "onZero": false
-                                                                                },
-                                                                                "scale": true,
-                                                                                "axisLabel": {
-                                                                                    "show": true,
-                                                                                    "rotate": 0,
-                                                                                    "textStyle": {
-                                                                                        "color": "#000000",
-                                                                                        "fontSize": 12,
-                                                                                        "fontFamily": ""
-                                                                                    }
-                                                                                },
-                                                                                "zlevel": 1
-                                                                            }
-                                                                        ],
-                                                                        "colorBy": [
-                                                                            {
-                                                                                "selected": []
-                                                                            }
-                                                                        ],
-                                                                        "legend": {
-                                                                            "show": true,
-                                                                            "orientation": "horizontal",
-                                                                            "left": "50%",
-                                                                            "right": "auto",
-                                                                            "top": "10px",
-                                                                            "bottom": "auto",
-                                                                            "textStyle": {
-                                                                                "color": "#000000",
-                                                                                "fontSize": 12,
-                                                                                "fontFamily": "",
-                                                                                "fontStyle": "normal",
-                                                                                "fontWeight": "normal",
-                                                                                "fontDecoration": "none"
-                                                                            }
-                                                                        },
-                                                                        "noDataMessage": "",
-                                                                        "plotOptions": {
-                                                                            "table": {
-                                                                                "formatter": []
-                                                                            },
-                                                                            "map": {
-                                                                                "geoData": {}
-                                                                            }
-                                                                        },
-                                                                        "source": {
-                                                                            "dataType": "lazy",
-                                                                            "lazyData": []
-                                                                        },
-                                                                        "guide": {
-                                                                            "message": "Set data options using Chart Setting Button."
-                                                                        }
-                                                                    },
-                                                                    "dataSource": {
-                                                                        "selectable": true
-                                                                    },
-                                                                    "style": {},
-                                                                    "group": "byj6chuvxk6gumrrjez2kms2"
-                                                                }
-                                                            ],
-                                                            "layout": {
-                                                                "type": "panel",
-                                                                "id": "default-1585535154061"
-                                                            }
-                                                        }
-                                                    ],
-                                                    "full": [
-                                                        {
-                                                            "panel": [],
-                                                            "layout": {}
-                                                        }
-                                                    ]
-                                                }
-                                            }
-                                        },
-                                        "meta": {
-                                            "table": {
-                                                "type": "table"
-                                            }
-                                        },
-                                        "context": "python",
-                                        "version": "3.6",
-                                        "outputs": {
-                                            "table": "twjrj6txnjkvw2m9"
-                                        },
-                                        "fid": "fjagxvktbmshcjru"
-                                    }
-                                ],
-                                "links": [],
-                                "preferences": {},
-                                "variables": {},
-                                "variableRef": [],
-                                "innerModels": {},
-                                "inData": [],
-                                "outData": [],
-                                "sheets": [],
-                                "param": {},
-                                "report": {
-                                    "title": "Report",
-                                    "data": []
-                                },
-                                "persist-mode": "auto",
-                                "diagram": {
-                                    "PAPER_MARGIN_TOP": 20,
-                                    "PAPER_MARGIN_LEFT": 20,
-                                    "FIGURE_WIDTH": 195,
-                                    "FIGURE_HEIGHT": 60,
-                                    "GAP_WIDTH": 55,
-                                    "GAP_HEIGHT": 40
-                                },
-                                "problemList": []
-                            },
-                            "description": "",
-                            "model_image": null,
-                            "creator": "brightics@samsung.com",
-                            "create_time": "2020-03-30T02:08:07.000Z",
-                            "updater": "brightics@samsung.com",
-                            "update_time": "2020-03-30T02:36:31.000Z",
-                            "event_key": "2020_023631.000",
-                            "type": "data",
-                            "tag": "null",
-                            "from_version": "0.0"
-                        }
-                    }
-                ],
-                "version": "3.6"
-            }
-        }
-    ],
-    "sampleImages": [
-        {
-            "fileName": "Read_CSV.png",
-            "label": "Read_CSV.png",
-            "base64": "data:image/png;base64,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AGAplEgAAKzGojualrgDCgC4OCUSAACrsXAptODOJQDgUimRAADW2PC5QNeunym+1WxYzpxf8/K33mo+fJFrRqXN2TVTjpINn2vUuq5U8hSvKZRIsz9LiQQA60SJBADAaiy6E2nhnUsAwGVSIgEAsCIfN7/41gI7izxYGwDWihIJAKBWa/iK/0Ve2z886uYV/wCwNpRIAACszrCQmqfYiuchOcoGAOtEiQQAwErFDqPiA8JbFtmxBACshhIJAIAVS3YZzb1bCQBYJSUSAAAAACklEgAAAAApJRIAAAAAKSUSAAAAACklEgAAAAApJRIAAAAAKSUSAAAAACklEgAAAAApJRIAAAAAKSUSAAAAACklEgAAAAApJRIAAAAAKSUSAAAAACklEgAAAAApJRIAAAAAKSUSAAAAACklEgAAAAApJRIAAAAAKSUSAAAAACklEgAAAAApJRIAAAAAKSUSAAAAACklEgAAAAApJRIAAAAAKSUSAAAAACklEgAAAAApJRIAAAAAKSUSAAAAACklEgAAAAApJRIAAAAAKSUSAAAAACklEgAAAAApJRIAAAAAKSUSAAAAACklEgAAAAApJRIAAAAAKSUSAAAAACklEgAAAAApJRIAAAAAKSUSAAAAACklEgAAAAApJRIAAAAAKSUSAAAAACklEgAAAAApJRIAAAAAKSUSAAAAACklEgAAAAApJRIAAAAAKSUSAAAAACklEgAAAAApJRIAAAAAKSUSAAAAACklEgAAAAApJRIAAAAAKSUSAAAAACklEgAAAAApJRIAAAAAKSUSAAAAACklEgAAAAApJRIAAAAAKSUSAAAAACklEgAAAAApJRIAAAAAKSUSAAAAACklEgAAAAApJRIAAAAAKSUSAAAAACklEgAAAAApJRIAAAAAKSUSAAAAACklEgAAAAApJRIAAAAAKSUSAAAAACklEgAAAAApJRIAAAAAKSUSAAAAACklEgAAAAApJRIAAAAAKSUSAAAAACklEgAAAAApJRIAAAAAKSUSAAAAACklEgAAAAApJRIAAAAAKSUSAAAAACklEgAAAAApJRIAAAAAKSUSAAAAACklEgAAAAApJRIAAAAAie3m/xyt0lgmsKDdAAAAAElFTkSuQmCC"
-        }
-    ]
+    "md": "## Format\n### Python\n\n```\nfrom brightics.function.io import write_csv\nwrite_csv(table = , path = )\n\n```\n\n## Description\nThis function writes a table to a csv file.\n\n---\n\n## Properties\n### VA\n#### Inputs\n1. **table**<b style=\"color:red\">*</b>: table\n\n#### Parameters\n1. **path**<b style=\"color:red\">*</b>: file path.\n\n\n\n### Python\n#### Inputs\n1. **table**<b style=\"color:red\">*</b>: table\n\n#### Parameters\n1. **path**<b style=\"color:red\">*</b>: file path.\n\n"
 }

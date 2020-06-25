@@ -206,6 +206,23 @@ def logistic_regression_predict(table, model, **params):
 def _logistic_regression_predict(table, model, prediction_col='prediction', prob_prefix='probability',
                                  output_log_prob=False, log_prob_prefix='log_probability', thresholds=None,
                                  suffix='index'):
+    if (table.shape[0] == 0):
+        new_cols = table.columns.tolist() + [prediction_col]
+        classes = model['lr_model'].classes_
+        if suffix == 'index':
+            prob_cols = [prob_prefix + '_{}'.format(i) for i in range(len(classes))]
+        else:
+            prob_cols = [prob_prefix + '_{}'.format(i) for i in classes]
+        if output_log_prob:
+            if suffix == 'index':
+                log_cols = [log_prob_prefix + '_{}'.format(i) for i in range(len(classes))]
+            else:
+                log_cols = [log_prob_prefix + '_{}'.format(i) for i in classes]
+        else:
+            log_cols = []
+        new_cols += prob_cols + log_cols
+        out_table = pd.DataFrame(columns=new_cols)
+        return {'out_table': out_table}
     if 'features' in model:
         feature_cols = model['features']
     else:

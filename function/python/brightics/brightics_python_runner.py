@@ -27,7 +27,8 @@ from contextlib import contextmanager
 import json
 import matplotlib
 matplotlib.use("agg")
-
+import multiprocessing
+multiprocessing.set_start_method('spawn', True)
 try:
     from StringIO import StringIO
 except ImportError:
@@ -125,6 +126,7 @@ class BrighticsPythonRunner(object):
                 interactive_code_object = compile(ast.Interactive(single_code), '<string>', 'single')
 
                 with redirect_stderr():
+#                    exec("print('　')")
                     exec(def_object, globals())
                     try:
                         exec(exec_code_object)
