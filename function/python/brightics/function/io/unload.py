@@ -24,7 +24,7 @@ import pandas as pd
 import boto3
 
 from brightics.function.utils import _model_dict_scala, _model_dict
-import brightics.common.json as data_json
+import brightics.common.datajson as data_json
 from brightics.common.datasource import DbEngine
 from brightics.common.validation import raise_runtime_error
 from brightics.brightics_data_api import _write_dataframe
@@ -215,9 +215,9 @@ def write_to_db(table, **params):
     return _write_to_db(table, **params)
 
 
-def _write_to_db(table, tableName, datasource, ifExists='fail'):
+def _write_to_db(table, tableName, datasource, schema=None, ifExists='fail'):
     if not isinstance(table, pd.DataFrame):
         raise_runtime_error('table is not pandas.DataFrame')
 
     with DbEngine(**datasource) as engine:
-        table.to_sql(tableName, engine, if_exists=ifExists, index=False)
+        table.to_sql(tableName, engine, schema=schema, if_exists=ifExists, index=False)

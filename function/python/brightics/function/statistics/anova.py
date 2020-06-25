@@ -169,7 +169,8 @@ def _twoway_anova(table, response_cols, factor_cols):
     """))
 
     if n == 1:
-        groups = table[factor_cols].unique()
+        _factor_col = factor_cols[0]
+        groups = table[_factor_col].unique()
         groups.sort()
         sum_len = np.sum([len(str(group)) for group in groups])
 
@@ -181,7 +182,7 @@ def _twoway_anova(table, response_cols, factor_cols):
         result['_grouped_data'][response_col] = dict()
 
         if n == 1:
-            ax = sns.boxplot(x=factor_cols, y=response_col, data=table, order=groups)
+            ax = sns.boxplot(x=_factor_col, y=response_col, data=table, order=groups)
             if sum_len > 512:
                 ax.set_xticklabels(ax.get_xticklabels(), rotation=90)
             elif sum_len > 64:

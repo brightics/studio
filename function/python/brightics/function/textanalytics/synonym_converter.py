@@ -20,9 +20,9 @@ from brightics.common.utils import check_required_parameters
 
 
 def synonym_converter(table, **params):
-    check_required_parameters(_synonym_converter, params, ['table'])   
+    check_required_parameters(_synonym_converter, params, ['table'])
     return _synonym_converter(table, **params)
-    
+
 
 def synonym_converter_user_dict(table, **params):
     check_required_parameters(_synonym_converter, params, ['table'])   
@@ -30,7 +30,7 @@ def synonym_converter_user_dict(table, **params):
     
 
 def _synonym_converter(table, input_cols, hold_cols=None, default_dict=False, synonym_list=None, prefix='synonym', user_dict=None):
-    
+
     if hold_cols is not None:
         hold_table = pd.DataFrame()
         hold_table[hold_cols] = table[hold_cols]
@@ -39,24 +39,33 @@ def _synonym_converter(table, input_cols, hold_cols=None, default_dict=False, sy
     
     # initial dictionary
     synonym_dict = dict()
-    if (synonym_list is not None):        
+    if synonym_list is not None:
         for word_synonym in synonym_list:
-            synonym_dict.update({synonym.strip() : word_synonym.split(',')[0] for synonym in word_synonym.split(',')[1:]})
-        
+            synonym_dict.update(
+                {synonym.strip(): word_synonym.split(',')[0] for synonym in word_synonym.split(',')[1:]})
+
     # default dictionary update
-    if (default_dict == True):
+    if default_dict:
         synonym_dict.update(dict())  # To do dict() => default dictionary
 
     # user_dict update
-    if (user_dict is not None):
+    if user_dict is not None:
         user_dictionary = user_dict.values
         for word_synonym in user_dictionary:
-            synonym_dict.update({synonym.strip() : word_synonym[0] for synonym in word_synonym[1].split(',')})
+            synonym_dict.update({synonym.strip(): word_synonym[0] for synonym in word_synonym[1].split(',')})
 
-    values = [[[synonym_dict.get(word, word) for word in word_list] for word_list in table[column]] for column in input_cols]
+    values = [[[synonym_dict.get(word, word) for word in word_list] for word_list in table[column]] for column in
+              input_cols]
+    # np.transpose works wrong when the number of rows or columns is equal to 1
+    if len(values) == 1:
+        values_tr = [[word_list] for word_list in values[0]]
+    elif len(values[0]) == 1:
+        values_tr = [[col[0] for col in values]]
+    else:
+        values_tr = np.transpose(values)
     value_columns = ['{}_{}'.format(prefix, column) for column in input_cols]
-    value_table = pd.DataFrame(np.transpose(values), columns=value_columns)
-    
+    value_table = pd.DataFrame(values_tr, columns=value_columns)
+
     out_table = pd.concat([hold_table, value_table.reset_index(drop=True)], axis=1)
-            
-    return {'out_table' : out_table}
+
+    return {'out_table': out_table}

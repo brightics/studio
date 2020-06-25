@@ -19,6 +19,7 @@ import pandas as pd
 from brightics.common.groupby import _function_by_group
 from brightics.function.utils import _model_dict
 from brightics.common.utils import check_required_parameters
+from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, dict2MD, plt2MD, keyValues2MD
 
 
 def scale(table, group_by=None, **params):
@@ -61,7 +62,25 @@ def _scale(table, input_cols, scaler, suffix=None):
     out_model['used_scaler'] = scaler
     out_model['scaler'] = scale
     out_model['suffix'] = suffix
-            
+    rb = BrtcReprBuilder()
+    params = {
+        "Input columns": input_cols,
+        "Normalization method": scaler,
+        "Suffix": suffix
+    }
+    summary_table = pd.DataFrame()
+    summary_table['Input columns'] = input_cols
+    summary_table['Normalization method'] = [scaler] * len(input_cols)
+    summary_table['New column names'] = scaled_cols
+    rb.addMD(strip_margin("""
+    | ## Label Encoder Model
+    | ### Parameters
+    | {params}
+    |
+    | ### Summary table
+    | {summary_table}
+    """.format(params=dict2MD(params), summary_table=pandasDF2MD(summary_table))))
+    out_model['_repr_brtc_'] = rb.get()
     return {'out_table' : out_table, 'model' : out_model}
 
 
@@ -73,7 +92,10 @@ def scale_model(table, model, **params):
         return _scale_model(table, model, **params)
     
     
-def _scale_model(table, model):        
+def _scale_model(table, model):
+    if (table.shape[0]==0):
+        out_table = pd.DataFrame(columns=table.columns)
+        return {'out_table' : out_table}
     scaled_cols = []
     for col in model['input_cols']:
         scaled_cols.append(col + model['suffix'])
@@ -81,5 +103,4 @@ def _scale_model(table, model):
     out_table = table.copy()
     scaled_table = model['scaler'].transform(out_table[model['input_cols']])
     out_table[scaled_cols] = pd.DataFrame(data=scaled_table)
-            
     return {'out_table' : out_table}

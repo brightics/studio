@@ -26,11 +26,21 @@ from brightics.common.validation import validate, greater_than, greater_than_or_
     over_to, less_than_or_equal_to, raise_runtime_error, greater_than_or_equal_to_or_equal_to
 import sklearn.utils as sklearn_utils
 from brightics.common.classify_input_type import check_col_type
+from brightics.common.exception import BrighticsFunctionException as BFE
 
 
 def svm_classification_train(table, group_by=None, **params):
-    check_required_parameters(_svm_classification_train, params, ['table'])
+    check_required_parameters(_svm_classification_train, params, ['table','gamma_val'])
     params = get_default_from_parameters_if_required(params, _svm_classification_train)
+
+    if params['gamma'] == 'other':
+        if 'gamma_val' not in params:
+            raise BFE.from_errors([{'0100': 'Gamma value is mandatory when gamma is other'}])
+        if params['gamma_val'] <= 0:
+            raise BFE.from_errors([{'0100': 'Gamma value must be greater than 0'}])
+    else:
+        params['gamma_val'] = None
+
     param_validation_check = [over_to(params, 0.0, 1.0, 'c'),
                               greater_than_or_equal_to(params, 0, 'degree'),
                               greater_than(params, 0.0, 'tol'),
@@ -44,7 +54,7 @@ def svm_classification_train(table, group_by=None, **params):
         return _svm_classification_train(table, **params)
 
 
-def _svm_classification_train(table, feature_cols, label_col, c=1.0, kernel='rbf', degree=3, gamma='auto', coef0=0.0,
+def _svm_classification_train(table, feature_cols, label_col, gamma_val, c=1.0, kernel='rbf', degree=3, gamma='auto', coef0=0.0,
                               shrinking=True, probability=True, tol=1e-3, max_iter=-1, random_state=None, class_weight=None):
     _table = table.copy()
 
@@ -61,7 +71,11 @@ def _svm_classification_train(table, feature_cols, label_col, c=1.0, kernel='rbf
         else:            
             class_weight = {class_labels[i] : class_weight[i] for i in range(len(class_labels))}
     
-    _svc = svm.SVC(C=c, kernel=kernel, degree=degree, gamma=gamma, coef0=coef0, shrinking=shrinking,
+    if gamma == 'other':
+        _gamma = gamma_val
+    else:
+        _gamma = gamma
+    _svc = svm.SVC(C=c, kernel=kernel, degree=degree, gamma=_gamma, coef0=coef0, shrinking=shrinking,
               probability=probability, tol=tol, max_iter=max_iter, random_state=random_state, class_weight=class_weight)
     _svc_model = _svc.fit(features, _label_col)
     

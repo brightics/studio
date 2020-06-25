@@ -30,7 +30,7 @@ import pyarrow.parquet as pq
 
 import brightics.common.data.table_data_reader as table_reader
 import brightics.common.data.utils as data_util
-import brightics.common.json as data_json
+import brightics.common.datajson as data_json
 from brightics.brightics_java_gateway import brtc_java_gateway as gateway
 from brightics.brightics_kv_store_client import KVStoreClient
 
@@ -126,7 +126,8 @@ def view_data(key):
 
         def ensure_none(df):
             val = df.values
-            val[isna(df.values)] = None
+            if isna(val).any():
+                val[isna(df.values)] = None
             return val
 
         return data_json.to_json({

@@ -28,11 +28,13 @@ from .ftest import ftest_for_stacked_data
 from .chi_square_test import chi_square_test_of_independence
 from .summary import statistic_summary, statistic_derivation, string_summary
 from .cross_table import cross_table
+from .cross_table import cross_table2
 from .levene import levenes_test
 from .duncan_test import duncan_test
 from .ljung_box_test import ljung_box_test
 from .mann_whitney_test import mann_whitney_test
 from .wilcoxon_test import wilcoxon_test
+from .wilcoxon_test2 import wilcoxon_test2
 from .friedman_test import friedman_test
 from .kruskal_wallis_test import kruskal_wallis_test
 from .normality_test import normality_test

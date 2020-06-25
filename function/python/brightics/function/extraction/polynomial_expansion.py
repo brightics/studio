@@ -26,11 +26,13 @@ def polynomial_expansion(table, **params):
     return _polynomial_expansion(table, **params)
     
 def _polynomial_expansion(table, input_cols, hold_cols=False):
-    out_table = pd.DataFrame()
-    out_table[input_cols] = table[input_cols]
     if hold_cols:
+        out_table = pd.DataFrame()
+        out_table[input_cols] = table[input_cols]
         hold_cols = list(set(hold_cols) - set(input_cols))
         out_table[hold_cols] = table[hold_cols]
+    else:
+        out_table = table.copy()
     for i in range(len(input_cols)):
         for j in range(i, len(input_cols)):
             out_table[input_cols[i] + '_' + input_cols[j]] = np.array(table[input_cols[i]]) * np.array(table[input_cols[j]])

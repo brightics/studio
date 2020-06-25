@@ -81,7 +81,6 @@ def _outlier_detection_tukey_carling(table, input_cols, outlier_method='tukey', 
         'Input Columns': input_cols,
         'Outlier Method': outlier_method,
         'Multiplier': multiplier,
-        'Number of Outliers in a Row': number_of_removal,
         'Result Type': result_type,
         'New Column Prefix': new_column_prefix
     }

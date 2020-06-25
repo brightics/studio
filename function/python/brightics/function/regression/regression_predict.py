@@ -18,6 +18,12 @@ from brightics.common.validation import raise_runtime_error
 from .linear_regression import linear_regression_predict
 from .decision_tree_regression import decision_tree_regression_predict
 from .random_forest_regression import random_forest_regression_predict
+from .ada_boost_regression import ada_boost_regression_predict
+from .glm import glm_predict
+from .isotonic_regression import isotonic_regression_predict
+from .mlp_regression import mlp_regression_predict
+from .xgb_regression import xgb_regression_predict
+from .pls_regression import pls_regression_predict
 import numpy as np
 
 
@@ -40,5 +46,16 @@ def regression_predict(table, model, prediction_col='prediction'):
             return random_forest_regression_predict(table = table, model = model, prediction_col = prediction_col)
     if 'forest_regression' in tmp_model['_type'] or 'gbt_regression' in tmp_model['_type']:
         return random_forest_regression_predict(table = table, model = model, prediction_col = prediction_col)
+    if tmp_model['_type'] == 'ada_boost_regression_model':
+        return ada_boost_regression_predict(table=table, model=model, pred_col_name=prediction_col)
+    if tmp_model['_type'] == 'glm_model':
+        return glm_predict(table=table, model=model, prediction_col=prediction_col)
+    if tmp_model['_type'] == 'mlp_regression_model':
+        return mlp_regression_predict(table=table, model=model, prediction_col=prediction_col)
+    if tmp_model['_type'] == 'xgb_regression_model':
+        return xgb_regression_predict(table=table, model=model, prediction_col=prediction_col)
+    if tmp_model['_type'] == 'isotonic_regression_model':
+        return isotonic_regression_predict(table=table, model=model, prediction_col=prediction_col)
+    if tmp_model['_type'] == 'pls_regression_model':
+        return pls_regression_predict(table=table, model=model, prediction_col=prediction_col)
     raise_runtime_error('''It is not supported yet.''')
-

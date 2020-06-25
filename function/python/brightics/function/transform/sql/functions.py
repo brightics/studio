@@ -21,7 +21,8 @@ import numpy as np
 from .serializer import _serialize
 from .serializer import _deserialize
 import re
-
+from brightics.common.validation import greater_than_or_equal_to
+from brightics.common.validation import validate
 """ 
 constants 
 """
@@ -116,7 +117,64 @@ def regexp_extract(subject, pattern, *index):  # todo index??
         return re.search(pattern, subject).group(1)
     else:
         return re.search(pattern, subject).group(index[0])
-    
+
+# NOTE: String index start from 1 in SQL and 0 in Python
+def _validate_params(params):
+    position = 1
+    occurrence = 1
+    return_option = 0
+    param_validation_check = []
+    # validate value of return_option
+    if len(params) >= 3:
+        return_option = params[2]
+        param_validation_check.append(greater_than_or_equal_to(params, 0, 2))
+    # validate value of occurrence
+    if len(params) >= 2:
+        occurrence = params[1]
+        param_validation_check.append(greater_than_or_equal_to(params, 1, 1))
+    # validate value of position
+    if len(params) >= 1:
+        position = params[0]
+        param_validation_check.append(greater_than_or_equal_to(params, 1, 0))
+    validate(*param_validation_check)
+    return position-1, occurrence-1, return_option
+
+
+def regexp_like(subject, pattern):
+    if re.search(pattern, subject) is None:
+        return False
+    return True
+
+
+def regexp_count(subject, pattern, *params):
+    position, _, _ = _validate_params(params)
+    return len(re.findall(pattern, subject[position:]))
+
+
+def regexp_substr(subject, pattern, *params):
+    position, occurrence, _ = _validate_params(params)
+    start, end = _regexp_common(subject, pattern, position, occurrence)
+    return subject[start:end]
+
+
+def regexp_instr(subject, pattern, *params):
+    position, occurrence, return_option = _validate_params(params)
+    if return_option == 0:
+        return _regexp_common(subject, pattern, position, occurrence)[0] + 1
+    return _regexp_common(subject, pattern, position, occurrence)[1] + 1
+
+
+def _regexp_common(subject, pattern, position, occurrence):
+    start = -1
+    end = -1
+    ret = re.finditer(pattern, subject[position:])
+    for ind, r in enumerate(ret):
+        if (ind == occurrence):
+            start = r.start()
+            end = r.end()
+            break
+    return start, end
+
 """
 datetime related functions
 """

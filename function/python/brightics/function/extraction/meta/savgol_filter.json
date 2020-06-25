@@ -1,0 +1,208 @@
+{
+    "script": {
+        "type": "",
+        "content": ""
+    },
+    "specJson": {
+        "category": "extraction",
+        "func": "brightics.function.extraction$savgol_filter",
+        "name": "brightics.function.extraction$savgol_filter",
+        "context": "python",
+        "label": "Savitzky-Golay Filter",
+        "description": "A Savitzky–Golay filter is a digital filter that can be applied to a set of digital data points for the purpose of smoothing the data, that is, to increase the precision of the data without distorting the signal tendency\n\nReference:\n+ <https://en.wikipedia.org/wiki/Savitzky%E2%80%93Golay_filter>",
+        "tags": [
+            "savgol_filter"
+        ],
+        "version": "3.6",
+        "inputs": {
+            "table": ""
+        },
+        "outputs": {
+            "out_table": ""
+        },
+        "meta": {
+            "table": {
+                "type": "table"
+            },
+            "out_table": {
+                "type": "table"
+            }
+        },
+        "params": [
+            {
+                "id": "input_cols",
+                "label": "Input Columns",
+                "description": "",
+                "mandatory": true,
+                "items": [],
+                "visibleOption": [],
+                "globalVariable": false,
+                "control": "ColumnSelector",
+                "columnType": [
+                    "Integer",
+                    "Long",
+                    "Float",
+                    "Double"
+                ],
+                "validation": [],
+                "multiple": true
+            },
+            {
+                "id": "window_length",
+                "label": "Window length",
+                "description": "The length of the filter window (i.e. the number of coefficients). window_length must be a positive odd integer.",
+                "mandatory": false,
+                "items": [],
+                "visibleOption": [],
+                "globalVariable": false,
+                "control": "InputBox",
+                "columnType": [],
+                "validation": [],
+                "targetTable": [],
+                "placeHolder": "1 (value >= 1)",
+                "type": "Integer",
+                "min": 1
+            },
+            {
+                "id": "polyorder",
+                "label": "Polyorder",
+                "description": "The order of the polynomial used to fit the samples. polyorder must be less than window_length.",
+                "mandatory": false,
+                "items": [],
+                "visibleOption": [],
+                "globalVariable": false,
+                "control": "InputBox",
+                "columnType": [],
+                "validation": [],
+                "targetTable": [],
+                "placeHolder": "0 (value >= 0)",
+                "type": "Integer",
+                "min": 0
+            },
+            {
+                "id": "deriv",
+                "label": "Derivative order",
+                "description": "The order of the derivative to compute. This must be a nonnegative integer. The default is 0, which means to filter the data without differentiating.",
+                "mandatory": false,
+                "items": [],
+                "visibleOption": [],
+                "globalVariable": false,
+                "control": "InputBox",
+                "columnType": [],
+                "validation": [],
+                "targetTable": [],
+                "type": "Integer",
+                "min": 0,
+                "placeHolder": "0 (value >= 0)"
+            },
+            {
+                "id": "delta",
+                "label": "Delta",
+                "description": "The spacing of the samples to which the filter will be applied. This is only used if deriv > 0. Default is 1.0.",
+                "mandatory": false,
+                "items": [],
+                "visibleOption": [
+                    {
+                        "script": "return #deriv# > 0;"
+                    }
+                ],
+                "globalVariable": false,
+                "control": "InputBox",
+                "columnType": [],
+                "validation": [],
+                "targetTable": [],
+                "type": "Double",
+                "min": 0,
+                "placeHolder": "1.0 (value >= 0.0)"
+            },
+            {
+                "id": "axis",
+                "label": "Axis",
+                "description": "The axis of the array x along which the filter is to be applied. Default is -1.\n\n",
+                "mandatory": false,
+                "items": [],
+                "visibleOption": [],
+                "globalVariable": false,
+                "control": "InputBox",
+                "columnType": [],
+                "validation": [],
+                "targetTable": [],
+                "type": "Integer",
+                "placeHolder": "-1"
+            },
+            {
+                "id": "mode",
+                "label": "Mode",
+                "description": "Must be ‘mirror’, ‘constant’, ‘nearest’, ‘wrap’ or ‘interp’. This determines the type of extension to use for the padded signal to which the filter is applied. When mode is ‘constant’, the padding value is given by cval. See the Notes for more details on ‘mirror’, ‘constant’, ‘wrap’, and ‘nearest’. When the ‘interp’ mode is selected (the default), no extension is used. Instead, a degree polyorder polynomial is fit to the last window_length values of the edges, and this polynomial is used to evaluate the last window_length // 2 output values.",
+                "mandatory": false,
+                "items": [
+                    {
+                        "label": "mirror",
+                        "value": "mirror",
+                        "default": false
+                    },
+                    {
+                        "label": "constant",
+                        "value": "constant",
+                        "default": false
+                    },
+                    {
+                        "label": "nearest",
+                        "value": "nearest",
+                        "default": false
+                    },
+                    {
+                        "label": "wrap",
+                        "value": "wrap",
+                        "default": false
+                    },
+                    {
+                        "label": "interp",
+                        "value": "interp",
+                        "default": true
+                    }
+                ],
+                "visibleOption": [],
+                "globalVariable": false,
+                "control": "RadioButton",
+                "columnType": [],
+                "validation": [],
+                "targetTable": []
+            },
+            {
+                "id": "cval",
+                "label": "cval",
+                "description": "Value to fill past the edges of the input if mode is ‘constant’. Default is 0.0.",
+                "mandatory": false,
+                "items": [],
+                "visibleOption": [
+                    {
+                        "id": "mode",
+                        "value": "constant"
+                    }
+                ],
+                "globalVariable": false,
+                "control": "InputBox",
+                "columnType": [],
+                "validation": [],
+                "targetTable": [],
+                "placeHolder": "0.0",
+                "type": "Double"
+            },
+            {
+                "id": "group_by",
+                "label": "Group By",
+                "description": "",
+                "mandatory": false,
+                "items": [],
+                "visibleOption": [],
+                "globalVariable": false,
+                "control": "ColumnSelector",
+                "columnType": [],
+                "validation": [],
+                "multiple": true
+            }
+        ]
+    },
+    "md": ""
+}

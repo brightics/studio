@@ -48,21 +48,23 @@ def _mann_whitney_test(table, response_col, factor_col, use_continuity=True):
     uniq_factor = table[factor_col].unique()
     for name in uniq_factor:
         groups[name] = np.array(table[response_col])[np.where(table[factor_col] == name)]
+    group_name = []
+    stats = []
+    pvals = []
     for name1, name2 in itertools.combinations(uniq_factor, 2):
-        stats, pval = mannwhitneyu(groups[name1], groups[name2], use_continuity=use_continuity)
-        rb.addMD(strip_margin("""
-        | ## {name1} vs {name2}
-        |
-        | ### Statistics U value: {stats}
-        |
-        | ### P value: {pval}
-        """.format(name1=name1, name2=name2, stats=stats, pval=pval)))
+        name = str(name1) + ' vs ' + str(name2)
+        stat, pval = mannwhitneyu(groups[name1], groups[name2], use_continuity=use_continuity)
+        group_name.append(name)
+        stats.append(stat)
+        pvals.append(pval)
             
-        name = str(name1) + '_' + str(name2)
         result[name] = dict()
-        result[name]['Statistics'] = stats
+        result[name]['Statistics'] = stat
         result[name]['P value'] = pval
         
+    rb.addMD(strip_margin("""
+    | {table}
+    """.format(table=pandasDF2MD(pd.DataFrame({'': group_name, 'Test Statistics': stats, 'P Value': pvals})))))
     result['_repr_brtc_'] = rb.get()
         
     return {'result': result}

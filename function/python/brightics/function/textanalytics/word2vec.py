@@ -74,8 +74,15 @@ def _word2vec(table, input_col, sg=1, size=100, window=5, min_count=1,
                    hashfxn=hashfxn)
 
     w2v.init_sims(replace=True)
-    vocab = w2v.wv.vocab 
-    
+    vocab = w2v.wv.vocab
+
+    analogies_score, sections = w2v.wv.evaluate_word_analogies(
+        'brightics/function/textanalytics/data/word2vec_questions_words.txt')
+    pearson_1, spearman_1, oov_ratio_1 = w2v.wv.evaluate_word_pairs(
+        'brightics/function/textanalytics/data/word2vec_wordsim353.tsv')
+    pearson_2, spearman_2, oov_ratio_2 = w2v.wv.evaluate_word_pairs(
+        'brightics/function/textanalytics/data/word2vec_simlex999.tsv')
+
     params = {'Input column': input_col,
               'Training algorithm': algo,
               'Word vector dimensionality': size,
@@ -126,9 +133,31 @@ def _word2vec(table, input_col, sg=1, size=100, window=5, min_count=1,
     | {topn_words}
     | {fig}
     |
+    | ### Word analogy score
+    | {analogies_score}
+    |
+    | ### Word correlation scores
+    | #### Pearson correlation coefficient with 2-tailed p-value (WordSim353)
+    | {pearson_1_1}, {pearson_1_2}
+    | #### Spearman rank-order correlation coefficient with 2-tailed p-value (WordSim353)
+    | {spearman_1_1}, {spearman_1_2}
+    | #### The ratio of pairs with unknown words (WordSim353) 
+    | {oov_ratio_1}
+    | #### Pearson correlation coefficient with 2-tailed p-value (SimLex999)
+    | {pearson_2_1}, {pearson_2_2}
+    | #### Spearman rank-order correlation coefficient with 2-tailed p-value (SimLex999)
+    | {spearman_2_1}, {spearman_2_2}
+    | #### The ratio of pairs with unknown words (SimLex999)
+    | {oov_ratio_2}
+    |
     | ### Parameters
     | {params}
-    """.format(length=length, topn=topn, topn_words=topn_words, params=dict2MD(params), fig=fig)))
+    """.format(length=length, analogies_score=analogies_score,
+               pearson_1_1=pearson_1[0], pearson_1_2=pearson_1[1], spearman_1_1=spearman_1[0],
+               spearman_1_2=spearman_1[1], oov_ratio_1=oov_ratio_1,
+               pearson_2_1=pearson_2[0], pearson_2_2=pearson_2[1], spearman_2_1=spearman_2[0],
+               spearman_2_2=spearman_2[1], oov_ratio_2=oov_ratio_2,
+               topn=topn, topn_words=topn_words, params=dict2MD(params), fig=fig)))
     
     vocab = list(w2v.wv.vocab)
     
@@ -249,18 +278,20 @@ def _word2vec_similarity2(table, model, positive_col=None, negative_col=None, to
     if positive_col is None:
         columns = [negative_col]
     elif negative_col is None:
-        columns = [positive_col] 
+        columns = [positive_col]
     else:
-        columns = [positive_col, negative_col]    
-    
+        columns = [positive_col, negative_col]
+
     df_dropped = table[columns].dropna(how='all')
-    
+
     if positive_col is None:
         res = df_dropped.apply(lambda _: _w2v_sim_neg(model, negative=_[negative_col], topn=topn), axis=1)
     elif negative_col is None:
         res = df_dropped.apply(lambda _: _w2v_sim_pos(model, positive=_[positive_col], topn=topn), axis=1)
     else:
-        res = df_dropped.apply(lambda _: _w2v_sim_both(model, positive=_[positive_col], negative=_[negative_col], topn=topn), axis=1)
-   
+        res = df_dropped.apply(
+            lambda _: _w2v_sim_both(model, positive=_[positive_col], negative=_[negative_col], topn=topn), axis=1)
+
     out_table = pd.DataFrame(sum(res, []), columns=columns + ['synonym', 'similarity'])
     return {'out_table': out_table}
+

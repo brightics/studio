@@ -140,7 +140,9 @@ def naive_bayes_predict(table, model, **params):
         return _naive_bayes_predict(table, model, **params)
 
 
-def _naive_bayes_predict(table, model, suffix, display_log_prob=False, prediction_col='prediction', prob_prefix='probability', log_prob_prefix='log_probability'):
+def _naive_bayes_predict(table, model, suffix, display_log_prob=False, prediction_col='prediction',
+                         prob_prefix='probability', log_prob_prefix='log_probability',
+                         display_joint_log_likelihood=False, joint_log_likelihood_prefix='joint_log_likelihood'):
     if 'features' in model:
         feature_cols = model['features']
     else:
@@ -169,7 +171,8 @@ def _naive_bayes_predict(table, model, suffix, display_log_prob=False, predictio
     else:
         suffixes = [0, 1]
 
-    prob = nb_model.predict_proba(features)    
+    prob = nb_model.predict_proba(features)   
+    likelihood = nb_model._joint_log_likelihood(features) 
     prob_cols = ['{prefix}_{suffix}'.format(prefix=prob_prefix, suffix=suffix) for suffix in suffixes]
     prob_df = pd.DataFrame(data=prob, columns=prob_cols)
 
@@ -184,5 +187,10 @@ def _naive_bayes_predict(table, model, suffix, display_log_prob=False, predictio
     else:
         result = pd.concat([result, prob_df], axis=1)
 
+    if display_joint_log_likelihood:
+        likelihood_cols = ['{prefix}_{suffix}'.format(prefix=joint_log_likelihood_prefix, suffix=suffix) for suffix in suffixes]
+        likelihood_df = pd.DataFrame(likelihood, columns=likelihood_cols)
+        result = pd.concat([result, likelihood_df], axis=1)
+        
     return {'out_table' : result}
 

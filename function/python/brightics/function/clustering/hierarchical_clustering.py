@@ -48,9 +48,8 @@ def hierarchical_clustering(table, group_by=None, **params):
 def _hierarchical_clustering(table, input_cols, input_mode='original', key_col=None, link='complete', met='euclidean', num_rows=20, figure_height=6.4, orient='right'):
     out_table = table.copy()
     feature_names, features = check_col_type(out_table, input_cols)
-    
+    len_features = len(features)
     if input_mode == 'original':
-        len_features = len(features)
         if key_col != None:
             data_names = list(out_table[key_col])
         elif key_col == None:
@@ -58,20 +57,15 @@ def _hierarchical_clustering(table, input_cols, input_mode='original', key_col=N
         out_table['name'] = data_names
         Z = linkage(ssd.pdist(features, metric=met), method=link, metric=met)
     elif input_mode == 'matrix':
-        len_features = len(input_cols)
-        if key_col != None:
-            data_names = []
-            for column in input_cols:
-                data_names.append(out_table[key_col][out_table.columns.get_loc(column)])
-        elif key_col == None:
-            data_names = []
-            for column in input_cols:
-                data_names.append(out_table.columns[out_table.columns.get_loc(column)])
+        data_names = input_cols
         col_index = []
+        if key_col is None:
+            col_list = out_table.columns.tolist()
+        else:
+            col_list = out_table[key_col].tolist()
         for column in input_cols:
-            col_index.append(out_table.columns.get_loc(column))
+            col_index.append(col_list.index(column))
         dist_matrix = features.iloc[col_index]
-        
         Z = linkage(ssd.squareform(dist_matrix), method=link, metric=met)
         dist_matrix['name'] = data_names
     else:

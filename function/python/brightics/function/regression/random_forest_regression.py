@@ -105,7 +105,7 @@ def _random_forest_regression_train(table, feature_cols, label_col,
               'min_impurity_decrease': min_impurity_decrease,
               'random_state': random_state}
     
-    model = dict()
+    model = _model_dict('random_forest_regression_model')
     model['regressor'] = regressor
     model['params'] = params
 

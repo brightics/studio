@@ -104,3 +104,105 @@ def _cross_table(table, input_cols_1, input_cols_2, result='N', margins=False):
     model['_repr_brtc_'] = rb.get()
   
     return {'model': model}
+
+def cross_table2(table, group_by=None, **params):
+    check_required_parameters(_cross_table2, params, ['table'])
+    if group_by is not None:
+        return _function_by_group(_cross_table2, table, group_by=group_by, **params)
+    else:
+        return _cross_table2(table, **params)
+
+
+def _cross_table2(table, input_cols_1, input_cols_2, result=['N', 'N / Row Total', 'N / Column Total', 'N / Total'], 
+                    add_info=['row_tot', 'column_tot'], row_total_str='row_total', col_total_str='col_total'):
+    
+    df1 = [table[col] for col in input_cols_1]
+    df2 = [table[col] for col in input_cols_2]
+        
+    result_table = pd.DataFrame()
+
+    if 'N' in result:
+        tmp_table = pd.crosstab(df1, df2, margins=False)
+        
+        if 'row_tot' in add_info:
+            tmp_sum = pd.DataFrame(tmp_table.sum(axis=1), columns=[row_total_str])
+            tmp_table[row_total_str] = tmp_sum
+        if 'column_tot' in add_info:
+            tmp_sum = pd.DataFrame(tmp_table.sum(axis=0), columns=[col_total_str]).T
+            tmp_table = pd.concat([tmp_table, tmp_sum])
+            
+        tmp_table.insert(loc=0, column='contents', value=['N'] * tmp_table.shape[0])
+        result_table = pd.concat([result_table, tmp_table])
+
+    if 'N / Row Total' in result:
+        tmp_table = pd.crosstab(df1, df2, normalize='index')
+        tmp_table.insert(loc=0, column='contents', value=['N / Row Total'] * tmp_table.shape[0])
+        result_table = pd.concat([result_table, tmp_table])
+
+    if 'N / Column Total' in result:
+        tmp_table = pd.crosstab(df1, df2, normalize='columns')
+        tmp_table.insert(loc=0, column='contents', value=['N / Column Total'] * tmp_table.shape[0])
+        result_table = pd.concat([result_table, tmp_table])
+    
+    if 'N / Total' in result:
+        tmp_table = pd.crosstab(df1, df2, normalize='all')
+        
+        if 'row_tot' in add_info:
+            tmp_sum = pd.DataFrame(tmp_table.sum(axis=1), columns=[row_total_str])
+            tmp_table[row_total_str] = tmp_sum
+        if 'column_tot' in add_info:
+            tmp_sum = pd.DataFrame(tmp_table.sum(axis=0), columns=[col_total_str]).T
+            tmp_table = pd.concat([tmp_table, tmp_sum])
+        
+        tmp_table.insert(loc=0, column='contents', value=['N / Total'] * tmp_table.shape[0])
+        result_table = pd.concat([result_table, tmp_table])
+
+    if len(input_cols_1) == 1:
+        result_table['new_index'] = result_table.index
+    else:
+        result_table['new_index'] = ['_'.join([str(x).replace('.', '_') for x in idx]) for idx in result_table.index]
+    result_table = result_table.sort_values(by=['new_index', 'contents'])
+    result_table = result_table.drop(['new_index'], axis=1)
+    
+    # each row and column name    
+    row_names = list(result_table.index)[:]    
+    if len(input_cols_1) == 1:
+        joined_row_name = [str(i) for i in row_names]
+    else:
+        if 'column_tot' in add_info:
+            if ('N' not in result) and ('N / Total' not in result):
+                joined_row_name = ['_'.join(str(s) for s in row_names[i]) for i in range(len(row_names))]
+            elif ('N' in result) and ('N / Total' in result):
+                joined_row_name = ['_'.join(str(s) for s in row_names[i]) for i in range(len(row_names) - 2)] + [row_names[-2]] + [row_names[-1]]
+            else:
+                joined_row_name = ['_'.join(str(s) for s in row_names[i]) for i in range(len(row_names) - 1)] + [row_names[-1]]               
+        else:
+            joined_row_name = ['_'.join(str(s) for s in row_names[i]) for i in range(len(row_names))]
+    
+    # joined_row_name = joined_row_name.astype(str)  
+  
+    column_names = list(result_table.columns)[:]
+    if len(input_cols_2) == 1:
+        joined_column_name = [str(i).replace('.','_') for i in column_names]
+    else:
+        if 'row_tot' in add_info:
+            if ('N' not in result) and ('N / Total' not in result):
+                joined_column_name = ['_' + '_'.join(str(s) for s in column_names[i]).replace('.','_') for i in range(len(column_names))]
+            else:
+                joined_column_name = ['_' + '_'.join(str(s) for s in column_names[i]).replace('.','_') for i in range(len(column_names) - 1)] + [column_names[-1][0]]
+        else:
+            joined_column_name = ['_' + '_'.join(str(s) for s in column_names[i]).replace('.','_') for i in range(len(column_names))]
+
+            
+    input_cols = input_cols_1 + input_cols_2
+    
+    # cross table
+    result_table.insert(loc=0, column=' ', value=joined_row_name)
+    result_table.columns = np.append('_'.join(input_cols), joined_column_name)
+    result_table = result_table.rename(columns={result_table.columns[1]: 'contents'})
+    result_table.reset_index(drop=True, inplace=True)
+
+    if not result:
+        raise_runtime_error("Please check 'result'.")
+
+    return {'out_table': result_table}

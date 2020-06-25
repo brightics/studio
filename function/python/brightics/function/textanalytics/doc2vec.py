@@ -17,15 +17,18 @@
 from random import randint
 import pandas as pd
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
+import matplotlib.pyplot as plt
+from sklearn.manifold import TSNE
 
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate
 from brightics.common.validation import greater_than_or_equal_to
-from brightics.common.repr import BrtcReprBuilder 
+from brightics.common.repr import BrtcReprBuilder
 from brightics.common.repr import strip_margin
 from brightics.function.utils import _model_dict
 from brightics.common.repr import dict2MD
+from brightics.common.repr import plt2MD
 
 
 def doc2vec(table, **params):
@@ -37,7 +40,8 @@ def doc2vec(table, **params):
                               greater_than_or_equal_to(params, 1, 'min_count'),
                               greater_than_or_equal_to(params, 1, 'train_epoch'),
                               greater_than_or_equal_to(params, 1, 'workers'),
-                              greater_than_or_equal_to(params, 1, 'negative')]
+                              greater_than_or_equal_to(params, 1, 'negative'),
+                              greater_than_or_equal_to(params, 1, 'topn')]
     validate(*param_validation_check) 
     return _doc2vec(table, **params)
 
@@ -45,8 +49,7 @@ def doc2vec(table, **params):
 def _doc2vec(table, input_col, dm=1, vector_size=100, window=10, min_count=1,
              max_vocab_size=None, train_epoch=100, workers=1, alpha=0.025,
              min_alpha=0.025, seed=None, hs=1, negative=5, ns_exponent=0.75,
-             hashfxn=hash):
-
+             topn=30, hashfxn=hash):
     if seed is None:
         random_state = seed
         seed = randint(0, 0xffffffff)
@@ -94,13 +97,44 @@ def _doc2vec(table, input_col, dm=1, vector_size=100, window=10, min_count=1,
               'Negative': negative,
               'Negative sampling exponent': ns_exponent}
 
+    # tsne visualization
+    length = len(vocab)
+    if length < topn:
+        topn = length
+    topn_words = sorted(vocab, key=vocab.get, reverse=True)[:topn]
+
+    X = d2v[topn_words]
+    tsne = TSNE(n_components=min(2, topn), random_state=seed)
+    X_tsne = tsne.fit_transform(X)
+    df = pd.DataFrame(X_tsne, index=topn_words, columns=['x', 'y'])
+
+    fig = plt.figure()
+    fig.set_size_inches(50, 40)
+    ax = fig.add_subplot(1, 1, 1)
+
+    ax.scatter(df['x'], df['y'], s=1000)
+    ax.tick_params(axis='both', which='major', labelsize=50)
+
+    for word, pos in df.iterrows():
+        ax.annotate(word, pos, fontsize=80)
+    plt.show()
+    fig = plt2MD(plt)
+    plt.clf()
+
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## Doc2Vec Result
     |
+    | ### Total Number of words
+    | {length}
+    |
+    | ### Top {topn} Words
+    | {topn_words}
+    | {fig}
+    |
     | ### Parameters
     | {params}
-    """.format(params=dict2MD(params))))
+    """.format(length=length, topn=topn, topn_words=topn_words, fig=fig, params=dict2MD(params))))
 
     model = _model_dict('doc2vec_model')
     model['params'] = params
