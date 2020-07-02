@@ -105,6 +105,7 @@ def _cross_table(table, input_cols_1, input_cols_2, result='N', margins=False):
   
     return {'model': model}
 
+
 def cross_table2(table, group_by=None, **params):
     check_required_parameters(_cross_table2, params, ['table'])
     if group_by is not None:
@@ -113,59 +114,64 @@ def cross_table2(table, group_by=None, **params):
         return _cross_table2(table, **params)
 
 
-def _cross_table2(table, input_cols_1, input_cols_2, result=['N', 'N / Row Total', 'N / Column Total', 'N / Total'], 
-                    add_info=['row_tot', 'column_tot'], row_total_str='row_total', col_total_str='col_total'):
-    
+def _cross_table2(table, input_cols_1, input_cols_2, result=None,
+                  add_info=None, row_total_str='row_total', col_total_str='col_total', contents_col='contents'):
     df1 = [table[col] for col in input_cols_1]
     df2 = [table[col] for col in input_cols_2]
-        
-    result_table = pd.DataFrame()
+    if result is None:
+        result = ['N']
+    if add_info is None:
+        add_info = []
+    if not result:
+        raise_runtime_error("Please check 'result'.")
+    tables = []
 
     if 'N' in result:
-        tmp_table = pd.crosstab(df1, df2, margins=False)
-        
+        tmp_table1 = pd.crosstab(df1, df2, margins=False)
+
         if 'row_tot' in add_info:
-            tmp_sum = pd.DataFrame(tmp_table.sum(axis=1), columns=[row_total_str])
-            tmp_table[row_total_str] = tmp_sum
+            tmp_sum = pd.DataFrame(tmp_table1.sum(axis=1), columns=[row_total_str])
+            tmp_table1[row_total_str] = tmp_sum
         if 'column_tot' in add_info:
-            tmp_sum = pd.DataFrame(tmp_table.sum(axis=0), columns=[col_total_str]).T
-            tmp_table = pd.concat([tmp_table, tmp_sum])
-            
-        tmp_table.insert(loc=0, column='contents', value=['N'] * tmp_table.shape[0])
-        result_table = pd.concat([result_table, tmp_table])
+            tmp_sum = pd.DataFrame(tmp_table1.sum(axis=0), columns=[col_total_str]).T
+            tmp_table1 = pd.concat([tmp_table1, tmp_sum])
+
+        tmp_table1[contents_col] = ['N'] * tmp_table1.shape[0]
+        tables.append(tmp_table1)
 
     if 'N / Row Total' in result:
-        tmp_table = pd.crosstab(df1, df2, normalize='index')
-        tmp_table.insert(loc=0, column='contents', value=['N / Row Total'] * tmp_table.shape[0])
-        result_table = pd.concat([result_table, tmp_table])
+        tmp_table2 = pd.crosstab(df1, df2, normalize='index')
+        tmp_table2[contents_col] = ['N / Row Total'] * tmp_table2.shape[0]
+        tables.append(tmp_table2)
 
     if 'N / Column Total' in result:
-        tmp_table = pd.crosstab(df1, df2, normalize='columns')
-        tmp_table.insert(loc=0, column='contents', value=['N / Column Total'] * tmp_table.shape[0])
-        result_table = pd.concat([result_table, tmp_table])
-    
+        tmp_table3 = pd.crosstab(df1, df2, normalize='columns')
+        tmp_table3[contents_col] = ['N / Column Total'] * tmp_table3.shape[0]
+        tables.append(tmp_table3)
+
     if 'N / Total' in result:
-        tmp_table = pd.crosstab(df1, df2, normalize='all')
-        
+        tmp_table4 = pd.crosstab(df1, df2, normalize='all')
+
         if 'row_tot' in add_info:
-            tmp_sum = pd.DataFrame(tmp_table.sum(axis=1), columns=[row_total_str])
-            tmp_table[row_total_str] = tmp_sum
+            tmp_sum = pd.DataFrame(tmp_table4.sum(axis=1), columns=[row_total_str])
+            tmp_table4[row_total_str] = tmp_sum
         if 'column_tot' in add_info:
-            tmp_sum = pd.DataFrame(tmp_table.sum(axis=0), columns=[col_total_str]).T
-            tmp_table = pd.concat([tmp_table, tmp_sum])
-        
-        tmp_table.insert(loc=0, column='contents', value=['N / Total'] * tmp_table.shape[0])
-        result_table = pd.concat([result_table, tmp_table])
+            tmp_sum = pd.DataFrame(tmp_table4.sum(axis=0), columns=[col_total_str]).T
+            tmp_table4 = pd.concat([tmp_table4, tmp_sum])
+
+        tmp_table4[contents_col] = ['N / Total'] * tmp_table4.shape[0]
+        tables.append(tmp_table4)
+    result_table = pd.concat(tables)
 
     if len(input_cols_1) == 1:
         result_table['new_index'] = result_table.index
     else:
         result_table['new_index'] = ['_'.join([str(x).replace('.', '_') for x in idx]) for idx in result_table.index]
-    result_table = result_table.sort_values(by=['new_index', 'contents'])
+    result_table = result_table.sort_values(by=['new_index', contents_col])
     result_table = result_table.drop(['new_index'], axis=1)
-    
-    # each row and column name    
-    row_names = list(result_table.index)[:]    
+
+    # each row and column name
+    row_names = list(result_table.index)[:]
     if len(input_cols_1) == 1:
         joined_row_name = [str(i) for i in row_names]
     else:
@@ -175,12 +181,12 @@ def _cross_table2(table, input_cols_1, input_cols_2, result=['N', 'N / Row Total
             elif ('N' in result) and ('N / Total' in result):
                 joined_row_name = ['_'.join(str(s) for s in row_names[i]) for i in range(len(row_names) - 2)] + [row_names[-2]] + [row_names[-1]]
             else:
-                joined_row_name = ['_'.join(str(s) for s in row_names[i]) for i in range(len(row_names) - 1)] + [row_names[-1]]               
+                joined_row_name = ['_'.join(str(s) for s in row_names[i]) for i in range(len(row_names) - 1)] + [row_names[-1]]
         else:
             joined_row_name = ['_'.join(str(s) for s in row_names[i]) for i in range(len(row_names))]
-    
-    # joined_row_name = joined_row_name.astype(str)  
-  
+
+    # joined_row_name = joined_row_name.astype(str)
+
     column_names = list(result_table.columns)[:]
     if len(input_cols_2) == 1:
         joined_column_name = [str(i).replace('.','_') for i in column_names]
@@ -193,16 +199,12 @@ def _cross_table2(table, input_cols_1, input_cols_2, result=['N', 'N / Row Total
         else:
             joined_column_name = ['_' + '_'.join(str(s) for s in column_names[i]).replace('.','_') for i in range(len(column_names))]
 
-            
     input_cols = input_cols_1 + input_cols_2
-    
+
     # cross table
     result_table.insert(loc=0, column=' ', value=joined_row_name)
     result_table.columns = np.append('_'.join(input_cols), joined_column_name)
-    result_table = result_table.rename(columns={result_table.columns[1]: 'contents'})
+    # result_table = result_table.rename(columns={result_table.columns[1]: contents_col})
     result_table.reset_index(drop=True, inplace=True)
-
-    if not result:
-        raise_runtime_error("Please check 'result'.")
 
     return {'out_table': result_table}

@@ -36,3 +36,6 @@ from .transpose_time_series import transpose_time_series
 from .SMOTE import SMOTE
 from .under_sampling import under_sampling
 from .explode import explode
+from .tsne import tsne
+from .savgol_filter import savgol_filter
+

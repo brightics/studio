@@ -4,142 +4,227 @@
         "content": ""
     },
     "specJson": {
-        "category": "manipulation",
-        "func": "brightics.function.manipulation$outlier_detection_lof48698",
-        "name": "brightics.function.manipulation$outlier_detection_lof",
+        "category": "transform",
+        "func": "brightics.function.transform$savgol_filter",
+        "name": "brightics.function.transform$savgol_filter",
         "context": "python",
-        "label": "Outlier Detection (Local Outlier Factor)",
-        "description": "This function is an unsupervised method for anomaly detection, which computes the local density deviation of a given data point with respect to its neighbors. By comparing the local density of a sample to the local densities of its neighbors, one can identify samples that have a substantially lower density than their neighbors. These are considered outliers.\n\nReference:\n+ <https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.LocalOutlierFactor.html>",
-        "tags": [],
+        "label": "Savitzky-Golay Filter",
+        "description": "A Savitzky–Golay filter is a digital filter that can be applied to a set of digital data points for the purpose of smoothing the data, that is, to increase the precision of the data without distorting the signal tendency\n\nReference:\n+ <https://en.wikipedia.org/wiki/Savitzky%E2%80%93Golay_filter>",
+        "tags": [
+            "savgol_filter"
+        ],
         "version": "3.6",
         "inputs": {
             "table": ""
         },
         "outputs": {
-            "out_table": "",
-            "model": ""
+            "out_table": ""
         },
         "meta": {
             "table": {
-                "type": "table",
-                "desc": "Data table to be inspected for anomaly  detection. ",
-                "optional": false
+                "type": "table"
             },
             "out_table": {
-                "type": "table",
-                "desc": "Result table"
-            },
-            "model": {
-                "type": "model",
-                "desc": "Trained outlier detection model."
+                "type": "table"
             }
         },
         "params": [
             {
                 "id": "input_cols",
                 "label": "Input Columns",
-                "description": "Input column names",
+                "description": "",
                 "visibleOption": [],
                 "control": "ColumnSelector",
                 "validation": [],
                 "mandatory": true,
                 "items": [],
+                "globalVariable": false,
                 "columnType": [
                     "Integer",
                     "Long",
-                    "Double",
-                    "Float"
+                    "Float",
+                    "Double"
                 ],
                 "multiple": true
             },
             {
-                "id": "n_neighbors",
-                "label": "Number of Neighbors",
-                "description": "Number of neighbors to be used for k-neighbors queries. If the number of neighbors is larger than the number of samples provided, all samples will be used.",
+                "id": "window_length",
+                "label": "Window length",
+                "description": "The length of the filter window (i.e. the number of coefficients). window_length must be a positive odd integer.",
                 "visibleOption": [],
                 "control": "InputBox",
                 "validation": [],
                 "mandatory": false,
                 "items": [],
+                "globalVariable": false,
                 "columnType": [],
-                "placeHolder": "20 (value >= 1)",
+                "targetTable": [],
+                "placeHolder": "1 (value >= 1)",
                 "type": "Integer",
                 "min": 1
             },
             {
-                "id": "result_type",
-                "label": "Result",
-                "description": "The choice whether the result table. The function may remove outliers from the table, add inlier/outlier identifiers, or just add inlier identifiers after the removal of outliers(`Both').  ",
+                "id": "polyorder",
+                "label": "Polyorder",
+                "description": "The order of the polynomial used to fit the samples. polyorder must be less than window_length.",
+                "visibleOption": [],
+                "control": "InputBox",
+                "validation": [],
+                "mandatory": false,
+                "items": [],
+                "globalVariable": false,
+                "columnType": [],
+                "targetTable": [],
+                "placeHolder": "0 (value >= 0)",
+                "type": "Integer",
+                "min": 0
+            },
+            {
+                "id": "deriv",
+                "label": "Derivative order",
+                "description": "The order of the derivative to compute. This must be a nonnegative integer. The default is 0, which means to filter the data without differentiating.",
+                "visibleOption": [],
+                "control": "InputBox",
+                "validation": [],
+                "mandatory": false,
+                "items": [],
+                "globalVariable": false,
+                "columnType": [],
+                "targetTable": [],
+                "type": "Integer",
+                "min": 0,
+                "placeHolder": "0 (value >= 0)"
+            },
+            {
+                "id": "delta",
+                "label": "Delta",
+                "description": "The spacing of the samples to which the filter will be applied. This is only used if deriv > 0. Default is 1.0.",
+                "visibleOption": [
+                    {
+                        "script": "return #deriv# > 0;"
+                    }
+                ],
+                "control": "InputBox",
+                "validation": [],
+                "mandatory": false,
+                "items": [],
+                "globalVariable": false,
+                "columnType": [],
+                "targetTable": [],
+                "type": "Double",
+                "min": 0,
+                "placeHolder": "1.0 (value >= 0.0)"
+            },
+            {
+                "id": "axis",
+                "label": "Axis",
+                "description": "The axis of the array x along which the filter is to be applied. Default is -1.\n\n",
+                "visibleOption": [],
+                "control": "InputBox",
+                "validation": [],
+                "mandatory": false,
+                "items": [],
+                "globalVariable": false,
+                "columnType": [],
+                "targetTable": [],
+                "type": "Integer",
+                "placeHolder": "-1"
+            },
+            {
+                "id": "mode",
+                "label": "Mode",
+                "description": "Must be ‘mirror’, ‘constant’, ‘nearest’, ‘wrap’ or ‘interp’. This determines the type of extension to use for the padded signal to which the filter is applied. When mode is ‘constant’, the padding value is given by cval. See the Notes for more details on ‘mirror’, ‘constant’, ‘wrap’, and ‘nearest’. When the ‘interp’ mode is selected (the default), no extension is used. Instead, a degree polyorder polynomial is fit to the last window_length values of the edges, and this polynomial is used to evaluate the last window_length // 2 output values.",
                 "visibleOption": [],
                 "control": "RadioButton",
                 "validation": [],
                 "mandatory": false,
                 "items": [
                     {
-                        "label": "Remove Outliers",
-                        "value": "remove_outliers",
+                        "label": "mirror",
+                        "value": "mirror",
                         "default": false
                     },
                     {
-                        "label": "Add Prediction",
-                        "value": "add_prediction",
+                        "label": "constant",
+                        "value": "constant",
+                        "default": false
+                    },
+                    {
+                        "label": "nearest",
+                        "value": "nearest",
+                        "default": false
+                    },
+                    {
+                        "label": "wrap",
+                        "value": "wrap",
+                        "default": false
+                    },
+                    {
+                        "label": "interp",
+                        "value": "interp",
                         "default": true
-                    },
-                    {
-                        "label": "Both",
-                        "value": "both",
-                        "default": false
                     }
                 ],
-                "columnType": []
+                "globalVariable": false,
+                "columnType": [],
+                "targetTable": []
             },
             {
-                "id": "new_column_name",
-                "label": "New Column Name",
-                "description": "Column name for inlier/outlier identifiers.",
-                "visibleOption": [],
+                "id": "cval",
+                "label": "cval",
+                "description": "Value to fill past the edges of the input if mode is ‘constant’. Default is 0.0.",
+                "visibleOption": [
+                    {
+                        "id": "mode",
+                        "value": "constant"
+                    }
+                ],
                 "control": "InputBox",
                 "validation": [],
                 "mandatory": false,
                 "items": [],
+                "globalVariable": false,
                 "columnType": [],
-                "placeHolder": "is_outlier",
-                "type": "String"
+                "targetTable": [],
+                "placeHolder": "0.0",
+                "type": "Double"
             },
             {
                 "id": "group_by",
                 "label": "Group By",
-                "description": "Column names for group by. The function would run on each groups independently, after partitioned based on the data in the group by columns. ",
+                "description": "",
                 "visibleOption": [],
                 "control": "ColumnSelector",
                 "validation": [],
                 "mandatory": false,
                 "items": [],
+                "globalVariable": false,
                 "columnType": [],
                 "multiple": true
             }
-        ],
-        "summary": "This function detects outliers based on Local Outlier Factor (LOF) algorithm. ",
-        "tutorialLink": "https://www.brightics.ai/docs/ai/v3.6/tutorials/11_outlier_detection"
+        ]
     },
-    "md": "# Outlier Detection (Local Outlier Factor)\nThis function detects outliers based on Local Outlier Factor (LOF) algorithm. \n\n## Description\nThis function is an unsupervised method for anomaly detection, which computes the local density deviation of a given data point with respect to its neighbors. By comparing the local density of a sample to the local densities of its neighbors, one can identify samples that have a substantially lower density than their neighbors. These are considered outliers.\n\nReference:\n+ <https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.LocalOutlierFactor.html>\n\n\n\n## Properties\n### VA\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) Data table to be inspected for anomaly  detection. \n#### OUTPUT\n1. **out_table**: (Table) Result table\n2. **model**: (Model) Trained outlier detection model.\n#### PARAMETER\n1. **Input Columns**<b style=\"color:red\">*</b>: Input column names\n\n2. **Number of Neighbors**: Number of neighbors to be used for k-neighbors queries. If the number of neighbors is larger than the number of samples provided, all samples will be used.\n\n3. **Result**: The choice whether the result table. The function may remove outliers from the table, add inlier/outlier identifiers, or just add inlier identifiers after the removal of outliers(`Both').  \n\n4. **New Column Name**: Column name for inlier/outlier identifiers.\n\n5. **Group By**: Column names for group by. The function would run on each groups independently, after partitioned based on the data in the group by columns. \n\n\n\n### Python\n#### USAGE\n\n```\nfrom brightics.function.manipulation import outlier_detection_lof\nres = outlier_detection_lof(table = , input_cols = , n_neighbors = , result_type = , new_column_name = , group_by = )\nres['out_table'], res['model']\n```\n\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) Data table to be inspected for anomaly  detection. \n#### OUTPUT\n1. **out_table**: (Table) Result table\n2. **model**: (Model) Trained outlier detection model.\n#### PARAMETER\n1. **input_cols**<b style=\"color:red\">*</b>: Input column names\n\t* Type: *list[str]*\n2. **n_neighbors**: Number of neighbors to be used for k-neighbors queries. If the number of neighbors is larger than the number of samples provided, all samples will be used.\n\t* Type: *int*\n\t* Default / Range: 20 (value >= 1)\n3. **result_type**: The choice whether the result table. The function may remove outliers from the table, add inlier/outlier identifiers, or just add inlier identifiers after the removal of outliers(`Both').  \n\t* Type: *str*\n\t* Default / Range: ( remove_outliers | add_prediction | both )\n4. **new_column_name**: Column name for inlier/outlier identifiers.\n\t* Type: *str*\n5. **group_by**: Column names for group by. The function would run on each groups independently, after partitioned based on the data in the group by columns. \n\t* Type: *list[str]*\n\n\n## Example\n### VA\n\n\n\n**<a href=\"/api/va/v2/help/downloads/brightics.function.manipulation$outlier_detection_lof48698/example-model/outlier_detection_lof.json\" download>[Sample Model]</a>**\n\n\n<img src=\"/api/va/v2/help/images/brightics.function.manipulation$outlier_detection_lof48698/outlier_detection_lof.PNG\"  width=\"800px\" style=\"border: 1px solid gray\" >\n\nA Simple exsample model for Outlier Detection function. The function finds ourliers in the iris data, based on sepal_lenth, sepal_width, petal_length, patel_width. \n\n++Parameters++\n1. **Input Columns**<b style=\"color:red\">*</b>: sepal_lenth, sepal_width, petal_length, patel_width \n2. **Number of Neighbors**: sepal_lenth, sepal_width,  \n3. **Result**: Add prediction\n4. **New Column Name**: is_outlier\n\n\n### Python\n\n```\nfrom brightics.function.manipulation import outlier_detection_lof\nres = outlier_detection_lof(table = inputs[0] \n\t\t\t, input_cols = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']\n\t\t\t, n_neighbors = 3 \n\t\t\t, result_type = 'add_prediction' \n\t\t\t, new_column_name = 'is_outlier')\nout_table = res['out_table']\nout_model = res['model']\n```\nThis script yields the same result of the VA sample model, if the Outlier Detection function is altered by Python Script function with the script.  \n\n\n\n\n\n",
+    "md": {
+        "en": "# Savitzky-Golay Filter\n\n\n## Description\nA Savitzky–Golay filter is a digital filter that can be applied to a set of digital data points for the purpose of smoothing the data, that is, to increase the precision of the data without distorting the signal tendency\n\nReference:\n+ <https://en.wikipedia.org/wiki/Savitzky%E2%80%93Golay_filter>\n\n## Properties\n### VA\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) \n#### OUTPUT\n1. **out_table**: (Table) \n#### PARAMETER\n1. **Input Columns**<b style=\"color:red\">*</b>: \n\n2. **Window length**: The length of the filter window (i.e. the number of coefficients). window_length must be a positive odd integer.\n\n3. **Polyorder**: The order of the polynomial used to fit the samples. polyorder must be less than window_length.\n\n4. **Derivative order**: The order of the derivative to compute. This must be a nonnegative integer. The default is 0, which means to filter the data without differentiating.\n\n5. **Delta**: The spacing of the samples to which the filter will be applied. This is only used if deriv > 0. Default is 1.0.\n\n6. **Axis**: The axis of the array x along which the filter is to be applied. Default is -1.\n\n\n\n7. **Mode**: Must be ‘mirror’, ‘constant’, ‘nearest’, ‘wrap’ or ‘interp’. This determines the type of extension to use for the padded signal to which the filter is applied. When mode is ‘constant’, the padding value is given by cval. See the Notes for more details on ‘mirror’, ‘constant’, ‘wrap’, and ‘nearest’. When the ‘interp’ mode is selected (the default), no extension is used. Instead, a degree polyorder polynomial is fit to the last window_length values of the edges, and this polynomial is used to evaluate the last window_length // 2 output values.\n\n8. **cval**: Value to fill past the edges of the input if mode is ‘constant’. Default is 0.0.\n\n9. **Group By**: \n\n\n### Python\n#### USAGE\n\n```\nsavgol_filter(table = , input_cols = , window_length = , polyorder = , deriv = , delta = , axis = , mode = , cval = , group_by = )\n```\n\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) \n#### OUTPUT\n1. **out_table**: (Table) \n#### PARAMETER\n1. **input_cols**<b style=\"color:red\">*</b>: \n\t* Type: *list[str]*\n2. **window_length**: The length of the filter window (i.e. the number of coefficients). window_length must be a positive odd integer.\n\t* Type: *int*\n\t* Default / Range: 1 (value >= 1)\n3. **polyorder**: The order of the polynomial used to fit the samples. polyorder must be less than window_length.\n\t* Type: *int*\n\t* Default / Range: 0 (value >= 0)\n4. **deriv**: The order of the derivative to compute. This must be a nonnegative integer. The default is 0, which means to filter the data without differentiating.\n\t* Type: *int*\n\t* Default / Range: 0 (value >= 0)\n5. **delta**: The spacing of the samples to which the filter will be applied. This is only used if deriv > 0. Default is 1.0.\n\t* Type: *double*\n\t* Default / Range: 1.0 (value >= 0.0)\n6. **axis**: The axis of the array x along which the filter is to be applied. Default is -1.\n\n\n\t* Type: *int*\n\n7. **mode**: Must be ‘mirror’, ‘constant’, ‘nearest’, ‘wrap’ or ‘interp’. This determines the type of extension to use for the padded signal to which the filter is applied. When mode is ‘constant’, the padding value is given by cval. See the Notes for more details on ‘mirror’, ‘constant’, ‘wrap’, and ‘nearest’. When the ‘interp’ mode is selected (the default), no extension is used. Instead, a degree polyorder polynomial is fit to the last window_length values of the edges, and this polynomial is used to evaluate the last window_length // 2 output values.\n\t* Type: *str*\n\t* Default / Range: ( mirror | constant | nearest | wrapinterp  | interp )\n8. **cval**: Value to fill past the edges of the input if mode is ‘constant’. Default is 0.0.\n\t* Type: *double*\n\n9. **group_by**: \n\t* Type: *list[str]*\n\n\n## Example\n### VA\n\n**<a href=\"/api/va/v2/help/downloads/brightics.function.transform$savgol_filter/example-model/Savitzky-Golay Filter.json\" download>[Sample Model]</a>**\n\n<img src=\"/api/va/v2/help/images/brightics.function.transform$savgol_filter/savgol_filter.PNG\"  width=\"800px\" style=\"border: 1px solid gray\" >\n\nThe sample workflow is an example for the usage of Savitzky-Golay Filter, applied on a sample time series.  It uses  ‘interp’ mode extension, for the padded signal to which the filter is applied. \n\n++Parameters++\n1. **Input Columns**<b style=\"color:red\">*</b>: data, data2\n2. **Window length**: 3\n3. **Polyorder**: 0\n4. **Derivative order**: 0\n5. **Axis**: -1\n6. **Mode**: interp\n\n\n\n### Python\n\n```\nfrom brightics.function.transform import savgol_filter\n\ninput_table = inputs[0]\n\nresult = savgol_filter(table = input_table,\n                    input_cols = ['data', 'data2'],\n                    window_length = 3,\n                    polyorder = 0,\n                    deriv = 0,\n                    axis = -1 ,\n                    mode = 'interp ')\n\noutput = result['out_table']\n```\nThis is the script expression for the usage of Savitzky-Golay Filter, with the same setting to the VA example model. \n\n\n",
+        "kr": ""
+    },
     "exampleModels": [
         {
-            "fileName": "outlier_detection_lof.json",
-            "label": "Load",
+            "fileName": "Savitzky-Golay Filter.json",
+            "label": "Savitzky-Golay Filter",
             "contents": {
                 "type": "files",
                 "data": [
                     {
                         "type": "file",
                         "data": {
-                            "id": "mkxwbw86au46wvym",
-                            "project_id": "pcru3vrbknxh94fn",
-                            "label": "Load",
+                            "id": "m2eejtbrrmxa6u76",
+                            "project_id": "p5dmzu78qb564crk",
+                            "label": "Savitzky-Golay Filter",
                             "contents": {
-                                "mid": "mkxwbw86au46wvym",
+                                "mid": "m2eejtbrrmxa6u76",
                                 "type": "data",
-                                "title": "Load",
+                                "title": "Savitzky-Golay Filter",
                                 "functions": [
                                     {
                                         "persist-mode": "auto",
@@ -147,15 +232,15 @@
                                         "name": "brightics.function.io$load",
                                         "param": {
                                             "partial_path": [
-                                                "/brightics@samsung.com/upload/sample_iris.csv"
+                                                "/brightics@samsung.com/upload/sample_timeseries.csv"
                                             ]
                                         },
                                         "display": {
                                             "label": "Load",
                                             "diagram": {
                                                 "position": {
-                                                    "x": 520,
-                                                    "y": 220
+                                                    "x": 270,
+                                                    "y": 120
                                                 }
                                             },
                                             "sheet": {
@@ -164,7 +249,7 @@
                                                         {
                                                             "panel": [
                                                                 {
-                                                                    "id": "default-1585562532484",
+                                                                    "id": "default-1593503560995",
                                                                     "chartOption": {
                                                                         "colorSet": [
                                                                             "#FD026C",
@@ -353,12 +438,12 @@
                                                                         "selectable": true
                                                                     },
                                                                     "style": {},
-                                                                    "group": "edetc32ka7s276fj9zcttki4"
+                                                                    "group": "vix5jd7gfkructrbzswpwz5w"
                                                                 }
                                                             ],
                                                             "layout": {
                                                                 "type": "panel",
-                                                                "id": "default-1585562532484"
+                                                                "id": "default-1593503560995"
                                                             }
                                                         }
                                                     ],
@@ -379,31 +464,28 @@
                                         "context": "python",
                                         "version": "3.6",
                                         "outputs": {
-                                            "table": "t6rzuc5pejrxmmxg"
+                                            "table": "tjtajkpumzu534wd"
                                         },
-                                        "fid": "fpdex7p7vysd7mtm"
+                                        "fid": "fnkgwp5vrkyzpyyj"
                                     },
                                     {
                                         "persist-mode": "auto",
-                                        "func": "brightics.function.manipulation$outlier_detection_lof48698",
-                                        "name": "brightics.function.manipulation$outlier_detection_lof",
+                                        "func": "brightics.function.transform$savgol_filter",
+                                        "name": "brightics.function.transform$savgol_filter",
                                         "param": {
-                                            "result_type": "add_prediction",
+                                            "mode": "interp",
                                             "input_cols": [
-                                                "sepal_length",
-                                                "sepal_width",
-                                                "petal_length",
-                                                "petal_width"
+                                                "data",
+                                                "data2"
                                             ],
-                                            "n_neighbors": 3,
-                                            "new_column_name": ""
+                                            "window_length": 3
                                         },
                                         "display": {
-                                            "label": "Outlier Detection (Local Outlier Factor)",
+                                            "label": "Savitzky-Golay Filter",
                                             "diagram": {
                                                 "position": {
-                                                    "x": 770,
-                                                    "y": 220
+                                                    "x": 520,
+                                                    "y": 120
                                                 }
                                             },
                                             "sheet": {
@@ -412,7 +494,7 @@
                                                         {
                                                             "panel": [
                                                                 {
-                                                                    "id": "default-1585562570242",
+                                                                    "id": "default-1593503608714",
                                                                     "chartOption": {
                                                                         "colorSet": [
                                                                             "#FD026C",
@@ -601,12 +683,12 @@
                                                                         "selectable": true
                                                                     },
                                                                     "style": {},
-                                                                    "group": "5s22itx6pn64wqy55unqbhkn"
+                                                                    "group": "k7yhdy4c6nhtif49bfsp2rux"
                                                                 }
                                                             ],
                                                             "layout": {
                                                                 "type": "panel",
-                                                                "id": "default-1585562570242"
+                                                                "id": "default-1593503608714"
                                                             }
                                                         }
                                                     ],
@@ -622,7 +704,7 @@
                                                         {
                                                             "panel": [
                                                                 {
-                                                                    "id": "default-1585562570281",
+                                                                    "id": "default-1593503608756",
                                                                     "chartOption": {
                                                                         "colorSet": [
                                                                             "#FD026C",
@@ -817,28 +899,24 @@
                                             },
                                             "out_table": {
                                                 "type": "table"
-                                            },
-                                            "model": {
-                                                "type": "model"
                                             }
                                         },
                                         "context": "python",
                                         "version": "3.6",
                                         "inputs": {
-                                            "table": "t6rzuc5pejrxmmxg"
+                                            "table": "tjtajkpumzu534wd"
                                         },
                                         "outputs": {
-                                            "out_table": "tcqdckmr2jurdbnj",
-                                            "model": "t35encaygvdanehk"
+                                            "out_table": "tbswnnn3xx5mq828"
                                         },
-                                        "fid": "f97dgnkftdzpbtva"
+                                        "fid": "fcze2farkmse5adt"
                                     }
                                 ],
                                 "links": [
                                     {
-                                        "kid": "k87vfwghpwtwv73p",
-                                        "sourceFid": "fpdex7p7vysd7mtm",
-                                        "targetFid": "f97dgnkftdzpbtva"
+                                        "kid": "k7vqbrhk2aw3cs98",
+                                        "sourceFid": "fnkgwp5vrkyzpyyj",
+                                        "targetFid": "fcze2farkmse5adt"
                                     }
                                 ],
                                 "preferences": {},
@@ -867,10 +945,10 @@
                             "description": "<p><br /></p>",
                             "model_image": null,
                             "creator": "brightics@samsung.com",
-                            "create_time": "2020-03-30T02:40:28.000Z",
+                            "create_time": "2020-06-30T07:52:33.000Z",
                             "updater": "brightics@samsung.com",
-                            "update_time": "2020-03-30T10:03:27.000Z",
-                            "event_key": "2020_100327.000",
+                            "update_time": "2020-06-30T07:53:44.000Z",
+                            "event_key": "2020_075344.000",
                             "type": "data",
                             "tag": "null",
                             "from_version": "0.0"
@@ -883,9 +961,20 @@
     ],
     "sampleImages": [
         {
-            "fileName": "outlier_detection_lof.PNG",
-            "label": "outlier_detection_lof.PNG",
-            "base64": "data:image/png;base64,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4TaLK4Um5WOduT/gQNub+arWKZiG89HovuuPr1bzyYx37kwcb1u1j96x1/uZebsBBTfAJKUQAOxAafExXFgN3XL77KKlUe2ntF3vlftq39X95RKoXQoNF127KoUGRou+ZsHWu04pBKtr6fNVo1c2VeoiqLqvjx9JtzTz1YwyunS8U5VKoubf1SuAlEIAk5RCALADWy1a5l7U9MqfxrgE6m/Xf6fQcNtxadN/51BBoRQa65dMw3+LUghW17Lnq6zax9R5pdEqtfM8tLBSqHS//QJdKQRQohQCgB2YWLR0XvWeXsz0bzdR/jR6i69qu3r//YVNtc/mvmcs2kZ6i6juMZVLJwspWF17PV+NdUvmzlxV3W95rpo43rbOsXePKf93tyBv739ybgNAKQQAO1JatFSLk/pjC+131nQXKt3t+oub9nbVfTTbtRc3eVE09b7bi57JV8orE6+sDxduzX113xU0feEGrIZlz1edbfrbVvNN8/vuXJJvN08ZVSyy+/dTGRZczXWdfed9dLYFIFMKAcDK2btXvPPiq1sSASzIHhY10woogOiUQgCwivZiMeWVdWDJ9qR4Lry7EoAhpRAAAABAQEohAAAAgICUQgAAAAABKYUAAAAAAlIKAQAAAASkFAIAAAAISCkEAAAAEJBSCAAAACAgpRAAAABAQEohAAAAgICUQgAAAAABKYUAAAAAAlIKAQAAAASkFAIAAAAISCkEAAAAEJBSCAAAACAgpRAAAABAQEohAAAAgICUQgAAAAABKYUAAAAAAlIKAQAAAASkFAIAAAAISCkEAAAAEJBSCAAAACAgpRAAAABAQEohAAAAgICUQgAAAAABKYUAAAAAAlIKAQAAAASkFAIAAAAISCkEAAAAEJBSCAAAACAgpRAAAABAQEohAAAAgICUQgAAAAABKYUAAAAAAlIKAQAAAASkFAIAAAAISCkEAAAAEJBSCAAAACAgpRAAAABAQEohAAAAgICUQgAAAAABKYUAAAAAAlIKAQAAAASkFAIAAAAISCkEAAAAEJBSCAAAACAgpRAAAABAQEohAAAAgICUQgAAAAABKYUAAAAAAlIKAQAAAASkFAIAAAAISCkEAAAAEJBSCAAAACAgpRAAAABAQEohAAAAgICUQgAAAAABKYUAAAAAAlIKAQAAAASkFAIAAAAISCkEAAAAEJBSCAAAACAgpRAAAABAQEohAAAAgICUQgAAAAABKYUAAAAAAlIKAQAAAASkFAIAAAAISCkEAAAAEJBSCAAAACAgpRAAAABAQEohAAAAgICUQgAAAAABKYUAAAAAAlIKAQAAAASkFAIAAAAISCkEAAAAEJBSCAAAACAgpRAAAABAQEohAAAAgICUQgAAAAABKYUAAAAAAlIKAQAAAASkFAIAAAAISCkEAAAAEJBSCAAAACAgpRAAAABAQEohAAAAgICUQgAAAAABKYUAAAAAAlIKAQAAAASkFAIAAAAISCkEAAAAEJBSCAAAACAgpRAAAABAQEohAAAAgICUQgAAAAABKYUAAAAAAlIKAQAAAASkFAIAAAAISCkEAAAAEJBSCAAAACAgpRAAAABAQEohAAAAgICUQgAAAAABKYUAAAAAAlIKAQAAAASkFAIAAAAISCkEAAAAEJBSCAAAACAgpRAAAABAQEohAAAAgICUQgAAAAABKYUAAAAAAlIKAQAAAASkFAIAAAAISCkEAAAAEJBSCAAAACAgpRAAAABAQEohAAAAgICUQgAAAAABKYUAAAAAAlIKAQAAAASkFAIAAAAISCkEAAAAEJBSCAAAACAgpRAAAABAQEohAAAAgICUQgAAAAABKYUAAAAAAlIKAQAAAASkFAIAAAAISCkEAAAAEJBSCAAAACAgpRAAAABAQEohAAAAgICUQgAAAAABKYUAAAAAAlIKAQAAAASkFAIAAAAISCkEAAAAEJBSCAAAACAgpRAAAABAQEohAAAAgICUQgAAAAABKYUAAAAAAlIKAQAAAASkFAIAAAAISCkEAAAAEJBSCAAAACAgpRAAAABAQEohAAAAgICUQgAAAAABKYUAAAAAAlIKAQAAAASkFAIAAAAISCkEAAAAEJBSCAAAACAgpRAAAABAQEohAAAAgICUQgAAAAABKYUAAAAAAlIKAQAAAASkFAIAAAAISCkEAAAAEJBSCAAAACAgpRAAAABAQEohAAAAgICUQgAAAAABKYUAAAAAwllP/w+qSiYaGs+FQwAAAABJRU5ErkJggg=="
+            "fileName": "savgol_filter.PNG",
+            "label": "savgol_filter.PNG",
+            "base64": "data:image/png;base64,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",
+            "description": "The sample workflow is an example for the usage of Savitzky-Golay Filter, applied on a sample time series.  It uses  ‘interp’ mode extension, for the padded signal to which the filter is applied. ",
+            "parameter": "1. **Input Columns**<b style=\"color:red\">*</b>: data, data2\n2. **Window length**: 3\n3. **Polyorder**: 0\n4. **Derivative order**: 0\n5. **Axis**: -1\n6. **Mode**: interp\n",
+            "index": 0
+        }
+    ],
+    "scriptExamples": [
+        {
+            "index": 1,
+            "code": "from brightics.function.transform import savgol_filter\r\n\r\ninput_table = inputs[0]\r\n\r\nresult = savgol_filter(table = input_table,\r\n                    input_cols = ['data', 'data2'],\r\n                    window_length = 3,\r\n                    polyorder = 0,\r\n                    deriv = 0,\r\n                    axis = -1 ,\r\n                    mode = 'interp ')\r\n\r\noutput = result['out_table']",
+            "description": "This is the script expression for the usage of Savitzky-Golay Filter, with the same setting to the VA example model. ",
+            "context": "python"
         }
     ]
 }
