@@ -25,3 +25,4 @@ from .arima import auto_arima_train
 from .arima import auto_arima_predict
 from .autocorrelation import autocorrelation
 from .linear_sampling import linear_sampling
+from .smooth import smooth_function

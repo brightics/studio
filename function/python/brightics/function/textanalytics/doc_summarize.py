@@ -102,7 +102,7 @@ def _text_summarizer(text, ratio, num_sentence, damping_factor):
     
     # Documents correlation matrix
     tokenized_sentence, splitted_array, len_doc = _tokenize_for_summarize(text=text)
-    if ratio != 2:
+    if ratio is not None:
         num_sentence = np.maximum(int(len_doc * ratio), 1)
     else:
         num_sentence = np.minimum(len_doc, num_sentence)
@@ -118,7 +118,8 @@ def _text_summarizer(text, ratio, num_sentence, damping_factor):
     return summarized_text, result_table, num_sentence
 
 
-def _doc_summarizer_kor(table, input_col, hold_cols=None, result_type='summarized_document', new_col_name='summarized_document', ratio=2, num_sentence=1, damping_factor=0.85):
+def _doc_summarizer_kor(table, input_col, hold_cols=None, result_type='summarized_document',
+                        new_col_name='summarized_document', ratio=None, num_sentence=1, damping_factor=0.85):
     
     doc_col = table[input_col].values
     len_doc_col = len(doc_col)

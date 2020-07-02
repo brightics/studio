@@ -9,7 +9,7 @@
         "name": "brightics.function.recommendation$collaborative_filtering_predict",
         "context": "python",
         "label": "Collaborative Filtering Predict",
-        "description": "This function predicts ratings for user-item pairs.",
+        "description": "To address some of the limitations of content-based filtering, collaborative filtering uses similarities between users and items simultaneously to provide recommendations. This allows for serendipitous recommendations; that is, collaborative filtering models can recommend an item to user A based on the interests of a similar user B. Furthermore, the embeddings can be learned automatically, without relying on hand-engineering of features.\n\nReference:\n+ <https://developers.google.com/machine-learning/recommendation/collaborative/basics>",
         "tags": [],
         "version": "3.6",
         "inputs": {
@@ -30,46 +30,1545 @@
                 "type": "table"
             }
         },
-		
         "params": [
             {
                 "id": "maintain_already_scored",
                 "label": "Maintain the score of already scored items.",
                 "description": "Whether to maintain the score of already scored items..",
-                "mandatory": false,
-                "items": [],
                 "visibleOption": [],
                 "control": "BooleanRadio",
-                "columnType": [],
                 "validation": [],
+                "mandatory": false,
+                "items": [],
+                "columnType": [],
                 "defaultValue": true
             },
             {
                 "id": "filter_minus",
                 "label": "Filter Neighbors whose similarity is minus.",
                 "description": "Whether to filter Neighbors whose similarity is minus.",
-                "mandatory": false,
-                "items": [],
                 "visibleOption": [],
                 "control": "BooleanRadio",
-                "columnType": [],
                 "validation": [],
+                "mandatory": false,
+                "items": [],
+                "columnType": [],
                 "defaultValue": false
             },
             {
                 "id": "prediction_col",
                 "label": "Prediction Column Name",
-                "description": "Predict column name Default: prediction It is used when 'mode' is predict. Unavailable characters for column name : ‘.’ ‘,’ ‘[‘ ‘]’ ‘{‘ ‘}’ ‘(‘ ‘)’ ‘-‘ ‘ ‘",
-                "mandatory": false,
-                "items": [],
+                "description": "A name of prediction column.",
                 "visibleOption": [],
                 "control": "InputBox",
-                "columnType": [],
                 "validation": [],
+                "mandatory": false,
+                "items": [],
+                "columnType": [],
                 "placeHolder": "prediction",
                 "type": "String"
             }
-        ]
+        ],
+        "tutorialLink": "https://www.brightics.ai/docs/ai/v3.6/tutorials/65_travel_als?type=insight",
+        "summary": "This function predicts ratings for user-item paris by using Collaborative Filtering algorithm based recommender model."
     },
-    "md": ""
+    "md": "# Collaborative Filtering Predict\nThis function predicts ratings for user-item paris by using Collaborative Filtering algorithm based recommender model.\n\n## Description\nTo address some of the limitations of content-based filtering, collaborative filtering uses similarities between users and items simultaneously to provide recommendations. This allows for serendipitous recommendations; that is, collaborative filtering models can recommend an item to user A based on the interests of a similar user B. Furthermore, the embeddings can be learned automatically, without relying on hand-engineering of features.\n\nReference:\n+ <https://developers.google.com/machine-learning/recommendation/collaborative/basics>\n\n\n\n## Properties\n### VA\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) Data in a Table. It must contain `User Column`, `Item Column` used in model training.\n2. **model**<b style=\"color:red\">*</b>: (Model) Trained Collaborative Filtering recommender model.\n\n#### OUTPUT\n1. **out_table**: (Table) A table that contains user-item pairs with predicted ratings as `Prediction Column Name`.\n#### PARAMETER\n1. **Maintain the score of already scored items.**: Whether to maintain the score of already scored items..\n\n\t* Available Options: `True`, `False`\n2. **Filter Neighbors whose similarity is minus.**: Whether to filter Neighbors whose similarity is minus.\n\n\t* Available Options: `True`, `False`\n3. **Prediction Column Name**: A name of prediction column.\n\n\n### Python\n#### USAGE\n\n```\ncollaborative_filtering_predict(table, model, maintain_already_scored=True, filter_minus =False, prediction_col='prediction')\n```\n\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) Data in a Table. It must contain `user_col`, `item_col` used in model training.\n2. **model**<b style=\"color:red\">*</b>: (Model) Trained Collaborative Filtering recommender model.\n#### OUTPUT\n1. **out_table**: (Table) A table that contains user-item pairs with predicted ratings as `prediction_col`.\n#### PARAMETER\n1. **maintain_already_scored**: Whether to maintain the score of already scored items..\n\t* Type: *bool*\n\t* Default / Range: True \n2. **filter_minus**: Whether to filter Neighbors whose similarity is minus.\n\t* Type: *bol*\n\t* Default / Range: False \n3. **prediction_col**: A name of prediction column.\n\t* Type: *str*\n\t* Default / Range: prediction\n\n## Example\n### VA\n**<a href=\"https://www.brightics.ai/docs/ai/v3.6/tutorials/65_travel_als?type=insight\" target=\"_blank\">[Related Tutorial]</a>**\n\n\n**<a href=\"/api/va/v2/help/downloads/brightics.function.recommendation$collaborative_filtering_predict16302/example-model/brightics.function.recommendation$collaborative_filtering_predict.json\" download>[Sample Model]</a>**\n\n\n<img src=\"/api/va/v2/help/images/brightics.function.recommendation$collaborative_filtering_predict16302/brightics.function.recommendation$collaborative_filtering_predict.png\"  width=\"800px\" style=\"border: 1px solid gray\" >\n\n<br>In this tutorial workflow, sample_ALSTrain is used to train a recommender system by using Collaborative Filtering algorithm. The generated model is afterward applied to a test data set to predict the value of _rating_, by using Collaborative Filtering Predict function. The parameter settings used in the function are shown below.\n\n\n++Parameters++\n1. **Maintain the score of already scored items.** : True\n2. **Filter Neighbors whose similarity is minus.** : False\n3. **Prediction Column Name** : prediction\n\n### Python\n```\nfrom brightics.function.recommendation import collaborative_filtering_predict\ninput_table = inputs[1]\ninput_model = models[0]\nresult = collaborative_filtering_predict(table=input_table, \n                                         model=input_model, \n                                         maintain_already_scored=True, \n                                         filter_minus =False, \n                                         prediction_col='prediction')\noutput = result['out_table']\n```\n<br>In this python script, Trained Collaborative Filtering recommender model is applied to a test data set to predict the value of _rating_, by using Collaborative Filtering Predict function.\n\n\n",
+    "exampleModels": [
+        {
+            "fileName": "brightics.function.recommendation$collaborative_filtering_predict.json",
+            "label": "Collaborative Filtering",
+            "contents": {
+                "type": "files",
+                "data": [
+                    {
+                        "type": "file",
+                        "data": {
+                            "id": "mg8a4en4jprs344t",
+                            "project_id": "prru57azq95s5dj7",
+                            "label": "Collaborative Filtering",
+                            "contents": {
+                                "mid": "mg8a4en4jprs344t",
+                                "type": "data",
+                                "title": "Collaborative Filtering",
+                                "functions": [
+                                    {
+                                        "persist-mode": "auto",
+                                        "func": "brightics.function.io$load13889",
+                                        "name": "brightics.function.io$load",
+                                        "param": {
+                                            "partial_path": [
+                                                "/brightics@samsung.com/upload/sample_ALSTrain.csv"
+                                            ]
+                                        },
+                                        "display": {
+                                            "label": "Load",
+                                            "diagram": {
+                                                "position": {
+                                                    "x": 20,
+                                                    "y": 220
+                                                }
+                                            },
+                                            "sheet": {
+                                                "out": {
+                                                    "partial": [
+                                                        {
+                                                            "panel": [
+                                                                {
+                                                                    "id": "default-1584064810105",
+                                                                    "chartOption": {
+                                                                        "colorSet": [
+                                                                            "#FD026C",
+                                                                            "#4682B8",
+                                                                            "#A5D22D",
+                                                                            "#F5CC0A",
+                                                                            "#FE8C01",
+                                                                            "#6B9494",
+                                                                            "#B97C46",
+                                                                            "#84ACD0",
+                                                                            "#C2E173",
+                                                                            "#F9DD5B",
+                                                                            "#FE569D",
+                                                                            "#FEB356",
+                                                                            "#9CB8B8",
+                                                                            "#D0A884",
+                                                                            "#2E6072",
+                                                                            "#6D8C1E",
+                                                                            "#A48806",
+                                                                            "#A90148",
+                                                                            "#A95E01",
+                                                                            "#476363",
+                                                                            "#7B532F"
+                                                                        ],
+                                                                        "title": {
+                                                                            "show": true,
+                                                                            "text": "",
+                                                                            "subtext": "",
+                                                                            "rotate": 0,
+                                                                            "textStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": ""
+                                                                            },
+                                                                            "subtextStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": ""
+                                                                            },
+                                                                            "left": "50%",
+                                                                            "top": "0px"
+                                                                        },
+                                                                        "toolbar": {
+                                                                            "show": false,
+                                                                            "right": "8px",
+                                                                            "top": "8px",
+                                                                            "orientation": "horizontal",
+                                                                            "menu": {}
+                                                                        },
+                                                                        "chart": {
+                                                                            "border": "1px #000000 none",
+                                                                            "background": "rgba(255, 255, 255,1)",
+                                                                            "animationDuration": 1000,
+                                                                            "type": "table"
+                                                                        },
+                                                                        "tooltip": {
+                                                                            "triggerOn": "mousemove"
+                                                                        },
+                                                                        "grid": {
+                                                                            "left": "10%",
+                                                                            "right": "10%",
+                                                                            "top": "60px",
+                                                                            "bottom": "60px",
+                                                                            "width": "auto",
+                                                                            "height": "auto"
+                                                                        },
+                                                                        "xAxis": [
+                                                                            {
+                                                                                "selected": [],
+                                                                                "title": {
+                                                                                    "show": true,
+                                                                                    "text": "",
+                                                                                    "subtext": "",
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "subtextStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "left": "50%",
+                                                                                    "bottom": "5px"
+                                                                                },
+                                                                                "axisTick": {
+                                                                                    "show": true
+                                                                                },
+                                                                                "axisLine": {
+                                                                                    "onZero": false
+                                                                                },
+                                                                                "scale": true,
+                                                                                "axisLabel": {
+                                                                                    "show": true,
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    }
+                                                                                },
+                                                                                "zlevel": 1
+                                                                            }
+                                                                        ],
+                                                                        "yAxis": [
+                                                                            {
+                                                                                "selected": [],
+                                                                                "title": {
+                                                                                    "show": true,
+                                                                                    "text": "",
+                                                                                    "subtext": "",
+                                                                                    "rotate": -90,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "subtextStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "left": "8px",
+                                                                                    "top": "50%"
+                                                                                },
+                                                                                "axisTick": {
+                                                                                    "show": true
+                                                                                },
+                                                                                "axisLine": {
+                                                                                    "onZero": false
+                                                                                },
+                                                                                "scale": true,
+                                                                                "axisLabel": {
+                                                                                    "show": true,
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    }
+                                                                                },
+                                                                                "zlevel": 1
+                                                                            }
+                                                                        ],
+                                                                        "colorBy": [
+                                                                            {
+                                                                                "selected": []
+                                                                            }
+                                                                        ],
+                                                                        "legend": {
+                                                                            "show": true,
+                                                                            "orientation": "horizontal",
+                                                                            "left": "50%",
+                                                                            "right": "auto",
+                                                                            "top": "10px",
+                                                                            "bottom": "auto",
+                                                                            "textStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": "",
+                                                                                "fontStyle": "normal",
+                                                                                "fontWeight": "normal",
+                                                                                "fontDecoration": "none"
+                                                                            }
+                                                                        },
+                                                                        "noDataMessage": "",
+                                                                        "plotOptions": {
+                                                                            "table": {
+                                                                                "formatter": []
+                                                                            },
+                                                                            "map": {
+                                                                                "geoData": {}
+                                                                            }
+                                                                        },
+                                                                        "source": {
+                                                                            "dataType": "lazy",
+                                                                            "lazyData": []
+                                                                        },
+                                                                        "guide": {
+                                                                            "message": "Set data options using Chart Setting Button."
+                                                                        }
+                                                                    },
+                                                                    "dataSource": {
+                                                                        "selectable": true
+                                                                    },
+                                                                    "style": {},
+                                                                    "group": "h6ks86f2mz3ms2eafvs489yn"
+                                                                }
+                                                            ],
+                                                            "layout": {
+                                                                "type": "panel",
+                                                                "id": "default-1584064810105"
+                                                            }
+                                                        }
+                                                    ],
+                                                    "full": [
+                                                        {
+                                                            "panel": [],
+                                                            "layout": {}
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        "meta": {
+                                            "table": {
+                                                "type": "table"
+                                            }
+                                        },
+                                        "context": "python",
+                                        "version": "3.6",
+                                        "outputs": {
+                                            "table": "tpeybfsdv8jrc6cp"
+                                        },
+                                        "fid": "fr37pj7bwpusqw5x"
+                                    },
+                                    {
+                                        "persist-mode": "auto",
+                                        "func": "brightics.function.transform$split_data",
+                                        "name": "brightics.function.transform$split_data",
+                                        "param": {},
+                                        "display": {
+                                            "label": "Split Data",
+                                            "diagram": {
+                                                "position": {
+                                                    "x": 270,
+                                                    "y": 220
+                                                }
+                                            },
+                                            "sheet": {
+                                                "in": {
+                                                    "partial": [
+                                                        {
+                                                            "panel": [
+                                                                {
+                                                                    "id": "default-1584065122773",
+                                                                    "chartOption": {
+                                                                        "colorSet": [
+                                                                            "#FD026C",
+                                                                            "#4682B8",
+                                                                            "#A5D22D",
+                                                                            "#F5CC0A",
+                                                                            "#FE8C01",
+                                                                            "#6B9494",
+                                                                            "#B97C46",
+                                                                            "#84ACD0",
+                                                                            "#C2E173",
+                                                                            "#F9DD5B",
+                                                                            "#FE569D",
+                                                                            "#FEB356",
+                                                                            "#9CB8B8",
+                                                                            "#D0A884",
+                                                                            "#2E6072",
+                                                                            "#6D8C1E",
+                                                                            "#A48806",
+                                                                            "#A90148",
+                                                                            "#A95E01",
+                                                                            "#476363",
+                                                                            "#7B532F"
+                                                                        ],
+                                                                        "title": {
+                                                                            "show": true,
+                                                                            "text": "",
+                                                                            "subtext": "",
+                                                                            "rotate": 0,
+                                                                            "textStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": ""
+                                                                            },
+                                                                            "subtextStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": ""
+                                                                            },
+                                                                            "left": "50%",
+                                                                            "top": "0px"
+                                                                        },
+                                                                        "toolbar": {
+                                                                            "show": false,
+                                                                            "right": "8px",
+                                                                            "top": "8px",
+                                                                            "orientation": "horizontal",
+                                                                            "menu": {}
+                                                                        },
+                                                                        "chart": {
+                                                                            "border": "1px #000000 none",
+                                                                            "background": "rgba(255, 255, 255,1)",
+                                                                            "animationDuration": 1000,
+                                                                            "type": "table"
+                                                                        },
+                                                                        "tooltip": {
+                                                                            "triggerOn": "mousemove"
+                                                                        },
+                                                                        "grid": {
+                                                                            "left": "10%",
+                                                                            "right": "10%",
+                                                                            "top": "60px",
+                                                                            "bottom": "60px",
+                                                                            "width": "auto",
+                                                                            "height": "auto"
+                                                                        },
+                                                                        "xAxis": [
+                                                                            {
+                                                                                "selected": [],
+                                                                                "title": {
+                                                                                    "show": true,
+                                                                                    "text": "",
+                                                                                    "subtext": "",
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "subtextStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "left": "50%",
+                                                                                    "bottom": "5px"
+                                                                                },
+                                                                                "axisTick": {
+                                                                                    "show": true
+                                                                                },
+                                                                                "axisLine": {
+                                                                                    "onZero": false
+                                                                                },
+                                                                                "scale": true,
+                                                                                "axisLabel": {
+                                                                                    "show": true,
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    }
+                                                                                },
+                                                                                "zlevel": 1
+                                                                            }
+                                                                        ],
+                                                                        "yAxis": [
+                                                                            {
+                                                                                "selected": [],
+                                                                                "title": {
+                                                                                    "show": true,
+                                                                                    "text": "",
+                                                                                    "subtext": "",
+                                                                                    "rotate": -90,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "subtextStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "left": "8px",
+                                                                                    "top": "50%"
+                                                                                },
+                                                                                "axisTick": {
+                                                                                    "show": true
+                                                                                },
+                                                                                "axisLine": {
+                                                                                    "onZero": false
+                                                                                },
+                                                                                "scale": true,
+                                                                                "axisLabel": {
+                                                                                    "show": true,
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    }
+                                                                                },
+                                                                                "zlevel": 1
+                                                                            }
+                                                                        ],
+                                                                        "colorBy": [
+                                                                            {
+                                                                                "selected": []
+                                                                            }
+                                                                        ],
+                                                                        "legend": {
+                                                                            "show": true,
+                                                                            "orientation": "horizontal",
+                                                                            "left": "50%",
+                                                                            "right": "auto",
+                                                                            "top": "10px",
+                                                                            "bottom": "auto",
+                                                                            "textStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": "",
+                                                                                "fontStyle": "normal",
+                                                                                "fontWeight": "normal",
+                                                                                "fontDecoration": "none"
+                                                                            }
+                                                                        },
+                                                                        "noDataMessage": "",
+                                                                        "plotOptions": {
+                                                                            "table": {
+                                                                                "formatter": []
+                                                                            },
+                                                                            "map": {
+                                                                                "geoData": {}
+                                                                            }
+                                                                        },
+                                                                        "source": {
+                                                                            "dataType": "lazy",
+                                                                            "lazyData": []
+                                                                        },
+                                                                        "guide": {
+                                                                            "message": "Set data options using Chart Setting Button."
+                                                                        }
+                                                                    },
+                                                                    "dataSource": {
+                                                                        "selectable": true
+                                                                    },
+                                                                    "style": {},
+                                                                    "group": "sii42wmh9dpfzpbag6kn7p7v"
+                                                                }
+                                                            ],
+                                                            "layout": {
+                                                                "type": "panel",
+                                                                "id": "default-1584065122773"
+                                                            }
+                                                        }
+                                                    ],
+                                                    "full": [
+                                                        {
+                                                            "panel": [],
+                                                            "layout": {}
+                                                        }
+                                                    ]
+                                                },
+                                                "out": {
+                                                    "partial": [
+                                                        {
+                                                            "panel": [
+                                                                {
+                                                                    "id": "default-1584065122849",
+                                                                    "chartOption": {
+                                                                        "colorSet": [
+                                                                            "#FD026C",
+                                                                            "#4682B8",
+                                                                            "#A5D22D",
+                                                                            "#F5CC0A",
+                                                                            "#FE8C01",
+                                                                            "#6B9494",
+                                                                            "#B97C46",
+                                                                            "#84ACD0",
+                                                                            "#C2E173",
+                                                                            "#F9DD5B",
+                                                                            "#FE569D",
+                                                                            "#FEB356",
+                                                                            "#9CB8B8",
+                                                                            "#D0A884",
+                                                                            "#2E6072",
+                                                                            "#6D8C1E",
+                                                                            "#A48806",
+                                                                            "#A90148",
+                                                                            "#A95E01",
+                                                                            "#476363",
+                                                                            "#7B532F"
+                                                                        ],
+                                                                        "title": {
+                                                                            "show": true,
+                                                                            "text": "",
+                                                                            "subtext": "",
+                                                                            "rotate": 0,
+                                                                            "textStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": ""
+                                                                            },
+                                                                            "subtextStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": ""
+                                                                            },
+                                                                            "left": "50%",
+                                                                            "top": "0px"
+                                                                        },
+                                                                        "toolbar": {
+                                                                            "show": false,
+                                                                            "right": "8px",
+                                                                            "top": "8px",
+                                                                            "orientation": "horizontal",
+                                                                            "menu": {}
+                                                                        },
+                                                                        "chart": {
+                                                                            "border": "1px #000000 none",
+                                                                            "background": "rgba(255, 255, 255,1)",
+                                                                            "animationDuration": 1000,
+                                                                            "type": "table"
+                                                                        },
+                                                                        "tooltip": {
+                                                                            "triggerOn": "mousemove"
+                                                                        },
+                                                                        "grid": {
+                                                                            "left": "10%",
+                                                                            "right": "10%",
+                                                                            "top": "60px",
+                                                                            "bottom": "60px",
+                                                                            "width": "auto",
+                                                                            "height": "auto"
+                                                                        },
+                                                                        "xAxis": [
+                                                                            {
+                                                                                "selected": [],
+                                                                                "title": {
+                                                                                    "show": true,
+                                                                                    "text": "",
+                                                                                    "subtext": "",
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "subtextStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "left": "50%",
+                                                                                    "bottom": "5px"
+                                                                                },
+                                                                                "axisTick": {
+                                                                                    "show": true
+                                                                                },
+                                                                                "axisLine": {
+                                                                                    "onZero": false
+                                                                                },
+                                                                                "scale": true,
+                                                                                "axisLabel": {
+                                                                                    "show": true,
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    }
+                                                                                },
+                                                                                "zlevel": 1
+                                                                            }
+                                                                        ],
+                                                                        "yAxis": [
+                                                                            {
+                                                                                "selected": [],
+                                                                                "title": {
+                                                                                    "show": true,
+                                                                                    "text": "",
+                                                                                    "subtext": "",
+                                                                                    "rotate": -90,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "subtextStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "left": "8px",
+                                                                                    "top": "50%"
+                                                                                },
+                                                                                "axisTick": {
+                                                                                    "show": true
+                                                                                },
+                                                                                "axisLine": {
+                                                                                    "onZero": false
+                                                                                },
+                                                                                "scale": true,
+                                                                                "axisLabel": {
+                                                                                    "show": true,
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    }
+                                                                                },
+                                                                                "zlevel": 1
+                                                                            }
+                                                                        ],
+                                                                        "colorBy": [
+                                                                            {
+                                                                                "selected": []
+                                                                            }
+                                                                        ],
+                                                                        "legend": {
+                                                                            "show": true,
+                                                                            "orientation": "horizontal",
+                                                                            "left": "50%",
+                                                                            "right": "auto",
+                                                                            "top": "10px",
+                                                                            "bottom": "auto",
+                                                                            "textStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": "",
+                                                                                "fontStyle": "normal",
+                                                                                "fontWeight": "normal",
+                                                                                "fontDecoration": "none"
+                                                                            }
+                                                                        },
+                                                                        "noDataMessage": "",
+                                                                        "plotOptions": {
+                                                                            "table": {
+                                                                                "formatter": []
+                                                                            },
+                                                                            "map": {
+                                                                                "geoData": {}
+                                                                            }
+                                                                        },
+                                                                        "source": {
+                                                                            "dataType": "lazy",
+                                                                            "lazyData": []
+                                                                        },
+                                                                        "guide": {
+                                                                            "message": "Set data options using Chart Setting Button."
+                                                                        }
+                                                                    },
+                                                                    "dataSource": {
+                                                                        "selectable": true
+                                                                    },
+                                                                    "style": {},
+                                                                    "group": "gwa6w87qd266urhd3hfeduyu"
+                                                                }
+                                                            ],
+                                                            "layout": {
+                                                                "type": "panel",
+                                                                "id": "default-1584065122849"
+                                                            }
+                                                        }
+                                                    ],
+                                                    "full": [
+                                                        {
+                                                            "panel": [],
+                                                            "layout": {}
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        "meta": {
+                                            "table": {
+                                                "type": "table"
+                                            },
+                                            "train_table": {
+                                                "type": "table"
+                                            },
+                                            "test_table": {
+                                                "type": "table"
+                                            }
+                                        },
+                                        "context": "python",
+                                        "version": "3.6",
+                                        "inputs": {
+                                            "table": "tpeybfsdv8jrc6cp"
+                                        },
+                                        "outputs": {
+                                            "train_table": "t7ht2b9chnnxjf9u",
+                                            "test_table": "tp4hafceafygd82n"
+                                        },
+                                        "fid": "f4n5w8geh35vntny"
+                                    },
+                                    {
+                                        "persist-mode": "auto",
+                                        "func": "brightics.function.recommendation$collaborative_filtering_train03961",
+                                        "name": "brightics.function.recommendation$collaborative_filtering_train",
+                                        "param": {
+                                            "based": "item",
+                                            "normalize": true,
+                                            "method": "cosine",
+                                            "centered": true,
+                                            "weighted": true,
+                                            "rating_col": "rating",
+                                            "user_col": "user",
+                                            "item_col": "item"
+                                        },
+                                        "display": {
+                                            "label": "Collaborative Filtering Train",
+                                            "diagram": {
+                                                "position": {
+                                                    "x": 520,
+                                                    "y": 220
+                                                }
+                                            },
+                                            "sheet": {
+                                                "in": {
+                                                    "partial": [
+                                                        {
+                                                            "panel": [
+                                                                {
+                                                                    "id": "default-1584065190232",
+                                                                    "chartOption": {
+                                                                        "colorSet": [
+                                                                            "#FD026C",
+                                                                            "#4682B8",
+                                                                            "#A5D22D",
+                                                                            "#F5CC0A",
+                                                                            "#FE8C01",
+                                                                            "#6B9494",
+                                                                            "#B97C46",
+                                                                            "#84ACD0",
+                                                                            "#C2E173",
+                                                                            "#F9DD5B",
+                                                                            "#FE569D",
+                                                                            "#FEB356",
+                                                                            "#9CB8B8",
+                                                                            "#D0A884",
+                                                                            "#2E6072",
+                                                                            "#6D8C1E",
+                                                                            "#A48806",
+                                                                            "#A90148",
+                                                                            "#A95E01",
+                                                                            "#476363",
+                                                                            "#7B532F"
+                                                                        ],
+                                                                        "title": {
+                                                                            "show": true,
+                                                                            "text": "",
+                                                                            "subtext": "",
+                                                                            "rotate": 0,
+                                                                            "textStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": ""
+                                                                            },
+                                                                            "subtextStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": ""
+                                                                            },
+                                                                            "left": "50%",
+                                                                            "top": "0px"
+                                                                        },
+                                                                        "toolbar": {
+                                                                            "show": false,
+                                                                            "right": "8px",
+                                                                            "top": "8px",
+                                                                            "orientation": "horizontal",
+                                                                            "menu": {}
+                                                                        },
+                                                                        "chart": {
+                                                                            "border": "1px #000000 none",
+                                                                            "background": "rgba(255, 255, 255,1)",
+                                                                            "animationDuration": 1000,
+                                                                            "type": "table"
+                                                                        },
+                                                                        "tooltip": {
+                                                                            "triggerOn": "mousemove"
+                                                                        },
+                                                                        "grid": {
+                                                                            "left": "10%",
+                                                                            "right": "10%",
+                                                                            "top": "60px",
+                                                                            "bottom": "60px",
+                                                                            "width": "auto",
+                                                                            "height": "auto"
+                                                                        },
+                                                                        "xAxis": [
+                                                                            {
+                                                                                "selected": [],
+                                                                                "title": {
+                                                                                    "show": true,
+                                                                                    "text": "",
+                                                                                    "subtext": "",
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "subtextStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "left": "50%",
+                                                                                    "bottom": "5px"
+                                                                                },
+                                                                                "axisTick": {
+                                                                                    "show": true
+                                                                                },
+                                                                                "axisLine": {
+                                                                                    "onZero": false
+                                                                                },
+                                                                                "scale": true,
+                                                                                "axisLabel": {
+                                                                                    "show": true,
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    }
+                                                                                },
+                                                                                "zlevel": 1
+                                                                            }
+                                                                        ],
+                                                                        "yAxis": [
+                                                                            {
+                                                                                "selected": [],
+                                                                                "title": {
+                                                                                    "show": true,
+                                                                                    "text": "",
+                                                                                    "subtext": "",
+                                                                                    "rotate": -90,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "subtextStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "left": "8px",
+                                                                                    "top": "50%"
+                                                                                },
+                                                                                "axisTick": {
+                                                                                    "show": true
+                                                                                },
+                                                                                "axisLine": {
+                                                                                    "onZero": false
+                                                                                },
+                                                                                "scale": true,
+                                                                                "axisLabel": {
+                                                                                    "show": true,
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    }
+                                                                                },
+                                                                                "zlevel": 1
+                                                                            }
+                                                                        ],
+                                                                        "colorBy": [
+                                                                            {
+                                                                                "selected": []
+                                                                            }
+                                                                        ],
+                                                                        "legend": {
+                                                                            "show": true,
+                                                                            "orientation": "horizontal",
+                                                                            "left": "50%",
+                                                                            "right": "auto",
+                                                                            "top": "10px",
+                                                                            "bottom": "auto",
+                                                                            "textStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": "",
+                                                                                "fontStyle": "normal",
+                                                                                "fontWeight": "normal",
+                                                                                "fontDecoration": "none"
+                                                                            }
+                                                                        },
+                                                                        "noDataMessage": "",
+                                                                        "plotOptions": {
+                                                                            "table": {
+                                                                                "formatter": []
+                                                                            },
+                                                                            "map": {
+                                                                                "geoData": {}
+                                                                            }
+                                                                        },
+                                                                        "source": {
+                                                                            "dataType": "lazy",
+                                                                            "lazyData": []
+                                                                        },
+                                                                        "guide": {
+                                                                            "message": "Set data options using Chart Setting Button."
+                                                                        }
+                                                                    },
+                                                                    "dataSource": {
+                                                                        "selectable": true
+                                                                    },
+                                                                    "style": {},
+                                                                    "group": "jsfctmpwmr5j9973as2zq437"
+                                                                }
+                                                            ],
+                                                            "layout": {
+                                                                "type": "panel",
+                                                                "id": "default-1584065190232"
+                                                            }
+                                                        }
+                                                    ],
+                                                    "full": [
+                                                        {
+                                                            "panel": [],
+                                                            "layout": {}
+                                                        }
+                                                    ]
+                                                },
+                                                "out": {
+                                                    "partial": [
+                                                        {
+                                                            "panel": [],
+                                                            "layout": {}
+                                                        }
+                                                    ],
+                                                    "full": [
+                                                        {
+                                                            "panel": [],
+                                                            "layout": {}
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        "meta": {
+                                            "table": {
+                                                "type": "table"
+                                            },
+                                            "model": {
+                                                "type": "model"
+                                            }
+                                        },
+                                        "context": "python",
+                                        "version": "3.6",
+                                        "inputs": {
+                                            "table": "t7ht2b9chnnxjf9u"
+                                        },
+                                        "outputs": {
+                                            "model": "thgwpe35uw9r9bsv"
+                                        },
+                                        "fid": "fmwa5dkg85fxjwjh"
+                                    },
+                                    {
+                                        "persist-mode": "auto",
+                                        "func": "brightics.function.recommendation$collaborative_filtering_predict16302",
+                                        "name": "brightics.function.recommendation$collaborative_filtering_predict",
+                                        "param": {
+                                            "maintain_already_scored": true,
+                                            "filter_minus": false
+                                        },
+                                        "display": {
+                                            "label": "Collaborative Filtering Predict",
+                                            "diagram": {
+                                                "position": {
+                                                    "x": 770,
+                                                    "y": 220
+                                                }
+                                            },
+                                            "sheet": {
+                                                "in": {
+                                                    "partial": [
+                                                        {
+                                                            "panel": [
+                                                                {
+                                                                    "id": "default-1584074008736",
+                                                                    "chartOption": {
+                                                                        "colorSet": [
+                                                                            "#FD026C",
+                                                                            "#4682B8",
+                                                                            "#A5D22D",
+                                                                            "#F5CC0A",
+                                                                            "#FE8C01",
+                                                                            "#6B9494",
+                                                                            "#B97C46",
+                                                                            "#84ACD0",
+                                                                            "#C2E173",
+                                                                            "#F9DD5B",
+                                                                            "#FE569D",
+                                                                            "#FEB356",
+                                                                            "#9CB8B8",
+                                                                            "#D0A884",
+                                                                            "#2E6072",
+                                                                            "#6D8C1E",
+                                                                            "#A48806",
+                                                                            "#A90148",
+                                                                            "#A95E01",
+                                                                            "#476363",
+                                                                            "#7B532F"
+                                                                        ],
+                                                                        "title": {
+                                                                            "show": true,
+                                                                            "text": "",
+                                                                            "subtext": "",
+                                                                            "rotate": 0,
+                                                                            "textStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": ""
+                                                                            },
+                                                                            "subtextStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": ""
+                                                                            },
+                                                                            "left": "50%",
+                                                                            "top": "0px"
+                                                                        },
+                                                                        "toolbar": {
+                                                                            "show": false,
+                                                                            "right": "8px",
+                                                                            "top": "8px",
+                                                                            "orientation": "horizontal",
+                                                                            "menu": {}
+                                                                        },
+                                                                        "chart": {
+                                                                            "border": "1px #000000 none",
+                                                                            "background": "rgba(255, 255, 255,1)",
+                                                                            "animationDuration": 1000,
+                                                                            "type": "table"
+                                                                        },
+                                                                        "tooltip": {
+                                                                            "triggerOn": "mousemove"
+                                                                        },
+                                                                        "grid": {
+                                                                            "left": "10%",
+                                                                            "right": "10%",
+                                                                            "top": "60px",
+                                                                            "bottom": "60px",
+                                                                            "width": "auto",
+                                                                            "height": "auto"
+                                                                        },
+                                                                        "xAxis": [
+                                                                            {
+                                                                                "selected": [],
+                                                                                "title": {
+                                                                                    "show": true,
+                                                                                    "text": "",
+                                                                                    "subtext": "",
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "subtextStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "left": "50%",
+                                                                                    "bottom": "5px"
+                                                                                },
+                                                                                "axisTick": {
+                                                                                    "show": true
+                                                                                },
+                                                                                "axisLine": {
+                                                                                    "onZero": false
+                                                                                },
+                                                                                "scale": true,
+                                                                                "axisLabel": {
+                                                                                    "show": true,
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    }
+                                                                                },
+                                                                                "zlevel": 1
+                                                                            }
+                                                                        ],
+                                                                        "yAxis": [
+                                                                            {
+                                                                                "selected": [],
+                                                                                "title": {
+                                                                                    "show": true,
+                                                                                    "text": "",
+                                                                                    "subtext": "",
+                                                                                    "rotate": -90,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "subtextStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "left": "8px",
+                                                                                    "top": "50%"
+                                                                                },
+                                                                                "axisTick": {
+                                                                                    "show": true
+                                                                                },
+                                                                                "axisLine": {
+                                                                                    "onZero": false
+                                                                                },
+                                                                                "scale": true,
+                                                                                "axisLabel": {
+                                                                                    "show": true,
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    }
+                                                                                },
+                                                                                "zlevel": 1
+                                                                            }
+                                                                        ],
+                                                                        "colorBy": [
+                                                                            {
+                                                                                "selected": []
+                                                                            }
+                                                                        ],
+                                                                        "legend": {
+                                                                            "show": true,
+                                                                            "orientation": "horizontal",
+                                                                            "left": "50%",
+                                                                            "right": "auto",
+                                                                            "top": "10px",
+                                                                            "bottom": "auto",
+                                                                            "textStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": "",
+                                                                                "fontStyle": "normal",
+                                                                                "fontWeight": "normal",
+                                                                                "fontDecoration": "none"
+                                                                            }
+                                                                        },
+                                                                        "noDataMessage": "",
+                                                                        "plotOptions": {
+                                                                            "table": {
+                                                                                "formatter": []
+                                                                            },
+                                                                            "map": {
+                                                                                "geoData": {}
+                                                                            }
+                                                                        },
+                                                                        "source": {
+                                                                            "dataType": "lazy",
+                                                                            "lazyData": []
+                                                                        },
+                                                                        "guide": {
+                                                                            "message": "Set data options using Chart Setting Button."
+                                                                        }
+                                                                    },
+                                                                    "dataSource": {
+                                                                        "selectable": true
+                                                                    },
+                                                                    "style": {},
+                                                                    "group": "gzmbdh2bzhy77n5mc4fyguc4"
+                                                                }
+                                                            ],
+                                                            "layout": {
+                                                                "type": "panel",
+                                                                "id": "default-1584074008736"
+                                                            }
+                                                        }
+                                                    ],
+                                                    "full": [
+                                                        {
+                                                            "panel": [],
+                                                            "layout": {}
+                                                        }
+                                                    ]
+                                                },
+                                                "out": {
+                                                    "partial": [
+                                                        {
+                                                            "panel": [
+                                                                {
+                                                                    "id": "default-1584074008812",
+                                                                    "chartOption": {
+                                                                        "colorSet": [
+                                                                            "#FD026C",
+                                                                            "#4682B8",
+                                                                            "#A5D22D",
+                                                                            "#F5CC0A",
+                                                                            "#FE8C01",
+                                                                            "#6B9494",
+                                                                            "#B97C46",
+                                                                            "#84ACD0",
+                                                                            "#C2E173",
+                                                                            "#F9DD5B",
+                                                                            "#FE569D",
+                                                                            "#FEB356",
+                                                                            "#9CB8B8",
+                                                                            "#D0A884",
+                                                                            "#2E6072",
+                                                                            "#6D8C1E",
+                                                                            "#A48806",
+                                                                            "#A90148",
+                                                                            "#A95E01",
+                                                                            "#476363",
+                                                                            "#7B532F"
+                                                                        ],
+                                                                        "title": {
+                                                                            "show": true,
+                                                                            "text": "",
+                                                                            "subtext": "",
+                                                                            "rotate": 0,
+                                                                            "textStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": ""
+                                                                            },
+                                                                            "subtextStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": ""
+                                                                            },
+                                                                            "left": "50%",
+                                                                            "top": "0px"
+                                                                        },
+                                                                        "toolbar": {
+                                                                            "show": false,
+                                                                            "right": "8px",
+                                                                            "top": "8px",
+                                                                            "orientation": "horizontal",
+                                                                            "menu": {}
+                                                                        },
+                                                                        "chart": {
+                                                                            "border": "1px #000000 none",
+                                                                            "background": "rgba(255, 255, 255,1)",
+                                                                            "animationDuration": 1000,
+                                                                            "type": "table"
+                                                                        },
+                                                                        "tooltip": {
+                                                                            "triggerOn": "mousemove"
+                                                                        },
+                                                                        "grid": {
+                                                                            "left": "10%",
+                                                                            "right": "10%",
+                                                                            "top": "60px",
+                                                                            "bottom": "60px",
+                                                                            "width": "auto",
+                                                                            "height": "auto"
+                                                                        },
+                                                                        "xAxis": [
+                                                                            {
+                                                                                "selected": [],
+                                                                                "title": {
+                                                                                    "show": true,
+                                                                                    "text": "",
+                                                                                    "subtext": "",
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "subtextStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "left": "50%",
+                                                                                    "bottom": "5px"
+                                                                                },
+                                                                                "axisTick": {
+                                                                                    "show": true
+                                                                                },
+                                                                                "axisLine": {
+                                                                                    "onZero": false
+                                                                                },
+                                                                                "scale": true,
+                                                                                "axisLabel": {
+                                                                                    "show": true,
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    }
+                                                                                },
+                                                                                "zlevel": 1
+                                                                            }
+                                                                        ],
+                                                                        "yAxis": [
+                                                                            {
+                                                                                "selected": [],
+                                                                                "title": {
+                                                                                    "show": true,
+                                                                                    "text": "",
+                                                                                    "subtext": "",
+                                                                                    "rotate": -90,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "subtextStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "left": "8px",
+                                                                                    "top": "50%"
+                                                                                },
+                                                                                "axisTick": {
+                                                                                    "show": true
+                                                                                },
+                                                                                "axisLine": {
+                                                                                    "onZero": false
+                                                                                },
+                                                                                "scale": true,
+                                                                                "axisLabel": {
+                                                                                    "show": true,
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    }
+                                                                                },
+                                                                                "zlevel": 1
+                                                                            }
+                                                                        ],
+                                                                        "colorBy": [
+                                                                            {
+                                                                                "selected": []
+                                                                            }
+                                                                        ],
+                                                                        "legend": {
+                                                                            "show": true,
+                                                                            "orientation": "horizontal",
+                                                                            "left": "50%",
+                                                                            "right": "auto",
+                                                                            "top": "10px",
+                                                                            "bottom": "auto",
+                                                                            "textStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": "",
+                                                                                "fontStyle": "normal",
+                                                                                "fontWeight": "normal",
+                                                                                "fontDecoration": "none"
+                                                                            }
+                                                                        },
+                                                                        "noDataMessage": "",
+                                                                        "plotOptions": {
+                                                                            "table": {
+                                                                                "formatter": []
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            ],
+                                                            "layout": {}
+                                                        }
+                                                    ],
+                                                    "full": [
+                                                        {
+                                                            "panel": [],
+                                                            "layout": {}
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        "meta": {
+                                            "table": {
+                                                "type": "table"
+                                            },
+                                            "model": {
+                                                "type": "model"
+                                            },
+                                            "out_table": {
+                                                "type": "table"
+                                            }
+                                        },
+                                        "context": "python",
+                                        "version": "3.6",
+                                        "inputs": {
+                                            "table": "tp4hafceafygd82n",
+                                            "model": "thgwpe35uw9r9bsv"
+                                        },
+                                        "outputs": {
+                                            "out_table": "twzf6djdqeptwjjm"
+                                        },
+                                        "fid": "f7pdqq825hdhxuqr"
+                                    }
+                                ],
+                                "links": [
+                                    {
+                                        "kid": "k3gsr69atyb4qu2d",
+                                        "sourceFid": "fr37pj7bwpusqw5x",
+                                        "targetFid": "f4n5w8geh35vntny"
+                                    },
+                                    {
+                                        "kid": "ktzwwt34an7uxp7m",
+                                        "sourceFid": "f4n5w8geh35vntny",
+                                        "targetFid": "fmwa5dkg85fxjwjh"
+                                    },
+                                    {
+                                        "kid": "kthqprzkx8yjk88e",
+                                        "sourceFid": "fmwa5dkg85fxjwjh",
+                                        "targetFid": "f7pdqq825hdhxuqr"
+                                    },
+                                    {
+                                        "kid": "kzqmk2eyx72p38ch",
+                                        "sourceFid": "f4n5w8geh35vntny",
+                                        "targetFid": "f7pdqq825hdhxuqr"
+                                    }
+                                ],
+                                "preferences": {},
+                                "variables": {},
+                                "variableRef": [],
+                                "innerModels": {},
+                                "inData": [],
+                                "outData": [],
+                                "sheets": [],
+                                "param": {},
+                                "report": {
+                                    "title": "Report",
+                                    "data": []
+                                },
+                                "persist-mode": "auto",
+                                "diagram": {
+                                    "PAPER_MARGIN_TOP": 20,
+                                    "PAPER_MARGIN_LEFT": 20,
+                                    "FIGURE_WIDTH": 195,
+                                    "FIGURE_HEIGHT": 60,
+                                    "GAP_WIDTH": 55,
+                                    "GAP_HEIGHT": 40
+                                },
+                                "problemList": []
+                            },
+                            "description": "<p><br /></p>",
+                            "model_image": null,
+                            "creator": "brightics@samsung.com",
+                            "create_time": "2020-03-13T02:00:05.000Z",
+                            "updater": "brightics@samsung.com",
+                            "update_time": "2020-03-13T04:34:52.000Z",
+                            "event_key": "2020_043452.000",
+                            "type": "data",
+                            "tag": "null",
+                            "from_version": "0.0"
+                        }
+                    }
+                ],
+                "version": "3.6"
+            }
+        }
+    ],
+    "sampleImages": [
+        {
+            "fileName": "brightics.function.recommendation$collaborative_filtering_predict.png",
+            "label": "brightics.function.recommendation$collaborative_filtering_predict.png",
+            "base64": "data:image/png;base64,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"
+        }
+    ]
 }

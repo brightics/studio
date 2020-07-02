@@ -1,191 +1,1486 @@
 {
-  "script": {
-    "type": "",
-    "content": ""
-  },
-  "specJson": {
-    "category": "textanalytics",
-    "func": "brightics.function.textanalytics$ner_crf_train",
-    "name": "brightics.function.textanalytics$ner_crf_train",
-    "context": "python",
-    "label": "NER CRF Train",
-    "description": "Trains a CRF model to perform the named entity recognition. (NER) An input corpus must contain four columns: sentence column which identifies each sentence, token column, pos column, and label column. It is assumed that the IOB system is used and each label starts with letters 'I', 'O', or 'B'.",
-    "tags": [
-      "ner",
-      "named entity recognition",
-      "crf"
+    "script": {
+        "type": "",
+        "content": ""
+    },
+    "specJson": {
+        "category": "textanalytics",
+        "func": "brightics.function.textanalytics$ner_crf_train",
+        "name": "brightics.function.textanalytics$ner_crf_train",
+        "context": "python",
+        "label": "NER CRF Train",
+        "description": "Named-entity recognition (NER) (also known as entity identification, entity chunking and entity extraction) is a subtask of information extraction that seeks to locate and classify named entities mentioned in unstructured text into pre-defined categories such as person names, organizations, locations, medical codes, time expressions, quantities, monetary values, percentages, etc.\n\nThis function trains a CRF model to perform the named entity recognition. An input corpus must contain four columns: sentence column which identifies each sentence, token column, pos column, and label column. It is assumed that the IOB system is used and each label starts with letters 'I', 'O', or 'B'.\n\nReference\n\n+ https://en.wikipedia.org/wiki/Named-entity_recognition",
+        "tags": [
+            "ner",
+            "named entity recognition",
+            "crf"
+        ],
+        "version": "3.6",
+        "inputs": {
+            "table": ""
+        },
+        "outputs": {
+            "model": ""
+        },
+        "meta": {
+            "table": {
+                "type": "table",
+                "desc": "Train data including sentence info, token info, part of speech, and named entity label.",
+                "optional": false
+            },
+            "model": {
+                "type": "model",
+                "desc": "Trained model which will be used in the NER CRF Predict function."
+            }
+        },
+        "params": [
+            {
+                "id": "sentence_col",
+                "label": "Sentence Column",
+                "description": "Sentence column which identifies each sentence. It may contain sentence ID, sentence itself, etc. This value for tokens in the same sentence should be identical.",
+                "visibleOption": [],
+                "control": "ColumnSelector",
+                "validation": [],
+                "mandatory": true,
+                "items": [],
+                "columnType": [
+                    "Integer",
+                    "Float",
+                    "Double",
+                    "Long",
+                    "String"
+                ],
+                "multiple": false
+            },
+            {
+                "id": "token_col",
+                "label": "Token Column",
+                "description": "Token column which contains a tokenized item.",
+                "visibleOption": [],
+                "control": "ColumnSelector",
+                "validation": [],
+                "mandatory": true,
+                "items": [],
+                "columnType": [
+                    "String"
+                ],
+                "multiple": false
+            },
+            {
+                "id": "pos_col",
+                "label": "POS Column",
+                "description": "POS column which contains a part of speech information.",
+                "visibleOption": [],
+                "control": "ColumnSelector",
+                "validation": [],
+                "mandatory": true,
+                "items": [],
+                "columnType": [
+                    "String"
+                ],
+                "multiple": false
+            },
+            {
+                "id": "label_col",
+                "label": "Label Column",
+                "description": "Label column which contains a named entity label.",
+                "visibleOption": [],
+                "control": "ColumnSelector",
+                "validation": [],
+                "mandatory": true,
+                "items": [],
+                "columnType": [
+                    "String"
+                ],
+                "multiple": false
+            },
+            {
+                "id": "algorithm",
+                "label": "Algorithm",
+                "description": "Training algorithm for CRF.",
+                "visibleOption": [],
+                "control": "RadioButton",
+                "validation": [],
+                "mandatory": false,
+                "items": [
+                    {
+                        "label": "L-BFGS Gradient Descent",
+                        "value": "lbfgs",
+                        "default": true
+                    },
+                    {
+                        "label": "L2 Stochastic Gradient Descent",
+                        "value": "l2sgd",
+                        "default": false
+                    },
+                    {
+                        "label": "Averaged Perceptron",
+                        "value": "ap",
+                        "default": false
+                    },
+                    {
+                        "label": "Passive Aggressive",
+                        "value": "pa",
+                        "default": false
+                    },
+                    {
+                        "label": "Adaptive Regularization Of Weight Vector",
+                        "value": "arow",
+                        "default": false
+                    }
+                ],
+                "columnType": []
+            },
+            {
+                "id": "c1",
+                "label": "c1",
+                "description": "The coefficient for L1 regularization. Affects when algorithm is set to L-BFGS.",
+                "visibleOption": [],
+                "control": "InputBox",
+                "validation": [],
+                "mandatory": false,
+                "items": [],
+                "columnType": [],
+                "targetTable": [],
+                "placeHolder": "0.1 (value >= 0)",
+                "type": "Double",
+                "min": 0
+            },
+            {
+                "id": "c2",
+                "label": "c2",
+                "description": "The coefficient for L2 regularization. Affects when algorithm is set to L2 SGD or L-BFGS.",
+                "visibleOption": [],
+                "control": "InputBox",
+                "validation": [],
+                "mandatory": false,
+                "items": [],
+                "columnType": [],
+                "targetTable": [],
+                "placeHolder": "0.1 (value >= 0)",
+                "type": "Double",
+                "min": 0
+            },
+            {
+                "id": "max_iterations",
+                "label": "Maximum number of iterations",
+                "description": "The maximum number of iterations for optimization algorithm. Suggested default values for each training algorithm: unlimited for L-BFGS, 1000 for L2 SGD, and 100 for AP, PA, and AROW.",
+                "visibleOption": [],
+                "control": "InputBox",
+                "validation": [],
+                "mandatory": false,
+                "items": [],
+                "columnType": [],
+                "targetTable": [],
+                "type": "Integer",
+                "min": 1,
+                "placeHolder": "100 (value >= 1)"
+            },
+            {
+                "id": "all_possible_transitions",
+                "label": "Use all possible transitions",
+                "description": "Specify whether CRF generates transition features that do not even occur in the training data.",
+                "visibleOption": [],
+                "control": "BooleanRadio",
+                "validation": [],
+                "mandatory": false,
+                "items": [],
+                "columnType": [],
+                "defaultValue": true
+            }
+        ],
+        "summary": "This function trains a CRF model to perform the named entity recognition."
+    },
+    "md": {
+        "en": "# NER CRF Train\nThis function trains a CRF model to perform the named entity recognition.\n\n## Description\nNamed-entity recognition (NER) (also known as entity identification, entity chunking and entity extraction) is a subtask of information extraction that seeks to locate and classify named entities mentioned in unstructured text into pre-defined categories such as person names, organizations, locations, medical codes, time expressions, quantities, monetary values, percentages, etc.\n\nThis function trains a CRF model to perform the named entity recognition. An input corpus must contain four columns:\n1. sentence column which identifies each sentence,\n2. token column which contains each word,\n3. pos column which contains part of speech of each word, and\n4. label column which contains named entity label of each word. It is assumed that the IOB system is used and each label starts with letters 'I', 'O', or 'B'.\n\nReference\n\n+ https://en.wikipedia.org/wiki/Named-entity_recognition\n\n## Properties\n### VA\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) Train data including sentence info, token info, part of speech, and named entity label.\n#### OUTPUT\n1. **model**: (Model) Trained model which will be used in the NER CRF Predict function.\n#### PARAMETER\n1. **Sentence Column**<b style=\"color:red\">*</b>: Sentence column which identifies each sentence. It may contain sentence ID, sentence itself, etc. This value for tokens in the same sentence should be identical.\n\n2. **Token Column**<b style=\"color:red\">*</b>: Token column which contains a tokenized item.\n\n3. **POS Column**<b style=\"color:red\">*</b>: POS column which contains a part of speech information.\n\n4. **Label Column**<b style=\"color:red\">*</b>: Label column which contains a named entity label. It is assumed that the IOB system is used and each label starts with letters 'I', 'O', or 'B'.\n\n5. **Algorithm**: Training algorithm for CRF.\n   + Available Items: `L-BFGS Gradient Descent`, `L2 Stochastic Gradient Descent`, `Averaged Perceptron`, `Passive Aggressive`, `Adaptive Regularization Of Weight Vector`\n\n6. **c1**: The coefficient for L1 regularization. Affects when algorithm is set to `L-BFGS Gradient Descent`.\n\n7. **c2**: The coefficient for L2 regularization. Affects when algorithm is set to `L2 Stochastic Gradient Descent` or `L-BFGS Gradient Descent`.\n\n8. **Maximum number of iterations**: The maximum number of iterations for optimization algorithm. Suggested default values for each training algorithm: unlimited for `L-BFGS Gradient Descent`, 1000 for `L2 Stochastic Gradient Descent`, and 100 for `Averaged Perceptron`, `Passive Aggressive`, `Adaptive Regularization Of Weight Vector`.\n\n9. **Use all possible transitions**: Specify whether CRF generates transition features that do not even occur in the training data.\n\n\t* Default value: true \n\n### Python\n#### USAGE\n\n```\nner_crf_train(table = , sentence_col = , token_col = , pos_col = , label_col = , algorithm = , c1 = , c2 = , max_iterations = , all_possible_transitions = true)\n```\n\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) Train data including sentence info, token info, part of speech, and named entity label.\n#### OUTPUT\n1. **model**: (Model) Trained model which will be used in the NER CRF Predict function.\n#### PARAMETER\n1. **sentence_col**<b style=\"color:red\">*</b>: Sentence column which identifies each sentence. It may contain sentence ID, sentence itself, etc. This value for tokens in the same sentence should be identical.\n\t* Type: *str*\n2. **token_col**<b style=\"color:red\">*</b>: Token column which contains a tokenized item.\n\t* Type: *str*\n3. **pos_col**<b style=\"color:red\">*</b>: POS column which contains a part of speech information.\n\t* Type: *str*\n4. **label_col**<b style=\"color:red\">*</b>: Label column which contains a named entity label.\n\t* Type: *str*\n5. **algorithm**: Training algorithm for CRF.\n\t* Type: *str*\n\t* Default / Range: lbfgs ( lbfgs | l2sgd | ap | pa | arow )\n6. **c1**: The coefficient for L1 regularization. Affects when algorithm is set to lbfgs.\n\t* Type: *double*\n\t* Default / Range: 0.1 (value >= 0)\n7. **c2**: The coefficient for L2 regularization. Affects when algorithm is set to l2sgd or lbfgs.\n\t* Type: *double*\n\t* Default / Range: 0.1 (value >= 0)\n8. **max_iterations**: The maximum number of iterations for optimization algorithm. Suggested default values for each training algorithm: unlimited for lbfgs, 1000 for l2sgd, and 100 for ap, pa, and arow.\n\t* Type: *int*\n\t* Default / Range: 100 (value >= 1)\n9. **all_possible_transitions**: Specify whether CRF generates transition features that do not even occur in the training data.\n\t* Type: *bool*\n\t* Default value: true \n\n\n## Example\n### VA\n\n**<a href=\"/api/va/v2/help/downloads/brightics.function.textanalytics$ner_crf_train/example-model/NER CRF.json\" download>[Sample Model]</a>**\n\n<img src=\"/api/va/v2/help/images/brightics.function.textanalytics$ner_crf_train/ner_crf_train.png\"  width=\"800px\" style=\"border: 1px solid gray\" >\n\nIn this tutorial workflow, ner_crf_train data is used to train a NER CRF model and to predict named entities. The generated model is afterward applied to another text data to predict named entity category of each word in the NER CRF Predict function. The parameter settings used in the function are shown below.\n\n++Parameters++\n1. **Sentence Column**<b style=\"color:red\">*</b>: sent\n2. **Token Column**<b style=\"color:red\">*</b>: word\n3. **POS Column**<b style=\"color:red\">*</b>: pos\n4. **Label Column**<b style=\"color:red\">*</b>: tag\n5. **Algorithm**: L-BFGS Gradient Descent\n6. **c1**: 0.1\n7. **c2**: 0.1\n8. **Maximum number of iterations**: 100\n9. **Use all possible transitions**: true\n\n\n\n### Python\n\n```\nfrom brightics.function.textanalytics import ner_crf_train\ninput_table = inputs[0]\nresult = ner_crf_train(table=input_table,\n                     sentence_col='sent', token_col='word', pos_col='pos', label_col='tag',\n                     algorithm='lbfgs', c1=0.1, c2=0.1,\n                     max_iterations=100, all_possible_transitions=True)\nmodel = result['model']\n```\nIn this tutorial workflow, ner_crf_train data is used to train a NER CRF model and to predict named entities. The generated model is afterward applied to another text data to predict named entity category of each word in the NER CRF Predict function.\n\n\n",
+        "kr": ""
+    },
+    "exampleModels": [
+        {
+            "fileName": "NER CRF.json",
+            "label": "NER CRF",
+            "contents": {
+                "type": "files",
+                "data": [
+                    {
+                        "type": "file",
+                        "data": {
+                            "id": "mnkcmj537fw9e7f8",
+                            "project_id": "p7puh97cexbjrebu",
+                            "label": "NER CRF",
+                            "contents": {
+                                "mid": "mnkcmj537fw9e7f8",
+                                "type": "data",
+                                "title": "NER CRF",
+                                "functions": [
+                                    {
+                                        "persist-mode": "auto",
+                                        "func": "brightics.function.io$load13889",
+                                        "name": "brightics.function.io$load",
+                                        "param": {
+                                            "partial_path": [
+                                                "/brightics@samsung.com/upload/ner_crf_train.csv"
+                                            ]
+                                        },
+                                        "display": {
+                                            "label": "Load",
+                                            "diagram": {
+                                                "position": {
+                                                    "x": 270,
+                                                    "y": 120
+                                                }
+                                            },
+                                            "sheet": {
+                                                "out": {
+                                                    "partial": [
+                                                        {
+                                                            "panel": [
+                                                                {
+                                                                    "id": "default-1592446040912",
+                                                                    "chartOption": {
+                                                                        "colorSet": [
+                                                                            "#FD026C",
+                                                                            "#4682B8",
+                                                                            "#A5D22D",
+                                                                            "#F5CC0A",
+                                                                            "#FE8C01",
+                                                                            "#6B9494",
+                                                                            "#B97C46",
+                                                                            "#84ACD0",
+                                                                            "#C2E173",
+                                                                            "#F9DD5B",
+                                                                            "#FE569D",
+                                                                            "#FEB356",
+                                                                            "#9CB8B8",
+                                                                            "#D0A884",
+                                                                            "#2E6072",
+                                                                            "#6D8C1E",
+                                                                            "#A48806",
+                                                                            "#A90148",
+                                                                            "#A95E01",
+                                                                            "#476363",
+                                                                            "#7B532F"
+                                                                        ],
+                                                                        "title": {
+                                                                            "show": true,
+                                                                            "text": "",
+                                                                            "subtext": "",
+                                                                            "rotate": 0,
+                                                                            "textStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": ""
+                                                                            },
+                                                                            "subtextStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": ""
+                                                                            },
+                                                                            "left": "50%",
+                                                                            "top": "0px"
+                                                                        },
+                                                                        "toolbar": {
+                                                                            "show": false,
+                                                                            "right": "8px",
+                                                                            "top": "8px",
+                                                                            "orientation": "horizontal",
+                                                                            "menu": {}
+                                                                        },
+                                                                        "chart": {
+                                                                            "border": "1px #000000 none",
+                                                                            "background": "rgba(255, 255, 255,1)",
+                                                                            "animationDuration": 1000,
+                                                                            "type": "table"
+                                                                        },
+                                                                        "tooltip": {
+                                                                            "triggerOn": "mousemove"
+                                                                        },
+                                                                        "grid": {
+                                                                            "left": "10%",
+                                                                            "right": "10%",
+                                                                            "top": "60px",
+                                                                            "bottom": "60px",
+                                                                            "width": "auto",
+                                                                            "height": "auto"
+                                                                        },
+                                                                        "xAxis": [
+                                                                            {
+                                                                                "selected": [],
+                                                                                "title": {
+                                                                                    "show": true,
+                                                                                    "text": "",
+                                                                                    "subtext": "",
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "subtextStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "left": "50%",
+                                                                                    "bottom": "5px"
+                                                                                },
+                                                                                "axisTick": {
+                                                                                    "show": true
+                                                                                },
+                                                                                "axisLine": {
+                                                                                    "onZero": false
+                                                                                },
+                                                                                "scale": true,
+                                                                                "axisLabel": {
+                                                                                    "show": true,
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    }
+                                                                                },
+                                                                                "zlevel": 1
+                                                                            }
+                                                                        ],
+                                                                        "yAxis": [
+                                                                            {
+                                                                                "selected": [],
+                                                                                "title": {
+                                                                                    "show": true,
+                                                                                    "text": "",
+                                                                                    "subtext": "",
+                                                                                    "rotate": -90,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "subtextStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "left": "8px",
+                                                                                    "top": "50%"
+                                                                                },
+                                                                                "axisTick": {
+                                                                                    "show": true
+                                                                                },
+                                                                                "axisLine": {
+                                                                                    "onZero": false
+                                                                                },
+                                                                                "scale": true,
+                                                                                "axisLabel": {
+                                                                                    "show": true,
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    }
+                                                                                },
+                                                                                "zlevel": 1
+                                                                            }
+                                                                        ],
+                                                                        "colorBy": [
+                                                                            {
+                                                                                "selected": []
+                                                                            }
+                                                                        ],
+                                                                        "legend": {
+                                                                            "show": true,
+                                                                            "orientation": "horizontal",
+                                                                            "left": "50%",
+                                                                            "right": "auto",
+                                                                            "top": "10px",
+                                                                            "bottom": "auto",
+                                                                            "textStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": "",
+                                                                                "fontStyle": "normal",
+                                                                                "fontWeight": "normal",
+                                                                                "fontDecoration": "none"
+                                                                            }
+                                                                        },
+                                                                        "noDataMessage": "",
+                                                                        "plotOptions": {
+                                                                            "table": {
+                                                                                "formatter": []
+                                                                            },
+                                                                            "map": {
+                                                                                "geoData": {}
+                                                                            }
+                                                                        },
+                                                                        "source": {
+                                                                            "dataType": "lazy",
+                                                                            "lazyData": []
+                                                                        },
+                                                                        "guide": {
+                                                                            "message": "Set data options using Chart Setting Button."
+                                                                        }
+                                                                    },
+                                                                    "dataSource": {
+                                                                        "selectable": true
+                                                                    },
+                                                                    "style": {},
+                                                                    "group": "ivznai52q8haijhp6hyaxv2u"
+                                                                }
+                                                            ],
+                                                            "layout": {
+                                                                "type": "panel",
+                                                                "id": "default-1592446040912"
+                                                            }
+                                                        }
+                                                    ],
+                                                    "full": [
+                                                        {
+                                                            "panel": [],
+                                                            "layout": {}
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        "meta": {
+                                            "table": {
+                                                "type": "table"
+                                            }
+                                        },
+                                        "context": "python",
+                                        "version": "3.6",
+                                        "outputs": {
+                                            "table": "tbwhmwdef4pf7jw2"
+                                        },
+                                        "fid": "f8d2vxmm577k299p"
+                                    },
+                                    {
+                                        "persist-mode": "auto",
+                                        "func": "brightics.function.textanalytics$ner_crf_train",
+                                        "name": "brightics.function.textanalytics$ner_crf_train",
+                                        "param": {
+                                            "algorithm": "lbfgs",
+                                            "all_possible_transitions": true,
+                                            "sentence_col": "sent",
+                                            "token_col": "word",
+                                            "pos_col": "pos",
+                                            "label_col": "tag"
+                                        },
+                                        "display": {
+                                            "label": "NER CRF Train",
+                                            "diagram": {
+                                                "position": {
+                                                    "x": 520,
+                                                    "y": 120
+                                                }
+                                            },
+                                            "sheet": {
+                                                "in": {
+                                                    "partial": [
+                                                        {
+                                                            "panel": [
+                                                                {
+                                                                    "id": "default-1592446118813",
+                                                                    "chartOption": {
+                                                                        "colorSet": [
+                                                                            "#FD026C",
+                                                                            "#4682B8",
+                                                                            "#A5D22D",
+                                                                            "#F5CC0A",
+                                                                            "#FE8C01",
+                                                                            "#6B9494",
+                                                                            "#B97C46",
+                                                                            "#84ACD0",
+                                                                            "#C2E173",
+                                                                            "#F9DD5B",
+                                                                            "#FE569D",
+                                                                            "#FEB356",
+                                                                            "#9CB8B8",
+                                                                            "#D0A884",
+                                                                            "#2E6072",
+                                                                            "#6D8C1E",
+                                                                            "#A48806",
+                                                                            "#A90148",
+                                                                            "#A95E01",
+                                                                            "#476363",
+                                                                            "#7B532F"
+                                                                        ],
+                                                                        "title": {
+                                                                            "show": true,
+                                                                            "text": "",
+                                                                            "subtext": "",
+                                                                            "rotate": 0,
+                                                                            "textStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": ""
+                                                                            },
+                                                                            "subtextStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": ""
+                                                                            },
+                                                                            "left": "50%",
+                                                                            "top": "0px"
+                                                                        },
+                                                                        "toolbar": {
+                                                                            "show": false,
+                                                                            "right": "8px",
+                                                                            "top": "8px",
+                                                                            "orientation": "horizontal",
+                                                                            "menu": {}
+                                                                        },
+                                                                        "chart": {
+                                                                            "border": "1px #000000 none",
+                                                                            "background": "rgba(255, 255, 255,1)",
+                                                                            "animationDuration": 1000,
+                                                                            "type": "table"
+                                                                        },
+                                                                        "tooltip": {
+                                                                            "triggerOn": "mousemove"
+                                                                        },
+                                                                        "grid": {
+                                                                            "left": "10%",
+                                                                            "right": "10%",
+                                                                            "top": "60px",
+                                                                            "bottom": "60px",
+                                                                            "width": "auto",
+                                                                            "height": "auto"
+                                                                        },
+                                                                        "xAxis": [
+                                                                            {
+                                                                                "selected": [],
+                                                                                "title": {
+                                                                                    "show": true,
+                                                                                    "text": "",
+                                                                                    "subtext": "",
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "subtextStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "left": "50%",
+                                                                                    "bottom": "5px"
+                                                                                },
+                                                                                "axisTick": {
+                                                                                    "show": true
+                                                                                },
+                                                                                "axisLine": {
+                                                                                    "onZero": false
+                                                                                },
+                                                                                "scale": true,
+                                                                                "axisLabel": {
+                                                                                    "show": true,
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    }
+                                                                                },
+                                                                                "zlevel": 1
+                                                                            }
+                                                                        ],
+                                                                        "yAxis": [
+                                                                            {
+                                                                                "selected": [],
+                                                                                "title": {
+                                                                                    "show": true,
+                                                                                    "text": "",
+                                                                                    "subtext": "",
+                                                                                    "rotate": -90,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "subtextStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "left": "8px",
+                                                                                    "top": "50%"
+                                                                                },
+                                                                                "axisTick": {
+                                                                                    "show": true
+                                                                                },
+                                                                                "axisLine": {
+                                                                                    "onZero": false
+                                                                                },
+                                                                                "scale": true,
+                                                                                "axisLabel": {
+                                                                                    "show": true,
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    }
+                                                                                },
+                                                                                "zlevel": 1
+                                                                            }
+                                                                        ],
+                                                                        "colorBy": [
+                                                                            {
+                                                                                "selected": []
+                                                                            }
+                                                                        ],
+                                                                        "legend": {
+                                                                            "show": true,
+                                                                            "orientation": "horizontal",
+                                                                            "left": "50%",
+                                                                            "right": "auto",
+                                                                            "top": "10px",
+                                                                            "bottom": "auto",
+                                                                            "textStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": "",
+                                                                                "fontStyle": "normal",
+                                                                                "fontWeight": "normal",
+                                                                                "fontDecoration": "none"
+                                                                            }
+                                                                        },
+                                                                        "noDataMessage": "",
+                                                                        "plotOptions": {
+                                                                            "table": {
+                                                                                "formatter": []
+                                                                            },
+                                                                            "map": {
+                                                                                "geoData": {}
+                                                                            }
+                                                                        },
+                                                                        "source": {
+                                                                            "dataType": "lazy",
+                                                                            "lazyData": []
+                                                                        },
+                                                                        "guide": {
+                                                                            "message": "Set data options using Chart Setting Button."
+                                                                        }
+                                                                    },
+                                                                    "dataSource": {
+                                                                        "selectable": true
+                                                                    },
+                                                                    "style": {},
+                                                                    "group": "4dh4cmmae3d4fthriufd7agf"
+                                                                }
+                                                            ],
+                                                            "layout": {
+                                                                "type": "panel",
+                                                                "id": "default-1592446118813"
+                                                            }
+                                                        }
+                                                    ],
+                                                    "full": [
+                                                        {
+                                                            "panel": [],
+                                                            "layout": {}
+                                                        }
+                                                    ]
+                                                },
+                                                "out": {
+                                                    "partial": [
+                                                        {
+                                                            "panel": [],
+                                                            "layout": {}
+                                                        }
+                                                    ],
+                                                    "full": [
+                                                        {
+                                                            "panel": [],
+                                                            "layout": {}
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        "meta": {
+                                            "table": {
+                                                "type": "table"
+                                            },
+                                            "model": {
+                                                "type": "model"
+                                            }
+                                        },
+                                        "context": "python",
+                                        "version": "3.6",
+                                        "inputs": {
+                                            "table": "tbwhmwdef4pf7jw2"
+                                        },
+                                        "outputs": {
+                                            "model": "tm7723fua2a6gdym"
+                                        },
+                                        "fid": "fmhc99x8ss8n9gxm"
+                                    },
+                                    {
+                                        "persist-mode": "auto",
+                                        "func": "brightics.function.io$load13889",
+                                        "name": "brightics.function.io$load",
+                                        "param": {
+                                            "partial_path": [
+                                                "/brightics@samsung.com/upload/text_eng.csv"
+                                            ]
+                                        },
+                                        "display": {
+                                            "label": "Load",
+                                            "diagram": {
+                                                "position": {
+                                                    "x": 520,
+                                                    "y": 220
+                                                }
+                                            },
+                                            "sheet": {
+                                                "out": {
+                                                    "partial": [
+                                                        {
+                                                            "panel": [
+                                                                {
+                                                                    "id": "default-1592446168212",
+                                                                    "chartOption": {
+                                                                        "colorSet": [
+                                                                            "#FD026C",
+                                                                            "#4682B8",
+                                                                            "#A5D22D",
+                                                                            "#F5CC0A",
+                                                                            "#FE8C01",
+                                                                            "#6B9494",
+                                                                            "#B97C46",
+                                                                            "#84ACD0",
+                                                                            "#C2E173",
+                                                                            "#F9DD5B",
+                                                                            "#FE569D",
+                                                                            "#FEB356",
+                                                                            "#9CB8B8",
+                                                                            "#D0A884",
+                                                                            "#2E6072",
+                                                                            "#6D8C1E",
+                                                                            "#A48806",
+                                                                            "#A90148",
+                                                                            "#A95E01",
+                                                                            "#476363",
+                                                                            "#7B532F"
+                                                                        ],
+                                                                        "title": {
+                                                                            "show": true,
+                                                                            "text": "",
+                                                                            "subtext": "",
+                                                                            "rotate": 0,
+                                                                            "textStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": ""
+                                                                            },
+                                                                            "subtextStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": ""
+                                                                            },
+                                                                            "left": "50%",
+                                                                            "top": "0px"
+                                                                        },
+                                                                        "toolbar": {
+                                                                            "show": false,
+                                                                            "right": "8px",
+                                                                            "top": "8px",
+                                                                            "orientation": "horizontal",
+                                                                            "menu": {}
+                                                                        },
+                                                                        "chart": {
+                                                                            "border": "1px #000000 none",
+                                                                            "background": "rgba(255, 255, 255,1)",
+                                                                            "animationDuration": 1000,
+                                                                            "type": "table"
+                                                                        },
+                                                                        "tooltip": {
+                                                                            "triggerOn": "mousemove"
+                                                                        },
+                                                                        "grid": {
+                                                                            "left": "10%",
+                                                                            "right": "10%",
+                                                                            "top": "60px",
+                                                                            "bottom": "60px",
+                                                                            "width": "auto",
+                                                                            "height": "auto"
+                                                                        },
+                                                                        "xAxis": [
+                                                                            {
+                                                                                "selected": [],
+                                                                                "title": {
+                                                                                    "show": true,
+                                                                                    "text": "",
+                                                                                    "subtext": "",
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "subtextStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "left": "50%",
+                                                                                    "bottom": "5px"
+                                                                                },
+                                                                                "axisTick": {
+                                                                                    "show": true
+                                                                                },
+                                                                                "axisLine": {
+                                                                                    "onZero": false
+                                                                                },
+                                                                                "scale": true,
+                                                                                "axisLabel": {
+                                                                                    "show": true,
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    }
+                                                                                },
+                                                                                "zlevel": 1
+                                                                            }
+                                                                        ],
+                                                                        "yAxis": [
+                                                                            {
+                                                                                "selected": [],
+                                                                                "title": {
+                                                                                    "show": true,
+                                                                                    "text": "",
+                                                                                    "subtext": "",
+                                                                                    "rotate": -90,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "subtextStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "left": "8px",
+                                                                                    "top": "50%"
+                                                                                },
+                                                                                "axisTick": {
+                                                                                    "show": true
+                                                                                },
+                                                                                "axisLine": {
+                                                                                    "onZero": false
+                                                                                },
+                                                                                "scale": true,
+                                                                                "axisLabel": {
+                                                                                    "show": true,
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    }
+                                                                                },
+                                                                                "zlevel": 1
+                                                                            }
+                                                                        ],
+                                                                        "colorBy": [
+                                                                            {
+                                                                                "selected": []
+                                                                            }
+                                                                        ],
+                                                                        "legend": {
+                                                                            "show": true,
+                                                                            "orientation": "horizontal",
+                                                                            "left": "50%",
+                                                                            "right": "auto",
+                                                                            "top": "10px",
+                                                                            "bottom": "auto",
+                                                                            "textStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": "",
+                                                                                "fontStyle": "normal",
+                                                                                "fontWeight": "normal",
+                                                                                "fontDecoration": "none"
+                                                                            }
+                                                                        },
+                                                                        "noDataMessage": "",
+                                                                        "plotOptions": {
+                                                                            "table": {
+                                                                                "formatter": []
+                                                                            },
+                                                                            "map": {
+                                                                                "geoData": {}
+                                                                            }
+                                                                        },
+                                                                        "source": {
+                                                                            "dataType": "lazy",
+                                                                            "lazyData": []
+                                                                        },
+                                                                        "guide": {
+                                                                            "message": "Set data options using Chart Setting Button."
+                                                                        }
+                                                                    },
+                                                                    "dataSource": {
+                                                                        "selectable": true
+                                                                    },
+                                                                    "style": {},
+                                                                    "group": "d7ywpykbuws2g56x3hyfpc4i"
+                                                                }
+                                                            ],
+                                                            "layout": {
+                                                                "type": "panel",
+                                                                "id": "default-1592446168212"
+                                                            }
+                                                        }
+                                                    ],
+                                                    "full": [
+                                                        {
+                                                            "panel": [],
+                                                            "layout": {}
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        "meta": {
+                                            "table": {
+                                                "type": "table"
+                                            }
+                                        },
+                                        "context": "python",
+                                        "version": "3.6",
+                                        "outputs": {
+                                            "table": "tm7g7pwga8b3crwk"
+                                        },
+                                        "fid": "fcq4pkygn2xxz7zt"
+                                    },
+                                    {
+                                        "persist-mode": "auto",
+                                        "func": "brightics.function.textanalytics$ner_crf_predict",
+                                        "name": "brightics.function.textanalytics$ner_crf_predict",
+                                        "param": {
+                                            "language": "eng",
+                                            "input_cols": [
+                                                "text"
+                                            ]
+                                        },
+                                        "display": {
+                                            "label": "NER CRF Predict",
+                                            "diagram": {
+                                                "position": {
+                                                    "x": 770,
+                                                    "y": 120
+                                                }
+                                            },
+                                            "sheet": {
+                                                "in": {
+                                                    "partial": [
+                                                        {
+                                                            "panel": [
+                                                                {
+                                                                    "id": "default-1592446198006",
+                                                                    "chartOption": {
+                                                                        "colorSet": [
+                                                                            "#FD026C",
+                                                                            "#4682B8",
+                                                                            "#A5D22D",
+                                                                            "#F5CC0A",
+                                                                            "#FE8C01",
+                                                                            "#6B9494",
+                                                                            "#B97C46",
+                                                                            "#84ACD0",
+                                                                            "#C2E173",
+                                                                            "#F9DD5B",
+                                                                            "#FE569D",
+                                                                            "#FEB356",
+                                                                            "#9CB8B8",
+                                                                            "#D0A884",
+                                                                            "#2E6072",
+                                                                            "#6D8C1E",
+                                                                            "#A48806",
+                                                                            "#A90148",
+                                                                            "#A95E01",
+                                                                            "#476363",
+                                                                            "#7B532F"
+                                                                        ],
+                                                                        "title": {
+                                                                            "show": true,
+                                                                            "text": "",
+                                                                            "subtext": "",
+                                                                            "rotate": 0,
+                                                                            "textStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": ""
+                                                                            },
+                                                                            "subtextStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": ""
+                                                                            },
+                                                                            "left": "50%",
+                                                                            "top": "0px"
+                                                                        },
+                                                                        "toolbar": {
+                                                                            "show": false,
+                                                                            "right": "8px",
+                                                                            "top": "8px",
+                                                                            "orientation": "horizontal",
+                                                                            "menu": {}
+                                                                        },
+                                                                        "chart": {
+                                                                            "border": "1px #000000 none",
+                                                                            "background": "rgba(255, 255, 255,1)",
+                                                                            "animationDuration": 1000,
+                                                                            "type": "table"
+                                                                        },
+                                                                        "tooltip": {
+                                                                            "triggerOn": "mousemove"
+                                                                        },
+                                                                        "grid": {
+                                                                            "left": "10%",
+                                                                            "right": "10%",
+                                                                            "top": "60px",
+                                                                            "bottom": "60px",
+                                                                            "width": "auto",
+                                                                            "height": "auto"
+                                                                        },
+                                                                        "xAxis": [
+                                                                            {
+                                                                                "selected": [],
+                                                                                "title": {
+                                                                                    "show": true,
+                                                                                    "text": "",
+                                                                                    "subtext": "",
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "subtextStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "left": "50%",
+                                                                                    "bottom": "5px"
+                                                                                },
+                                                                                "axisTick": {
+                                                                                    "show": true
+                                                                                },
+                                                                                "axisLine": {
+                                                                                    "onZero": false
+                                                                                },
+                                                                                "scale": true,
+                                                                                "axisLabel": {
+                                                                                    "show": true,
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    }
+                                                                                },
+                                                                                "zlevel": 1
+                                                                            }
+                                                                        ],
+                                                                        "yAxis": [
+                                                                            {
+                                                                                "selected": [],
+                                                                                "title": {
+                                                                                    "show": true,
+                                                                                    "text": "",
+                                                                                    "subtext": "",
+                                                                                    "rotate": -90,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "subtextStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "left": "8px",
+                                                                                    "top": "50%"
+                                                                                },
+                                                                                "axisTick": {
+                                                                                    "show": true
+                                                                                },
+                                                                                "axisLine": {
+                                                                                    "onZero": false
+                                                                                },
+                                                                                "scale": true,
+                                                                                "axisLabel": {
+                                                                                    "show": true,
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    }
+                                                                                },
+                                                                                "zlevel": 1
+                                                                            }
+                                                                        ],
+                                                                        "colorBy": [
+                                                                            {
+                                                                                "selected": []
+                                                                            }
+                                                                        ],
+                                                                        "legend": {
+                                                                            "show": true,
+                                                                            "orientation": "horizontal",
+                                                                            "left": "50%",
+                                                                            "right": "auto",
+                                                                            "top": "10px",
+                                                                            "bottom": "auto",
+                                                                            "textStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": "",
+                                                                                "fontStyle": "normal",
+                                                                                "fontWeight": "normal",
+                                                                                "fontDecoration": "none"
+                                                                            }
+                                                                        },
+                                                                        "noDataMessage": "",
+                                                                        "plotOptions": {
+                                                                            "table": {
+                                                                                "formatter": []
+                                                                            },
+                                                                            "map": {
+                                                                                "geoData": {}
+                                                                            }
+                                                                        },
+                                                                        "source": {
+                                                                            "dataType": "lazy",
+                                                                            "lazyData": []
+                                                                        },
+                                                                        "guide": {
+                                                                            "message": "Set data options using Chart Setting Button."
+                                                                        }
+                                                                    },
+                                                                    "dataSource": {
+                                                                        "selectable": true
+                                                                    },
+                                                                    "style": {},
+                                                                    "group": "426ft2vxkx8enzrwtpu8r8v2"
+                                                                }
+                                                            ],
+                                                            "layout": {
+                                                                "type": "panel",
+                                                                "id": "default-1592446198006"
+                                                            }
+                                                        }
+                                                    ],
+                                                    "full": [
+                                                        {
+                                                            "panel": [],
+                                                            "layout": {}
+                                                        }
+                                                    ]
+                                                },
+                                                "out": {
+                                                    "partial": [
+                                                        {
+                                                            "panel": [
+                                                                {
+                                                                    "id": "default-1592446198068",
+                                                                    "chartOption": {
+                                                                        "colorSet": [
+                                                                            "#FD026C",
+                                                                            "#4682B8",
+                                                                            "#A5D22D",
+                                                                            "#F5CC0A",
+                                                                            "#FE8C01",
+                                                                            "#6B9494",
+                                                                            "#B97C46",
+                                                                            "#84ACD0",
+                                                                            "#C2E173",
+                                                                            "#F9DD5B",
+                                                                            "#FE569D",
+                                                                            "#FEB356",
+                                                                            "#9CB8B8",
+                                                                            "#D0A884",
+                                                                            "#2E6072",
+                                                                            "#6D8C1E",
+                                                                            "#A48806",
+                                                                            "#A90148",
+                                                                            "#A95E01",
+                                                                            "#476363",
+                                                                            "#7B532F"
+                                                                        ],
+                                                                        "title": {
+                                                                            "show": true,
+                                                                            "text": "",
+                                                                            "subtext": "",
+                                                                            "rotate": 0,
+                                                                            "textStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": ""
+                                                                            },
+                                                                            "subtextStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": ""
+                                                                            },
+                                                                            "left": "50%",
+                                                                            "top": "0px"
+                                                                        },
+                                                                        "toolbar": {
+                                                                            "show": false,
+                                                                            "right": "8px",
+                                                                            "top": "8px",
+                                                                            "orientation": "horizontal",
+                                                                            "menu": {}
+                                                                        },
+                                                                        "chart": {
+                                                                            "border": "1px #000000 none",
+                                                                            "background": "rgba(255, 255, 255,1)",
+                                                                            "animationDuration": 1000,
+                                                                            "type": "table"
+                                                                        },
+                                                                        "tooltip": {
+                                                                            "triggerOn": "mousemove"
+                                                                        },
+                                                                        "grid": {
+                                                                            "left": "10%",
+                                                                            "right": "10%",
+                                                                            "top": "60px",
+                                                                            "bottom": "60px",
+                                                                            "width": "auto",
+                                                                            "height": "auto"
+                                                                        },
+                                                                        "xAxis": [
+                                                                            {
+                                                                                "selected": [],
+                                                                                "title": {
+                                                                                    "show": true,
+                                                                                    "text": "",
+                                                                                    "subtext": "",
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "subtextStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "left": "50%",
+                                                                                    "bottom": "5px"
+                                                                                },
+                                                                                "axisTick": {
+                                                                                    "show": true
+                                                                                },
+                                                                                "axisLine": {
+                                                                                    "onZero": false
+                                                                                },
+                                                                                "scale": true,
+                                                                                "axisLabel": {
+                                                                                    "show": true,
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    }
+                                                                                },
+                                                                                "zlevel": 1
+                                                                            }
+                                                                        ],
+                                                                        "yAxis": [
+                                                                            {
+                                                                                "selected": [],
+                                                                                "title": {
+                                                                                    "show": true,
+                                                                                    "text": "",
+                                                                                    "subtext": "",
+                                                                                    "rotate": -90,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "subtextStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    },
+                                                                                    "left": "8px",
+                                                                                    "top": "50%"
+                                                                                },
+                                                                                "axisTick": {
+                                                                                    "show": true
+                                                                                },
+                                                                                "axisLine": {
+                                                                                    "onZero": false
+                                                                                },
+                                                                                "scale": true,
+                                                                                "axisLabel": {
+                                                                                    "show": true,
+                                                                                    "rotate": 0,
+                                                                                    "textStyle": {
+                                                                                        "color": "#000000",
+                                                                                        "fontSize": 12,
+                                                                                        "fontFamily": ""
+                                                                                    }
+                                                                                },
+                                                                                "zlevel": 1
+                                                                            }
+                                                                        ],
+                                                                        "colorBy": [
+                                                                            {
+                                                                                "selected": []
+                                                                            }
+                                                                        ],
+                                                                        "legend": {
+                                                                            "show": true,
+                                                                            "orientation": "horizontal",
+                                                                            "left": "50%",
+                                                                            "right": "auto",
+                                                                            "top": "10px",
+                                                                            "bottom": "auto",
+                                                                            "textStyle": {
+                                                                                "color": "#000000",
+                                                                                "fontSize": 12,
+                                                                                "fontFamily": "",
+                                                                                "fontStyle": "normal",
+                                                                                "fontWeight": "normal",
+                                                                                "fontDecoration": "none"
+                                                                            }
+                                                                        },
+                                                                        "noDataMessage": "",
+                                                                        "plotOptions": {
+                                                                            "table": {
+                                                                                "formatter": []
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            ],
+                                                            "layout": {}
+                                                        }
+                                                    ],
+                                                    "full": [
+                                                        {
+                                                            "panel": [],
+                                                            "layout": {}
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        "meta": {
+                                            "table": {
+                                                "type": "table"
+                                            },
+                                            "model": {
+                                                "type": "model"
+                                            },
+                                            "out_table": {
+                                                "type": "table"
+                                            }
+                                        },
+                                        "context": "python",
+                                        "version": "3.6",
+                                        "inputs": {
+                                            "table": "tm7g7pwga8b3crwk",
+                                            "model": "tm7723fua2a6gdym"
+                                        },
+                                        "outputs": {
+                                            "out_table": "tu5ydb824f8drtkg"
+                                        },
+                                        "fid": "fmaug3auvumr3ph2"
+                                    }
+                                ],
+                                "links": [
+                                    {
+                                        "kid": "kteze5xajb25ezdx",
+                                        "sourceFid": "f8d2vxmm577k299p",
+                                        "targetFid": "fmhc99x8ss8n9gxm"
+                                    },
+                                    {
+                                        "kid": "kyyb57de2haavtfn",
+                                        "sourceFid": "fmhc99x8ss8n9gxm",
+                                        "targetFid": "fmaug3auvumr3ph2"
+                                    },
+                                    {
+                                        "kid": "ks4yn2s8ngvr2gx9",
+                                        "sourceFid": "fcq4pkygn2xxz7zt",
+                                        "targetFid": "fmaug3auvumr3ph2"
+                                    }
+                                ],
+                                "preferences": {},
+                                "variables": {},
+                                "variableRef": [],
+                                "innerModels": {},
+                                "inData": [],
+                                "outData": [],
+                                "sheets": [],
+                                "param": {},
+                                "report": {
+                                    "title": "Report",
+                                    "data": []
+                                },
+                                "persist-mode": "auto",
+                                "diagram": {
+                                    "PAPER_MARGIN_TOP": 20,
+                                    "PAPER_MARGIN_LEFT": 20,
+                                    "FIGURE_WIDTH": 195,
+                                    "FIGURE_HEIGHT": 60,
+                                    "GAP_WIDTH": 55,
+                                    "GAP_HEIGHT": 40
+                                },
+                                "problemList": []
+                            },
+                            "description": "<p><br /></p>",
+                            "model_image": null,
+                            "creator": "brightics@samsung.com",
+                            "create_time": "2020-06-18T02:07:16.000Z",
+                            "updater": "brightics@samsung.com",
+                            "update_time": "2020-06-18T02:10:04.000Z",
+                            "event_key": "2020_021004.000",
+                            "type": "data",
+                            "tag": "null",
+                            "from_version": "0.0"
+                        }
+                    }
+                ],
+                "version": "3.6"
+            }
+        }
     ],
-    "version": "3.6",
-    "inputs": {
-      "table": ""
-    },
-    "outputs": {
-      "model": ""
-    },
-    "meta": {
-      "table": {
-        "type": "table"
-      },
-      "model": {
-        "type": "model"
-      }
-    },
-    "params": [
-      {
-        "id": "sentence_col",
-        "label": "Sentence Column",
-        "description": "Sentence column which identifies each sentence. It may contain sentence ID, sentence itself, etc. This value for tokens in the same sentence should be identical.",
-        "mandatory": true,
-        "items": [],
-        "visibleOption": [],
-        "control": "ColumnSelector",
-        "columnType": [
-          "Integer",
-          "Float",
-          "Double",
-          "Long",
-          "String"
-        ],
-        "validation": [],
-        "multiple": false
-      },
-      {
-        "id": "token_col",
-        "label": "Token Column",
-        "description": "Token column which contains a tokenized item.",
-        "mandatory": true,
-        "items": [],
-        "visibleOption": [],
-        "control": "ColumnSelector",
-        "columnType": [
-          "String"
-        ],
-        "validation": [],
-        "multiple": false
-      },
-      {
-        "id": "pos_col",
-        "label": "POS Column",
-        "description": "POS column which contains a part of speech information.",
-        "mandatory": true,
-        "items": [],
-        "visibleOption": [],
-        "control": "ColumnSelector",
-        "columnType": [
-          "String"
-        ],
-        "validation": [],
-        "multiple": false
-      },
-      {
-        "id": "label_col",
-        "label": "Label Column",
-        "description": "Label column which contains a named entity label.",
-        "mandatory": true,
-        "items": [],
-        "visibleOption": [],
-        "control": "ColumnSelector",
-        "columnType": [
-          "String"
-        ],
-        "validation": [],
-        "multiple": false
-      },
-      {
-        "id": "algorithm",
-        "label": "Algorithm",
-        "description": "Training algorithm for CRF.",
-        "mandatory": false,
-        "items": [
-          {
-            "label": "L-BFGS Gradient Descent",
-            "value": "lbfgs",
-            "default": true
-          },
-          {
-            "label": "L2 Stochastic Gradient Descent",
-            "value": "l2sgd",
-            "default": false
-          },
-          {
-            "label": "Averaged Perceptron",
-            "value": "ap",
-            "default": false
-          },
-          {
-            "label": "Passive Aggressive",
-            "value": "pa",
-            "default": false
-          },
-          {
-            "label": "Adaptive Regularization Of Weight Vector",
-            "value": "arow",
-            "default": false
-          }
-        ],
-        "visibleOption": [],
-        "control": "RadioButton",
-        "columnType": [],
-        "validation": []
-      },
-      {
-        "id": "c1",
-        "label": "c1",
-        "description": "The coefficient for L1 regularization. Affects when algorithm is set to L-BFGS.",
-        "mandatory": false,
-        "items": [],
-        "visibleOption": [],
-        "control": "InputBox",
-        "columnType": [],
-        "validation": [],
-        "targetTable": [],
-        "placeHolder": "0.1 (value >= 0)",
-        "type": "Double",
-        "min": 0
-      },
-      {
-        "id": "c2",
-        "label": "c2",
-        "description": "The coefficient for L2 regularization. Affects when algorithm is set to L2 SGD or L-BFGS.",
-        "mandatory": false,
-        "items": [],
-        "visibleOption": [],
-        "control": "InputBox",
-        "columnType": [],
-        "validation": [],
-        "targetTable": [],
-        "placeHolder": "0.1 (value >= 0)",
-        "type": "Double",
-        "min": 0
-      },
-      {
-        "id": "max_iterations",
-        "label": "Maximum number of iterations",
-        "description": "The maximum number of iterations for optimization algorithm. Suggested default values for each training algorithm: unlimited for L-BFGS, 1000 for L2 SGD, and 100 for AP, PA, and AROW.",
-        "mandatory": false,
-        "items": [],
-        "visibleOption": [],
-        "control": "InputBox",
-        "columnType": [],
-        "validation": [],
-        "targetTable": [],
-        "type": "Integer",
-        "min": 1,
-        "placeHolder": "100 (value >= 1)"
-      },
-      {
-        "id": "all_possible_transitions",
-        "label": "Use all possible transitions",
-        "description": "Specify whether CRF generates transition features that do not even occur in the training data.",
-        "mandatory": false,
-        "items": [],
-        "visibleOption": [],
-        "control": "BooleanRadio",
-        "columnType": [],
-        "validation": [],
-        "defaultValue": true
-      }
+    "sampleImages": [
+        {
+            "fileName": "ner_crf_train.png",
+            "label": "ner_crf_train.png",
+            "base64": "data:image/png;base64,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",
+            "description": "In this tutorial workflow, ner_crf_train data is used to train a NER CRF model and to predict named entities. The generated model is afterward applied to another text data to predict named entity category of each word in the NER CRF Predict function. The parameter settings used in the function are shown below.",
+            "parameter": "1. **Sentence Column**<b style=\"color:red\">*</b>: sent\n2. **Token Column**<b style=\"color:red\">*</b>: word\n3. **POS Column**<b style=\"color:red\">*</b>: pos\n4. **Label Column**<b style=\"color:red\">*</b>: tag\n5. **Algorithm**: L-BFGS Gradient Descent\n6. **c1**: 0.1\n7. **c2**: 0.1\n8. **Maximum number of iterations**: 100\n9. **Use all possible transitions**: true\n",
+            "index": 0
+        }
+    ],
+    "scriptExamples": [
+        {
+            "index": 1,
+            "code": "from brightics.function.textanalytics import ner_crf_train\r\ninput_table = inputs[0]\r\nresult = ner_crf_train(table=input_table,\r\n                     sentence_col='sent', token_col='word', pos_col='pos', label_col='tag',\r\n                     algorithm='lbfgs', c1=0.1, c2=0.1,\r\n                     max_iterations=100, all_possible_transitions=True)\r\nmodel = result['model']",
+            "description": "In this tutorial workflow, ner_crf_train data is used to train a NER CRF model and to predict named entities. The generated model is afterward applied to another text data to predict named entity category of each word in the NER CRF Predict function.",
+            "context": "python"
+        }
     ]
-  },
-  "md": ""
 }
