@@ -111,6 +111,7 @@ app.use(__REQ_express.static(__REQ_path.join(__dirname, 'public')));
 
 app.use(subPathUrl + '*/js/plugins/echarts', __REQ_express.static(__dirname + '/node_modules/echarts/dist/'));
 app.use(subPathUrl + '*/js/plugins/echarts-stat', __REQ_express.static(__dirname + '/node_modules/echarts-stat/dist/'));
+app.use(subPathUrl + '*/js/plugins/echarts-wordcloud', __REQ_express.static(__dirname + '/node_modules/echarts-wordcloud/dist/'));
 
 app.use(subPathUrl + '*/js/plugins/d3', __REQ_express.static(__dirname + '/node_modules/d3/build/'));
 app.use(subPathUrl + '*/js/plugins/d3-tip', __REQ_express.static(__dirname + '/node_modules/d3-tip/'));
