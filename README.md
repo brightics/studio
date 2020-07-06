@@ -70,6 +70,9 @@ This section explain how to install some python packages to Brightics Studio pyt
 	/brightics-studio/lib/python/python get-pip.py : This step is only needed once.
 	/brightics-studio/lib/python/Scripts/pip install <ANY_PACKAGES>
 
+### Notes
+Tokenizer (Korean) function will not work properly if the installation path contains Korean characters. You need to install Brightics Studio in a folder whose full path does not contain Korean characters in order to make use of this function.
+
 ## Development
 ### Prerequisite
  * JDK 1.8, 1.9 (64bit)
