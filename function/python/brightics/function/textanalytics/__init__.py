@@ -29,6 +29,8 @@ from .tfidf import tfidf2
 from .tfidf import tfidf3
 from .tokenizer import tokenizer_eng
 from .tokenizer import tokenizer_kor
+from .tokenizer2 import tokenizer_eng2
+from .tokenizer2 import tokenizer_kor2
 from .bow import bow
 from .doc_doc_mtx import doc_doc_mtx
 from .doc_term_mtx import doc_term_mtx

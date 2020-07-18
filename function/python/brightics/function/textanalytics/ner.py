@@ -27,7 +27,7 @@ import sklearn_crfsuite
 import pickle
 
 from brightics.function.textanalytics.split_sentences import split_sentences
-from brightics.function.textanalytics.tokenizer import tokenizer_kor, tokenizer_eng
+from brightics.function.textanalytics.tokenizer2 import tokenizer_kor2, tokenizer_eng2
 from brightics.function.utils import _model_dict
 from brightics.common.repr import BrtcReprBuilder
 from brightics.common.repr import strip_margin
@@ -452,10 +452,10 @@ def _ner_crf_predict(table, model, input_cols, language='eng', new_col_prefix='n
         # Split sentences and tokenize using Brightics functions
         df_split_sentences = split_sentences(table, input_col=col, language=language)['out_table'].reset_index()
         if language == 'eng':
-            df_tokenized = tokenizer_eng(df_split_sentences, input_cols=['sentence'], is_tagged=True,
+            df_tokenized = tokenizer_eng2(df_split_sentences, input_cols=['sentence'], is_tagged=True,
                                          stemming=False, lower_case=False)['out_table']
         else:  # language == 'kor'
-            df_tokenized = tokenizer_kor(df_split_sentences, input_cols=['sentence'], is_tagged=True,
+            df_tokenized = tokenizer_kor2(df_split_sentences, input_cols=['sentence'], is_tagged=True,
                                          stemming=False)['out_table']
         col_doc_id = df_tokenized['doc_id']
         col_tokenized = df_tokenized['tokenized_sentence']
