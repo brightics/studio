@@ -63,6 +63,9 @@ def _dtm(table, input_col, topic_name='topic', num_topic=5, num_topic_word=10, m
     else:  # Mac
         dtm_filename = 'dtm-darwin64'
     dtm_path = os.path.join(str(pathlib.Path(__file__).parent.absolute()), 'dtm', dtm_filename)
+    if running_os != 'Windows':
+        bash_command = "chmod +x {}".format(dtm_path)
+        os.system(bash_command)
     tokenized_doc = np.array(table[input_col])
     num_doc = len(tokenized_doc)
     if time_slice is None:
