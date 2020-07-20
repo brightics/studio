@@ -18,6 +18,7 @@ from .select_column import select_column
 from .missing_data import delete_missing_data
 from .reshaping import pivot
 from .reshaping import pivot2
+from .reshaping import pivot3
 from .reshaping import unpivot
 from .reshaping import distinct
 from .reshaping import transpose
@@ -30,4 +31,12 @@ from .json_extraction import get_table
 from .sql import execute as sql_execute
 from .sql import execute2 as sql_execute2
 from .svd import svd
+from .svd import svd2
+from .svd import svd_model
 from .transpose_time_series import transpose_time_series
+from .SMOTE import SMOTE
+from .under_sampling import under_sampling
+from .explode import explode
+from .tsne import tsne
+from .savgol_filter import savgol_filter
+

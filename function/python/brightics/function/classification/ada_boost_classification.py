@@ -123,6 +123,16 @@ def ada_boost_classification_predict(table, model, **params):
 
 
 def _ada_boost_classification_predict(table, model, pred_col_name='prediction', prob_col_prefix='probability', suffix='index'):
+    if (table.shape[0] == 0):
+        new_cols = table.columns.tolist() + [pred_col_name]
+        classes = model['classifier'].classes_
+        if suffix == 'index':
+            prob_cols = [prob_col_prefix + '_{}'.format(i) for i in range(len(classes))]
+        else:
+            prob_cols = [prob_col_prefix + '_{}'.format(i) for i in classes]
+        new_cols += prob_cols
+        out_table = pd.DataFrame(columns=new_cols)
+        return {'out_table': out_table}
     out_table = table.copy()
     classifier = model['classifier']
     _, test_data = check_col_type(table, model['params']['feature_cols'])

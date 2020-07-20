@@ -58,7 +58,7 @@ def _xgb_classification_train(table, feature_cols, label_col, max_depth=3, learn
             class_weight=None, eval_set=None, eval_metric=None, early_stopping_rounds=None, verbose=True,
             xgb_model=None, sample_weight_eval_set=None):
     feature_names, features = check_col_type(table, feature_cols)
-    
+
     if isinstance(features, list):
         features = np.array(features)
 
@@ -106,10 +106,11 @@ def _xgb_classification_train(table, feature_cols, label_col, max_depth=3, learn
     get_param = classifier.get_params()
     feature_importance = classifier.feature_importances_
 #     plt.rcdefaults()
-    plot_importance(classifier)
-    plt.tight_layout()
-    fig_plot_importance = plt2MD(plt)
-    plt.clf()
+    # plot_importance(classifier)
+    # plt.tight_layout()
+    # fig_plot_importance = plt2MD(plt)
+    fig_plot_importance = _plot_feature_importances(feature_names, classifier)
+    # plt.clf()
 #     plt.rcParams['figure.dpi'] = figure_dpi
 #     plot_tree(classifier)
 #     fig_plot_tree_UT = plt2MD(plt)
@@ -206,3 +207,22 @@ def _xgb_classification_predict(table, model, prediction_col='prediction', proba
     result = pd.concat([result, prob_df], axis=1)
     
     return {'out_table': result}
+
+
+def _plot_feature_importances(feature_names, classifier):
+    
+    feature_importance = classifier.feature_importances_
+    indices = np.argsort(feature_importance)
+    sorted_feature_names = np.array(feature_names)[indices]
+    
+    plt.barh(range(len(indices)), feature_importance[indices], color='b', align='center')
+    for i, v in enumerate(feature_importance[indices]):
+        plt.text(v, i, " {:.2f}".format(v), color='b', va='center', fontweight='bold')
+    
+    plt.yticks(range(len(indices)), sorted_feature_names)
+    plt.xlabel("Feature importance")
+    plt.ylabel("Feature")
+    plt.tight_layout()
+    fig_feature_importances = plt2MD(plt)
+    plt.close()
+    return fig_feature_importances

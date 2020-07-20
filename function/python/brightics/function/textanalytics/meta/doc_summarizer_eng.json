@@ -66,26 +66,9 @@
                 "targetTable": []
             },
             {
-                "id": "hold_cols",
-                "label": "Hold Columns",
-                "description": "Column to hold in output Table.",
-                "visibleOption": [
-                    {
-                        "id": "result_type",
-                        "value": "summarized_document"
-                    }
-                ],
-                "control": "ColumnSelector",
-                "validation": [],
-                "mandatory": false,
-                "items": [],
-                "columnType": [],
-                "multiple": true
-            },
-            {
                 "id": "ratio",
                 "label": "Compression Ratio",
-                "description": "Number between 0 and 1 that determines the proportion of the number of sentences of the original text to be chosen for the summary.",
+                "description": "Number between 0 and 1 that determines the proportion of the number of sentences of the original text to be chosen for the summary. If None, the ratio is set to the proportion of `Number of Sentences` parameter to the total number of sentences.",
                 "visibleOption": [],
                 "control": "InputBox",
                 "validation": [],
@@ -135,7 +118,7 @@
         ],
         "summary": "This function summarizes English documents."
     },
-    "md": "# Documents Summarizer (English)\nThis function summarizes English documents.\n\n## Description\nThis function summarizes the given text, by extracting one or more important sentences from the text.\n\n\n## Properties\n### VA\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) English documents in a Table.\n#### OUTPUT\n1. **out_table**: (Table) Summarized English documents in a Table.\n#### PARAMETER\n1. **Input Column**<b style=\"color:red\">*</b>: Column to select as input. The column must contain a English document in each row.\n\n2. **Result Type**: Output type of summarization. If `Summarized Document`, output table shows summarized document in `New Column Name`.\n   - Available Options : `Summarized Document`, `Sentence`\n\n3. **Hold Columns**: Column to hold in output Table.\n\n4. **Compression Ratio**: Number between 0 and 1 that determines the proportion of the number of sentences of the original text to be chosen for the summary.\n\n5. **Number of Sentences**: Determines how many sentences will the output contains. If `Compression Ratio` is provided, then this parameter will be ignored.\n\n6. **New Column Name**: New column name for summarized English documents.\n\n\n### Python\n#### USAGE\n\n```\ndoc_summarizer_eng(table, input_col, result_type='sentence', hold_cols=None, ratio, num_sentence=1, new_col_name='summarized_document')\n```\n\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) English documents in a Table.\n#### OUTPUT\n1. **out_table**: (Table) Summarized English documents in a Table.\n#### PARAMETER\n1. **input_col**<b style=\"color:red\">*</b>: Column to select as input. The column must contain a English document in each row.\n\t* Type: *str*\n2. **result_type**: Output type of summarization. If `summarized_document`, output table shows summarized document in `new_col_name`.\n   - Available Options : `summarized_document`, `sentence`\n\t* Type: *str*\n\t* Default / Range: sentence ( summarized_document  | sentence )\n3. **hold_cols**: Column to hold in output Table.\n\t* Type: *list[str]*\n4. **ratio**: Number between 0 and 1 that determines the proportion of the number of sentences of the original text to be chosen for the summary.\n\t* Type: *float*\n\t* Default / Range: ( 0 < value <= 1)\n5. **num_sentence**: Determines how many sentences will the output contains. If `Compression Ratio` is provided, then this parameter will be ignored.\n\t* Type: *int*\n\t* Default / Range: 1 ( value >= 1 )\n6. **new_col_name**: New column name for summarized English documents.\n\t* Type: *str*\n\t* Default / Range: summarized_document\n\n## Example\n### VA\n\n\n**<a href=\"/api/va/v2/help/downloads/brightics.function.textanalytics$doc_summarizer_eng81555/example-model/brightics.function.textanalytics$doc_summarizer_eng.json\" download>[Sample Model]</a>**\n\n\n<img src=\"/api/va/v2/help/images/brightics.function.textanalytics$doc_summarizer_eng81555/brightics.function.textanalytics$doc_summmarizer_eng.PNG\"  width=\"800px\" style=\"border: 1px solid gray\" >\n\n<br>In this tutorial workflow, sample text data is used for summarization. With Documents Summarizer(English) function, summarized document is returned in output table. The parameter settings used in the function are shown below.\n\n++Parameters++\n1. **Input Column**<b style=\"color:red\">*</b>: text \n2. **Result Type**: Sentence \n3. **Hold Columns**: None  \n4. **Compression Ratio**: 0.2 \n5. **Number of Sentences**: 1 \n6. **New Column Name**: summarized_document \n\n\n### Python\n\n```\nfrom brightics.function.textanalytics import doc_summarizer_eng\ninput_table = inputs[0]\nresult = doc_summarizer_eng(table=input_table, input_col='text', result_type='sentence', hold_cols=None, ratio=0.2)\noutput = result['out_table']\n```\n\n<br>In this python script, sample text data table which contains the Matrix synopsis is used for summarization. With _doc\\_summarizer\\_eng_ function, summarized document is returned in output table.\n\n",
+    "md": "# Documents Summarizer (English)\nThis function summarizes English documents.\n\n## Description\nThis function summarizes the given text, by extracting one or more important sentences from the text.\n\n\n## Properties\n### VA\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) English documents in a Table.\n#### OUTPUT\n1. **out_table**: (Table) Summarized English documents in a Table.\n#### PARAMETER\n1. **Input Column**<b style=\"color:red\">*</b>: Column to select as input. The column must contain a English document in each row.\n\n2. **Result Type**: Output type of summarization. If `Summarized Document`, output table shows summarized document in `New Column Name`.\n   - Available Options : `Summarized Document`, `Sentence`\n\n3. **Compression Ratio**: Number between 0 and 1 that determines the proportion of the number of sentences of the original text to be chosen for the summary.\n\n4. **Number of Sentences**: Determines how many sentences will the output contains. If `Compression Ratio` is provided, then this parameter will be ignored.\n\n5. **New Column Name**: New column name for summarized English documents.\n\n\n### Python\n#### USAGE\n\n```\ndoc_summarizer_eng(table, input_col, result_type='sentence', ratio, num_sentence=1, new_col_name='summarized_document')\n```\n\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) English documents in a Table.\n#### OUTPUT\n1. **out_table**: (Table) Summarized English documents in a Table.\n#### PARAMETER\n1. **input_col**<b style=\"color:red\">*</b>: Column to select as input. The column must contain a English document in each row.\n\t* Type: *str*\n2. **result_type**: Output type of summarization. If `summarized_document`, output table shows summarized document in `new_col_name`.\n   - Available Options : `summarized_document`, `sentence`\n\t* Type: *str*\n\t* Default / Range: sentence ( summarized_document  | sentence )\n3. **ratio**: Number between 0 and 1 that determines the proportion of the number of sentences of the original text to be chosen for the summary.\n\t* Type: *float*\n\t* Default / Range: ( 0 < value <= 1)\n4. **num_sentence**: Determines how many sentences will the output contains. If `Compression Ratio` is provided, then this parameter will be ignored.\n\t* Type: *int*\n\t* Default / Range: 1 ( value >= 1 )\n5. **new_col_name**: New column name for summarized English documents.\n\t* Type: *str*\n\t* Default / Range: summarized_document\n\n## Example\n### VA\n\n\n**<a href=\"/api/va/v2/help/downloads/brightics.function.textanalytics$doc_summarizer_eng81555/example-model/brightics.function.textanalytics$doc_summarizer_eng.json\" download>[Sample Model]</a>**\n\n\n<img src=\"/api/va/v2/help/images/brightics.function.textanalytics$doc_summarizer_eng81555/brightics.function.textanalytics$doc_summmarizer_eng.PNG\"  width=\"800px\" style=\"border: 1px solid gray\" >\n\n<br>In this tutorial workflow, sample text data is used for summarization. With Documents Summarizer(English) function, summarized document is returned in output table. The parameter settings used in the function are shown below.\n\n++Parameters++\n1. **Input Column**<b style=\"color:red\">*</b>: text \n2. **Result Type**: Sentence \n3. **Compression Ratio**: 0.2 \n4. **Number of Sentences**: 1 \n5. **New Column Name**: summarized_document \n\n\n### Python\n\n```\nfrom brightics.function.textanalytics import doc_summarizer_eng\ninput_table = inputs[0]\nresult = doc_summarizer_eng(table=input_table, input_col='text', result_type='sentence', ratio=0.2)\noutput = result['out_table']\n```\n\n<br>In this python script, sample text data table which contains the Matrix synopsis is used for summarization. With _doc\\_summarizer\\_eng_ function, summarized document is returned in output table.\n\n",
     "exampleModels": [
         {
             "fileName": "brightics.function.textanalytics$doc_summarizer_eng.json",
@@ -160,7 +143,7 @@
                                         "name": "brightics.function.io$load",
                                         "param": {
                                             "partial_path": [
-                                                "/brightics@samsung.com/upload/text_eng.csv"
+                                                "/brightics@samsung.com/upload/sample_text_eng.csv"
                                             ]
                                         },
                                         "display": {
@@ -402,7 +385,7 @@
                                         "name": "brightics.function.textanalytics$doc_summarizer_eng",
                                         "param": {
                                             "result_type": "sentence",
-                                            "input_col": "text_hold",
+                                            "input_col": "text",
                                             "num_sentence": 1,
                                             "ratio": 0.2
                                         },
@@ -864,12 +847,7 @@
                                     }
                                 ],
                                 "preferences": {},
-                                "variables": {
-                                    "path": {
-                                        "type": "string",
-                                        "value": ""
-                                    }
-                                },
+                                "variables": {},
                                 "variableRef": [],
                                 "innerModels": {},
                                 "inData": [],

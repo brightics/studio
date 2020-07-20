@@ -14,7 +14,7 @@
     limitations under the License.
 """
 
-import brightics.common.json as data_json
+import brightics.common.datajson as data_json
 from brightics.brightics_java_gateway import brtc_java_gateway as gateway
 
 

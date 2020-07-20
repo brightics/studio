@@ -112,7 +112,37 @@ This function returns value for executed SQL Query. For a description of core fu
 ##### - description : This function detects missing data and returns boolean values.
 ##### - ex : select is_null(sepal_length), is_null(5), is_null(null) from #{DF(0)}
 
+#### sin
+##### - description: This is sine function (radian based). 
+##### - ex: select sin(sepal_length), sin(sepal_width) from #{DF(0)}
 
+#### cos
+##### - description: This is cosine function (radian based). 
+##### - ex: select cos(sepal_length), cos(sepal_width) from #{DF(0)}
+
+#### tan
+##### - description: This is tangent function (radian based). 
+##### - ex: select tan(sepal_length), tan(sepal_width) from #{DF(0)}
+
+#### cot
+##### - description: This is cotangent function (radian based). 
+##### - ex: select cot(sepal_length), cot(sepal_width) from #{DF(0)}
+
+#### asin
+##### - description: This is inverse sine function (radian based). 
+##### - ex: select asin(sepal_length), asin(sepal_width) from #{DF(0)}
+
+#### acos
+##### - description: This is inverse cosine function (radian based). 
+##### - ex: select acos(sepal_length), acos(sepal_width) from #{DF(0)}
+
+#### atan
+##### - description: This is inverse tangent function (radian based). 
+##### - ex: select atan(sepal_length), atan(sepal_width) from #{DF(0)}
+
+#### acot
+##### - description: This is inverse cotangent function (radian based). 
+##### - ex: select acot(sepal_length), acot(sepal_width) from #{DF(0)}
 
 ### Regular Expression Related Functions
 
@@ -124,7 +154,21 @@ This function returns value for executed SQL Query. For a description of core fu
 ##### - description : This function finds a pattern from a string or a string type column, and replace such pattern.
 ##### - ex : select regexp_replace(species, 'setosa', 'setosa_2'), regexp_replace('a b c', 'a', 'value') from #{DF(0)}
 
+#### regexp_like
+##### - description: This function returns True if source string matches the pattern, False otherwise.
+##### - ex: select regexp_like(column_name, '[A-Z]+') from #{DF(0)}
 
+#### regexp_count
+##### - description: This function returns the number of times a pattern occurs in a source string.
+##### - ex: select regexp_count(column_name, '[A-Z]+'), regexp_count(column_name, '[A-Z]+', 2) from #{DF(0)}
+
+#### regexp_substr
+##### - description: This function is similar to regexp_instr, but instead of returning the position of the substring, it returns the substring itself.
+##### - ex: select regexp_substr(column_name, '[A-Z]+'), regexp_substr(column_name, '[A-Z]+', 2), regexp_substr(column_name, '[A-Z]+', 3, 3) from #{DF(0)}
+
+#### regexp_instr
+##### - description: This function returns an integer indicating the beginning or ending position of the matched substring.
+##### - ex: select regexp_instr(column_name, '[A-Z]+'), regexp_instr(column_name, '[A-Z]+', 2), regexp_instr(column_name, '[A-Z]+', 6, 2), regexp_instr(column_name, '[A-Z]+', 3, 2, 1) from #{DF(0)}
 
 ### Datetime Related Functions
 

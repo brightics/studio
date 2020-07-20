@@ -28,8 +28,8 @@ WORKDIR /brightics-studio
 RUN mv /git/studio/build/target/dist/brightics-studio /
 RUN sed -i "s/\"127.0.0.1\",/\"0.0.0.0\",/g" /brightics-studio/visual-analytics/conf.json
 RUN sed -i "s/\%\*\ //g" /brightics-studio/setup.sh
-RUN sed -i '24d' /brightics-studio/start-brightics.sh
 RUN ./setup.sh
+RUN mv /brightics-studio/lib/nltk_data /brightics-studio/lib/brightics_python_env/
 RUN rm -rf /brightics-studio/lib/etc /brightics-studio/lib/graphviz /brightics-studio/lib/hadoop /brightics-studio/lib/shortcut /brightics-studio/lib/node/node_modules/npm/changelogs /brightics-studio/lib/node/node_modules/npm/doc /brightics-studio/lib/node/node_modules/npm/html /brightics-studio/lib/node/node_modules/npm/man /brightics-studio/lib/node/node_modules/npm/scripts /brightics-studio/lib/node/node_modules/npm/*.md /brightics-studio/lib/node/node_modules/npm/AUTHORS /brightics-studio/lib/node/node_modules/npm/TODO.org /brightics-studio/lib/node/node_modules/npm/.github /opt/zulu8.46.0.19-ca-jre8.0.252-linux_x64/man 
 
 

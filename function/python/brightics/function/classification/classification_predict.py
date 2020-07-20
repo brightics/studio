@@ -20,6 +20,9 @@ from .logistic_regression import logistic_regression_predict
 from .decision_tree_classification import decision_tree_classification_predict
 from .random_forest_classification import random_forest_classification_predict
 from .naive_bayes_classification import naive_bayes_predict
+from .ada_boost_classification import ada_boost_classification_predict
+from .mlp_classification import mlp_classification_predict
+from .xgb_classification import xgb_classification_predict
 import numpy as np
 
 
@@ -35,7 +38,7 @@ def classification_predict(table, model, prediction_col='prediction', prob_prefi
         return logistic_regression_predict(table=table, model=model, prediction_col=prediction_col, prob_prefix=prob_prefix,
                                  output_log_prob=output_log_prob, log_prob_prefix=log_prob_prefix, thresholds=thresholds,
                                  suffix=suffix)
-    if tmp_model['_type'] == 'svm_model':
+    if tmp_model['_type'] == 'svc_model':
         return svm_classification_predict(table=table, model=model, prediction_col=prediction_col, prob_prefix=prob_prefix,
                                  display_log_prob=output_log_prob, log_prob_prefix=log_prob_prefix, thresholds=thresholds,
                                  suffix=suffix)
@@ -52,4 +55,26 @@ def classification_predict(table, model, prediction_col='prediction', prob_prefi
     if tmp_model['_type'] == 'naive_bayes_model':
         return naive_bayes_predict(table=table, model=model, prediction_col=prediction_col, prob_prefix=prob_prefix,
                                  display_log_prob=output_log_prob, log_prob_prefix=log_prob_prefix, suffix=suffix)
+    if tmp_model['_type'] == 'ada_boost_classification_model':
+        return ada_boost_classification_predict(
+            table=table, model=model,
+            pred_col_name=prediction_col,
+            prob_col_prefix=prob_prefix, suffix=suffix
+        )
+    if tmp_model['_type'] == 'mlp_classification_model':
+        return mlp_classification_predict(
+            table=table, model=model,
+            prediction_col=prediction_col,
+            prob_prefix=prob_prefix,
+            output_log_prob=output_log_prob,
+            log_prob_prefix=log_prob_prefix,
+            suffix=suffix, thresholds=thresholds
+        )
+    if tmp_model['_type'] == 'xgb_classification_model':
+        return xgb_classification_predict(
+            table=table, model=model,
+            prediction_col=prediction_col,
+            probability_col=prob_prefix,
+            suffix=suffix, thresholds=thresholds
+        )
     raise_runtime_error('''It is not supported yet.''')

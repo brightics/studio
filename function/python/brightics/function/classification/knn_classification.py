@@ -51,10 +51,19 @@ def _knn_classification(train_table, test_table, feature_cols, label_col, k=5, a
     
     # Predict the class labels for the provided data
     knn.fit(X_train, y_train)
+    classes = knn.classes_
+    if (test_table.shape[0] == 0):
+        new_cols = test_table.columns.tolist() + [pred_col_name]
+        if suffix == 'index':
+            prob_cols = [prob_col_prefix + '_{}'.format(i) for i in range(len(classes))]
+        else:
+            prob_cols = [prob_col_prefix + '_{}'.format(i) for i in classes]
+        new_cols += prob_cols
+        out_table = pd.DataFrame(columns=new_cols)
+        return {'out_table': out_table}
     pred = knn.predict(X_test)
     out_col_pred = pd.DataFrame(pred, columns=[pred_col_name])
     
-    classes = knn.classes_
     if suffix == 'index':
         suffixes = [i for i, _ in enumerate(classes)]
     else:

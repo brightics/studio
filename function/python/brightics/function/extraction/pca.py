@@ -50,7 +50,7 @@ def _pca(table, input_cols, new_column_name='projected_', n_components=None, cop
     if n_components is None:
         n_components = num_feature_cols
     
-    pca = PCA(None, copy, whiten, svd_solver, tol, iterated_power, random_state=seed)
+    pca = PCA(n_components, copy, whiten, svd_solver, tol, iterated_power, random_state=seed)
     pca_model = pca.fit(table[input_cols])
         
     column_names = []

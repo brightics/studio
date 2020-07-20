@@ -24,25 +24,38 @@ import pandas as pd
 import boto3
 
 from brightics.function.utils import _model_dict_scala, _model_dict
-import brightics.common.json as data_json
+import brightics.common.datajson as data_json
 from brightics.common.datasource import DbEngine
 from brightics.common.validation import raise_runtime_error
 from brightics.brightics_data_api import _write_dataframe
 import brightics.common.data.utils as data_utils
 from brightics.common.utils import check_required_parameters
 import brightics.common.data.table_data_reader as table_reader
-import brightics.common.data.utils as util
+from brightics.brightics_java_gateway import brtc_java_gateway as gateway
+
+
+def could_delete_path(path):
+    path = path if path[-1] == '/' else  path + '/'
+    if gateway.data_root in path and gateway.data_root != path:
+        return True
+    return False
 
 
 def unload(table, partial_path, mode="overwrite"):
-    path = data_utils.make_data_path_from_key(partial_path[0])
+    path = partial_path[0] if isinstance(partial_path, list) else partial_path
+    if path[0].startswith('.'):
+        raise_runtime_error('Cannot use a string to start with ".(dot)".')
+    if '..' in path:
+        raise_runtime_error('Cannot use a string "..(double dot)".')
+    path = path if path[0].startswith('/') else '/' + path
+    path = data_utils.make_data_path_from_key(path)
+    if not could_delete_path(path):
+        raise_runtime_error('Please check a path String and a type of path. Cannot use a root of directory for the path.')
     if os.path.isdir(path):
         shutil.rmtree(path)
     if mode=="append":
         try:
-            old_frame = table_reader.read_parquet(
-                util.make_data_path_from_key(partial_path[0])
-            )
+            old_frame = table_reader.read_parquet(path)
             new_frame = pd.concat([old_frame, table], axis=0, ignore_index=True)
             _write_dataframe(new_frame, path)
         except:
@@ -202,9 +215,9 @@ def write_to_db(table, **params):
     return _write_to_db(table, **params)
 
 
-def _write_to_db(table, tableName, datasource, ifExists='fail'):
+def _write_to_db(table, tableName, datasource, schema=None, ifExists='fail'):
     if not isinstance(table, pd.DataFrame):
         raise_runtime_error('table is not pandas.DataFrame')
 
     with DbEngine(**datasource) as engine:
-        table.to_sql(tableName, engine, if_exists=ifExists, index=False)
+        table.to_sql(tableName, engine, schema=schema, if_exists=ifExists, index=False)

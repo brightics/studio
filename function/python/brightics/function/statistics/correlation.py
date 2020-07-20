@@ -42,19 +42,21 @@ def _correlation(table, vars, method='pearson', display_plt=True, height=2.5, co
 
     size = len(vars)
     result_arr = []
-    
+    cov_xy = table[vars].cov()
+
     for i in range(size): 
         for j in range(i):
+            cov_temp = cov_xy[vars[i]][vars[j]]
             if method == 'pearson':
                 r, p = stats.pearsonr(table[vars[i]], table[vars[j]])
             elif method == 'spearman':
                 r, p = stats.spearmanr(table[vars[i]], table[vars[j]])
             else:
                 r, p = stats.kendalltau(table[vars[i]], table[vars[j]])
+                
+            result_arr.append([vars[i], vars[j], r, p, cov_temp])    
             
-            result_arr.append([vars[i], vars[j], r, p])    
-            
-    df_result = pd.DataFrame(result_arr, columns=['x', 'y', 'corr', 'p_value'])
+    df_result = pd.DataFrame(result_arr, columns=['x', 'y', 'corr', 'p_value', 'cov'])
 
     rb = BrtcReprBuilder()    
     if display_plt:

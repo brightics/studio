@@ -121,6 +121,10 @@ def ada_boost_regression_predict(table, model, **params):
 
 
 def _ada_boost_regression_predict(table, model, pred_col_name='prediction'):
+    if (table.shape[0] == 0):
+        new_cols = table.columns.tolist() + [pred_col_name]
+        out_table = pd.DataFrame(columns=new_cols)
+        return {'out_table': out_table}
     out_table = table.copy()
     regressor = model['regressor']
     _, test_data = check_col_type(table, model['params']['feature_cols'])

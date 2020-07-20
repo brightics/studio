@@ -404,7 +404,7 @@ def _association_rule(table, input_mode=None, array_input=None, mul_items=None, 
                 tmp.remove(None)
                 transactions[i] = np.array(list(tmp))
     elif input_mode == 'transaction':
-        transactions = [list(set(transaction)) for transaction in np.array(table[array_input])]
+        transactions = [list(set(transaction) - {None}) for transaction in np.array(table[array_input])]
     else:
         if items is None:
             raise Exception('Select Item Column')

@@ -16,6 +16,7 @@
 
 import pandas as pd
 import numpy as np
+from string import punctuation
 
 from brightics.common.groupby import _function_by_group
 from brightics.common.validation import raise_runtime_error
@@ -173,6 +174,86 @@ def pivot2(table, values, aggfunc, index=None, columns=None):  # TODO
         for name in out_table.columns.tolist()[len(index):]:
             name_list.append(name[0][1:] + "_" + "_".join(str(i) for i in name[1:]))
         out_table.columns = index + name_list
+    return {'out_table':out_table}
+
+    
+def pivot3(table, values, aggfunc, index=None, columns=None):  # TODO
+
+    if index is None and columns is None:
+        # TODO: assign an error code.
+        raise_runtime_error('Group key value is required: Index or Columns.')
+
+    def _count(x): return len(x)
+
+    def _sum(x): return brtc_stat.sum(x)
+
+    def _mean(x): return brtc_stat.mean(x)
+
+    def _std(x): return brtc_stat.std(x)
+
+    def _var(x): return brtc_stat.var_samp(x)
+
+    def _max(x): return brtc_stat.max(x)
+    
+    def _min(x): return brtc_stat.min(x)
+
+    def _q1(x): return brtc_stat.percentile(x, 25)
+
+    def _median(x): return brtc_stat.median(x)
+
+    def _q3(x): return brtc_stat.percentile(x, 75)
+    
+    def _distinct(x): return list(set(x))
+    
+    func_list = []
+    for func_name in aggfunc:
+        if func_name == 'count':
+            func_list.append(_count)
+        elif func_name == 'mean':
+            func_list.append(_mean)
+        elif func_name == 'std':
+            func_list.append(_std)
+        elif func_name == 'var':
+            func_list.append(_var)
+        elif func_name == 'min':
+            func_list.append(_min)
+        elif func_name == 'q1':
+            func_list.append(_q1)
+        elif func_name == 'median':
+            func_list.append(_median)
+        elif func_name == 'q3':
+            func_list.append(_q3)
+        elif func_name == 'max':
+            func_list.append(_max)
+        elif func_name == 'sum':
+            func_list.append(_sum) 
+        elif func_name == 'distinct':
+            func_list.append(_distinct) 
+    
+    pivoted = pd.pivot_table(table, values=values, index=index, columns=columns, aggfunc=func_list, fill_value=None, margins=False, margins_name='All')
+    out_table = pd.concat([pivoted.index.to_frame(), pivoted], axis=1)
+    if index is None:
+        out_table = out_table.rename(index=str, columns={0: "values"})
+        name_list = []
+        if len(columns) == 1:
+            for name in out_table.columns.tolist()[1:]:
+                name_list.append(name[0][1:] + "_" + str(name[1]))
+            out_table.columns = out_table.columns.tolist()[:1] + name_list
+        else:
+            for name in out_table.columns.tolist()[len(columns) + 1:]:
+                name_list.append(name[1:])
+            out_table.columns = out_table.columns.tolist()[:len(columns) + 1] + name_list
+    elif index is not None:
+        name_list = []
+        for name in out_table.columns.tolist()[len(index):]:
+            name_list.append(name[0][1:] + "_" + "_".join(str(i) for i in name[1:]))
+        out_table.columns = index + name_list
+    
+    special_char = str(punctuation) + ' '
+
+    for char in special_char:
+            out_table.columns = out_table.columns.str.replace(char, '_')
+            
     return {'out_table':out_table}
 
 

@@ -22,9 +22,10 @@ import pandas as pd
 
 import brightics.common.data.table_data_reader as table_reader
 import brightics.common.data.utils as util
-import brightics.common.json as data_json
+import brightics.common.datajson as data_json
 from brightics.common.datasource import DbEngine
 from brightics.common.validation import raise_runtime_error
+from brightics.common.exception import BrighticsFunctionException as BFE
 
 
 def read_csv(path, engine='python', delimiter=',', na_filter=False, strip_col=False, quoting=3, encoding='utf-8'):
@@ -34,7 +35,26 @@ def read_csv(path, engine='python', delimiter=',', na_filter=False, strip_col=Fa
         quoting = 3
     dir_data = os.getcwd() + '/data'
     path = os.path.join(dir_data, path)
-    return {'table': table_reader.read_csv(path, engine, delimiter, na_filter, strip_col, quoting, encoding)}
+    res = pd.DataFrame()
+    if os.path.isfile(path):
+        res = table_reader.read_csv(path, engine, delimiter, na_filter, strip_col, quoting, encoding)
+    elif os.path.isdir(path):
+        for f in os.listdir(path):
+            if f.endswith('.csv'):
+                f_path = os.path.join(path, f)
+                try:
+                    tmp = table_reader.read_csv(f_path, engine, delimiter, na_filter, strip_col, quoting, encoding)
+                except:
+                    raise BFE.from_errors([{'0100': 'Can not read ' + f_path + '.'}])
+                if res.shape != (0, 0) and not res.columns.equals(tmp.columns):
+                    raise BFE.from_errors([{'0100': 'Files under ' + path + ' do not have same schema.'}])
+                res = pd.concat([res, tmp])
+    else:
+        raise BFE.from_errors([{'0100': 'Path ' + path + ' is incorrect.'}])
+    for i, col in enumerate(res.columns):
+        res = res.rename(columns={'Unnamed: {i}'.format(i=i): 'Unnamed_{i}'.format(i=i)})
+
+    return {'table': res}
 
 
 def load_model(path):
@@ -85,7 +105,7 @@ def load(partial_path=['/brightics@samsung.com/upload/sample_iris.csv']):
 
     if partial_path.endswith("/"):
         partial_path = partial_path[:-1]
-
+        
     return {'table': table_reader.read_parquet(util.make_data_path_from_key(partial_path))}
 
 

@@ -18,6 +18,7 @@ from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate
 from brightics.common.validation import greater_than, greater_than_or_equal_to, over_under
+from brightics.common.validation import raise_runtime_error
 import pandas as pd
 import numpy as np
 from nltk import tokenize
@@ -73,16 +74,16 @@ def _tokenize_for_summarize(text):
         import kss
         splitted_array = kss.split_sentences(text)
     else:
-        from brightics.function.textanalytics.pykss import pykss
-        splitted_array = pykss.split_sentences(text)
+        from . import split_sentences_kss as kss2
+        splitted_array = kss2.kss.pykss.split_sentences(text)
 
     # Tokenizer
     tokenized_table = _tokenizer_kor(texts=splitted_array, pos_extraction=['Noun'])
     len_doc = len(tokenized_table)
-    
+
     # Tokenizer afterprocess
     tokenized_sentence = ([' '.join(tokenized_table[i]) for i in range(len_doc)])
-    
+
     return tokenized_sentence, splitted_array, len_doc
 
 
@@ -101,7 +102,7 @@ def _text_summarizer(text, ratio, num_sentence, damping_factor):
     
     # Documents correlation matrix
     tokenized_sentence, splitted_array, len_doc = _tokenize_for_summarize(text=text)
-    if (ratio != 2):
+    if ratio is not None:
         num_sentence = np.maximum(int(len_doc * ratio), 1)
     else:
         num_sentence = np.minimum(len_doc, num_sentence)
@@ -117,16 +118,18 @@ def _text_summarizer(text, ratio, num_sentence, damping_factor):
     return summarized_text, result_table, num_sentence
 
 
-def _doc_summarizer_kor(table, input_col, hold_cols=None, result_type='summarized_document', new_col_name='summarized_document', ratio=2, num_sentence=1, damping_factor=0.85):
+def _doc_summarizer_kor(table, input_col, hold_cols=None, result_type='summarized_document',
+                        new_col_name='summarized_document', ratio=None, num_sentence=1, damping_factor=0.85):
     
     doc_col = table[input_col].values
     len_doc_col = len(doc_col)
-    
+
     if hold_cols is None:
-        hold_cols = [input_col]
-    out_table = table[hold_cols]
+        out_table = table.copy()
+    else:
+        out_table = table[hold_cols]
     
-    if (result_type == 'summarized_document'):
+    if result_type == 'summarized_document':
         summarizer = np.vectorize(_text_summarizer)
         result_table = summarizer(doc_col, ratio=ratio, num_sentence=num_sentence, damping_factor=damping_factor)[0]
         out_table[new_col_name] = result_table
@@ -142,37 +145,49 @@ def _doc_summarizer_kor(table, input_col, hold_cols=None, result_type='summarize
     return {'out_table': out_table}
 
 
-def _doc_summarizer_eng(table, input_col, hold_cols=None, result_type='summarized_document', new_col_name='summarized_document', ratio=2, num_sentence=1):
+def _doc_summarizer_eng(table, input_col, hold_cols=None, result_type='summarized_document',
+                        new_col_name='summarized_document', ratio=None, num_sentence=1):
     
     doc_col = table[input_col].values
     len_doc_col = len(doc_col)
-    
+
     if hold_cols is None:
-        hold_cols = [input_col]
-    out_table = table[hold_cols]
+        out_table = table.copy()
+    else:
+        out_table = table[hold_cols]
 
     table_list = []
     for i in range(len_doc_col):
-        len_doc = len(summarize(doc_col[i], ratio=1, split=True))
-        if (ratio != 2):
-            _num_sentence = np.maximum(int(len_doc * ratio), 1)
-            _ratio = ratio
+        try:
+            len_doc = len(summarize(doc_col[i], ratio=1, split=True))
+        except ValueError as e:
+            if str(e) == "input must have more than one sentence":
+                summarized_doc = doc_col[i]
+                summarized_sents = [doc_col[i]]
+                _num_sentence = 1
+            else:
+                raise
         else:
-            _num_sentence = np.minimum(len_doc, num_sentence)
-            _ratio = (_num_sentence / len_doc if len_doc != 0 else 1)
-        if (result_type == 'summarized_document'):
-            summarized_col = [summarize(doc_col[i], ratio=_ratio)]
+            if ratio is not None:
+                _num_sentence = np.maximum(int(len_doc * ratio), 1)
+                _ratio = ratio
+            else:
+                _num_sentence = np.minimum(len_doc, num_sentence)
+                _ratio = (_num_sentence / len_doc if len_doc != 0 else 1)
+            summarized_doc = summarize(doc_col[i], ratio=_ratio, split=False)
+            summarized_sents = summarize(doc_col[i], ratio=_ratio, split=True)
+
+        if result_type == 'summarized_document':
+            summarized_col = [summarized_doc]
         else:
-            summarized_sentences = summarize(doc_col[i], ratio=_ratio, split=True)
-            summarized_col = np.insert(np.transpose([summarized_sentences[0:_num_sentence]]), 0, i + 1, axis=1)
-        table_list.append(summarized_col)    
+            summarized_col = np.insert(np.transpose([summarized_sents[0:_num_sentence]]), 0, i + 1, axis=1)
+        table_list.append(summarized_col)
     result_table = np.concatenate(table_list, axis=0)
     
-    if (result_type == 'summarized_document'):
+    if result_type == 'summarized_document':
         out_table[new_col_name] = result_table
     else:
         out_table = pd.DataFrame(result_table, columns=['doc_id', 'sentence'])
         out_table['doc_id'] = out_table['doc_id'].astype(int)
     
     return {'out_table': out_table}
-        

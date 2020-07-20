@@ -265,7 +265,8 @@ def _collaborative_filtering_train(table, user_col , item_col, rating_col, N=10,
     model = _model_dict('collaborative filtering')
     model['weighted'] = weighted
     model['k'] = k
-    model['similar_coeff'] = similar_coeff
+    model['method'] = method
+    model['centered_ratings'] = centered_ratings
     model['item_encoder'] = item_encoder
     model['user_encoder'] = user_encoder
     model['item_users'] = item_users
@@ -319,7 +320,8 @@ def _collaborative_filtering_predict(table, model, prediction_col='prediction', 
     user_avg = model['user_avg']
     weighted = model['weighted']
     k = model['k']
-    similar_coeff = model['similar_coeff']
+    method = model['method']
+    centered_ratings = model['centered_ratings']
     item_encoder = model['item_encoder']
     user_encoder = model['user_encoder']
     item_users = model['item_users']
@@ -327,6 +329,17 @@ def _collaborative_filtering_predict(table, model, prediction_col='prediction', 
     user_col = model['user_col']
     item_col = model['item_col']
     based = model['based']
+
+    if method == 'cosine':
+        similar_coeff = cosine_similarity(centered_ratings)
+    elif method == 'pearson':
+        result = []
+        for i in centered_ratings.toarray():
+            result.append(i - np.average(i))
+        similar_coeff = cosine_similarity(result)
+    elif method == 'jaccard':
+        similar_coeff = 1 - pairwise_distances(centered_ratings.toarray(), metric="hamming")
+        
     tmp_user = np.array(table[user_col])
     tmp_item = np.array(table[item_col])
     valid_indices = [i for i in range(len(tmp_user)) if tmp_user[i] in user_encoder.classes_ and tmp_item[i] in item_encoder.classes_]

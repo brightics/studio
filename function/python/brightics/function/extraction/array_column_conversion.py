@@ -41,12 +41,20 @@ def _columns_to_array(table, input_cols, remain_cols=False, output_col_name='arr
     if remain_cols:
         out_table = table.copy()
         npa = np.array(table[input_cols])
-        out_table[_output_col_name] = list(npa)
+        tmp_col = table[input_cols].dtypes == 'object'
+        if tmp_col.any():
+            out_table[_output_col_name] = list(npa.astype(str))
+        else:
+            out_table[_output_col_name] = list(npa)
         return {'out_table' : out_table}
     else:
         out_table = table[list(set(table.axes[1]) - set(input_cols))].copy()
         npa = np.array(table[input_cols])
-        out_table[_output_col_name] = list(npa)
+        tmp_col = table[input_cols].dtypes == 'object'
+        if tmp_col.any():
+            out_table[_output_col_name] = list(npa.astype(str))
+        else:
+            out_table[_output_col_name] = list(npa)
         return {'out_table' : out_table}
 
 
