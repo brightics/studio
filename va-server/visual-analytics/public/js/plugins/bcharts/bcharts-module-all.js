@@ -60,30 +60,30 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 723);
+/******/ 	return __webpack_require__(__webpack_require__.s = 679);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 723:
+/***/ 679:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _bchartDecisiontreeForBrightics = __webpack_require__(724);
+var _bchartDecisiontreeForBrightics = __webpack_require__(680);
 
 var _bchartDecisiontreeForBrightics2 = _interopRequireDefault(_bchartDecisiontreeForBrightics);
 
-var _d3DecisiontreeForBrightics = __webpack_require__(725);
+var _d3DecisiontreeForBrightics = __webpack_require__(681);
 
 var _d3DecisiontreeForBrightics2 = _interopRequireDefault(_d3DecisiontreeForBrightics);
 
-var _chartValidatorDecisiontreeForBrightics = __webpack_require__(728);
+var _chartValidatorDecisiontreeForBrightics = __webpack_require__(684);
 
 var _chartValidatorDecisiontreeForBrightics2 = _interopRequireDefault(_chartValidatorDecisiontreeForBrightics);
 
-var _chartOptionDecisiontree = __webpack_require__(729);
+var _chartOptionDecisiontree = __webpack_require__(685);
 
 var _chartOptionDecisiontree2 = _interopRequireDefault(_chartOptionDecisiontree);
 
@@ -99,7 +99,7 @@ Brightics.Chart.Adonis.API.registerChartOption({ Key: _bchartDecisiontreeForBrig
 
 /***/ }),
 
-/***/ 724:
+/***/ 680:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -201,7 +201,7 @@ BDecisionTreeForBrighticsCharts.Attr = {
                     link: {
                         showArrow: true,
                         width: 2,
-                        color: '#FFC14A',
+                        color: '#FD026C',
                         opacity: 1
                     }
                 }
@@ -214,7 +214,7 @@ exports.default = BDecisionTreeForBrighticsCharts;
 
 /***/ }),
 
-/***/ 725:
+/***/ 681:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -224,7 +224,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _d3DecisiontreeForBrighticsOptionBuilder = __webpack_require__(726);
+var _d3DecisiontreeForBrighticsOptionBuilder = __webpack_require__(682);
 
 var _d3DecisiontreeForBrighticsOptionBuilder2 = _interopRequireDefault(_d3DecisiontreeForBrighticsOptionBuilder);
 
@@ -708,7 +708,7 @@ exports.default = D3DecisionTreeForBrightics;
 
 /***/ }),
 
-/***/ 726:
+/***/ 682:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -718,7 +718,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _decisiontreeForBrighticsExtractor = __webpack_require__(727);
+var _decisiontreeForBrighticsExtractor = __webpack_require__(683);
 
 var _decisiontreeForBrighticsExtractor2 = _interopRequireDefault(_decisiontreeForBrighticsExtractor);
 
@@ -869,7 +869,7 @@ exports.default = D3DecisionTreeForBrighticsOptionBuilder;
 
 /***/ }),
 
-/***/ 727:
+/***/ 683:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1071,7 +1071,7 @@ exports.default = DecisionTreeForBrighticsDataExtractor;
 
 /***/ }),
 
-/***/ 728:
+/***/ 684:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1134,7 +1134,7 @@ exports.default = DecisionTreeForBrighticsChartValidator;
 
 /***/ }),
 
-/***/ 729:
+/***/ 685:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
