@@ -1,7 +1,8 @@
 # Brightics Studio v1.1
-
+![Version](https://img.shields.io/github/v/release/brightics/studio)
 [![Build Status](https://travis-ci.com/brightics/studio.svg?branch=master)](https://travis-ci.com/brightics/studio)
 ![Download Counts](https://img.shields.io/github/downloads/brightics/studio/total.svg)
+![Latest Counts](https://img.shields.io/github/downloads/brightics/studio/latest/total)
 
 <img src="docs/images/brightics_sample.png" width="960px" height="468px" alt="Brightics Studio"></img>
 
