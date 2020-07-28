@@ -16,15 +16,11 @@
 
 package com.samsung.sds.brightics.common.data.parquet.reader.util;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
+import com.samsung.sds.brightics.common.data.parquet.reader.BrighticsParquetReadSupport;
+import com.samsung.sds.brightics.common.data.parquet.reader.DefaultRecord;
+import com.samsung.sds.brightics.common.data.parquet.reader.info.FileIndex;
+import com.samsung.sds.brightics.common.data.parquet.reader.info.ParquetInformation;
+import com.samsung.sds.brightics.common.data.view.Column;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -36,23 +32,23 @@ import org.apache.parquet.hadoop.ParquetReader;
 import org.apache.parquet.hadoop.metadata.BlockMetaData;
 import org.apache.parquet.hadoop.metadata.FileMetaData;
 import org.apache.parquet.hadoop.metadata.ParquetMetadata;
-import org.apache.parquet.schema.DecimalMetadata;
-import org.apache.parquet.schema.GroupType;
-import org.apache.parquet.schema.MessageType;
-import org.apache.parquet.schema.OriginalType;
-import org.apache.parquet.schema.Type;
+import org.apache.parquet.schema.*;
 import org.apache.parquet.schema.Type.Repetition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
-import com.samsung.sds.brightics.common.data.parquet.reader.BrighticsParquetReadSupport;
-import com.samsung.sds.brightics.common.data.parquet.reader.DefaultRecord;
-import com.samsung.sds.brightics.common.data.parquet.reader.info.FileIndex;
-import com.samsung.sds.brightics.common.data.parquet.reader.info.ParquetInformation;
-import com.samsung.sds.brightics.common.data.view.Column;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class BrighticsParquetUtils {
 	
-//	private static final Logger LOGGER = LoggerFactory.getLogger("ParquetClient");
+	private static final Logger LOGGER = LoggerFactory.getLogger("ParquetClient");
 	
 	public static ParquetInformation getParquetInformation(Path path, Configuration conf, int[] filteredColumnIndex) throws IOException {
         FileStatus directory = FileSystem.get(conf).getFileStatus(path);
@@ -68,7 +64,8 @@ public class BrighticsParquetUtils {
 		
         // set schema
         FileMetaData fileMetaData = footers.get(0).getParquetMetadata().getFileMetaData();
-        List<Type> filteredColumns = getFilteredColumns(fileMetaData.getSchema(), filteredColumnIndex);
+        int[] validatedColumnIndexArray = Arrays.stream(filteredColumnIndex).filter(i -> fileMetaData.getSchema().getColumns().size() > i).toArray();
+        List<Type> filteredColumns = getFilteredColumns(fileMetaData.getSchema(), validatedColumnIndexArray);
         Column[] schema = filteredColumns.stream().map(c -> new Column(c.getName(), convertTypeName(c))).toArray(Column[]::new);
         
         //set count, buffer size
@@ -86,7 +83,7 @@ public class BrighticsParquetUtils {
             buf.add(new FileIndex(footer.getFile().toString(), previousTotalCount, previousTotalCount + currentCount));
             previousTotalCount += currentCount;
         }
-        return new ParquetInformation(schema, previousTotalCount, totalBytes, buf);
+        return new ParquetInformation(schema, previousTotalCount, totalBytes, buf, validatedColumnIndexArray);
     }
 	
     public static ParquetInformation getParquetInformation(Path path, Configuration conf) throws IOException {
@@ -194,7 +191,8 @@ public class BrighticsParquetUtils {
         List<Type> copyFields = new ArrayList<Type>();
         //if filteredColumns is null or 0. pass filtering
         if(schema.getColumns().size() < filteredColumns.length) {
-        	throw new BrighticsCoreException("3102", "The column size used in the query is larger than the number of existing data columns.");
+            LOGGER.warn("The column size used in the query is larger than the number of existing data columns.");
+//        	throw new BrighticsCoreException("3102", "The column size used in the query is larger than the number of existing data columns.");
         }
         
         if (filteredColumns != null && filteredColumns.length > 0) {
@@ -220,7 +218,7 @@ public class BrighticsParquetUtils {
             Stream<Integer> range = IntStream.range(start, end + 1).boxed();
             return Stream.concat(range, selected).distinct().sorted().mapToInt(i -> i).toArray();
         } else {
-            return selected.mapToInt(i -> i).toArray();
+            return selected.distinct().sorted().mapToInt(i -> i).toArray();
         }
     }
 	
