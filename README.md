@@ -1,5 +1,5 @@
 # Brightics Studio v1.1
-![Version](https://img.shields.io/github/v/release/brightics/studio)
+[![Version](https://img.shields.io/github/v/release/brightics/studio)](https://github.com/brightics/studio/releases)
 [![Release Date](https://img.shields.io/github/release-date/brightics/studio)](https://github.com/brightics/studio/releases)
 [![Build Status](https://travis-ci.com/brightics/studio.svg?branch=master)](https://travis-ci.com/brightics/studio)
 ![Download Counts](https://img.shields.io/github/downloads/brightics/studio/total.svg)
