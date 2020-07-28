@@ -6,7 +6,8 @@
 ![Latest Counts](https://img.shields.io/github/downloads/brightics/studio/latest/total)
 [![docker star](https://img.shields.io/docker/stars/brightics/studio)](https://hub.docker.com/r/brightics/studio)
 <a href="../../graphs/contributors"><img src="https://img.shields.io/github/contributors/brightics/studio.svg" /></a>
-![youtube](https://img.shields.io/youtube/views/DR13sLVWXYs?style=social)
+[![community](https://img.shields.io/badge/Help-Community-brightgreen)](https://www.brightics.ai/community/)
+[![youtube](https://img.shields.io/youtube/views/DR13sLVWXYs?style=social)](https://www.youtube.com/brighticsTV)
 
 <img src="docs/images/brightics_sample.png" width="960px" height="468px" alt="Brightics Studio"></img>
 
