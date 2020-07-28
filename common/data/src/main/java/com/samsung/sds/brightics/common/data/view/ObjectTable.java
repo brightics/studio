@@ -32,4 +32,10 @@ public class ObjectTable extends Table {
         this.data.put("data", data);
     }
 
+    public ObjectTable(long count, long columnCount, long bytes, Column[] schema, List<Object[]> data) {
+        super(count, bytes, schema);
+        this.data.put("columnCount", columnCount);
+        this.data.put("data", data);
+    }
+
 }
