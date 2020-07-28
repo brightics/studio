@@ -1,8 +1,12 @@
 # Brightics Studio v1.1
 ![Version](https://img.shields.io/github/v/release/brightics/studio)
+[![Release Date](https://img.shields.io/github/release-date/brightics/studio)](https://github.com/brightics/studio/releases)
 [![Build Status](https://travis-ci.com/brightics/studio.svg?branch=master)](https://travis-ci.com/brightics/studio)
 ![Download Counts](https://img.shields.io/github/downloads/brightics/studio/total.svg)
 ![Latest Counts](https://img.shields.io/github/downloads/brightics/studio/latest/total)
+[![docker star](https://img.shields.io/docker/stars/brightics/studio)](https://hub.docker.com/r/brightics/studio)
+<a href="../../graphs/contributors"><img src="https://img.shields.io/github/contributors/brightics/studio.svg" /></a>
+![youtube](https://img.shields.io/youtube/views/DR13sLVWXYs?style=social)
 
 <img src="docs/images/brightics_sample.png" width="960px" height="468px" alt="Brightics Studio"></img>
 
