@@ -58,7 +58,7 @@ public abstract class AbstractContext {
     // init data container
     abstract public void initDataMap();
 
-    abstract public String viewData(String key, long min, long max) throws Exception;
+    abstract public String viewData(String key, long min, long max, int[] columnIndex) throws Exception;
 
     abstract public String viewSchema(String key) throws Exception;
 

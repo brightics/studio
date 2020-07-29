@@ -33,6 +33,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @ScriptContext(contextType = {ContextType.PYTHON, ContextType.DLPYTHON})
 public class PythonContext extends AbstractContext {
@@ -116,11 +118,17 @@ public class PythonContext extends AbstractContext {
     }
 
     @Override
-    public String viewData(String key, long min, long max) {
-        logger.info("View data {}", key);
+    public String viewData(String key, long min, long max, int[] columnIndex) {
+        logger.info("View data {}, min {}, max{}, columnIndex {} ", key, min, max, columnIndex);
         // FIXME add support for min and max
         try {
-            return processManager.run(String.format("view_data('%s')", key), true);
+            if (columnIndex != null && columnIndex.length > 0) {
+                return processManager.run(String.format("view_data('%s', %d, $d, %s)", key, min, max
+                        , Arrays.stream(columnIndex).mapToObj(i -> String.valueOf(i))
+                                .collect(Collectors.joining(", ", "column_index = [", "]"))), true);
+            } else {
+                return processManager.run(String.format("view_data('%s', %d, $d)", key, min, max), true);
+            }
         } catch (Exception e) {
             logger.error("Error occurred while view data {}", key);
             logger.error(e.getMessage());
