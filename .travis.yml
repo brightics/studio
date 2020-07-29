@@ -1,18 +1,32 @@
 language: java
 jdk:
-  - openjdk8
+- openjdk8
 script: mvn clean package -DskipTests
-
 branches:
   only:
-    - master-dl
-    - master
+  - master-dl
+  - master
 
 cache:
   directories:
-    - $HOME/.m2
+  - "$HOME/.m2"
 
 notifications:
   email:
     recipients:
-      - krazyeom@gmail.com
+    - krazyeom@gmail.com
+
+before_deploy:
+  - git config --global user.email "krazyeom@gmail.com"
+  - git config --global user.name "Sungwook Yeom"
+  - export BUILD_NUM=$(date '+%Y-%m')
+  - export GIT_TAG=1.1-$BUILD_NUM
+
+deploy:
+  - provider: script
+    script: bash ./docker/docker-deploy.sh
+    skip_cleanup: true
+    on:
+      repo: brightics/studio
+      branche: master
+      tags: true
