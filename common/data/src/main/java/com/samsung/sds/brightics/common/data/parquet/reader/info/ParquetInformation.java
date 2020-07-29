@@ -18,22 +18,29 @@ package com.samsung.sds.brightics.common.data.parquet.reader.info;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import com.samsung.sds.brightics.common.data.view.Column;
 
 public class ParquetInformation {
-    
+
     Column[] schema;
     long count;
     long bytes;
     List<FileIndex> page;
-    
+    int[] columnIndex;
+
     public ParquetInformation(Column[] schema, long count, long bytes, List<FileIndex> page) {
+        this(schema, count, bytes, page, new int[0]);
+    }
+
+    public ParquetInformation(Column[] schema, long count, long bytes, List<FileIndex> page, int[] columnIndex) {
         super();
         this.schema = schema;
         this.count = count;
         this.bytes = bytes;
         this.page = page;
+        this.columnIndex = columnIndex;
     }
 
     public List<FileIndex> getLimitedFiles(long lowerOffset, long upperOffset) {
@@ -44,6 +51,10 @@ public class ParquetInformation {
 
     public Column[] getSchema() {
         return schema;
+    }
+
+    public int[] getColumnIndex() {
+        return columnIndex;
     }
 
     public long getCount() {
@@ -57,7 +68,5 @@ public class ParquetInformation {
     public List<FileIndex> getPage() {
         return page;
     }
-    
-    
-    
+
 }
