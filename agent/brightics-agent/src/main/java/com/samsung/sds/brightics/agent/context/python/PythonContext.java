@@ -123,11 +123,11 @@ public class PythonContext extends AbstractContext {
         // FIXME add support for min and max
         try {
             if (columnIndex != null && columnIndex.length > 0) {
-                return processManager.run(String.format("view_data('%s', %d, $d, %s)", key, min, max
+                return processManager.run(String.format("view_data('%s', %d, %d, %s)", key, min, max
                         , Arrays.stream(columnIndex).mapToObj(i -> String.valueOf(i))
                                 .collect(Collectors.joining(", ", "column_index = [", "]"))), true);
             } else {
-                return processManager.run(String.format("view_data('%s', %d, $d)", key, min, max), true);
+                return processManager.run(String.format("view_data('%s', %d, %d)", key, min, max), true);
             }
         } catch (Exception e) {
             logger.error("Error occurred while view data {}", key);

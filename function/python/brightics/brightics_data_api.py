@@ -71,13 +71,7 @@ def list_status():
     return [_get_data_status_json(status) for status in data_dict.values()]
 
 
-def view_data(key, min, max):
-    view_data(key, min, max, None)
-
-def view_data(key):
-    view_data(key, 0, 1000)
-
-def view_data(key, min, max, column_index):
+def view_data(key, min=0, max=1000, column_index=None):
     data_info = get_data_info(key)
     if not data_info or 'data' not in data_info:
         raise Exception('no data for ' + key)
@@ -147,13 +141,16 @@ def view_data(key, min, max, column_index):
                 val[isna(inner_df.values)] = None
             return val
 
+        column_list = list(schema_map(data))
+        row_values = ensure_none(data)
         return data_json.to_json({
             'type': 'table',
             'data': {
-                'count': data.shape[0],
+                'count': row_values.__len__(),
                 'bytes': -1,
-                'schema': list(schema_map(data)),
-                'data': ensure_none(data)
+                'schema': column_list,
+                'data': row_values,
+                'columnCount':column_list.__len__()
             }
         })
     elif psdf and isinstance(data, psdf.DataFrame):
