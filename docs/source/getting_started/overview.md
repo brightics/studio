@@ -27,4 +27,4 @@ Charts and report generators are also provided to visualize data in various ways
 
 #### Real-time Visualization with Brightics AI 
 
-<iframe style="width:696px; height:600px;" src="https://www.brightics.ai/publish/TDU_20190325?title=TDU_20190325" frameborder="0" scrolling="no"></iframe>
+<iframe style="width:696px; height:600px;" src="https://iris.brightics.ai/publish/report/used_car" frameborder="0" scrolling="no"></iframe>
