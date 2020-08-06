@@ -119,8 +119,7 @@ public class PythonContext extends AbstractContext {
 
     @Override
     public String viewData(String key, long min, long max, int[] columnIndex) {
-        logger.info("View data {}, min {}, max{}, columnIndex {} ", key, min, max, columnIndex);
-        // FIXME add support for min and max
+        logger.info("View data {}, min {}, max{}", key, min, max);
         try {
             if (columnIndex != null && columnIndex.length > 0) {
                 return processManager.run(String.format("view_data('%s', %d, %d, %s)", key, min, max
