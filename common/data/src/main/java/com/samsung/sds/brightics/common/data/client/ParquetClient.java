@@ -125,6 +125,7 @@ public class ParquetClient {
 				filteredColumns);
 		List<FileIndex> indexes = info.getLimitedFiles(min, max);
 		Column[] schema = info.getSchema();
+		int[] columnIndex = info.getColumnIndex();
 
 		List<Object[]> data = new ArrayList<>();
 		for (FileIndex index : indexes) {
@@ -145,13 +146,13 @@ public class ParquetClient {
 				}
 				long numRowCount = endIndex - startIndex - leftSkip - rightSkip;
 				reader = (BrighticsParquetReader<DefaultRecord>) BrighticsParquetUtils.getReader(new Path(filePath),
-						filteredColumns);
+						columnIndex);
 				while (leftSkip > 0) {
-					reader.read(filteredColumns);
+					reader.read(columnIndex);
 					leftSkip--;
 				}
 				DefaultRecord record;
-				while ((record = reader.read(filteredColumns)) != null && numRowCount > 0) {
+				while ((record = reader.read(columnIndex)) != null && numRowCount > 0) {
 					data.add(record.getValues());
 					numRowCount--;
 				}
@@ -163,7 +164,7 @@ public class ParquetClient {
 
 		}
 		//send filtered schema and row data information with total count and byte
-        return new ObjectTable(info.getCount(), info.getBytes(), schema, data);
+        return new ObjectTable(info.getCount(), schema.length, info.getBytes(), schema, data);
 	}
     
     public static ObjectTable readParquet(String path, long min, long max) throws IllegalArgumentException, IOException {

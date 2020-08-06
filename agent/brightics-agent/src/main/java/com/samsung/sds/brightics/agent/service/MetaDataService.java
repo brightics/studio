@@ -274,14 +274,14 @@ public class MetaDataService {
             String user = ThreadUtil.getCurrentUser();
             DataStatus ds = ContextManager.getCurrentUserContextSession().getDataStatus(request.getKey());
             ContextType contextType = ds.contextType;
-			if (contextType == ContextType.FILESYSTEM) {
-				int[] filteredColumns = getFilteredColumnFromParam(params);
+            int[] filteredColumns = getFilteredColumnFromParam(params);
+            if (contextType == ContextType.FILESYSTEM) {
 				return getSuccessResult(ParquetClient.readParquet(ds.path, min, max, filteredColumns));
 			} else if (contextType == ContextType.KV_STORE) {
                 return getSuccessResult(DataViewJson.fromRawJsonData(ds.typeName,
                         Optional.ofNullable(KVStoreClient.getInstance().getJsonForClientView(ds.key)).orElseThrow(() -> new BrighticsCoreException("4406"))));
             } else {
-                return getSuccessResult(ContextManager.getRunnerAsContext(contextType, user).viewData(ds.key, min, max));
+                return getSuccessResult(ContextManager.getRunnerAsContext(contextType, user).viewData(ds.key, min, max, filteredColumns));
             }
         } catch (AbsBrighticsException e) {
             logger.error("cannot get data.");
