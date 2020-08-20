@@ -48,7 +48,7 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import com.samsung.sds.brightics.agent.context.python.calcitepython.Sql2Pandas;
+import com.samsung.sds.brightics.agent.context.python.calcitePandas.Sql2Pandas;
 
 public class PythonProcessManager {
     

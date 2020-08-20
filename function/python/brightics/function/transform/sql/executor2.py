@@ -16,7 +16,7 @@
 
 import pandas as pd
 
-from .calcitepython.Sql2Pandas import Sql2Pandas
+from .brighticsql.brighticsql import BrighticSQL
 
 
 def execute2(tables=[pd.DataFrame()], query="select 1"):
@@ -31,8 +31,8 @@ def execute2(tables=[pd.DataFrame()], query="select 1"):
     for i, enum_name in enumerate(enum_table_names):
         query = query.replace("""#{{DF({i})}}""".format(i=i), enum_name)
 
-    Sql2Pandas.set_tables(input_tables)
-    result_df = Sql2Pandas.execute_sql_query(query)
-    Sql2Pandas.reset()
+    BrighticSQL.set_tables(input_tables)
+    result_df = BrighticSQL.execute_sql_query(query)
+    BrighticSQL.reset()
 
     return {'out_table': result_df}
