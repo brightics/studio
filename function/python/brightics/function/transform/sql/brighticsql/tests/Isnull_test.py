@@ -1,30 +1,12 @@
-"""
-    Copyright 2019 Samsung SDS
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-"""
-
-# -*- coding: utf-8 -*-
-
 import numpy as np
 import pandas as pd
 import unittest
 
-from  ..src.utils.unittest_util import table_cmp
-from ..brighticsql import BrighticSQL
+from brighticsql.utils.unittest_util import table_cmp
+from brighticsql.sqldf import BrighticSQL
 
 
-class Isnull_test(unittest.TestCase):
+class IsnullTest(unittest.TestCase):
 
     def setUp(self):
         self.print_dfs = False
@@ -41,7 +23,7 @@ class Isnull_test(unittest.TestCase):
 
     def test01(self):
         sql = "select a from df1 where a is null"
-        res = self.brtcsql.execute_sql_query(sql)
+        res = self.brtcsql.execute(sql)
         ref = pd.DataFrame({
             'A': [None, None, None]
         })
@@ -49,7 +31,7 @@ class Isnull_test(unittest.TestCase):
 
     def test02(self):
         sql = "select * from df1 where a is null"
-        res = self.brtcsql.execute_sql_query(sql)
+        res = self.brtcsql.execute(sql)
         ref = pd.DataFrame({
             'A': [None, None, None],
             'G': ['g1', 'g2', 'g1'],
@@ -59,7 +41,7 @@ class Isnull_test(unittest.TestCase):
 
     def test03(self):
         sql = "select * from df1 where a is not null"
-        res = self.brtcsql.execute_sql_query(sql)
+        res = self.brtcsql.execute(sql)
         ref = pd.DataFrame({
             'A': [1, 2, 4, 8],
             'G': ['g0', 'g0', None, 'g1'],
@@ -69,7 +51,7 @@ class Isnull_test(unittest.TestCase):
 
     def test04(self):
         sql = "select a, b from df1 where a is not null"
-        res = self.brtcsql.execute_sql_query(sql)
+        res = self.brtcsql.execute(sql)
         ref = pd.DataFrame({
             'A': [1, 2, 4, 8],
             'b': [0.1, 0.1, np.nan, np.nan]

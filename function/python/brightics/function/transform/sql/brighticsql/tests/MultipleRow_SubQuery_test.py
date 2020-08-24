@@ -1,28 +1,12 @@
-"""
-    Copyright 2019 Samsung SDS
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-"""
-
 import numpy as np
 import pandas as pd
 import unittest
 
-from  ..src.utils.unittest_util import table_cmp
-from ..brighticsql import BrighticSQL
+from brighticsql.utils.unittest_util import table_cmp
+from brighticsql.sqldf import BrighticSQL
 
 
-class MultipleRow_SubQuery_test(unittest.TestCase):
+class MultipleRowSubQueryTest(unittest.TestCase):
 
     def setUp(self):
         self.print_dfs = False
@@ -41,7 +25,7 @@ class MultipleRow_SubQuery_test(unittest.TestCase):
             'Price': [18.0, 19.0, 10.0, 22.0, 21.35, 25.0, 3.0, 40.0, 9.0, 31]
         })
         self.instructor = pd.DataFrame({
-            'NAME':	['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'],
+            'NAME': ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'],
             'DEPARTMENT': ['CB', 'E', 'CS', 'E', 'CS', 'E', 'CS', 'B'],
             'SALARY': [1, 1.2, 1.3, 1.2, 2, 1.2, 2, 0.9]
         })
@@ -69,7 +53,7 @@ class MultipleRow_SubQuery_test(unittest.TestCase):
         sql = """SELECT ProductName
                  FROM Products
                  WHERE ProductID in (SELECT ProductID FROM OrderDetails WHERE Quantity = 10)"""
-        res = self.brtcsql.execute_sql_query(sql)
+        res = self.brtcsql.execute(sql)
         ref = pd.DataFrame({'ProductName': ['D', 'F', 'H']})
         table_cmp(sql, res, ref, print_dfs=self.print_dfs,
                   check_row_order=self.check_row_order)
@@ -78,7 +62,7 @@ class MultipleRow_SubQuery_test(unittest.TestCase):
         sql = """SELECT ProductName
                  FROM Products
                  WHERE ProductID = some(SELECT ProductID FROM OrderDetails WHERE Quantity = 10)"""
-        res = self.brtcsql.execute_sql_query(sql)
+        res = self.brtcsql.execute(sql)
         ref = pd.DataFrame({'ProductName': ['D', 'F', 'H']})
         table_cmp(sql, res, ref, print_dfs=self.print_dfs,
                   check_row_order=self.check_row_order)
@@ -87,8 +71,9 @@ class MultipleRow_SubQuery_test(unittest.TestCase):
         sql = """SELECT ProductName
                  FROM Products
                  WHERE ProductID <> some(SELECT ProductID FROM OrderDetails WHERE Quantity = 10)"""
-        res = self.brtcsql.execute_sql_query(sql)
-        ref = pd.DataFrame({'ProductName': ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']})
+        res = self.brtcsql.execute(sql)
+        ref = pd.DataFrame(
+            {'ProductName': ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']})
         table_cmp(sql, res, ref, print_dfs=self.print_dfs,
                   check_row_order=self.check_row_order)
 
@@ -96,7 +81,7 @@ class MultipleRow_SubQuery_test(unittest.TestCase):
         sql = """SELECT name
                  FROM instructor
                  WHERE salary > some (SELECT salary from instructor where department='CS')"""
-        res = self.brtcsql.execute_sql_query(sql)
+        res = self.brtcsql.execute(sql)
         ref = pd.DataFrame({'name': ['E', 'G']})
         table_cmp(sql, res, ref, print_dfs=self.print_dfs,
                   check_row_order=self.check_row_order)
@@ -105,7 +90,7 @@ class MultipleRow_SubQuery_test(unittest.TestCase):
         sql = """SELECT name
                  FROM instructor
                  WHERE salary >= some (SELECT salary from instructor where department='CS')"""
-        res = self.brtcsql.execute_sql_query(sql)
+        res = self.brtcsql.execute(sql)
         ref = pd.DataFrame({'name': ['C', 'E', 'G']})
         table_cmp(sql, res, ref, print_dfs=self.print_dfs,
                   check_row_order=self.check_row_order)
@@ -114,7 +99,7 @@ class MultipleRow_SubQuery_test(unittest.TestCase):
         sql = """SELECT name
                  FROM instructor
                  WHERE salary < some (SELECT salary from instructor where department='CS')"""
-        res = self.brtcsql.execute_sql_query(sql)
+        res = self.brtcsql.execute(sql)
         ref = pd.DataFrame({'name': ['A', 'B', 'C', 'D', 'F', 'H']})
         table_cmp(sql, res, ref, print_dfs=self.print_dfs,
                   check_row_order=self.check_row_order)
@@ -123,7 +108,7 @@ class MultipleRow_SubQuery_test(unittest.TestCase):
         sql = """SELECT name
                  FROM instructor
                  WHERE salary <= some (SELECT salary from instructor where department='CS')"""
-        res = self.brtcsql.execute_sql_query(sql)
+        res = self.brtcsql.execute(sql)
         ref = pd.DataFrame({'name': ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']})
         table_cmp(sql, res, ref, print_dfs=self.print_dfs,
                   check_row_order=self.check_row_order)
@@ -132,7 +117,7 @@ class MultipleRow_SubQuery_test(unittest.TestCase):
         sql = """SELECT ProductName
                  FROM Products
                  WHERE ProductID = any(SELECT ProductID FROM OrderDetails WHERE Quantity = 10)"""
-        res = self.brtcsql.execute_sql_query(sql)
+        res = self.brtcsql.execute(sql)
         ref = pd.DataFrame({'ProductName': ['D', 'F', 'H']})
         table_cmp(sql, res, ref, print_dfs=self.print_dfs,
                   check_row_order=self.check_row_order)
@@ -141,8 +126,9 @@ class MultipleRow_SubQuery_test(unittest.TestCase):
         sql = """SELECT ProductName
                  FROM Products
                  WHERE ProductID <> any(SELECT ProductID FROM OrderDetails WHERE Quantity = 10)"""
-        res = self.brtcsql.execute_sql_query(sql)
-        ref = pd.DataFrame({'ProductName': ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']})
+        res = self.brtcsql.execute(sql)
+        ref = pd.DataFrame(
+            {'ProductName': ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']})
         table_cmp(sql, res, ref, print_dfs=self.print_dfs,
                   check_row_order=self.check_row_order)
 
@@ -150,7 +136,7 @@ class MultipleRow_SubQuery_test(unittest.TestCase):
         sql = """SELECT name
                  FROM instructor
                  WHERE salary > any (SELECT salary from instructor where department='CS')"""
-        res = self.brtcsql.execute_sql_query(sql)
+        res = self.brtcsql.execute(sql)
         ref = pd.DataFrame({'name': ['E', 'G']})
         table_cmp(sql, res, ref, print_dfs=self.print_dfs,
                   check_row_order=self.check_row_order)
@@ -159,7 +145,7 @@ class MultipleRow_SubQuery_test(unittest.TestCase):
         sql = """SELECT name
                  FROM instructor
                  WHERE salary >= any (SELECT salary from instructor where department='CS')"""
-        res = self.brtcsql.execute_sql_query(sql)
+        res = self.brtcsql.execute(sql)
         ref = pd.DataFrame({'name': ['C', 'E', 'G']})
         table_cmp(sql, res, ref, print_dfs=self.print_dfs,
                   check_row_order=self.check_row_order)
@@ -168,7 +154,7 @@ class MultipleRow_SubQuery_test(unittest.TestCase):
         sql = """SELECT name
                  FROM instructor
                  WHERE salary < any (SELECT salary from instructor where department='CS')"""
-        res = self.brtcsql.execute_sql_query(sql)
+        res = self.brtcsql.execute(sql)
         ref = pd.DataFrame({'name': ['A', 'B', 'C', 'D', 'F', 'H']})
         table_cmp(sql, res, ref, print_dfs=self.print_dfs,
                   check_row_order=self.check_row_order)
@@ -177,7 +163,7 @@ class MultipleRow_SubQuery_test(unittest.TestCase):
         sql = """SELECT name
                  FROM instructor
                  WHERE salary <= any (SELECT salary from instructor where department='CS')"""
-        res = self.brtcsql.execute_sql_query(sql)
+        res = self.brtcsql.execute(sql)
         ref = pd.DataFrame({'name': ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']})
         table_cmp(sql, res, ref, print_dfs=self.print_dfs,
                   check_row_order=self.check_row_order)
@@ -186,7 +172,7 @@ class MultipleRow_SubQuery_test(unittest.TestCase):
         sql = """SELECT Name
                  FROM instructor
                  WHERE salary = all(SELECT salary FROM instructor WHERE department = 'E')"""
-        res = self.brtcsql.execute_sql_query(sql)
+        res = self.brtcsql.execute(sql)
         ref = pd.DataFrame({'Name': ['B', 'D', 'F']})
         table_cmp(sql, res, ref, print_dfs=self.print_dfs,
                   check_row_order=self.check_row_order)
@@ -195,8 +181,8 @@ class MultipleRow_SubQuery_test(unittest.TestCase):
         sql = """SELECT Name
                  FROM instructor
                  WHERE salary <> all(SELECT salary FROM instructor WHERE department = 'E')"""
-        res = self.brtcsql.execute_sql_query(sql)
-        ref = pd.DataFrame({'Name': ['A', 'C', 'E', 'G','H']})
+        res = self.brtcsql.execute(sql)
+        ref = pd.DataFrame({'Name': ['A', 'C', 'E', 'G', 'H']})
         table_cmp(sql, res, ref, print_dfs=self.print_dfs,
                   check_row_order=self.check_row_order)
 
@@ -204,7 +190,7 @@ class MultipleRow_SubQuery_test(unittest.TestCase):
         sql = """SELECT Name
                  FROM instructor
                  WHERE salary > all(SELECT salary FROM instructor WHERE department = 'E')"""
-        res = self.brtcsql.execute_sql_query(sql)
+        res = self.brtcsql.execute(sql)
         ref = pd.DataFrame({'Name': ['C', 'E', 'G']})
         table_cmp(sql, res, ref, print_dfs=self.print_dfs,
                   check_row_order=self.check_row_order)
@@ -213,7 +199,7 @@ class MultipleRow_SubQuery_test(unittest.TestCase):
         sql = """SELECT Name
                  FROM instructor
                  WHERE salary >= all(SELECT salary FROM instructor WHERE department = 'E')"""
-        res = self.brtcsql.execute_sql_query(sql)
+        res = self.brtcsql.execute(sql)
         ref = pd.DataFrame({'Name': ['B', 'C', 'D', 'E', 'F', 'G']})
         table_cmp(sql, res, ref, print_dfs=self.print_dfs,
                   check_row_order=self.check_row_order)
@@ -222,7 +208,7 @@ class MultipleRow_SubQuery_test(unittest.TestCase):
         sql = """SELECT Name
                  FROM instructor
                  WHERE salary < all(SELECT salary FROM instructor WHERE department = 'E')"""
-        res = self.brtcsql.execute_sql_query(sql)
+        res = self.brtcsql.execute(sql)
         ref = pd.DataFrame({'Name': ['A', 'H']})
         table_cmp(sql, res, ref, print_dfs=self.print_dfs,
                   check_row_order=self.check_row_order)
@@ -231,7 +217,7 @@ class MultipleRow_SubQuery_test(unittest.TestCase):
         sql = """SELECT Name
                  FROM instructor
                  WHERE salary <= all(SELECT salary FROM instructor WHERE department = 'E')"""
-        res = self.brtcsql.execute_sql_query(sql)
+        res = self.brtcsql.execute(sql)
         ref = pd.DataFrame({'Name': ['A', 'B', 'D', 'F', 'H']})
         table_cmp(sql, res, ref, print_dfs=self.print_dfs,
                   check_row_order=self.check_row_order)
@@ -239,7 +225,7 @@ class MultipleRow_SubQuery_test(unittest.TestCase):
     def test20(self):
         sql = """select * from food f
                  where exists (select c.number from color c)"""
-        res = self.brtcsql.execute_sql_query(sql)
+        res = self.brtcsql.execute(sql)
         ref = pd.DataFrame({
             'number': [1, None, 2, 3, 4, 5, 6, 7, 8, 9, None, None, 10],
             'food': ['chicken', 'spagetti', 'hamberger', 'pizza', 'salad',
@@ -252,7 +238,7 @@ class MultipleRow_SubQuery_test(unittest.TestCase):
     def test21(self):
         sql = """select * from food f
                  where exists (select number = number from color)"""
-        res = self.brtcsql.execute_sql_query(sql)
+        res = self.brtcsql.execute(sql)
         ref = pd.DataFrame({
             'number': [1, None, 2, 3, 4, 5, 6, 7, 8, 9, None, None, 10],
             'food': ['chicken', 'spagetti', 'hamberger', 'pizza', 'salad',
@@ -265,7 +251,7 @@ class MultipleRow_SubQuery_test(unittest.TestCase):
     def test22(self):
         sql = """select * from food f
                  where exists (select number <> number from color)"""
-        res = self.brtcsql.execute_sql_query(sql)
+        res = self.brtcsql.execute(sql)
         ref = pd.DataFrame({
             'number': [1, None, 2, 3, 4, 5, 6, 7, 8, 9, None, None, 10],
             'food': ['chicken', 'spagetti', 'hamberger', 'pizza', 'salad',

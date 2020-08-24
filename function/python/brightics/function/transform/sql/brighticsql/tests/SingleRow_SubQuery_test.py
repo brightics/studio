@@ -1,30 +1,12 @@
-"""
-    Copyright 2019 Samsung SDS
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-"""
-
-# -*- coding: utf-8 -*-
-
-import numpy as np
-import pandas as pd
 import unittest
 
-from  ..src.utils.unittest_util import table_cmp
-from ..brighticsql import BrighticSQL
+import pandas as pd
+
+from brighticsql.sqldf import BrighticSQL
+from brighticsql.utils.unittest_util import table_cmp
 
 
-class SingleRow_SubQuery_test(unittest.TestCase):
+class SingleRowSubQueryTest(unittest.TestCase):
 
     def setUp(self):
         self.print_dfs = False
@@ -50,7 +32,7 @@ class SingleRow_SubQuery_test(unittest.TestCase):
     def test01(self):
         sql = """SELECT * from food
                  where number = (select number from color where color='green')"""
-        res = self.brtcsql.execute_sql_query(sql)
+        res = self.brtcsql.execute(sql)
         ref = pd.DataFrame({
             'number': [3],
             'food': ['pizza']})
@@ -60,7 +42,7 @@ class SingleRow_SubQuery_test(unittest.TestCase):
     def test02(self):
         sql = """SELECT * from food
                  where number = (select number from color where color='orange')"""
-        res = self.brtcsql.execute_sql_query(sql)
+        res = self.brtcsql.execute(sql)
         ref = pd.DataFrame({
             'number': [],
             'food': []})
@@ -70,7 +52,7 @@ class SingleRow_SubQuery_test(unittest.TestCase):
     def test03(self):
         sql = """SELECT * from food
                  where number < (select number from color where color='green')"""
-        res = self.brtcsql.execute_sql_query(sql)
+        res = self.brtcsql.execute(sql)
         ref = pd.DataFrame({
             'number': [1, 2],
             'food': ['chicken', 'hamberger']})
@@ -80,7 +62,7 @@ class SingleRow_SubQuery_test(unittest.TestCase):
     def test04(self):
         sql = """SELECT * from food
                  where number <= (select number from color where color='green')"""
-        res = self.brtcsql.execute_sql_query(sql)
+        res = self.brtcsql.execute(sql)
         ref = pd.DataFrame({
             'number': [1, 2, 3],
             'food': ['chicken', 'hamberger', 'pizza']})
@@ -90,7 +72,7 @@ class SingleRow_SubQuery_test(unittest.TestCase):
     def test05(self):
         sql = """SELECT * from food
                  where number > (select number from color where color='green')"""
-        res = self.brtcsql.execute_sql_query(sql)
+        res = self.brtcsql.execute(sql)
         ref = pd.DataFrame({
             'number': [4, 5, 6, 7, 8, 9, 10],
             'food': ['salad', None, None, 'candy', 'sushi', 'soup', 'cake']
@@ -101,10 +83,11 @@ class SingleRow_SubQuery_test(unittest.TestCase):
     def test06(self):
         sql = """SELECT * from food
                  where number >= (select number from color where color='green')"""
-        res = self.brtcsql.execute_sql_query(sql)
+        res = self.brtcsql.execute(sql)
         ref = pd.DataFrame({
             'number': [3, 4, 5, 6, 7, 8, 9, 10],
-            'food': ['pizza', 'salad', None, None, 'candy', 'sushi', 'soup', 'cake']
+            'food': ['pizza', 'salad', None, None, 'candy', 'sushi', 'soup',
+                     'cake']
         })
         table_cmp(sql, res, ref, print_dfs=self.print_dfs,
                   check_row_order=self.check_row_order)
@@ -112,10 +95,11 @@ class SingleRow_SubQuery_test(unittest.TestCase):
     def test07(self):
         sql = """SELECT * from food
                  where number <> (select number from color where color='green')"""
-        res = self.brtcsql.execute_sql_query(sql)
+        res = self.brtcsql.execute(sql)
         ref = pd.DataFrame({
             'number': [1, 2, 4, 5, 6, 7, 8, 9, 10],
-            'food': ['chicken', 'hamberger', 'salad', None, None, 'candy', 'sushi', 'soup', 'cake']
+            'food': ['chicken', 'hamberger', 'salad', None, None, 'candy',
+                     'sushi', 'soup', 'cake']
         })
         table_cmp(sql, res, ref, print_dfs=self.print_dfs,
                   check_row_order=self.check_row_order)
