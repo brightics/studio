@@ -58,7 +58,7 @@ public class WriterUtil {
         } else if (rel instanceof LogicalIntersect) {
             return mapLogicalIntersect((LogicalIntersect) rel);
         } else {
-            throw new Exception("Unimplemented RelNode Type.");
+            throw new NotImplementedException("Unimplemented RelNode Type.");
         }
     }
 
@@ -74,8 +74,7 @@ public class WriterUtil {
         } else if (rex instanceof RexCorrelVariable) {
             return mapRexCorrelVariable((RexCorrelVariable) rex);
         } else {
-            throw new Exception(
-                    "Unknown RexNode Type or UnImplemented RexNode Type");
+            throw new NotImplementedException("UnImplemented RexNode Type");
         }
     }
 
