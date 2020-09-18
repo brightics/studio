@@ -1,3 +1,37 @@
+Brightics Studio 사용자께 안내 말씀드립니다.
+
+BrighticsStudio-v1.1-2020.07-windows.exe에 악성코드 감염이 발견되어 삭제 및 재설치 안내해 드립니다
+
+### [삭제 방법]
+1. 설치한 `brightics-studio` 폴더 전체를 삭제해주세요 (기본 설치 경로는 `C:\brightics-studio` 입니다.)
+![1](img/1.png)
+
+2. 파일 탐색기를 열고 주소 표시창에 `%userprofile%` 을 입력해주세요
+![2](img/2.png)
+
+3. `Brightics Studio Updater.exe` 파일이 존재하면 삭제해주시고 없다면 다음 단계로 넘어가 주세요.
+
+
+4. `msvcp140_3.dll` 파일이 존재하면 삭제해주시고 없다면 다음 단계로 넘어가 주세요.
+![4](img/4.png)
+
+5. 파일 탐색기를 열고 주소 표시창에 `%temp%` 를 입력해주세요
+![5](img/5.png)
+
+6. `STL.vbs` 파일이 존재하면 삭제해주시고 없다면 다음 단계로 넘어가 주세요.
+![6](img/6.png)
+
+7. 윈도키 + R 단축키를 이용하거나 윈도 실행창에서 `cmd` 를 입력해주세요.
+![7](img/7.png)
+
+8. 윈도우 명령어 창이 열리면 `SchTasks /DELETE /TN BrighticsStudioUpdater` 를 입력해주세요.
+![8](img/8.png)
+
+### [재설치방법]
+[BrighticsStudio-v1.1-2020.06-windows.exe](https://github.com/brightics/studio/releases/download/v1.1-2020.06/BrighticsStudio-v1.1-2020.06-windows.exe) 를 다운로드하여 재설치하시기 바랍니다.
+
+사용에 불편을 끼쳐 죄송합니다.
+
 # Brightics Studio v1.1
 [![Version](https://img.shields.io/github/v/release/brightics/studio)](https://github.com/brightics/studio/releases)
 [![Release Date](https://img.shields.io/github/release-date/brightics/studio)](https://github.com/brightics/studio/releases)
