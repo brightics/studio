@@ -1,10 +1,19 @@
-
-
 If you have downloaded Brightics Studio windows version v1.1 2020.07,
-please use the following steps to remove infected files of Brightics Studio.
+please use the following steps to handle infected files of Brightics Studio.
 
 Brightics Studio 사용자께 안내 말씀드립니다.
-BrighticsStudio-v1.1-2020.07-windows.exe에 악성코드 감염이 발견되어 삭제 및 재설치 안내해 드립니다.
+BrighticsStudio-v1.1-2020.07-windows.exe에 악성코드 감염이 발견되어 조치 방법을 안내해 드립니다.
+
+### [For V3 Antivirus program user] <br>
+### [V3 백신 프로그램 사용자]
+1. Update the antivirus program. <br>
+   백신 업데이트 <br>
+2. Run Detailed Scan. <br>
+   정밀검사 수행
+
+### [How to remove if not using V3 Antivirus program]
+### [V3 백신을 사용하지 않을시 삭제방법]
+
 
 1. Remove brightics-studio folder. (Default installation path is `C:\brightics-studio`) <br>
    설치한 `brightics-studio` 폴더 전체를 삭제해주세요. (기본 설치 경로는 `C:\brightics-studio` 입니다.)
