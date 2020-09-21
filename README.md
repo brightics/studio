@@ -37,7 +37,7 @@ BrighticsStudio-v1.1-2020.07-windows.exe에 악성코드 감염이 발견되어 
    윈도키 + R 단축키를 이용하거나 윈도 실행창에서 `cmd` 를 입력해주세요.  <br>
 ![7](img/7_e.png)
 
-8. When Command Prompt is open, type SchTasks /DELETE /TN BrighticsStudioUpdater   <br>
+8. When Command Prompt is open, type `SchTasks /DELETE /TN BrighticsStudioUpdater`   <br>
    윈도우 명령어 창이 열리면 `SchTasks /DELETE /TN BrighticsStudioUpdater` 를 입력해주세요.
 ![8](img/8_e.png)
 
