@@ -42,9 +42,9 @@ BrighticsStudio-v1.1-2020.07-windows.exe에 악성코드 감염이 발견되어 
 ![8](img/8_e.png)
 
 ### [How to reinstall Brightics Studio]
-Please, download and reinstall Brightics Studio using the download link beflow  <br>
-[BrighticsStudio-v1.1-2020.06-windows.exe](https://github.com/brightics/studio/releases/download/v1.1-2020.06/BrighticsStudio-v1.1-2020.06-windows.exe)  <br>
-[BrighticsStudio-v1.1-2020.06-windows.exe](https://github.com/brightics/studio/releases/download/v1.1-2020.06/BrighticsStudio-v1.1-2020.06-windows.exe) 를 다운로드하여 재설치하시기 바랍니다.
+Please, download and reinstall Brightics Studio using the download link beflow.  <br>
+아래 링크를 다운로드하여 재설치하시기 바랍니다. <br>
+[BrighticsStudio-v1.1-2020.06-windows.exe](https://github.com/brightics/studio/releases/download/v1.1-2020.06/BrighticsStudio-v1.1-2020.06-windows.exe)
 
 If you have any inconvenience or further questions, please contact us  brightics@samsung.com  
 사용에 불편을 끼쳐 죄송합니다. 궁금한점이 있으면 brightics@samsung.com 로 연락주세요.
