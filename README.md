@@ -1,7 +1,14 @@
 # Brightics Studio v1.1
-
-[![Build Status](https://travis-ci.com/brightics/studio.svg?branch=master-dl)](https://travis-ci.com/brightics/studio)
-
+[![Version](https://img.shields.io/github/v/release/brightics/studio)](https://github.com/brightics/studio/releases)
+[![Release Date](https://img.shields.io/github/release-date/brightics/studio)](https://github.com/brightics/studio/releases)
+[![Build Status](https://travis-ci.com/brightics/studio.svg?branch=master)](https://travis-ci.com/brightics/studio)
+![CodeQL](https://github.com/brightics/studio/workflows/CodeQL/badge.svg)
+![Download Counts](https://img.shields.io/github/downloads/brightics/studio/total.svg)
+![Latest Counts](https://img.shields.io/github/downloads/brightics/studio/latest/total)
+[![docker star](https://img.shields.io/docker/stars/brightics/studio)](https://hub.docker.com/r/brightics/studio)
+<a href="../../graphs/contributors"><img src="https://img.shields.io/github/contributors/brightics/studio.svg" /></a>
+[![community](https://img.shields.io/badge/Help-Community-brightgreen)](https://www.brightics.ai/community/categories)
+[![youtube](https://img.shields.io/youtube/views/DR13sLVWXYs?style=social)](https://www.youtube.com/brighticsTV)
 
 <img src="docs/images/brightics_sample.png" width="960px" height="468px" alt="Brightics Studio"></img>
 
@@ -125,10 +132,10 @@ See [the documentation about this license](BRIGHTICS_VA_LICENSE) for more detail
 We are working hard to solve these issues and soon it will be public.
 
 ### Contributors
+
 This project exists thanks to all the people who contribute.
 <a href="../../graphs/contributors"><img src="https://opencollective.com/brightics-studio/contributors.svg?width=890&button=false" /></a>
 
 ## Contact us
 If you like to use Brightics Studio, please let us know your usage and feedback.<br>
 Or you have questions while using Brightics Studio, don't hesitate and feel free to contact brightics@samsung.com
-
