@@ -1,0 +1,194 @@
+{
+  "_label": "Local Simulation for Grad CAM",
+  "_description": "Local Simulation for Grad CAM",
+  "_tags": [
+    "image",
+    "classification",
+    "simulation",
+    "cam"
+  ],
+  "_confType": "GradCAM",
+  "params": {
+    "model": {
+      "_label": "Warm Start",
+      "_description": "Warm start model settings for the inference.",
+      "_type": "module",
+      "_control": "moduleSelector",
+      "_moduleName": "warm-start",
+      "_value": {
+        "_label": "Basic (All Variables)",
+        "_description": "This warm start setting restores the whole variables.",
+        "params": {
+          "model": {
+            "_label": "Model",
+            "_description": "The model from which to warm-start the model parameters.",
+            "_type": "model",
+            "_control": "modelSelector",
+            "_value": {
+              "id": "",
+              "path": ""
+            },
+            "_optional": false,
+            "_advancedOption": false
+          },
+          "vars_to_warm_start": {
+            "_label": "Variables To Warm Start (Regular Expressions)",
+            "_description": "Regular expressions for the name of trainable variables. Multiple expressions can be assigned by comma. Default is '.*' (all variables)",
+            "_type": "string",
+            "_control": "input",
+            "_value": ".*",
+            "_optional": true,
+            "_advancedOption": false
+          },
+          "load_only_trainable_vars": {
+            "_label": "Load Only Trainable Variables",
+            "_description": "If checked, only trainable variables in the model graph are considered. If not checked, all variables are considered.",
+            "_type": "boolean",
+            "_control": "checkbox",
+            "_value": false,
+            "_optional": true,
+            "_advancedOption": false
+          },
+          "checkpoint_exclude_scopes": {
+            "_label": "Checkpoint Exclude Scopes",
+            "_description": "Scopes to exclude in the checkpoint.",
+            "_type": "string",
+            "_control": "input",
+            "_value": "",
+            "_optional": true,
+            "_advancedOption": false
+          }
+        },
+        "_deprecated": false,
+        "module": "brightics.deeplearning.runner.warm_start",
+        "_tags": [],
+        "name": "BasicWarmStart",
+        "updateVersion": "3.7"
+      },
+      "_optional": false,
+      "_advancedOption": false
+    },
+    "output_path": {
+      "_label": "Inference Result Output Path",
+      "_description": "Path to saving results of inference job.",
+      "_type": "string",
+      "_control": "input",
+      "_value": "",
+      "_optional": true,
+      "_advancedOption": false
+    },
+    "output_overwrite": {
+      "_label": "Inference Output Overwrite",
+      "_description": "If checked, output file will be overwritten when there exists another file in the same path. Otherwise, an error will be raised.",
+      "_type": "boolean",
+      "_control": "checkbox",
+      "_value": false,
+      "_optional": true,
+      "_advancedOption": false
+    },
+    "html_path": {
+      "_label": "Output Summary Path",
+      "_description": "Path to saving summary results of this simulation job.",
+      "_type": "string",
+      "_control": "input",
+      "_value": "",
+      "_optional": true,
+      "_advancedOption": false
+    },
+    "target_tensor_name": {
+      "_label": "Target Tensor Name",
+      "_description": "Target tensor name. ex) resnet_v2_50/block4/unit_3/bottleneck_v2/conv3/BiasAdd:0",
+      "_type": "string",
+      "_control": "input",
+      "_value": "",
+      "_optional": true,
+      "_advancedOption": false
+    },
+    "target_operation_name": {
+      "_label": "Target Operation Name",
+      "_description": "Target operation name. Ignored when Target Tensor Name is assigned. ex) resnet_v2_50/block4/unit_3/bottleneck_v2/conv3/BiasAdd",
+      "_type": "string",
+      "_control": "input",
+      "_value": "",
+      "_optional": true,
+      "_advancedOption": false
+    },
+    "logit_tensor_name": {
+      "_label": "Logit Tensor Name",
+      "_description": "Logit tensor name(before the softmax). ex) resnet_v2_50/logits/BiasAdd:0",
+      "_type": "string",
+      "_control": "input",
+      "_value": "",
+      "_optional": true,
+      "_advancedOption": false
+    },
+    "logit_operation_name": {
+      "_label": "Logit Operation Name",
+      "_description": "Logit operation name. Ignored when Logit Tensor Name is assigned. ex) resnet_v2_50/logits/BiasAdd",
+      "_type": "string",
+      "_control": "input",
+      "_value": "",
+      "_optional": true,
+      "_advancedOption": false
+    },
+    "image_key": {
+      "_label": "Image key",
+      "_description": "Image tensor key in features. If features is a tensor, use 'features'. If features is a dictionary of tensor, use 'features.key_name'.",
+      "_type": "string",
+      "_control": "input",
+      "_value": "features.image",
+      "_optional": false,
+      "_advancedOption": false
+    },
+    "output_image_shape": {
+      "_label": "Output Image Shape",
+      "_description": "The (height, width, channels) of output images, including Grad-CAM overlaid. It must be equal to the size of input data. Values are separated by comma.",
+      "_type": "string",
+      "_control": "input",
+      "_value": "",
+      "_optional": false,
+      "_advancedOption": false
+    },
+    "sampling_ratio": {
+      "_label": "Sampling Ratio",
+      "_description": "Sampling ratio in [0,1]. Samples to be shown in summary.",
+      "_type": "number",
+      "_control": "input",
+      "_value": 0.01,
+      "_optional": true,
+      "_advancedOption": false
+    },
+    "use_gpu": {
+      "_label": "Use GPU",
+      "_description": "Whether GPU is used for the inference job.",
+      "_type": "boolean",
+      "_control": "checkbox",
+      "_value": true,
+      "_optional": true,
+      "_advancedOption": false
+    },
+    "intra_op_parallelism_threads": {
+      "_label": "Intra Op Parallelism Threads",
+      "_description": "The execution of an individual op (for some op types) can be parallelized on a pool of intra_op_parallelism_threads. 0 means the system picks an appropriate number.",
+      "_type": "number",
+      "_control": "input",
+      "_value": 0,
+      "_optional": true,
+      "_advancedOption": false
+    },
+    "inter_op_parallelism_threads": {
+      "_label": "Inter Op Parallelism Threads",
+      "_description": "Nodes that perform blocking operations are enqueued on a pool of inter_op_parallelism_threads available in each process. 0 means the system picks an appropriate number.",
+      "_type": "number",
+      "_control": "input",
+      "_value": 0,
+      "_optional": true,
+      "_advancedOption": false
+    }
+  },
+  "module": "brightics.deeplearning.inference_configuration",
+  "name": "local_simulation_grad_cam",
+  "updateVersion": "3.7",
+  "_deprecated": false,
+  "_executionType": "default"
+}

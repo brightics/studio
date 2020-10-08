@@ -92,9 +92,7 @@ public enum PythonScriptType {
     DLPythonScript {
         @Override
         public String getSource(TaskMessageWrapper message) {
-            return scriptBuilder(message).
-                    addScript().
-                    script();
+            return DLPythonScriptBuilder.script(message);
         }
     },
     DLPredict {

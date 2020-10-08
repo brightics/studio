@@ -61,7 +61,7 @@ public class AgentUserService {
 		if(!DYNAMIC_AGENT.equals(brighticsAgentUser.getAgentId())){
 			agentService.getBrighticsAgentOrThrow(brighticsAgentUser.getAgentId());
 		}
-		if(brighticsAgentUserMapRepository.exists(brighticsAgentUser.getUserId())){
+		if(brighticsAgentUserMapRepository.existsById(brighticsAgentUser.getUserId())){
 			brighticsAgentUserMapRepository.delete(brighticsAgentUser.getUserId(), USER_SERVICE_NAME);
 		}
 		brighticsAgentUserMapRepository.save(brighticsAgentUser, USER_SERVICE_NAME);

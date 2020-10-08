@@ -19,11 +19,10 @@ package com.samsung.sds.brightics.server.common.message.stream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import com.samsung.sds.brightics.common.network.proto.stream.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.samsung.sds.brightics.common.network.proto.stream.ReadMessage;
-import com.samsung.sds.brightics.common.network.proto.stream.WriteMessage;
 import com.samsung.sds.brightics.common.network.sender.MessageSender;
 import com.samsung.sds.brightics.server.common.util.AuthenticationUtil;
 
@@ -45,5 +44,16 @@ public class StreamMessageManager {
 		logger.info("[FILE RECEIVE] UserID: " + AuthenticationUtil.getRequestUserId() + " , Message : "
 				+ message.toString());
 		sender.receiveFile(message, outputstream);
+	}
+
+	public void receiveCheckpoint(ReadCheckpointMessage message, OutputStream outputstream){
+		logger.info("[CHECKPOINT RECEIVE] UserID: " + AuthenticationUtil.getRequestUserId() + " , Message : "
+				+ message.toString());
+		sender.receiveCheckpoint(message, outputstream);
+	}
+
+	public ResultMessage download(DownloadMessage message) {
+		logger.info("[DOWNLOAD] UserID: " + message.getUser() + " , Message : " + message.toString());
+		return sender.download(message);
 	}
 }
