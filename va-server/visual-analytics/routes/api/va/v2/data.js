@@ -46,7 +46,7 @@ const convertResultSet = function (resultSet) {
     return temp;
 };
 
-const parseStagingData = function (body) {
+const parseStagingData = function (body, columnLength) {
     let arrColIndexes = [];
     let resultSet = convertResultSet(JSON.parse(body));
     resultSet.columns = [];
@@ -79,6 +79,7 @@ const parseStagingData = function (body) {
             }
         }
     }
+    if (columnLength) resultSet.columnLength = columnLength;
     return resultSet;
 };
 
@@ -588,7 +589,6 @@ const downloadFile = function (req, res) {
     });
     let options = __BRTC_CORE_SERVER.createRequestOptions('GET', url);
     __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-    res.write(Buffer.from('EFBBBF', 'hex'));
     request(options).pipe(res);
 };
 /**
@@ -692,13 +692,10 @@ const importFile = function (req, res) {
 };
 
 router.get('/staging/query', __BRTC_ERROR_HANDLER.checkParams(['user', 'mid', 'tab', 'offset', 'limit']), function (req, res) {
-    const compile = mf.compile('/api/core/v2/data/view/{mid}/{tab}?offset={offset}&limit={limit}');
-    const url = compile({
-        user: req.query.user,
-        mid: req.query.mid,
-        tab: req.query.tab,
-        offset: req.query.offset,
-        limit: req.query.limit,
+    
+    let compile = mf.compile('/api/core/v2/data/schema?key={key}');
+    let url = compile({
+        key: `/${req.query.user}/${req.query.mid}/${req.query.tab}`
     });
     let options = __BRTC_CORE_SERVER.createRequestOptions('GET', url);
     __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
@@ -707,13 +704,81 @@ router.get('/staging/query', __BRTC_ERROR_HANDLER.checkParams(['user', 'mid', 't
         if (error) {
             return __BRTC_ERROR_HANDLER.sendServerError(res, error);
         }
-        if (response.statusCode !== 200) {
+        const statusCode = response.statusCode;
+        if(statusCode === 401){
+            return __BRTC_ERROR_HANDLER.unAuthenticatedError(req, res);
+        } else if (statusCode !== 200) {
+            return __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
+        }
+        try {
+            // var markdown = require( "markdown" ).markdown;
+            var jsonBody = JSON.parse(body);
+            
+            compile = mf.compile('/api/core/v2/data/view/{mid}/{tab}?offset={offset}&limit={limit}');
+            url = compile({
+                user: req.query.user,
+                mid: req.query.mid,
+                tab: req.query.tab,
+                offset: req.query.offset,
+                limit: req.query.limit,
+            });
+            options = __BRTC_CORE_SERVER.createRequestOptions('POST', url);
+            __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
+            options.timeout = 30 * 1000;
+            if (jsonBody.type === 'table' && jsonBody.data.schema.length > 1000) {
+                var columnOptions = req.query.skiprange ? {} : {
+                    start: req.query.start || 0,
+                    end: req.query.end || 999
+                };
+                if (req.query.indexes) {
+                    columnOptions.selectedColumns = JSON.parse(req.query.indexes);
+                }
+                options.body = JSON.stringify(columnOptions);
+            }
+            request(options, function (error, response, body) {
+                if (error) {
+                    return __BRTC_ERROR_HANDLER.sendServerError(res, error);
+                }
+                if (response.statusCode !== 200) {
+                    return __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
+                }
+                try {
+                    // var markdown = require( "markdown" ).markdown;
+                    const jsonBody2 = JSON.parse(body);
+
+                    if (jsonBody2.type === 'table') return res.json(parseStagingData(body, jsonBody.data.schema.length));
+                    else return res.json(jsonBody2.data);
+                } catch (err) {
+                    return __BRTC_ERROR_HANDLER.sendServerError(res, err);
+                }
+            });
+        } catch (err) {
+            return __BRTC_ERROR_HANDLER.sendServerError(res, err);
+        }
+    });    
+});
+
+router.get('/staging/schema', __BRTC_ERROR_HANDLER.checkParams(['key']), function (req, res) {
+    const compile = mf.compile('/api/core/v2/data/schema?key={key}');
+    const url = compile({
+        key: req.query.key
+    });
+    let options = __BRTC_CORE_SERVER.createRequestOptions('GET', url);
+    __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
+    options.timeout = 30 * 1000;
+    request(options, function (error, response, body) {
+        if (error) {
+            return __BRTC_ERROR_HANDLER.sendServerError(res, error);
+        }
+        const statusCode = response.statusCode;
+        if(statusCode === 401){
+            return __BRTC_ERROR_HANDLER.unAuthenticatedError(req, res);
+        } else if (statusCode !== 200) {
             return __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
         }
         try {
             // var markdown = require( "markdown" ).markdown;
             const jsonBody = JSON.parse(body);
-
             if (jsonBody.type === 'table') return res.json(parseStagingData(body));
             else return res.json(jsonBody.data);
         } catch (err) {

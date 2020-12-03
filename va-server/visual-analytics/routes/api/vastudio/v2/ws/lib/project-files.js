@@ -43,7 +43,7 @@ exports.createFile = function (req, res) {
                     tag: req.body.tag
                 };
 
-                __BRTC_DAO.project.updateTime({id: req.params.project}, function (err) {
+                __BRTC_DAO.project.updateTime({ id: req.params.project }, function (err) {
                     __BRTC_ERROR_HANDLER.sendError(res, 34012);
                 }, function (result) {
                     __BRTC_DAO.file.create(opt, function (err) {
@@ -98,7 +98,7 @@ exports.updateFile = function (req, res) {
             tag: req.body.tag
         };
 
-        __BRTC_DAO.project.updateTime({id: req.params.project}, function (err) {
+        __BRTC_DAO.project.updateTime({ id: req.params.project }, function (err) {
             __BRTC_ERROR_HANDLER.sendError(res, 32032);
         }, function (result) {
             __BRTC_DAO.file.update(opt, function (err) {
@@ -125,7 +125,7 @@ exports.deleteFile = function (req, res) {
             project_id: req.params.project
         };
 
-        __BRTC_DAO.project.updateTime({id: req.params.project}, function (err) {
+        __BRTC_DAO.project.updateTime({ id: req.params.project }, function (err) {
             __BRTC_ERROR_HANDLER.sendError(res, 36041);
         }, function (result) {
             __BRTC_DAO.file.delete(opt, function (err) {
@@ -154,7 +154,7 @@ exports.saveFile = function (req, res) {
             tag: req.body.tag
         };
 
-        __BRTC_DAO.project.updateTime({id: req.params.project}, function (err) {
+        __BRTC_DAO.project.updateTime({ id: req.params.project }, function (err) {
             __BRTC_ERROR_HANDLER.sendError(res, 32032);
         }, function (result) {
             __BRTC_DAO.file.save(opt, function (err) {
@@ -162,7 +162,6 @@ exports.saveFile = function (req, res) {
                     return res.json([]);
                 }
                 __BRTC_ERROR_HANDLER.sendServerError(res, err);
-                return undefined;
             }, function (rowCount) {
                 __BRTC_DAO.file.selectById(opt, function (err) {
                     __BRTC_ERROR_HANDLER.sendServerError(res, err);

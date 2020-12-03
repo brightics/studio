@@ -1,7 +1,7 @@
 var getMyLibrary = function (userId, errCallback, doneCallback) {
     var opt = {
         id: userId,
-        label: 'My Template',
+        label: 'My Template222',
         creator: userId,
         type: 'Closed'
     };

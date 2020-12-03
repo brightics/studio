@@ -3,7 +3,7 @@ var router = __REQ_express.Router();
 var getMyLibrary = function (userId, errCallback, doneCallback) {
     var opt = {
         id: userId,
-        label: 'My Template',
+        label: 'My Template111',
         creator: userId,
         type: 'Closed'
     };
