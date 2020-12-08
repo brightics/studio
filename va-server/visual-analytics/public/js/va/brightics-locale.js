@@ -210,7 +210,22 @@ var Brtc_Locale = {
     AddtoReport: "리포트로 추가",
     RecommendedGraphType: "추천 차트",
     AvailableGraphType: "사용 가능한 차트",
-    'Entervalue.(Ifitisempty,itisautomaticallysettothefilepath.)': "입력되지 않을 경우 자동으로 경로 설정"
+    'Entervalue.(Ifitisempty,itisautomaticallysettothefilepath.)': "입력되지 않을 경우 자동으로 경로 설정",
+    Click: "클릭",
+    'Double-Click': "더블-클릭",
+    'SearchItem': "검색",
+    Result: "결과",
+    Home: "홈",
+    Trend: "추세",
+    Timeseries: "시계열",
+    Transform: "변환",
+    Sort: "정렬",
+    Preprocessing: "전처리",
+    AddColumn: "열추가",
+    Filter: "필터",
+    Remove: "삭제",
+    MissingValue: "결측치",
+    Statistics: "통계"
 }
 
 var getTextByLocale = function (path) {
