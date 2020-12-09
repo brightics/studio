@@ -225,7 +225,27 @@ var Brtc_Locale = {
     Filter: "필터",
     Remove: "삭제",
     MissingValue: "결측치",
-    Statistics: "통계"
+    Statistics: "통계",
+    process: "프로세스",
+    functioncompleted: "개 함수 완료",
+    day: "일",
+    hour: "시간",
+    min: "분",
+    sec: "초",
+    Wait: "대기중",
+    Running: "수행중",
+    Success: "성공",
+    Fail: "실패",
+    Abort: "중지",
+    Minimap: "미니맵",
+    Total: "합계",
+    "isarequiredparameter": "은(는) 파라미터가 필요합니다",
+    "Inputsisrequired.": "입력값이 필요합니다",
+    "Scriptcontainsinvalidcontents": "스크립트에 유효하지 않은 컨텐츠가 있습니다",
+    "Inputpathdoesnotexist": "입력 경로가 없습니다",
+    "DataSourcedoesnotexist.": "데이터소스가 없습니다",
+    "Cannotexecutetheflow.Itcontainsinvalidcontents": "실행에 실패하였습니다",
+    "Sorry!Anunexpectederroroccurred.Pleasecontactadministrator": "오류발생. 관리자에게 문의하세요"
 }
 
 var getTextByLocale = function (path) {
