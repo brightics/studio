@@ -60,12 +60,12 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 686);
+/******/ 	return __webpack_require__(__webpack_require__.s = 726);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 299:
+/***/ 311:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -75,7 +75,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseLayout = __webpack_require__(300);
+var _baseLayout = __webpack_require__(312);
 
 var _baseLayout2 = _interopRequireDefault(_baseLayout);
 
@@ -99,7 +99,7 @@ FlexLayout.prototype.createContents = function () {
 FlexLayout.prototype.createLayout = function () {
     var $parent = this.$mainControl.children('.bcharts-tethys-layout');
     var hCnt, vCnt, chartCnt;
-    if (this.options.pagination.enable) {
+    if (this.options.pagination && this.options.pagination.enable) {
         if (this.options.layout.flexData.width.indexOf('px') != -1) {
             hCnt = Math.floor(this.$mainControl.innerWidth() / parseInt(this.options.layout.flexData.width.replace('px', '')));
         } else {
@@ -177,7 +177,7 @@ exports.default = FlexLayout;
 
 /***/ }),
 
-/***/ 300:
+/***/ 312:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -233,13 +233,13 @@ exports.default = Layout;
 
 /***/ }),
 
-/***/ 686:
+/***/ 726:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _bchartsTethys = __webpack_require__(687);
+var _bchartsTethys = __webpack_require__(727);
 
 var _bchartsTethys2 = _interopRequireDefault(_bchartsTethys);
 
@@ -267,7 +267,7 @@ $.fn.bchartsTethys = function (options, propertyName, propertyValue) {
 
 /***/ }),
 
-/***/ 687:
+/***/ 727:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -277,15 +277,15 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _flexLayout = __webpack_require__(299);
+var _flexLayout = __webpack_require__(311);
 
 var _flexLayout2 = _interopRequireDefault(_flexLayout);
 
-var _chartCache = __webpack_require__(688);
+var _chartCache = __webpack_require__(728);
 
 var _chartCache2 = _interopRequireDefault(_chartCache);
 
-var _layoutRegister = __webpack_require__(689);
+var _layoutRegister = __webpack_require__(729);
 
 var LayoutRegistry = _interopRequireWildcard(_layoutRegister);
 
@@ -326,6 +326,14 @@ BChartsTethys.prototype.destroy = function () {
     clearInterval(this.chartRenderIntervalId);
 };
 
+BChartsTethys.prototype.stop = function () {
+    this.interval = false;
+};
+
+BChartsTethys.prototype.restart = function () {
+    this.interval = true;
+};
+
 BChartsTethys.prototype._createLayoutManager = function () {
     if (this.options.layout && this.options.layout.type) {
         return LayoutRegistry.createLayout(this.options.layout.type, this.parentId, this.options);
@@ -349,8 +357,11 @@ BChartsTethys.prototype._createContents = function ($parent) {
 
     this._doLayoutAutoEvent();
 
+    this.interval = true;
     this.chartRenderIntervalId = setInterval(function () {
-        _this._renderChart();
+        if (_this.interval) {
+            _this._renderChart();
+        }
     }, 300);
 };
 
@@ -439,7 +450,7 @@ BChartsTethys.prototype._renderChart = function () {
 
 BChartsTethys.prototype._destroyChart = function (chartId) {
     var _this = this;
-    var $el = this.$parent.find('[groupByKeyName="' + CSS.escape(chartId) + '"]');
+    var $el = this.$parent.find('#' + CSS.escape(chartId));
 
     // create cache element
     var $cached = $el.children('.bcharts-container').clone();
@@ -449,8 +460,16 @@ BChartsTethys.prototype._destroyChart = function (chartId) {
         $cached.find('.bcharts-chart').empty();
         $cached.find('.bcharts-chart').append(img);
         $cached.mouseover(function () {
-            // mouse over 되었을 경우에 real chart 로 복원
-            _this.chartCache.appeared([$(this).parent().attr('groupByKeyName')]);
+            if (!(_this.options.chartRender === "click")) {
+                //real chart 로 복원
+                _this.chartCache.appeared([$(this).parent().attr('id')]);
+            }
+        });
+        $cached.click(function () {
+            if (_this.options.chartRender === "click") {
+                //real chart 로 복원
+                _this.chartCache.appeared([$(this).parent().attr('id')]);
+            }
         });
 
         // destory original element
@@ -485,7 +504,7 @@ exports.default = BChartsTethys;
 
 /***/ }),
 
-/***/ 688:
+/***/ 728:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -576,7 +595,7 @@ exports.default = ChartCache;
 
 /***/ }),
 
-/***/ 689:
+/***/ 729:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -588,7 +607,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.registerLayout = registerLayout;
 exports.createLayout = createLayout;
 
-var _layoutIndex = __webpack_require__(690);
+var _layoutIndex = __webpack_require__(730);
 
 var Layout = _interopRequireWildcard(_layoutIndex);
 
@@ -625,7 +644,7 @@ function createLayout(layoutType, parentId, options) {
 
 /***/ }),
 
-/***/ 690:
+/***/ 730:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -636,11 +655,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.each = exports.flex = undefined;
 
-var _flexLayout = __webpack_require__(299);
+var _flexLayout = __webpack_require__(311);
 
 var _flexLayout2 = _interopRequireDefault(_flexLayout);
 
-var _eachLayout = __webpack_require__(691);
+var _eachLayout = __webpack_require__(731);
 
 var _eachLayout2 = _interopRequireDefault(_eachLayout);
 
@@ -656,7 +675,7 @@ exports.each = _eachLayout2.default;
 
 /***/ }),
 
-/***/ 691:
+/***/ 731:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -666,7 +685,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _baseLayout = __webpack_require__(300);
+var _baseLayout = __webpack_require__(312);
 
 var _baseLayout2 = _interopRequireDefault(_baseLayout);
 
