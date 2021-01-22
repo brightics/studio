@@ -127,19 +127,21 @@ var responseFunctionHelp = function(req, res, operation, palette, fileContents, 
             "background-color: #EEEEEE;" +
             "font-weight: 500;" +
             "}" +
-            "</style>" ;
-          //   +
-          //   '<div class="panel bs-docs-function-note" style="display: block;">' +
-          //   '<div class="panel-heading"><h3 class="panel-title"><strong>Note</strong></h3></div>' +
-          //   '<div class="panel-body">' +
-          //   '<ul class="brtc-ul">' +
-          //   "<li>A significant digit is 10 digits for all analytic functions. We ignore the differences between each value of outputs from analytic function results and help pages in case more than 10 significant digits are the same.</li>" +
-          //   "<li>When you use train and predict functions, the order and the number of columns should be the same for both functions.</li>" +
-          //   "<li>We recommend you to preprocess abnormal values such as NaN or null beforehand. You can use Brightics preprocessing functions before analyzing data.</li>" +
-          //   "<li>The result of the function may vary depending on the system even if the same seed is used.</li>" +
-          //   "<li>The results of Spark and Python functions may differ even if you use the same function because of the internal algorithms are different.</li>" +
-          //   "</ul>";
-          // "</div>" + "</div>";
+            "</style>" +
+            +
+            '<div class="panel bs-docs-function-note" style="display: block;">' +
+            '<div class="panel-heading"><h3 class="panel-title"><strong>안내</strong></h3></div>' +
+            '<div class="panel-body">' +
+            '<ul class="brtc-ul">' +
+            "<p>함수 도움말 페이지 입니다.</p>" +
+            "<p>각 카테고리별 함수에 대한 설명을 참고하세요.</p>" +
+            // "<li>A significant digit is 10 digits for all analytic functions. We ignore the differences between each value of outputs from analytic function results and help pages in case more than 10 significant digits are the same.</li>" +
+            // "<li>When you use train and predict functions, the order and the number of columns should be the same for both functions.</li>" +
+            // "<li>We recommend you to preprocess abnormal values such as NaN or null beforehand. You can use Brightics preprocessing functions before analyzing data.</li>" +
+            // "<li>The result of the function may vary depending on the system even if the same seed is used.</li>" +
+            // "<li>The results of Spark and Python functions may differ even if you use the same function because of the internal algorithms are different.</li>" +
+            "</ul>";
+          "</div>" + "</div>";
 
           status = "ERRNOTFOUND";
         }
