@@ -128,7 +128,6 @@ var responseFunctionHelp = function(req, res, operation, palette, fileContents, 
             "font-weight: 500;" +
             "}" +
             "</style>" +
-            +
             '<div class="panel bs-docs-function-note" style="display: block;">' +
             '    <div class="panel-heading"><h3 class="panel-title"><strong>안내</strong></h3></div>' +
             '    <div class="panel-body">' +
