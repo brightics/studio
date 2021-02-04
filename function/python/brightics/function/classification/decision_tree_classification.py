@@ -83,7 +83,7 @@ def _decision_tree_classification_train(table, feature_cols, label_col,  # fig_s
                    sample_weight, check_input, X_idx_sorted)
 
     try:
-        from sklearn.externals.six import StringIO
+        from six import StringIO
         from sklearn.tree import export_graphviz
         import pydotplus
         dot_data = StringIO()

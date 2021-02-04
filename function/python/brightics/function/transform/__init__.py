@@ -34,9 +34,9 @@ from .svd import svd
 from .svd import svd2
 from .svd import svd_model
 from .transpose_time_series import transpose_time_series
-from .SMOTE import SMOTE
-from .under_sampling import under_sampling
+# from .SMOTE import SMOTE
+# from .under_sampling import under_sampling
 from .explode import explode
-from .tsne import tsne
-from .savgol_filter import savgol_filter
+# from .tsne import tsne
+# from .savgol_filter import savgol_filter
 
