@@ -3,7 +3,7 @@ require('dotenv').config();
 
 global.__basedir = __dirname;
 
-const args = require('yargs').argv;
+const args = require('yargs-parser')(process.argv.slice(2));
 global.__BRTC_ARGS = {
     user_id: args.user_id || 'brightics@samsung.com',
     access_token: args.access_token || 'ACCESS_TOKEN',
