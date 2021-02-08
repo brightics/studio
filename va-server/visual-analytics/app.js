@@ -3,7 +3,7 @@ require('dotenv').config();
 
 global.__basedir = __dirname;
 
-const args = require('yargs').argv;
+const args = require('yargs-parser')(process.argv.slice(2));
 global.__BRTC_ARGS = {
     user_id: args.user_id || 'brightics@samsung.com',
     access_token: args.access_token || 'ACCESS_TOKEN',
@@ -111,7 +111,6 @@ app.use(__REQ_express.static(__REQ_path.join(__dirname, 'public')));
 
 app.use(subPathUrl + '*/js/plugins/echarts', __REQ_express.static(__dirname + '/node_modules/echarts/dist/'));
 app.use(subPathUrl + '*/js/plugins/echarts-stat', __REQ_express.static(__dirname + '/node_modules/echarts-stat/dist/'));
-app.use(subPathUrl + '*/js/plugins/echarts/wordcloud', __REQ_express.static(__dirname + '/node_modules/echarts-wordcloud/dist/'));
 
 app.use(subPathUrl + '*/js/plugins/d3', __REQ_express.static(__dirname + '/node_modules/d3/build/'));
 app.use(subPathUrl + '*/js/plugins/d3-tip', __REQ_express.static(__dirname + '/node_modules/d3-tip/'));
@@ -257,7 +256,7 @@ process.on('uncaughtException', function (err) {
 //     return dbType + '://' + dbUserName + '@' + dbAddress;
 // };
 
-var server = http.createServer(app).listen(__BRTC_CONF.port, __BRTC_CONF.host || '0.0.0.0', function () {
+var server = http.createServer(app).listen(__BRTC_CONF.port, function () {
     log.info('   O');
     log.info('  P');
     log.info(' E');
