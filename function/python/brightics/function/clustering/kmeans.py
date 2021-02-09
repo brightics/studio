@@ -21,8 +21,8 @@ from sklearn.decomposition import PCA
 import numpy as np
 import pandas as pd
 import matplotlib.cm as cm
-from sklearn.metrics.cluster.unsupervised import silhouette_score, \
-    silhouette_samples
+# from sklearn.metrics.cluster.unsupervised import silhouette_score, \
+#     silhouette_samples
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import get_default_from_parameters_if_required
