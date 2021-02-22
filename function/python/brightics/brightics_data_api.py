@@ -18,7 +18,6 @@ import base64
 import json
 import os
 from io import BytesIO
-from urllib.parse import urlparse
 
 import matplotlib
 import pandas as pd
@@ -258,26 +257,11 @@ def _write_dataframe(dataframe, path):
     if not path.startswith('hdfs://'):
         path = data_util.make_data_path(path)
 
-    _remove_exist_directory_if_dir(path)
     _make_directory_if_needed(path)
 
     table = pa.Table.from_pandas(dataframe, preserve_index=False)
     pq.write_table(table, path)
 
-
-def _remove_exist_directory_if_dir(path):
-    """
-    remove directory made by spark data frame.
-    pyarrow.parquet write table method can not overwrite directory. 
-    """
-    parsed_uri = urlparse(path)
-    if parsed_uri.scheme == 'hdfs':
-        if pa.HadoopFileSystem().isdir(path) :
-            pa.HadoopFileSystem().delete(path, recursive='true')
-    else :
-        parsed_uri = urlparse(path)
-        if os.path.isdir(parsed_uri.path):
-            os.removedirs(parsed_uri.path, recursive='true')
 
 def _make_directory_if_needed(path):
     """
@@ -285,11 +269,7 @@ def _make_directory_if_needed(path):
 
     :param path: File location full path
     """
-    parsed_uri = urlparse(path)
-    if parsed_uri.scheme == 'hdfs':  # Doesn't need to make dirs
-        return
-
-    directory_path = os.path.dirname(parsed_uri.path)
+    directory_path = os.path.dirname(path)
     if not os.path.exists(directory_path):
         os.makedirs(directory_path)
 
