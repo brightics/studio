@@ -15,7 +15,6 @@
 """
 
 import re
-from urllib.parse import urlparse
 
 from brightics.brightics_java_gateway import brtc_java_gateway as gateway
 
@@ -29,19 +28,7 @@ def validate_column_name(df):
 
 
 def make_data_path(path):
-    fs_path = gateway.default_fs_path
-    if path.startswith('/') and fs_path.endswith('/'):
-        path = path[1:]
-    elif not path.startswith('/') and not fs_path.endswith('/'):
-        path = '/' + path
-
-    parsed_uri = urlparse(fs_path + path)
-    if parsed_uri.scheme == 'hdfs':
-        return fs_path + path
-
-    if re.match('^/.+:/*', parsed_uri.path):
-        return parsed_uri.path[1:]
-    return parsed_uri.path
+    return path
 
 
 def make_data_path_from_key(key):
