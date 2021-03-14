@@ -1,14 +1,3 @@
-We would like to inform you that a malware has been detected in the file BrighticsStudio-v1.1-2020.07-windows.exe Therefore, we request you to delete the file and reinstall with a new safe file that has undergone a through inspection Because each user's PC environments are different, we have written a manual that can cover as many specs as possible. <br>
-[Malware removal and reinstallation.](https://github.com/brightics/studio/blob/master/notice.md) <br>
-The problem has been detected from a portable version of Brightics Studio, meaning that it is safe to use Brightics AI.  <br>
-We would like to express the most sincere apologies to any inconvenience that you might have experienced from this malware issue. 
-
-
-BrighticsStudio-v1.1-2020.07-windows.exe에 악성코드 감염위험이 발견되어 삭제 및 재설치 안내드립니다.<br>
-보안점검을 통해 안전성이 확인된 파일로 재설치 부탁드립니다. 사용자 PC의 환경이 달라 가능한 모든 매뉴얼을 작성해서 안내드리니 참고하시기 바랍니다.<br>
-[재설치 링크](https://github.com/brightics/studio/blob/master/notice.md)<br>
-Brightics Studio 포터블 패키지 파일에서 발생하였으며 Brightics AI 사용에는 문제가 없음을 안내드리며 사용에 불편을 드려 죄송합니다. 
-
 # Brightics Studio v1.1
 [![Version](https://img.shields.io/github/v/release/brightics/studio)](https://github.com/brightics/studio/releases)
 [![Release Date](https://img.shields.io/github/release-date/brightics/studio)](https://github.com/brightics/studio/releases)
