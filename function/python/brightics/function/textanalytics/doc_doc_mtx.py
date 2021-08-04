@@ -60,8 +60,8 @@ def _doc_doc_mtx(table, model, input_col, result_type='sparse'):
     elif result_type == 'dense':
         doc_idx = ['doc_{}'.format(i) for i in range(len(corpus))]
         out_table = pd.DataFrame(doc_doc.todense())
-        out_table.insert(loc=0, column=' ', value=doc_idx)
-        out_table.columns = np.append("", doc_idx)
+        out_table.insert(loc=0, column='doc_idx', value=doc_idx)
+        out_table.columns = np.append("doc_idx", doc_idx)
     else:
         raise_runtime_error("Please check 'result_type'.") 
     
