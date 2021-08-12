@@ -60,7 +60,7 @@ def _bow(table, input_col, add_words=None, no_below=1, no_above=0.8, keep_n=1000
 
     empty_description = ''
     if len(list(dictionary.dfs.values())) == 0:
-        out_table = pd.DataFrame([], columns=['token', 'document_frequency'])
+        out_table = pd.DataFrame([], columns=['token', 'document_frequency', 'term_frequency'])
         empty_description = 'Out table is empty since parameter \"Minimum Number of Occurrence\" is greater than the maximum of document frequency.'
     else:
         # out_table = pd.DataFrame.from_dict(dictionary.token2id, orient='index').drop([0], axis=1)
