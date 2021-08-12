@@ -74,7 +74,7 @@ def _bow(table, input_col, add_words=None, no_below=1, no_above=0.8, keep_n=1000
         id2token = dict((v, k) for k, v in dictionary.token2id.items())
         word_cnt = dict(dictionary.doc2bow(np.concatenate(word_list)))
         lst = []
-        row = namedtuple('row', ['token', 'document_frequency', 'word_count'])
+        row = namedtuple('row', ['token', 'document_frequency', 'term_frequency'])
         for k, v in sorted(id2token.items()):
             lst.append(row(v, dictionary.dfs[k], word_cnt[k]))
         out_table = pd.DataFrame(lst)
