@@ -1,12 +1,12 @@
 """
     Copyright 2019 Samsung SDS
-    
+
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
-    
+
         http://www.apache.org/licenses/LICENSE-2.0
-    
+
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,6 +25,9 @@ from brightics.common.validation import validate, greater_than_or_equal_to, grea
 from gensim.corpora import Dictionary
 import pandas as pd
 import operator
+import numpy as np
+from collections import namedtuple
+import itertools
 
 
 def bow(table, group_by=None, **params):
@@ -47,28 +50,36 @@ def _bow(table, input_col, add_words=None, no_below=1, no_above=0.8, keep_n=1000
     if add_words != None:
         dictionary.add_documents([add_words])
     dictionary.filter_extremes(no_below=no_below, no_above=no_above, keep_n=keep_n, keep_tokens=None)
-    
-    params = { 
+
+    params = {
         'Input Column': input_col,
         'Minimum Number of Occurrence': no_below,
         'Maximum Fraction of Occurrence': no_above,
         'Keep N most Frequent': keep_n
     }
-    
+
     empty_description = ''
     if len(list(dictionary.dfs.values())) == 0:
         out_table = pd.DataFrame([], columns=['token', 'document_frequency'])
         empty_description = 'Out table is empty since parameter \"Minimum Number of Occurrence\" is greater than the maximum of document frequency.'
     else:
-        out_table = pd.DataFrame.from_dict(dictionary.token2id, orient='index').drop([0], axis=1)
-        out_table.insert(loc=0, column='token', value=dictionary.token2id.keys())
-    
-        token_cnt = sorted(dictionary.dfs.items(), key=operator.itemgetter(0))
-        dfs_list = []
-        for i in range(len(dictionary.dfs)):
-            dfs_list.append(token_cnt[i][1])
-        out_table['document_frequency'] = dfs_list
-    
+        # out_table = pd.DataFrame.from_dict(dictionary.token2id, orient='index').drop([0], axis=1)
+        # out_table.insert(loc=0, column='token', value=dictionary.token2id.keys())
+        #
+        # token_cnt = sorted(dictionary.dfs.items(), key=operator.itemgetter(0))
+        # dfs_list = []
+        # for i in range(len(dictionary.dfs)):
+        #     dfs_list.append(token_cnt[i][1])
+        # out_table['document_frequency'] = dfs_list
+        id2token = dict((v, k) for k, v in dictionary.token2id.items())
+        word_cnt = dict(dictionary.doc2bow(np.concatenate(word_list)))
+        lst = []
+        row = namedtuple('row', ['token', 'document_frequency', 'word_count'])
+        for k, v in sorted(id2token.items()):
+            lst.append(row(v, dictionary.dfs[k], word_cnt[k]))
+        out_table = pd.DataFrame(lst)
+
+
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
         |# Bag of Words Result
@@ -79,11 +90,11 @@ def _bow(table, input_col, add_words=None, no_below=1, no_above=0.8, keep_n=1000
         | {description}
         |
         """.format(display_params=dict2MD(params), description=empty_description)))
-        
+
     model = _model_dict('bow')
     model['dict_table'] = out_table
     model['dictionary'] = dictionary
     model['add_words'] = add_words
     model['_repr_brtc_'] = rb.get()
-    
+
     return {'model' : model, 'out_table': out_table}
