@@ -52,7 +52,7 @@ public enum PythonScriptType {
                     addScript().
                     addPutScriptResultScript().
                     addWriteOutputsScript().
-                    script();
+                    wrapScriptByFunc();
         }
     },
     UDF {
@@ -64,7 +64,7 @@ public enum PythonScriptType {
                     addScript().
                     addPutOutputsScript().
                     addWriteOutputsScript().
-                    script();
+                    wrapScriptByFunc();
         }
     },
     Function {
