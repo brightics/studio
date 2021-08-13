@@ -189,7 +189,7 @@ def pivot3(table, values, aggfunc, index=None, columns=None):  # TODO
 
     def _mean(x): return brtc_stat.mean(x)
 
-    def _std(x): return brtc_stat.std(x)
+    def _std(x): return brtc_stat.std_samp(x)
 
     def _var(x): return brtc_stat.var_samp(x)
 
