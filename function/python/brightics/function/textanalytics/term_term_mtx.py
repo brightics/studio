@@ -64,8 +64,8 @@ def _term_term_mtx(table, model, input_col, result_type='sparse'):
         num_origin = len(dictionary) - len(model['add_words'])
         terms = [term for term in dictionary.token2id.keys()][:num_origin]
         out_table = pd.DataFrame(term_term.todense())
-        out_table.insert(loc=0, column='term', value=terms)
-        out_table.columns = np.append("term", terms)
+        out_table.insert(loc=0, column='_term', value=terms)
+        out_table.columns = np.append("_term", terms)
 
     else:
         raise_runtime_error("Please check 'result_type'.")
