@@ -27,8 +27,6 @@ import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
 import com.samsung.sds.brightics.common.data.DataStatus;
 import com.samsung.sds.brightics.common.network.proto.ContextType;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
@@ -65,18 +63,8 @@ public class PythonScriptBuilder {
         StringJoiner wrappedScript = new StringJoiner(SCRIPT_DELIM, prefixScript, postfixScript);
 
         String[] scriptCodes = script.toString().split(SCRIPT_DELIM);
-        boolean isMultiline = false;
-        Pattern p = Pattern.compile("\"\"\"");
-        for (int i = 0; i < scriptCodes.length; i++) {
-            String tmp = parseTabIndent(scriptCodes[i]);
-            wrappedScript.add(isMultiline ? tmp : PYTHON_INDENT + tmp);
-            Matcher m = p.matcher(scriptCodes[i]);
-            int cnt = 0;
-            while (m.find())
-                cnt++;
-            if (cnt == 1)   // greater or equal to 2, think closed String define
-                isMultiline = isMultiline ? false : true;
-        }
+        for (int i = 0; i < scriptCodes.length; i++)
+            wrappedScript.add(PYTHON_INDENT + parseTabIndent(scriptCodes[i]));
 
         return wrappedScript.toString();
     }
