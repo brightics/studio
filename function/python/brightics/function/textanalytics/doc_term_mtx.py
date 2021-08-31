@@ -62,15 +62,15 @@ def _doc_term_mtx(table, model, input_col, result_type='doc_to_bow_token'):
         
     if result_type == 'doc_to_bow_token':
         out_table = pd.DataFrame(data=doc_to_bow_list, columns=['doc_to_bow'])
-        out_table.insert(loc=0, column='doc_idx', value=doc_idx)
+        out_table.insert(loc=0, column='_doc_idx', value=doc_idx)
     elif result_type == 'doc_term_mtx':
         out_table = pd.DataFrame(matutils.corpus2dense(bow_corpus, num_terms=len(dictionary.token2id)).T)
-        out_table.insert(loc=0, column=' ', value=doc_idx)
-        out_table.columns = np.append('', terms)
+        out_table.insert(loc=0, column='_doc_idx', value=doc_idx)
+        out_table.columns = np.append('_doc_idx', terms)
     elif result_type == 'term_doc_mtx':
         out_table = pd.DataFrame(matutils.corpus2dense(bow_corpus, num_terms=len(dictionary.token2id)))
-        out_table.insert(loc=0, column=' ', value=terms)
-        out_table.columns = np.append('', doc_idx)
+        out_table.insert(loc=0, column='_term', value=terms)
+        out_table.columns = np.append('_term', doc_idx)
     else:
         raise_runtime_error("Please check 'result_type'.")
         

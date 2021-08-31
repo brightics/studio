@@ -206,9 +206,17 @@ def _statistic_summary_groupby(table, input_cols, statistics, group_by=None):
         if 'avg' == st:
             agg_func.append(np.mean)
         if 'variance' == st:
-            agg_func.append(np.var)
+            # agg_func.append(np.var)
+            # the above implementation passed to the method .agg(...)
+            # seems to result in the sample variance as like pd.var
+            # which is equivalent to the following
+            agg_func.append('var')
         if 'stddev' == st:
-            agg_func.append(np.std)
+            # agg_func.append(np.std)
+            # the above implementation passed to the method .agg(...)
+            # seems to result in the sample stddev as like pd.std
+            # which is equivalent to the following
+            agg_func.append('std')
         if 'nrow' == st:
             agg_func.append('size')
         if 'num_of_value' == st:
@@ -259,7 +267,7 @@ def _statistic_summary_original(table, input_cols, statistics, percentile_amount
         if 'variance' == st:
             data['variance'] = [brtc_stats.var_samp(_table[x]) for x in input_cols]
         if 'stddev' == st:
-            data['stddev'] = [brtc_stats.std(_table[x]) for x in input_cols]
+            data['stddev'] = [brtc_stats.std_samp(_table[x]) for x in input_cols]
         if 'skewness' == st:
             data['skewness'] = [brtc_stats.skewness(_table[x]) for x in input_cols]
         if 'kurtosis' == st:
