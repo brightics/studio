@@ -262,7 +262,11 @@ def tfidf2(table, group_by=None, **params):
 
 def _tfidf2(table, input_col, max_df=None, min_df=1, num_voca=100, idf_weighting_scheme='inverseDocumentFrequency', norm='l2', smooth_idf=True, sublinear_tf=False, output_type=True):
     corpus_orig = np.array(table[input_col])
-    corpus = np.array([np.array([_encode_ngram(token) for token in doc]) for doc in corpus_orig])
+    is_doc_list = bool(len(corpus_orig)) and (isinstance(corpus_orig[0], list) or isinstance(corpus_orig[0], np.ndarray))
+    if is_doc_list:
+        corpus = np.array([np.array([_encode_ngram(token) for token in doc]) for doc in corpus_orig])
+    else:
+        corpus = corpus_orig
 
     if max_df == None:
         max_df = len(corpus)
@@ -292,7 +296,7 @@ def _tfidf2(table, input_col, max_df=None, min_df=1, num_voca=100, idf_weighting
         for doc in range(len(corpus)):
             docID_list += ['doc_{}'.format(doc) for _ in range(len_voca)]
             document_list += [corpus_orig[doc] for _ in range(len_voca)]
-            vocabulary_list += [_decode_ngram(voca_dict[j][0]) for j in range(len_voca)]
+            vocabulary_list += [_decode_ngram(voca_dict[j][0], is_doc_list) for j in range(len_voca)]
         label_table['document_id'] = docID_list
         label_table[input_col] = document_list
         label_table['vocabulary'] = vocabulary_list
@@ -309,7 +313,7 @@ def _tfidf2(table, input_col, max_df=None, min_df=1, num_voca=100, idf_weighting
             document_list += [corpus_orig[doc] for _ in range(csr_matrix_tfidf.indptr[doc + 1] - csr_matrix_tfidf.indptr[doc])]
         tfidf_table['document_id'] = docID_list
         tfidf_table[input_col] = document_list
-        tfidf_table['vocabulary'] = [_decode_ngram(voca_dict[i][0]) for i in csr_matrix_tf.indices]
+        tfidf_table['vocabulary'] = [_decode_ngram(voca_dict[i][0], is_doc_list) for i in csr_matrix_tf.indices]
         tfidf_table['frequency'] = csr_matrix_tf.data
         data_list = []
         for doc in range(len(corpus)):
@@ -325,7 +329,7 @@ def _tfidf2(table, input_col, max_df=None, min_df=1, num_voca=100, idf_weighting
         # idf table
     
     idf_table = pd.DataFrame()
-    idf_table['vocabulary'] = [_decode_ngram(voca_dict[j][0]) for j in range(len(voca_dict))]
+    idf_table['vocabulary'] = [_decode_ngram(voca_dict[j][0], is_doc_list) for j in range(len(voca_dict))]
     if idf_weighting_scheme == 'inverseDocumentFrequency':
         idf_table['idf_weight'] = tfidf_vectorizer.idf_.tolist()
     elif idf_weighting_scheme == 'unary':
@@ -369,5 +373,8 @@ def _encode_ngram(token):
     return "_".join(token.split(" "))
 
 
-def _decode_ngram(token):
-    return " ".join(token.split("_"))
+def _decode_ngram(token, is_doc_list):
+    if is_doc_list:
+        return " ".join(token.split("_"))
+    else:
+        return token
