@@ -287,45 +287,26 @@ def _tfidf2(table, input_col, max_df=None, min_df=1, num_voca=100, idf_weighting
     
     # tf-idf table
     
-    tfidf_table = pd.DataFrame()
     document_list = []
     docID_list = []
-    if output_type == False:
-        vocabulary_list = []
-        label_table = pd.DataFrame()
-        for doc in range(len(corpus)):
-            docID_list += ['doc_{}'.format(doc) for _ in range(len_voca)]
-            document_list += [corpus_orig[doc] for _ in range(len_voca)]
-            vocabulary_list += [_decode_ngram(voca_dict[j][0], is_doc_list) for j in range(len_voca)]
-        label_table['document_id'] = docID_list
-        label_table[input_col] = document_list
-        label_table['vocabulary'] = vocabulary_list
-        tfidf_table = label_table
-        tfidf_table['frequency'] = np.ravel(csr_matrix_tf.todense())
-        if idf_weighting_scheme == 'inverseDocumentFrequency':
-            tfidf_table['tfidf_score'] = np.ravel(csr_matrix_tfidf.todense())
-        elif idf_weighting_scheme == 'unary':
-            tfidf_table['tfidf_score'] = list(map(float, np.array(tfidf_table['frequency'])))
+    vocabulary_list = []
+    tfidf_table = pd.DataFrame()
+    for doc in range(len(corpus)):
+        docID_list += ['doc_{}'.format(doc) for _ in range(len_voca)]
+        document_list += [corpus_orig[doc] for _ in range(len_voca)]
+        vocabulary_list += [_decode_ngram(voca_dict[j][0], is_doc_list) for j in range(len_voca)]
+    tfidf_table['document_id'] = docID_list
+    tfidf_table[input_col] = document_list
+    tfidf_table['vocabulary'] = vocabulary_list
+    tfidf_table['frequency'] = np.ravel(csr_matrix_tf.todense())
+    if idf_weighting_scheme == 'inverseDocumentFrequency':
+        tfidf_table['tfidf_score'] = np.ravel(csr_matrix_tfidf.todense())
+    elif idf_weighting_scheme == 'unary':
+        tfidf_table['tfidf_score'] = list(map(float, np.array(tfidf_table['frequency'])))
     
-    elif output_type == True:
-        for doc in range(len(corpus)):
-            docID_list += ['doc_{}'.format(doc) for _ in range(csr_matrix_tfidf.indptr[doc + 1] - csr_matrix_tfidf.indptr[doc])]
-            document_list += [corpus_orig[doc] for _ in range(csr_matrix_tfidf.indptr[doc + 1] - csr_matrix_tfidf.indptr[doc])]
-        tfidf_table['document_id'] = docID_list
-        tfidf_table[input_col] = document_list
-        tfidf_table['vocabulary'] = [_decode_ngram(voca_dict[i][0], is_doc_list) for i in csr_matrix_tf.indices]
-        tfidf_table['frequency'] = csr_matrix_tf.data
-        data_list = []
-        for doc in range(len(corpus)):
-            data_list += [csr_matrix_tfidf.data[i]  for i in range(csr_matrix_tfidf.indptr[doc + 1] - csr_matrix_tfidf.indptr[doc])][::-1]
-        if idf_weighting_scheme == 'inverseDocumentFrequency':
-            tfidf_table['tfidf_score'] = data_list
-        elif idf_weighting_scheme == 'unary':
-            tfidf_table['tfidf_score'] = list(map(float, np.array(tfidf_table['frequency'])))
-    
-    else:
-        raise_runtime_error("Please check 'output_type'.")
-    
+    if output_type:
+        tfidf_table = tfidf_table.drop(tfidf_table[tfidf_table.frequency == 0].index)
+
         # idf table
     
     idf_table = pd.DataFrame()
