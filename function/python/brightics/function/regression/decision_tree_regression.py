@@ -27,7 +27,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.tree import DecisionTreeRegressor
-from sklearn.tree.export import export_graphviz
+from sklearn.tree import export_graphviz
 
 
 def decision_tree_regression_train(table, group_by=None, **params):
@@ -64,7 +64,7 @@ def _decision_tree_regression_train(table, feature_cols, label_col,  # fig_size=
                    sample_weight, check_input, X_idx_sorted)
     
     try:
-        from sklearn.externals.six import StringIO  
+        from six import StringIO  
         from sklearn.tree import export_graphviz
         import pydotplus
         dot_data = StringIO()

@@ -3,12 +3,21 @@ syntax = "proto3";
 option java_outer_classname = "StreamProto";
 option java_multiple_files = true;
 
+import "google/protobuf/any.proto";
+import "common.proto";
+
 package com.samsung.sds.brightics.common.network.proto.stream;
+
+message ReadCheckpointMessage {
+	string user = 1;
+	string path = 2;
+}
 
 message ReadMessage {
     string user = 1;
 	string key = 2;
 	string delimiter =3;
+	string tempKey = 4;
 }
 
 message WriteMessage {
@@ -24,9 +33,25 @@ message ByteStreamMessage {
 	string tempKey = 2;
 }
 
+message DownloadMessage {
+	string user = 1;
+	string path = 2;
+}
+
+message ResultMessage {
+	MessageStatus messageStatus = 1;
+	google.protobuf.Any result = 2;
+}
+
 service StreamService {
-  rpc writeStreaminitializer(WriteMessage) returns (WriteMessage) {}
-  rpc readStream(ReadMessage) returns (stream ByteStreamMessage) {}
-  rpc writeStream(stream ByteStreamMessage) returns (stream WriteMessage) {}
+	rpc writeStreaminitializer(WriteMessage) returns (WriteMessage) {}
+	rpc writeStream(stream ByteStreamMessage) returns (stream WriteMessage) {}
+
+	rpc readStream(ReadMessage) returns (stream ByteStreamMessage) {}
+	rpc readStreamDone(ReadMessage) returns (ReadMessage) {}
+
+	rpc readCheckpoint(ReadCheckpointMessage) returns (stream ByteStreamMessage) {}
+
+	rpc download(DownloadMessage) returns (ResultMessage) {}
 }
 

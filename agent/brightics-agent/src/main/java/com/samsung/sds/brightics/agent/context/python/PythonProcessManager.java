@@ -27,6 +27,7 @@ import com.samsung.sds.brightics.common.core.util.JsonUtil;
 import com.samsung.sds.brightics.common.core.util.SystemEnvUtil;
 import com.samsung.sds.brightics.common.data.DataStatus;
 import com.samsung.sds.brightics.common.data.client.KVStoreClient;
+import com.samsung.sds.brightics.common.network.proto.ContextType;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -60,7 +61,8 @@ public class PythonProcessManager {
     private static final String EXCEPTION_PYTHON_DEAD = "4326";
 
     private static final String SCRIPT_PATH;
-    private static final String PYTHON_PATH;
+    private static final String FN_PYTHON_PATH;
+    private static final String DL_PYTHON_PATH;
 
     public static final String DEFAULT_FS_PATH;
 
@@ -77,7 +79,8 @@ public class PythonProcessManager {
         Path PYTHON_SOURCE_REPO = Paths.get(FUNCTION_ROOT, "python", "brightics");
 
         SCRIPT_PATH = PYTHON_SOURCE_REPO.resolve("brightics_python_runner.py").toString();
-        PYTHON_PATH = System.getenv("BRIGHTICS_PYTHON_PATH") == null ? "python" : System.getenv("BRIGHTICS_PYTHON_PATH");
+        FN_PYTHON_PATH = System.getenv("BRIGHTICS_PYTHON_PATH") == null ? "python" : System.getenv("BRIGHTICS_PYTHON_PATH");
+        DL_PYTHON_PATH = System.getenv("BRIGHTICS_DL_PYTHON_PATH") == null ? FN_PYTHON_PATH : System.getenv("BRIGHTICS_DL_PYTHON_PATH");
 
         DEFAULT_FS_PATH = new Configuration()
                 .get(CommonConfigurationKeysPublic.FS_DEFAULT_NAME_KEY, CommonConfigurationKeysPublic.FS_DEFAULT_NAME_DEFAULT);
@@ -87,9 +90,9 @@ public class PythonProcessManager {
         this.id = id;
     }
 
-    void init() {
+    void init(String contextType) {
         startPy4JServer();
-        startPythonProcess();
+        startPythonProcess(contextType);
 
         initializeStates();
     }
@@ -177,13 +180,15 @@ public class PythonProcessManager {
 
     private CountDownLatch pythonProcessLatch;
 
-    private void startPythonProcess() throws BrighticsCoreException {
+    private void startPythonProcess(String contextType) throws BrighticsCoreException {
         logger.info("Python process start");
         pythonProcessLatch = new CountDownLatch(1);
 
         if (gatewayServer == null) {
             startPy4JServer(); // throw new BrighticsException() ?
         }
+
+        String PYTHON_PATH = ContextType.DLPYTHON.name().equals(contextType)? DL_PYTHON_PATH : FN_PYTHON_PATH;
 
         ProcessBuilder builder = new ProcessBuilder(
                 PYTHON_PATH,

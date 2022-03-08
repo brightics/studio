@@ -25,7 +25,7 @@ source $BRIGHTICS_PACKAGES_HOME/lib/brightics_python_env/bin/activate
 
 # Brightics Server
 cd $BRIGHTICS_PACKAGES_HOME/brightics-server
-./start-server.sh $USER_ID $ACCESS_TOKEN &
+./start-server.sh $USER_ID &
 
 # Visual Analytics
 cd $BRIGHTICS_PACKAGES_HOME/visual-analytics

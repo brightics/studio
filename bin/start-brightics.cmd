@@ -47,7 +47,7 @@ SET ACCESS_TOKEN=ACCESS_TOKEN
 
 :: Brightics Server
 CD /d "%BRIGHTICS_HOME%brightics-server"
-START /B start-server.cmd %USER_ID% %ACCESS_TOKEN%
+START /B start-server.cmd %USER_ID%
 
 ECHO Waiting for 30 seconds to run Brightics Server.
 ping -n 30 127.0.0.1 > nul

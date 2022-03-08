@@ -18,7 +18,6 @@ import base64
 import json
 import os
 from io import BytesIO
-from urllib.parse import urlparse
 
 import matplotlib
 import pandas as pd
@@ -30,7 +29,7 @@ import pyarrow.parquet as pq
 
 import brightics.common.data.table_data_reader as table_reader
 import brightics.common.data.utils as data_util
-import brightics.common.datajson as data_json
+import brightics.common.json as data_json
 from brightics.brightics_java_gateway import brtc_java_gateway as gateway
 from brightics.brightics_kv_store_client import KVStoreClient
 
@@ -71,7 +70,7 @@ def list_status():
     return [_get_data_status_json(status) for status in data_dict.values()]
 
 
-def view_data(key):
+def view_data(key, min=0, max=1000, column_index=None):
     data_info = get_data_info(key)
     if not data_info or 'data' not in data_info:
         raise Exception('no data for ' + key)
@@ -119,24 +118,38 @@ def view_data(key):
                                 return 'double'
                 return 'object'
 
-            for colname, dtype in zip(df.columns, df.dtypes):
-                dt = col_dtype(df[colname]) \
-                    if dtype.name == 'object' else dtype.name
-                yield {'column-name': colname, 'column-type': _dtypemap[dt]}
+            if column_index :
+                for i, (colname, dtype) in enumerate(zip(df.columns, df.dtypes)):
+                    if column_index.__contains__(i):
+                        dt = col_dtype(df[colname]) \
+                            if dtype.name == 'object' else dtype.name
+                        yield {'column-name': colname, 'column-type': _dtypemap[dt]}
+            else:
+                for colname, dtype in zip(df.columns, df.dtypes):
+                    dt = col_dtype(df[colname]) \
+                        if dtype.name == 'object' else dtype.name
+                    yield {'column-name': colname, 'column-type': _dtypemap[dt]}
 
         def ensure_none(df):
-            val = df.values
+            if column_index :
+                inner_df = df.iloc[min:max , column_index ]
+            else:
+                inner_df = df.iloc[min:max , ]
+            val = inner_df.values
             if isna(val).any():
-                val[isna(df.values)] = None
+                val[isna(inner_df.values)] = None
             return val
 
+        column_list = list(schema_map(data))
+        row_values = ensure_none(data)
         return data_json.to_json({
             'type': 'table',
             'data': {
-                'count': data.shape[0],
+                'count': row_values.__len__(),
                 'bytes': -1,
-                'schema': list(schema_map(data)),
-                'data': ensure_none(data)
+                'schema': column_list,
+                'data': row_values,
+                'columnCount':column_list.__len__()
             }
         })
     elif psdf and isinstance(data, psdf.DataFrame):
@@ -244,26 +257,11 @@ def _write_dataframe(dataframe, path):
     if not path.startswith('hdfs://'):
         path = data_util.make_data_path(path)
 
-    _remove_exist_directory_if_dir(path)
     _make_directory_if_needed(path)
 
     table = pa.Table.from_pandas(dataframe, preserve_index=False)
     pq.write_table(table, path)
 
-
-def _remove_exist_directory_if_dir(path):
-    """
-    remove directory made by spark data frame.
-    pyarrow.parquet write table method can not overwrite directory. 
-    """
-    parsed_uri = urlparse(path)
-    if parsed_uri.scheme == 'hdfs':
-        if pa.HadoopFileSystem().isdir(path) :
-            pa.HadoopFileSystem().delete(path, recursive='true')
-    else :
-        parsed_uri = urlparse(path)
-        if os.path.isdir(parsed_uri.path):
-            os.removedirs(parsed_uri.path, recursive='true')
 
 def _make_directory_if_needed(path):
     """
@@ -271,11 +269,7 @@ def _make_directory_if_needed(path):
 
     :param path: File location full path
     """
-    parsed_uri = urlparse(path)
-    if parsed_uri.scheme == 'hdfs':  # Doesn't need to make dirs
-        return
-
-    directory_path = os.path.dirname(parsed_uri.path)
+    directory_path = os.path.dirname(path)
     if not os.path.exists(directory_path):
         os.makedirs(directory_path)
 

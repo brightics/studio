@@ -28,16 +28,6 @@ router.get('/', function (req, res) {
     }
 });
 
-const handle = (options) => {
-    return new Promise((resolve, reject) => {
-        try {
-            return request(options, (...args) => resolve(args));
-        } catch (e) {
-            return reject(e);
-        }
-    });
-}
-
 const attachAgentAsMapping = (userId) => {
     const url = `/api/core/v2/agentUser`;
     const options = __BRTC_CORE_SERVER.createRequestOptions('PUT', url);
@@ -45,22 +35,26 @@ const attachAgentAsMapping = (userId) => {
         userId,
         agentId: 'BRIGHTICS'
     });
-    return handle(options);
+    return new Promise((resolve, reject) => {
+        try {
+            return request(options, (...args) => resolve(args));
+        } catch (e) {
+            return reject(e);
+        }
+    });
 };
 
 const deleteAgentAsMapping = (userId) => {
     const url = `/api/core/v2/agentUser/${userId}`;
     const options = __BRTC_CORE_SERVER.createRequestOptions('DELETE', url);
-    return handle(options);
+    return new Promise((resolve, reject) => {
+        try {
+            return request(options, (...args) => resolve(args));
+        } catch (e) {
+            return reject(e);
+        }
+    });
 };
-
-const handleError = (res) => ([error, response, body]) => {
-    if (error) {
-        __BRTC_ERROR_HANDLER.sendServerError(res, error);
-    } else {
-        res.sendStatus(200);
-    }
-}
 
 var createPublishReport = function (req, res) {
     var task = function (permissions) {
@@ -77,7 +71,13 @@ var createPublishReport = function (req, res) {
             __BRTC_ERROR_HANDLER.sendServerError(res, err);
         }, function (result) {
             attachAgentAsMapping(req.body.publishId)
-                .then(handleError(res));
+                .then(([error, response, body]) => {
+                    if (error) {
+                        __BRTC_ERROR_HANDLER.sendServerError(res, error);
+                    } else {
+                        res.sendStatus(200);
+                    }
+                });
         });
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_PUBLISH_CREATE, task);
@@ -93,8 +93,13 @@ var deletePublishReport = function (req, res) {
         }, function (result) {
             // deleteAgentAsMapping
             deleteAgentAsMapping(req.params.publishId)
-                .then(handleError(res));
-
+                .then(([error, response, body]) => {
+                    if (error) {
+                        __BRTC_ERROR_HANDLER.sendServerError(res, error);
+                    } else {
+                        res.sendStatus(200);
+                    }
+                });
         });
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_PUBLISH_DELETE, task);

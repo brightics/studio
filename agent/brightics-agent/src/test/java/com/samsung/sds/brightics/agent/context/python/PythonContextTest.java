@@ -74,7 +74,7 @@ public class PythonContextTest {
         ThreadLocalContext.put("user", "test_user");
 
         runner = new PythonContext("test_user");
-        runner.init();
+        runner.init("PYTHON");
 
         pythonVersion = Integer.parseInt(runner.runScript(makePythonScript("import sys\nprint(sys.version_info.major)")));
     }
@@ -96,7 +96,7 @@ public class PythonContextTest {
     @Test
     public void testMultiplePythonRunner() {
         PythonContext runner2 = new PythonContext("test_session");
-        runner2.init();
+        runner2.init("PYTHON");
 
         TaskMessageWrapper scriptMessage1 = makePythonScript("print('Hello, runner1')");
         TaskMessageWrapper scriptMessage2 = makePythonScript("print('Hello, runner2')");
@@ -367,7 +367,7 @@ public class PythonContextTest {
                 "put_data('df_data', df, 'label')"));
         assertThat(putDataResult).isBlank();
 
-        Map<String, Object> dataView = toMap(runner.viewData("df_data", 0, 10));
+        Map<String, Object> dataView = toMap(runner.viewData("df_data", 0, 10, new int[0]));
 
         Column[] schema = new Column[3];
         schema[0] = new Column("one", "float64");
@@ -396,7 +396,7 @@ public class PythonContextTest {
                 "put_data('text_data', 'This is saved text data', 'label')"));
         assertThat(putDataResult).isBlank();
 
-        Map<String, Object> dataView = toMap(runner.viewData("text_data", 0, 10));
+        Map<String, Object> dataView = toMap(runner.viewData("text_data", 0, 10, new int[0]));
 
         assertThat(dataView).containsKeys("type", "data");
         assertThat(dataView.get("type")).isEqualTo("text");

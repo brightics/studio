@@ -26,6 +26,7 @@ import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;
 
+import com.samsung.sds.brightics.common.network.proto.stream.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,10 +57,6 @@ import com.samsung.sds.brightics.common.network.proto.metadata.MetaDataServiceGr
 import com.samsung.sds.brightics.common.network.proto.metadata.MetaDataServiceGrpc.MetaDataServiceBlockingStub;
 import com.samsung.sds.brightics.common.network.proto.metadata.RemoveDataAliasMessage;
 import com.samsung.sds.brightics.common.network.proto.metadata.ResultDataMessage;
-import com.samsung.sds.brightics.common.network.proto.stream.ByteStreamMessage;
-import com.samsung.sds.brightics.common.network.proto.stream.ReadMessage;
-import com.samsung.sds.brightics.common.network.proto.stream.StreamServiceGrpc;
-import com.samsung.sds.brightics.common.network.proto.stream.WriteMessage;
 import com.samsung.sds.brightics.common.network.proto.task.ExecuteTaskMessage;
 import com.samsung.sds.brightics.common.network.proto.task.ResultTaskMessage;
 import com.samsung.sds.brightics.common.network.proto.task.StopTaskMessage;
@@ -88,6 +85,7 @@ public class MessageSender {
     private MetaDataServiceBlockingStub metaDataBlockingStub;
     private DatabaseServiceBlockingStub databaseBlockingStub;
     private DeeplearningServiceBlockingStub deeplearningBlockingStub;
+    private StreamServiceGrpc.StreamServiceBlockingStub StreamBlockingStub;
 
     private ManagedChannel channel;
     private NetworkConfig config;
@@ -109,6 +107,7 @@ public class MessageSender {
         this.metaDataBlockingStub = MetaDataServiceGrpc.newBlockingStub(channel);
         this.databaseBlockingStub = DatabaseServiceGrpc.newBlockingStub(channel);
         this.deeplearningBlockingStub = DeeplearningServiceGrpc.newBlockingStub(channel);
+        this.StreamBlockingStub = StreamServiceGrpc.newBlockingStub(channel);
 
         if (config.getIsCheckHeartbeat()) {
             Thread thread = new Thread(heartbeatRunnable());
@@ -228,16 +227,29 @@ public class MessageSender {
     }
 
     public void receiveFile(ReadMessage request, OutputStream outputstream) {
-        String key = request.getKey();
+        receiveData("file", request, request.getKey(), outputstream);
+    }
+
+    public void receiveCheckpoint(ReadCheckpointMessage request, OutputStream outputstream) {
+        receiveData("checkpoint", request, request.getPath(), outputstream);
+    }
+
+    public ResultMessage download(DownloadMessage message) {
+        return StreamBlockingStub.download(message);
+    }
+
+    private void receiveData(String type, Object message, String key, OutputStream outputstream) {
         CountDownLatch doneSignal = new CountDownLatch(1);
         List<String> errorSignal = new ArrayList<>();
-
-        StreamServiceGrpc.newStub(channel).readStream(request, new StreamObserver<ByteStreamMessage>() {
+        StreamObserver<ByteStreamMessage> observer = new StreamObserver<ByteStreamMessage>() {
             @Override
             public void onNext(ByteStreamMessage value) {
                 try {
                     ByteString data = value.getData();
                     data.writeTo(outputstream);
+                    outputstream.flush();
+                    //send done message.
+                    StreamBlockingStub.readStreamDone(ReadMessage.newBuilder().setTempKey(value.getTempKey()).build());
                 } catch (Exception e) {
                     logger.error("[Common network] fail to write data stream.", e);
                 }
@@ -255,10 +267,14 @@ public class MessageSender {
                 logger.info(String.format("[Common network] complete to receive file. key : %s", key));
                 doneSignal.countDown();
             }
-        });
-
+        };
+        if ("checkpoint".equalsIgnoreCase(type)) {
+            StreamServiceGrpc.newStub(channel).readCheckpoint((ReadCheckpointMessage) message, observer);
+        } else if ("file".equalsIgnoreCase(type)) {
+            StreamServiceGrpc.newStub(channel).readStream((ReadMessage) message, observer);
+        }
         try {
-            doneSignal.await(); //wait for the count = 0
+            doneSignal.await(); // wait for the count = 0
         } catch (InterruptedException e) {
             logger.error("[Common network] Interrupted to receive file.", e);
         }
@@ -266,6 +282,7 @@ public class MessageSender {
             throw new BrighticsCoreException("3402", "file key is " + errorSignal.get(0));
         }
     }
+
 
     private Runnable heartbeatRunnable() {
         return () -> {

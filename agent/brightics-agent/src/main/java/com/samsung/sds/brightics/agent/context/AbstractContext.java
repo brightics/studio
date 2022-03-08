@@ -38,7 +38,7 @@ public abstract class AbstractContext {
     }
 
     // init contextRunner
-    abstract public void init();
+    abstract public void init(String contextType);
 
     // function task run.
     abstract public String runFunction(TaskMessageWrapper message) throws Exception;
@@ -58,7 +58,7 @@ public abstract class AbstractContext {
     // init data container
     abstract public void initDataMap();
 
-    abstract public String viewData(String key, long min, long max) throws Exception;
+    abstract public String viewData(String key, long min, long max, int[] columnIndex) throws Exception;
 
     abstract public String viewSchema(String key) throws Exception;
 

@@ -62,7 +62,6 @@ public class ContextManager {
     private static final Lock lock = new Lock();
 
     static {
-
         Set<Class<?>> classes;
         try {
             Reflections reflections = new Reflections(defaultRunnerPackage);
@@ -70,8 +69,10 @@ public class ContextManager {
             for (Class<?> clazz : classes) {
                 ScriptContext annotation = clazz.getAnnotation(ScriptContext.class);
                 if (annotation != null) {
-                    contextClassByType.put(annotation.contextType(), (Class<? extends AbstractContext>) clazz);
-                    logger.info("Success to regist '{}'.", clazz.getName());
+                    for (ContextType contextType : annotation.contextType()) {
+                        contextClassByType.put(contextType, (Class<? extends AbstractContext>) clazz);
+                        logger.info("Success to regist type '{}', name '{}'.", contextType.name(), clazz.getName());
+                    }
                 }
             }
             logger.info("Finish to initialize script context classes.");
@@ -97,7 +98,7 @@ public class ContextManager {
                 logger.info("Create new {} context.", contextType);
                 AbstractContext someContext = contextClassByType.get(contextType).getConstructor(String.class)
                         .newInstance(user);
-                someContext.init();
+                someContext.init(contextType.name());
                 someContext.initDataMap();
                 userContextSession.putContext(contextType, someContext);
             }

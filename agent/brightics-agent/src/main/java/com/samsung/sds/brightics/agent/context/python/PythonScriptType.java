@@ -52,7 +52,7 @@ public enum PythonScriptType {
                     addScript().
                     addPutScriptResultScript().
                     addWriteOutputsScript().
-                    script();
+                    wrapScriptByFunc();
         }
     },
     UDF {
@@ -64,7 +64,7 @@ public enum PythonScriptType {
                     addScript().
                     addPutOutputsScript().
                     addWriteOutputsScript().
-                    script();
+                    wrapScriptByFunc();
         }
     },
     Function {
@@ -92,9 +92,7 @@ public enum PythonScriptType {
     DLPythonScript {
         @Override
         public String getSource(TaskMessageWrapper message) {
-            return scriptBuilder(message).
-                    addScript().
-                    script();
+            return DLPythonScriptBuilder.script(message);
         }
     },
     DLPredict {

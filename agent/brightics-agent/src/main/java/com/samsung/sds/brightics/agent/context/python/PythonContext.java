@@ -33,31 +33,28 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
-@ScriptContext(contextType = ContextType.PYTHON)
+@ScriptContext(contextType = {ContextType.PYTHON, ContextType.DLPYTHON})
 public class PythonContext extends AbstractContext {
 
     private static final String EXCEPTION_SCRIPT_ERROR = "4325";
 
     private static final Gson gson = BrighticsGsonBuilder.getGsonInstance();
 
-    PythonProcessManager processManager;
+    private PythonProcessManager processManager;
+    private String contextType;
 
     public PythonContext(String id) {
         super(id);
     }
 
     @Override
-    public void init() {
+    public void init(String contextType) {
+        this.contextType = contextType;
         processManager = new PythonProcessManager(id);
-        processManager.init();
-
-        Runtime.getRuntime().addShutdownHook(new Thread("PythonContextShutdownHook") {
-            @Override
-            public void run() {
-                PythonContext.this.close();
-            }
-        });
+        processManager.init(contextType);
     }
 
     @Override
@@ -65,7 +62,7 @@ public class PythonContext extends AbstractContext {
         if (processManager == null || !processManager.isAlive()) {
             logger.info("Python process terminated. Try to init python process again.");
             processManager = new PythonProcessManager(id);
-            processManager.init();
+            processManager.init(this.contextType);
         }
 
         try {
@@ -79,39 +76,21 @@ public class PythonContext extends AbstractContext {
 
     @Override
     public String runScript(TaskMessageWrapper message) {
+        PythonScriptType type = PythonScriptType.getType(message);
+
         if (processManager == null || !processManager.isAlive()) {
             logger.info("Python process terminated. Try to init python process again.");
             processManager = new PythonProcessManager(id);
-            processManager.init();
+            processManager.init(contextType);
         }
-
-        PythonScriptType type = PythonScriptType.getType(message);
 
         try {
             return processManager.run(type.getSource(message));
         } catch (AbsBrighticsException be) {
-            if (type == PythonScriptType.DLPythonScript) {
-                writeDLErrorFile(message, ExceptionUtils.getStackTrace(be.getCause()));
-            }
             throw be;
         } catch (Exception e) {
-            if (type == PythonScriptType.DLPythonScript) {
-                writeDLErrorFile(message, ExceptionUtils.getStackTrace(e.getCause()));
-            }
-            throw new BrighticsCoreException(EXCEPTION_SCRIPT_ERROR, e.getMessage()).initCause(e.getCause());
-        }
-    }
-
-    private void writeDLErrorFile(TaskMessageWrapper message, String errMessage) {
-        String logPath = message.params.getOrException("logPath");
-        String logName = message.params.getOrException("logName");
-
-        Path path = Paths.get(logPath, logName + ".err");
-
-        try {
-            Files.write(path, errMessage.getBytes(), StandardOpenOption.CREATE_NEW);
-        } catch (IOException e) {
-            logger.error("Error occurred while write Deep Learning error message");
+            throw new BrighticsCoreException(EXCEPTION_SCRIPT_ERROR, e.getMessage()).initCause(e.getCause())
+                    .addDetailMessage(ExceptionUtils.getStackTrace(e));
         }
     }
 
@@ -139,11 +118,16 @@ public class PythonContext extends AbstractContext {
     }
 
     @Override
-    public String viewData(String key, long min, long max) {
-        logger.info("View data {}", key);
-        // FIXME add support for min and max
+    public String viewData(String key, long min, long max, int[] columnIndex) {
+        logger.info("View data {}, min {}, max{}", key, min, max);
         try {
-            return processManager.run(String.format("view_data('%s')", key), true);
+            if (columnIndex != null && columnIndex.length > 0) {
+                return processManager.run(String.format("view_data('%s', %d, %d, %s)", key, min, max
+                        , Arrays.stream(columnIndex).mapToObj(i -> String.valueOf(i))
+                                .collect(Collectors.joining(", ", "column_index = [", "]"))), true);
+            } else {
+                return processManager.run(String.format("view_data('%s', %d, %d)", key, min, max), true);
+            }
         } catch (Exception e) {
             logger.error("Error occurred while view data {}", key);
             logger.error(e.getMessage());
@@ -198,6 +182,6 @@ public class PythonContext extends AbstractContext {
     @Override
     public void reset() {
         close();
-        init();
+        init(this.contextType);
     }
 }

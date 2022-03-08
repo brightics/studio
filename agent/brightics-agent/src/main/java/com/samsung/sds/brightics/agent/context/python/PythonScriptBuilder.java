@@ -26,6 +26,7 @@ import com.samsung.sds.brightics.agent.util.DataKeyUtil;
 import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
 import com.samsung.sds.brightics.common.data.DataStatus;
 import com.samsung.sds.brightics.common.network.proto.ContextType;
+
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
@@ -38,7 +39,7 @@ import java.util.stream.Stream;
 public class PythonScriptBuilder {
 
     private static final String SCRIPT_DELIM = "\n";
-
+    private static final String PYTHON_INDENT = "    "; // 4 spaces
     private StringJoiner script = new StringJoiner(SCRIPT_DELIM);
     private TaskMessageWrapper message;
 
@@ -48,6 +49,24 @@ public class PythonScriptBuilder {
 
     public String script() {
         return script.toString();
+    }
+
+    /**
+     * Wrapping code with function
+     * Call only in type {@code PythonScriptType.UDF} and {@code PythonScriptType.PythonScript}
+     * @return python code
+     */
+    public String wrapScriptByFunc() {
+        String uniqFuncName = String.format("brtc_py_wrapper_%d", this.hashCode()).replace("-", "_");
+        String prefixScript = String.format("def %s():%s", uniqFuncName, SCRIPT_DELIM);
+        String postfixScript = String.format("%s%s()", SCRIPT_DELIM, uniqFuncName);
+        StringJoiner wrappedScript = new StringJoiner(SCRIPT_DELIM, prefixScript, postfixScript);
+
+        String[] scriptCodes = script.toString().split(SCRIPT_DELIM);
+        for (int i = 0; i < scriptCodes.length; i++)
+            wrappedScript.add(PYTHON_INDENT + parseTabIndent(scriptCodes[i]));
+
+        return wrappedScript.toString();
     }
 
     PythonScriptBuilder addScript() {
@@ -334,5 +353,26 @@ public class PythonScriptBuilder {
             default:
                 return String.format("%s", StringUtils.trim(value));
         }
+    }
+
+    /**
+     * Tab 으로 Indentation 한 코드를 Space으로 변경하기 위한 메소드
+     * @param line  a line of code
+     * @return  Space Indent로 변환된 문자열 또는 원본 문자열
+     */
+    private String parseTabIndent(String line) {
+        String rst = line;
+        int cnt = 0;
+
+        while (rst.length() > 0 && rst.charAt(0) == '\t') {
+            cnt++;
+            rst = rst.substring(1);
+        }
+
+        for (int i = cnt; i > 0; i--) {
+            rst = PYTHON_INDENT + rst;
+        }
+
+        return rst;
     }
 }

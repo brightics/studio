@@ -1,0 +1,252 @@
+{
+  "_label": "Model Function Spec",
+  "_description": "Model Function Spec - image classification",
+  "_tags": [
+    "image",
+    "classification"
+  ],
+  "params": {
+    "network": {
+      "_label": "Network",
+      "_description": "Network for training model",
+      "_type": "module",
+      "_control": "moduleSelector",
+      "_moduleName": "network",
+      "_value": {},
+      "_optional": false,
+      "_advancedOption": false
+    },
+    "loss": {
+            "_label": "Loss",
+            "_description": "Loss description",
+            "_type": "module",
+            "_control": "moduleSelector",
+            "_moduleName": "train-operation/loss",
+            "_value": {
+              "module": "brightics.deeplearning.model_function.image.classification.loss",
+              "updateVersion": "3.6",
+              "name": "softmax_cross_entropy",
+              "params": {
+                "label_smoothing": {
+                  "_value": 0,
+                  "_description": "Label Smoothing",
+                  "_label": "Label Smoothing",
+                  "_optional": true,
+                  "_type": "number",
+                  "_control": "input",
+                  "_advancedOption": true
+                },
+                "weights": {
+                  "_value": 1,
+                  "_description": "Weights",
+                  "_label": "Weights",
+                  "_optional": true,
+                  "_type": "number",
+                  "_control": "input",
+                  "_advancedOption": true
+                }
+              },
+              "_label": "Softmax Cross Entropy",
+              "_description": "Softmax Cross Entropy",
+              "_tags": [
+                "image",
+                "classification",
+                "loss"
+              ],
+              "_deprecated": false,
+              "_contentType": "loss"
+            },
+            "_optional": false,
+            "_advancedOption": false
+          },
+          "learning_rate_policy": {
+            "_label": "Learning Rate Policy",
+            "_description": "Learning rate policy",
+            "_type": "module",
+            "_control": "moduleSelector",
+            "_moduleName": "train-operation/learning_rate_policy",
+            "_value": {
+              "module": "brightics.deeplearning.model_function.image.classification.learning_rate",
+              "updateVersion": "3.6",
+              "name": "exponential_decay",
+              "params": {
+                "decay_rate": {
+                  "_value": 0.94,
+                  "_description": "Decay Rate",
+                  "_label": "Decay Rate",
+                  "_optional": true,
+                  "_type": "number",
+                  "_control": "input",
+                  "_advancedOption": false
+                },
+                "decay_steps": {
+                  "_value": 2000,
+                  "_description": "Decay Steps",
+                  "_label": "Decay Steps",
+                  "_optional": true,
+                  "_type": "number",
+                  "_control": "input",
+                  "_advancedOption": false
+                },
+                "learning_rate": {
+                  "_value": 0.01,
+                  "_description": "Initial Learning Rate",
+                  "_label": "Learning Rate",
+                  "_optional": false,
+                  "_type": "number",
+                  "_control": "input",
+                  "_advancedOption": false
+                },
+                "staircase": {
+                  "_value": false,
+                  "_description": "Boolean. If True, decay the learning rate at discrete intervals",
+                  "_label": "Staircase",
+                  "_optional": true,
+                  "_type": "boolean",
+                  "_control": "input",
+                  "_advancedOption": false
+                }
+              },
+              "_label": "Exponential Decay",
+              "_description": "Exponential Learning Rate Decay",
+              "_tags": [
+                "image",
+                "classification",
+                "learning rate policy"
+              ],
+              "_deprecated": false,
+              "_contentType": "learning_rate_policy"
+            },
+            "_optional": false,
+            "_advancedOption": false
+          },
+          "optimizer": {
+            "_label": "Optimizer",
+            "_description": "Optimizer description",
+            "_type": "module",
+            "_control": "moduleSelector",
+            "_moduleName": "train-operation/optimizer",
+            "_value": {
+              "module": "brightics.deeplearning.model_function.image.classification.optimizer",
+              "updateVersion": "3.6",
+              "name": "adam",
+              "params": {
+                "beta1": {
+                  "_value": 0.9,
+                  "_description": "The exponential decay rate for the 1st moment estimates.",
+                  "_label": "Beta1",
+                  "_optional": true,
+                  "_type": "number",
+                  "_control": "input",
+                  "_advancedOption": false
+                },
+                "beta2": {
+                  "_value": 0.999,
+                  "_description": "The exponential decay rate for the 2nd moment estimates.",
+                  "_label": "Beta2",
+                  "_optional": true,
+                  "_type": "number",
+                  "_control": "input",
+                  "_advancedOption": false
+                },
+                "epsilon": {
+                  "_value": 1e-8,
+                  "_description": "A small constant for numerical stability.",
+                  "_label": "Epsilon",
+                  "_optional": true,
+                  "_type": "number",
+                  "_control": "input",
+                  "_advancedOption": false
+                },
+                "use_locking": {
+                  "_value": false,
+                  "_description": "If True, use locks for update operations.",
+                  "_label": "Use Locking",
+                  "_optional": true,
+                  "_type": "boolean",
+                  "_control": "input",
+                  "_advancedOption": false
+                }
+              },
+              "_label": "Adam",
+              "_description": "Adam Optimizer",
+              "_tags": [
+                "image",
+                "classification",
+                "optimizer"
+              ],
+              "_deprecated": false,
+              "_contentType": "optimizer"
+            },
+            "_optional": false,
+            "_advancedOption": false
+          },
+    "predictions": {
+      "_label": "Prediction",
+      "_description": "Prediction values for inferencing with model trained.",
+      "_type": "module[]",
+      "_control": "moduleTree",
+      "_moduleName": "train-operation/prediction",
+      "_value": [
+        {
+          "_description": "Predicted class id.",
+          "_label": "Prediction",
+          "params": {},
+          "_tags": [
+            "prediction"
+          ],
+          "_deprecated": false,
+          "_contentType": "prediction",
+          "module": "brightics.deeplearning.model_function.image.classification.prediction",
+          "name": "prediction",
+          "updateVersion": "3.6"
+        },
+        {
+          "_description": "Logit values from network.",
+          "_label": "Probabilities",
+          "params": {},
+          "_tags": [
+            "prediction",
+            "probabilities"
+          ],
+          "_deprecated": false,
+          "_contentType": "prediction",
+          "module": "brightics.deeplearning.model_function.image.classification.prediction",
+          "name": "probabilities",
+          "updateVersion": "3.6"
+        }
+      ],
+      "_optional": false,
+      "_advancedOption": false
+    },
+    "eval_metrics": {
+      "_label": "Evaluation Metrics",
+      "_description": "Metrics displayed in evaluation steps.",
+      "_type": "module[]",
+      "_control": "moduleTree",
+      "_moduleName": "train-operation/metric",
+      "_value": [
+        {
+          "_description": "Accuracy",
+          "_label": "Accuracy",
+          "params": {},
+          "_tags": [
+            "eval metric",
+            "accuracy"
+          ],
+          "_deprecated": false,
+          "_contentType": "metric",
+          "module": "brightics.deeplearning.model_function.image.classification.metric",
+          "name": "accuracy",
+          "updateVersion": "3.6"
+        }
+      ],
+      "_optional": false,
+      "_advancedOption": false
+    }
+  },
+  "module": "brightics.deeplearning.model_function",
+  "name": "ImageClassificationModelFunction",
+  "updateVersion": "3.6",
+  "_deprecated": false
+}

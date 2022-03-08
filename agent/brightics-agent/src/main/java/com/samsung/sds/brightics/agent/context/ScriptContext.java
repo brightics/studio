@@ -23,5 +23,5 @@ import com.samsung.sds.brightics.common.network.proto.ContextType;
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ScriptContext {
-    ContextType contextType();
+    ContextType[] contextType();
 }

@@ -130,8 +130,6 @@ We are working hard to solve these issues and soon it will be public.
 This project exists thanks to all the people who contribute.
 <a href="../../graphs/contributors"><img src="https://opencollective.com/brightics-studio/contributors.svg?width=890&button=false" /></a>
 
-
 ## Contact us
 If you like to use Brightics Studio, please let us know your usage and feedback.<br>
 Or you have questions while using Brightics Studio, don't hesitate and feel free to contact brightics@samsung.com
-

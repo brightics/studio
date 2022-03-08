@@ -294,8 +294,7 @@ enum ScriptType {
     ScalaScript(ContextType.SCALA, true),
     Python(ContextType.PYTHON, false),
     PythonScript(ContextType.PYTHON, true),
-    DLPythonScript(ContextType.PYTHON, false),
-    DLPredict(ContextType.PYTHON, false),
+    DLPythonScript(ContextType.DLPYTHON, false),
     PyFunction(ContextType.PYTHON, true),
     UDF(ContextType.SCALA, true); // could be both context (python|scala)
 

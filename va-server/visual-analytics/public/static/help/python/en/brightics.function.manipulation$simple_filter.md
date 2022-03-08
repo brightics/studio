@@ -1,78 +1,34 @@
-## Format
-Filter a data based on a given formula. 
+## 필터
 
-## Description
-Filter is a higher-order function that processes a data in some order to produce a new data containing those elements of the original data for which a given predicate returns the boolean value true. Filter function generates a new data based on a given formula.
+데이터 필터링 함수
 
-Reference
+## 설명
+
+본 함수는 인풋 테이블로 부터 주어진 조건식에 만족하는 데이터만을 추출하는 함수이다. AND 혹은 OR 조건을 통해 한개 이상의 조건식을 설정 할 수 있다. 
+ 
+
+참조
 - <https://en.wikipedia.org/wiki/Filter_(higher-order_function)>
 
 ---
 
-## Properties
-### VA
-#### INPUT
-1. **table**<b style="color:red">*</b>: (Table) Data in a Table.
+## 속성
+#### 입력
+1. **table**<b style="color:red">*</b>: (Table) 대상 데이터를 포함하는 테이블
 
-#### OUTPUT
-1. **table**: (Table) Filtered output table according to a specified rule. 
+#### 출력
+1. **table**: (Table) 조건식에 맞게 추출된 데이터 테이블 
 
-#### PARAMETER
-1. **Filter**<b style="color:red">*</b>:
-   - **Condition**<b style="color:red">*</b> : Choose main operators, columns, operators and operands.
+#### 매개변수
+1. **Condition**<b style="color:red">*</b> : 필터링을 위한 조건식
 
+## 예제
 
-### Python
-```python
-simple_filter(table, main_operator, input_cols, operators, operands)
-```
-
-#### INPUT
-1. **table**<b style="color:red">*</b>: (Table) Data in a Table.
-
-#### OUTPUT
-1. **table**: (Table) Filtered output table according to a specified rule. 
-
-#### PARAMETER
-1. **main_operator**<b style="color:red">*</b>: Main operators for multiple filter formulas.
-    - Type: str
-    - Default / Range: And (And | Or)
-2. **input_cols**<b style="color:red">*</b>: Columns to apply the filter formula.
-    - Type: list[str]
-3. **operators**<b style="color:red">*</b>: Operators for the filter formula.
-    - Type: list[str]
-    - Default / Range: (== | != | In | Not In | Starts With | Ends With | Contain | Not Contain)
-4. **operands**<b style="color:red">*</b>: Operands for the filter formula. 
-    - Type: list[str]
-
-
-## Example
-### VA
-**<a href="https://www.brightics.ai/docs/ai/v3.6/tutorials/07_data_refine?type=insight" target="_blank">[Related Tutorial]</a>**
-
-**<a href="/static/help/python/sample_model/filter.json" download>[Sample Model]</a>**
+**<a href="/static/help/python/sample_model/filter.json" download>[예제 모델]</a>**
 
 <img src="/static/help/python/sample_model_img/filter.PNG"  width="800px" style="border: 1px solid gray" >
 
-In the tutorial workflow, sample_iris data is used as input of Filter function. The ouput of this function is a filtered output table according to a given rule. The parameter settings used in the function are shown below.
+<br>본 예제는 필터 함수를 이용하여 sample_iris 데이터의 일부를 추출하는 예제를 보여준다. 예제에서는 _species_ = 'setosa'의 조건식을 설정하여, 이에 맞는 데이터만을 추출하고 있다. 
 
-++Parameters++
-1. **main_operator**: And
-2. **input_cols**: species
-3. **operators**: ==
-4. **operands**: setosa
-
-
-### Python
-```
-from brightics.function.manipulation import simple_filter
-input_table = inputs[0]
-res = simple_filter(table = input_table,
-  		    main_operator = "and", 
-	            input_cols = ["species"], 
-	            operators = ["=="], 
-		    operands = ["'setosa'"])
-output = res['out_table']
-```
-
-In this python script, Filter function is applied to the input data to generate a new data based on a given formula. 
+++매개변수++
+1. **Condition**<b style="color:red">*</b>: And, species, ==, 'setosa'
