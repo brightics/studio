@@ -98,7 +98,8 @@
 
       Brightics Studio가 자동으로 팝업되지 않는 경우 수동으로 http://127.0.0.1:3000 으로 이동하여 Brightics Studio를 사용하십시오.  
 
-
+      ※ macOS 에서 http://127.0.0.1:3000에 접속이 되지 않는 경우 [Brightics AI 포탈 FAQ](https://www.brightics.ai/community/FAQ) 의 "Brightics Studio Mac 버전 설치 오류가 발생합니다."를 확인해주세요.
+      
   * **Optional** : macOS 사용자는 [Homebrew](https://brew.sh/) 를 사용하여 [graphviz](http://graphviz.org/download/) 를 설치해야 Decision Tree의 트리 그림을 그릴 수 있습니다.   
   하지만 설치가 쉽지 않다면 넘어가도 됩니다.
       ```
