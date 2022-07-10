@@ -25,10 +25,14 @@ RUN cd /git/studio && mvn clean package -DskipTests
 # setup
 WORKDIR /brightics-studio
 
+RUN conda create -y -n python python=3.6.6
+SHELL ["conda", "run", "-n", "python", "/bin/bash", "-c"]
 RUN mv /git/studio/build/target/dist/brightics-studio /
 RUN sed -i "s/\"127.0.0.1\",/\"0.0.0.0\",/g" /brightics-studio/visual-analytics/conf.json
 RUN sed -i "s/\%\*\ //g" /brightics-studio/setup.sh
 RUN ./setup.sh
+RUN /brightics-studio/lib/brightics_python_env/bin/pip install kss==1.2.4
+RUN /brightics-studio/lib/brightics_python_env/bin/python -m spacy download en_core_web_sm
 RUN mv /brightics-studio/lib/nltk_data /brightics-studio/lib/brightics_python_env/
 RUN rm -rf /brightics-studio/lib/etc /brightics-studio/lib/graphviz /brightics-studio/lib/hadoop /brightics-studio/lib/shortcut /brightics-studio/lib/node/node_modules/npm/changelogs /brightics-studio/lib/node/node_modules/npm/doc /brightics-studio/lib/node/node_modules/npm/html /brightics-studio/lib/node/node_modules/npm/man /brightics-studio/lib/node/node_modules/npm/scripts /brightics-studio/lib/node/node_modules/npm/*.md /brightics-studio/lib/node/node_modules/npm/AUTHORS /brightics-studio/lib/node/node_modules/npm/TODO.org /brightics-studio/lib/node/node_modules/npm/.github /opt/zulu8.46.0.19-ca-jre8.0.252-linux_x64/man 
 
@@ -46,7 +50,7 @@ RUN yum install -y graphviz && \
     rm -rf /var/cache/yum && \
     curl -s https://cdn.azul.com/zulu/bin/zulu8.46.0.19-ca-jre8.0.252-linux_x64.tar.gz | tar xzv
 
-ENV PYTHON_HOME=/opt/miniconda3 \
+ENV PYTHON_HOME=/brightics-studio/lib/brightics_python_env \
     JAVA_HOME=/opt/zulu8.46.0.19-ca-jre8.0.252-linux_x64 \
     NODEJS_HOME=/brightics-studio/lib/node
 
