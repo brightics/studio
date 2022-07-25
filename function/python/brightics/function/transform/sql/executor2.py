@@ -14,12 +14,11 @@
     limitations under the License.
 """
 
-import pandas as pd
+from brighticsql.sqldf import BrighticSQL
 
-from .calcitepython.Sql2Pandas import Sql2Pandas
+brtcsql = BrighticSQL()
 
-
-def execute2(tables=[pd.DataFrame()], query="select 1"):
+def execute2(tables=None, query="select 1"):
     """
         tables: list of Pandas dataframes
         query: SQL query statement, ex) 'select 5'
@@ -31,8 +30,8 @@ def execute2(tables=[pd.DataFrame()], query="select 1"):
     for i, enum_name in enumerate(enum_table_names):
         query = query.replace("""#{{DF({i})}}""".format(i=i), enum_name)
 
-    Sql2Pandas.set_tables(input_tables)
-    result_df = Sql2Pandas.execute_sql_query(query)
-    Sql2Pandas.reset()
+    brtcsql.set_tables(input_tables)
+    result_df = brtcsql.execute(query)
+    brtcsql.reset()
 
     return {'out_table': result_df}

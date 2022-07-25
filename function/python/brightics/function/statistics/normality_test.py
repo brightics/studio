@@ -62,10 +62,12 @@ def _normality_test(table, input_cols, sig_level=0, method=['kstest', 'jarque_be
             stats_res['estimates'].append(stats)
             stats_res['p_value'].append(pval)
             result['kstest'][input_col] = {'estimates':stats, 'p_value':pval}
+        kstest_table = pd.DataFrame(stats_res)
+        result['kstest_result'] = kstest_table
         rb.addMD(strip_margin("""
         | ## {method} result
         |{stats_table}
-        """.format(method=test_name['kstest'], stats_table=pandasDF2MD(pd.DataFrame(stats_res)))))
+        """.format(method=test_name['kstest'], stats_table=pandasDF2MD(kstest_table))))
     if 'jarque_bera' in method:
         stats_res = dict()
         stats_res['data'] = []
@@ -78,28 +80,32 @@ def _normality_test(table, input_cols, sig_level=0, method=['kstest', 'jarque_be
             stats_res['estimates'].append(stats)
             stats_res['p_value'].append(pval)
             result['jarque_bera'][input_col] = {'estimates':stats, 'p_value':pval}
+        jarque_bera_table = pd.DataFrame(stats_res)
+        result['jarque_bera_result'] = jarque_bera_table
         rb.addMD(strip_margin("""
         | ## {method} result
         |{stats_table}
-        """.format(method=test_name['jarque_bera'], stats_table=pandasDF2MD(pd.DataFrame(stats_res)))))
+        """.format(method=test_name['jarque_bera'], stats_table=pandasDF2MD(jarque_bera_table))))
     if 'anderson' in method:
         stats_res = dict()
         stats_res['data'] = []
         stats_res['estimates'] = []
-        stats_res['critical value'] = []
-        stats_res['significance level'] = []
+        stats_res['critical_value'] = []
+        stats_res['significance_level'] = []
         result['anderson'] = dict()
         for input_col in input_cols:
             stats, critical_val, significance_lvl = anderson(table[input_col], dist='norm')
             stats_res['data'] += [input_col]
             stats_res['estimates'] += [stats]
-            stats_res['critical value'] += [critical_val[sig_level]]
-            stats_res['significance level'] += [significance_lvl[sig_level]]
-            result['anderson'][input_col] = {'estimates':[stats] * len(critical_val), 'critical value':list(critical_val), 'significance level':list(significance_lvl)}
+            stats_res['critical_value'] += [critical_val[sig_level]]
+            stats_res['significance_level'] += [significance_lvl[sig_level]]
+            result['anderson'][input_col] = {'estimates':[stats] * len(critical_val), 'critical_value':list(critical_val), 'significance_level':list(significance_lvl)}
+        anderson_table = pd.DataFrame(stats_res)
+        result['anderson_result'] = anderson_table
         rb.addMD(strip_margin("""
         | ## {method} result
         |{stats_table}
-        """.format(method=test_name['anderson'], stats_table=pandasDF2MD(pd.DataFrame(stats_res)))))
+        """.format(method=test_name['anderson'], stats_table=pandasDF2MD(anderson_table))))
         
     result['_repr_brtc_'] = rb.get()
         

@@ -14,5 +14,8 @@
     limitations under the License.
 """
 
+import os, sys
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from .executor import execute
 from .executor2 import execute2
+from .executor import execute3

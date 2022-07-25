@@ -17,6 +17,8 @@
 
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 import pandas as pd
+import matplotlib
+matplotlib.rcParams['axes.unicode_minus'] = False
 import matplotlib.pyplot as plt
 from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, plt2MD, dict2MD
 from brightics.function.utils import _model_dict
@@ -27,9 +29,12 @@ from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.exception import BrighticsFunctionException
 from sklearn.utils.multiclass import unique_labels
 
+from brightics.common.data_export import PyPlotData, PyPlotMeta
+
+
 def lda(table, group_by=None, **params):
     check_required_parameters(_lda, params, ['table'])
-    
+
     params = get_default_from_parameters_if_required(params, _lda)
     if (params['solver'] == 'svd'):
         if (params['shrinkage'] == 'float'):
@@ -48,7 +53,7 @@ def lda(table, group_by=None, **params):
         else:
             param_validation_check = [greater_than_or_equal_to(params, 1, 'n_components')]
     validate(*param_validation_check)
-    
+
     if group_by is not None:
         label_col = ""
         for param in params:
@@ -64,8 +69,8 @@ def lda(table, group_by=None, **params):
         return grouped_model
     else:
         return _lda(table, **params)
-    
-    
+
+
 def _lda(table, feature_cols, label_col, new_column_name='projected_', solver='svd', shrinkage=None, shrinkage_value=None,
          priors=None, n_components=None, store_covariance=False,
          tol=1.0e-4):
@@ -126,10 +131,29 @@ def _lda(table, feature_cols, label_col, new_column_name='projected_', solver='s
     res_get_param['means'] = res_mean
     res_get_param['coef'] = res_coef
     res_get_param['xbar'] = res_xbar
-    
+
     # visualization
-    plt.figure()
-    fig_scree = _screeplot(res_explained_variance_ratio, n_components)
+    # plt.figure()
+    # fig_scree = _screeplot(res_explained_variance_ratio, n_components)
+
+    n_components_range = range(1, len(res_explained_variance_ratio) + 1)
+    cum_explained_variance_ratio = res_explained_variance_ratio.cumsum()
+
+    figs = PyPlotData()
+
+    meta = PyPlotMeta('fig_scree',
+                      ylabel='Cumulative Explained Variance Ratio',
+                      xticks={'ticks': n_components_range,
+                              'labels': n_components_range})
+
+    meta.plot(n_components_range, cum_explained_variance_ratio, 'x-')
+    meta.set_ylim([0, 1.05])
+    meta.text(n_components, cum_explained_variance_ratio[n_components - 1] - 0.05,
+              '%0.4f' % cum_explained_variance_ratio[n_components - 1], va='center', ha='center')
+
+    figs.addmeta(meta)
+
+    figs.compile()
 
     table_explained_variance_ratio = pd.DataFrame(res_explained_variance_ratio, columns=['explained_variance_ratio'])
     table_explained_variance_ratio['cum_explained_variance_ratio'] = res_explained_variance_ratio.cumsum()
@@ -142,10 +166,9 @@ def _lda(table, feature_cols, label_col, new_column_name='projected_', solver='s
         |
         | ### Parameters
         | {parameter1}
-        """.format(fig_scree=fig_scree,
+        """.format(fig_scree=figs.getMD('fig_scree'),
                    table_explained_variance_ratio=pandasDF2MD(table_explained_variance_ratio),
-                   parameter1=dict2MD(res_get_param)
-                   )))
+                   parameter1=dict2MD(res_get_param))))
 
     model['coef'] = res_coef
     model['n_components'] = n_components
@@ -161,6 +184,8 @@ def _lda(table, feature_cols, label_col, new_column_name='projected_', solver='s
     model['_repr_brtc_'] = rb.get()
     model['lda_model'] = lda_model
     model['input_cols'] = feature_cols
+    model['figures'] = figs.tojson()
+
 
     return {'out_table': out_df, 'model': model}
 
@@ -178,7 +203,7 @@ def _screeplot(explained_variance_ratio, n_components, ax=None):
     ax.set_ylim([0, 1.05])
     ax.set_ylabel('Cumulative Explained Variance Ratio')
     ax.text(n_components, cum_explained_variance_ratio[n_components - 1] - 0.05,
-             '%0.4f' % cum_explained_variance_ratio[n_components - 1], va='center', ha='center')
+            '%0.4f' % cum_explained_variance_ratio[n_components - 1], va='center', ha='center')
     fig_scree = plt2MD(plt)
     plt.clf()
     return fig_scree
@@ -190,7 +215,7 @@ def lda_model(table, model, **params):
         return _function_by_group(_lda_model, table, model, **params)
     else:
         return _lda_model(table, model, **params)
-    
+
 
 def _lda_model(table, model, new_column_name='projected_', prediction_col='prediction'):
     new_col_names = []

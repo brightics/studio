@@ -20,6 +20,7 @@ import sqlite3
 from pandas.io import sql
 
 from . import functions
+from . import functions3
 from . import aggregate_functions
 from .serializer import _get_columns_to_serialize
 from .serializer import _get_serialized_table
@@ -59,6 +60,30 @@ def execute(tables, query):
     
     return {'out_table': res}
 
+def execute3(tables, query):
+    if isinstance(tables, pd.DataFrame):
+        tables = [tables]
+
+    sqlite3.enable_callback_tracebacks(True)
+    con = sqlite3.connect(':memory:', detect_types=sqlite3.PARSE_DECLTYPES)
+    
+    _register_adapters(sqlite3)
+    _register_converters(sqlite3)
+    _create_functions(con, functions3)
+    _create_aggregate_functions(con, aggregate_functions)
+    
+    con.execute("PRAGMA temp_store = MEMORY")
+    con.execute("PRAGMA journal_mode = OFF")
+    
+    table_names = _write_table(tables, con)
+    
+    for i, table_name in enumerate(table_names):
+        query = query.replace("""#{{DF({i})}}""".format(i=i), table_name)
+    res = _get_deserialized_table(sql.read_sql(query, con))
+        
+    con.close()  # delete tables?
+    
+    return {'out_table': res}
 
 def _write_table(tables, con):
     table_names = []

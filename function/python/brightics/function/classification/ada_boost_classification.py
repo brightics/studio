@@ -14,8 +14,11 @@
     limitations under the License.
 """
 
+import matplotlib
 import numpy as np
 import pandas as pd
+
+matplotlib.rcParams['axes.unicode_minus'] = False
 import matplotlib.pyplot as plt
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
@@ -29,6 +32,7 @@ from brightics.common.validation import validate, greater_than_or_equal_to, grea
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.function.utils import _model_dict
 from brightics.common.classify_input_type import check_col_type
+from brightics.common.data_export import PyPlotData, PyPlotMeta
 
 
 def ada_boost_classification_train(table, group_by=None, **params):
@@ -38,6 +42,7 @@ def ada_boost_classification_train(table, group_by=None, **params):
                               greater_than_or_equal_to(params, 1, 'n_estimators'),
                               greater_than(params, 0, 'learning_rate')]
     validate(*param_validation_check)
+
     if group_by is not None:
         return _function_by_group(_ada_boost_classification_train, table, group_by=group_by, **params)
     else:
@@ -45,16 +50,15 @@ def ada_boost_classification_train(table, group_by=None, **params):
 
 
 def _plot_feature_importance(feature_cols, classifier):
-    
     feature_importance = classifier.feature_importances_
     indices = np.argsort(feature_importance)
     sorted_feature_cols = np.array(feature_cols)[indices]
-    
+
     n_features = len(feature_cols)
     plt.barh(range(n_features), feature_importance[indices], color='b', align='center')
     for i, v in enumerate(feature_importance[indices]):
         plt.text(v, i, " {:.2f}".format(v), color='b', va='center', fontweight='bold')
-    
+
     plt.yticks(np.arange(n_features), sorted_feature_cols)
     plt.xlabel("Feature importance")
     plt.ylabel("Feature")
@@ -62,19 +66,60 @@ def _plot_feature_importance(feature_cols, classifier):
     fig_feature_importance = plt2MD(plt)
     plt.close()
     return fig_feature_importance
-    
-    
+
+
+def preprocess_():
+    base_estimator_class = DecisionTreeClassifier
+    preprocess_result = {'empty_estimator_param': {'base_estimator': base_estimator_class()},
+                         'base_estimator_class': base_estimator_class,
+                         'estimator_class': AdaBoostClassifier,
+                         'estimator_params': ['base_estimator', 'n_estimators', 'learning_rate', 'algorithm',
+                                              'random_state'],
+                         'base_estimator_params': ['max_depth']}
+    return preprocess_result
+
+
+def postprocess_(table, feature_cols, classifier):
+    feature_names, _ = check_col_type(table, feature_cols)
+
+    feature_importance = classifier.feature_importances_
+    indices = np.argsort(feature_importance)
+    sorted_feature_cols = np.array(feature_names)[indices]
+    n_features = len(feature_names)
+    figs = PyPlotData()
+    meta = PyPlotMeta('fig_feature_importance',
+                      xlabel='Feature importance',
+                      ylabel='Feature',
+                      yticks={'ticks': np.arange(n_features), 'labels': sorted_feature_cols})
+    meta.barh(range(n_features),
+              feature_importance[indices], color='b', align='center')
+    for i, v in enumerate(feature_importance[indices]):
+        meta.text(v, i, " {:.2f}".format(v), color='b',
+                  va='center', fontweight='bold')
+    meta.tight_layout()
+
+    figs.addmeta(meta)
+    figs.compile()
+
+    postprocess_result = {'update_md': {'Feature Importance': figs.getMD('fig_feature_importance')},
+                          'type': 'ada_boost_classification_model',
+                          'figs': figs}
+    return postprocess_result
+
+
 def _ada_boost_classification_train(table, feature_cols, label_col, max_depth=1,
-                                    n_estimators=50, learning_rate=1.0, algorithm='SAMME.R', random_state=None):
-    
+                                    n_estimators=50, learning_rate=1.0, algorithm='SAMME.R', random_state=None,
+                                    _user_id=None):
     feature_names, x_train = check_col_type(table, feature_cols)
     y_train = table[label_col]
 
     base_estimator = DecisionTreeClassifier(max_depth=max_depth)
 
     classifier = AdaBoostClassifier(base_estimator, n_estimators, learning_rate, algorithm, random_state)
-
     classifier.fit(x_train, y_train)
+
+    postprocess_result = postprocess_(table, feature_cols, classifier)
+    fig_feature_importance = postprocess_result['update_md']['Feature Importance']
 
     params = {'feature_cols': feature_cols,
               'label_col': label_col,
@@ -83,14 +128,14 @@ def _ada_boost_classification_train(table, feature_cols, label_col, max_depth=1,
               'learning_rate': learning_rate,
               'algorithm': algorithm,
               'random_state': random_state}
-    
+
     model = _model_dict('ada_boost_classification_model')
     get_param = classifier.get_params()
     model['parameters'] = get_param
     model['classifier'] = classifier
     model['params'] = params
+    model['figures'] = postprocess_result['figs'].tojson()
 
-    fig_feature_importance = _plot_feature_importance(feature_names, classifier)
     params = dict2MD(get_param)
 
     rb = BrtcReprBuilder()
@@ -109,8 +154,11 @@ def _ada_boost_classification_train(table, feature_cols, label_col, max_depth=1,
 
     model['_repr_brtc_'] = rb.get()
     feature_importance = classifier.feature_importances_
-    feature_importance_table = pd.DataFrame([[feature_names[i], feature_importance[i]] for i in range(len(feature_names))], columns=['feature_name', 'importance'])
+    feature_importance_table = pd.DataFrame(
+        [[feature_names[i], feature_importance[i]] for i in range(len(feature_names))],
+        columns=['feature_name', 'importance'])
     model['feature_importance_table'] = feature_importance_table
+    model['feature_cols'] = feature_cols
     return {'model': model}
 
 
@@ -122,7 +170,8 @@ def ada_boost_classification_predict(table, model, **params):
         return _ada_boost_classification_predict(table, model, **params)
 
 
-def _ada_boost_classification_predict(table, model, pred_col_name='prediction', prob_col_prefix='probability', suffix='index'):
+def _ada_boost_classification_predict(table, model, pred_col_name='prediction', prob_col_prefix='probability',
+                                      suffix='index'):
     if (table.shape[0] == 0):
         new_cols = table.columns.tolist() + [pred_col_name]
         classes = model['classifier'].classes_
@@ -135,18 +184,22 @@ def _ada_boost_classification_predict(table, model, pred_col_name='prediction', 
         return {'out_table': out_table}
     out_table = table.copy()
     classifier = model['classifier']
-    _, test_data = check_col_type(table, model['params']['feature_cols'])
-    
-    out_table[pred_col_name] = classifier.predict(test_data)   
-    
+    if 'feature_cols' in model:
+        _, test_data = check_col_type(table, model['feature_cols'])
+    else:
+        _, test_data = check_col_type(table, model['params']['feature_cols'])
+
+    out_table[pred_col_name] = classifier.predict(test_data)
+
     classes = classifier.classes_
     if suffix == 'index':
         suffixes = [i for i, _ in enumerate(classes)]
     else:
         suffixes = classes
-        
+
     prob = classifier.predict_proba(test_data)
-    prob_col_name = ['{prob_col_prefix}_{suffix}'.format(prob_col_prefix=prob_col_prefix, suffix=suffix) for suffix in suffixes]    
+    prob_col_name = ['{prob_col_prefix}_{suffix}'.format(prob_col_prefix=prob_col_prefix, suffix=suffix) for suffix in
+                     suffixes]
     out_col_prob = pd.DataFrame(data=prob, columns=prob_col_name)
 
     out_table = pd.concat([out_table, out_col_prob], axis=1)

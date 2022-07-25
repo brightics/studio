@@ -23,9 +23,10 @@ import numpy as np
 import pandas as pd
 import en_core_web_sm
 import re
-import sklearn_crfsuite
 import pickle
+from pathlib import Path
 
+from brightics.function.textanalytics.ner_estimator.estimator import CRF
 from brightics.function.textanalytics.split_sentences import split_sentences
 from brightics.function.textanalytics.tokenizer2 import tokenizer_kor2, tokenizer_eng2
 from brightics.function.utils import _model_dict
@@ -82,7 +83,9 @@ def _ner_eng(table, input_cols, method='nltk', ne_extraction_nltk=None, ne_extra
     if method == METHOD_CRF:
         # Load a CRF model pre-trained with GMB corpus and sklearn_crfsuite.
         # https://www.kaggle.com/abhinavwalia95/entity-annotated-corpus/version/3#ner_dataset.csv
-        with open('brightics/function/textanalytics/data/english_ner_model.pickle', 'rb') as f:
+        data_path = Path(__file__).resolve().parent / 'data'
+        eng_path = data_path / 'english_ner_model.pickle'
+        with open(eng_path, 'rb') as f:
             crf_model = pickle.load(f)
         model = {'crf_model': crf_model}
         res = _ner_crf_predict(table, model, input_cols, language='eng', new_col_prefix=new_col_prefix,
@@ -146,7 +149,9 @@ def ner_kor(table, **params):
 def _ner_kor(table, input_cols, ne_extraction_crf=None, new_col_prefix='named_entity'):
     # Load a CRF model pre-trained with KoreanNERCorpus and sklearn_crfsuite.
     # https://github.com/machinereading/KoreanNERCorpus
-    with open('brightics/function/textanalytics/data/korean_ner_model.pickle', 'rb') as f:
+    data_path = Path(__file__).resolve().parent / 'data'
+    kor_path = data_path / 'korean_ner_model.pickle'
+    with open(kor_path, 'rb') as f:
         crf_model = pickle.load(f)
     model = {'crf_model': crf_model}
     res = _ner_crf_predict(table, model, input_cols, language='kor', new_col_prefix=new_col_prefix,
@@ -389,7 +394,7 @@ def _ner_crf_train(table, sentence_col, token_col, pos_col, label_col, algorithm
         crf_params['c2'] = c2
     elif algorithm == 'l2sgd':
         crf_params['c2'] = c2
-    crf = sklearn_crfsuite.CRF(**crf_params)
+    crf = CRF(**crf_params)
     crf_model = crf.fit(features_train, label_train)
 
     appearing_labels = list(set([label[2:].upper() for label in table[label_col].values if label[0] == 'B']))

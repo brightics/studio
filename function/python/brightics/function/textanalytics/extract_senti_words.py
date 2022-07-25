@@ -15,9 +15,9 @@
 """
 
 from brightics.common.utils import check_required_parameters
-from nltk.corpus import stopwords
 import pandas as pd
 import numpy as np
+from pathlib import Path
 
 
 def extract_senti_words(table, **params):
@@ -33,9 +33,12 @@ def _extract_senti_words(table, input_col, user_dict=None, hold_cols=None):
     else:
         out_table = table[hold_cols]
     text_data = table[input_col].values
-    
-    basic_dict = dict(pd.read_csv('brightics/function/textanalytics/data/senti_words_basic_dict_kor.csv').values)
-    basic_dict.update(pd.read_csv('brightics/function/textanalytics/data/senti_words_basic_dict_eng.csv').values)
+
+    data_path = Path(__file__).resolve().parent / 'data'
+    kor_path = data_path / 'senti_words_basic_dict_kor.csv'
+    eng_path = data_path / 'senti_words_basic_dict_eng.csv'
+    basic_dict = dict(pd.read_csv(kor_path).values)
+    basic_dict.update(pd.read_csv(eng_path).values)
     if user_dict is not None:
         basic_dict.update(user_dict.values)
 

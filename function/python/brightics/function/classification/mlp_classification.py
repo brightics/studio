@@ -46,7 +46,7 @@ def mlp_classification_train(table, group_by=None, **params):
         param_validation_check = [greater_than(params, 0.0, 'learning_rate_init'),
                                   greater_than(params, 0.0, 'tol')]
     else:
-        if not params['batch_size'] or not isinstance(params['batch_size'], int):
+        if 'batch_size' not in params or not isinstance(params['batch_size'], int):
             param_validation_check = [require_param('batch_size')]
             validate(*param_validation_check)
         param_validation_check = [greater_than(params, 0, 'batch_size'),
@@ -61,34 +61,71 @@ def mlp_classification_train(table, group_by=None, **params):
         return _mlp_classification_train(table, **params)
 
 
-def _mlp_classification_train(table, feature_cols, label_col, hidden_layer_sizes=(100,), activation='relu', solver='adam', alpha=0.0001, batch_size_auto=True, batch_size='auto', learning_rate='constant', learning_rate_init=0.001, max_iter=200, random_state=None, tol=0.0001):
+def preprocess_(table, label_col, hidden_layer_sizes, batch_size_auto, batch_size):
+    label = table[label_col]
+    if sklearn_utils.multiclass.type_of_target(label) == 'continuous':
+        raise_error('0718', 'label_col')
 
+    if hidden_layer_sizes is None:
+        hidden_layer_sizes = (100,)
+
+    if batch_size_auto:
+        batch_size = 'auto'
+    else:
+        if not isinstance(batch_size, int):
+            raise_runtime_error("Manual batch size should be integer.")
+
+    preprocess_result = {'update_param': {"hidden_layer_sizes": hidden_layer_sizes,
+                                          "batch_size": batch_size},
+                         'estimator_class': MLPClassifier,
+                         'estimator_params': ['hidden_layer_sizes', 'activation', 'solver', 'alpha', 'batch_size',
+                                              'learning_rate', 'learning_rate_init', 'max_iter', 'shuffle',
+                                              'random_state', 'tol']}
+    return preprocess_result
+
+
+def postprocess_(table, feature_cols, label_col, classifier):
     _, features = check_col_type(table, feature_cols)
     label = table[label_col]
+    predict = classifier.predict(features)
 
-    if(sklearn_utils.multiclass.type_of_target(label) == 'continuous'):
-        raise_error('0718', 'label_col')
-    
-    mlp_model = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, activation=activation, solver=solver, alpha=alpha, batch_size=batch_size, learning_rate=learning_rate, learning_rate_init=learning_rate_init, max_iter=max_iter, shuffle=True, random_state=random_state, tol=tol)
-    mlp_model.fit(features, label)
-    
-    predict = mlp_model.predict(features)
-    
     _accuracy_score = accuracy_score(label, predict)
     _f1_score = f1_score(label, predict, average='micro')
     _precision_score = precision_score(label, predict, average='micro')
     _recall_score = recall_score(label, predict, average='micro')
-    
-    # summary = pd.DataFrame({'features': feature_names})
-    # coef_trans = np.transpose(coefficients)
-    
-    # summary = pd.concat((summary, pd.DataFrame(coef_trans, columns=classes)), axis=1)
-        
-    result_table = pd.DataFrame.from_items([
+
+    result_table = pd.DataFrame.from_dict([
         ['Metric', ['Accuracy Score', 'F1 Score', 'Precision Score', 'Recall Score']],
         ['Score', [_accuracy_score, _f1_score, _precision_score, _recall_score]]
     ])
-    
+
+    postprocess_result = {'update_md': {'Summary': pandasDF2MD(result_table)},
+                          'update_model_etc': {'accuracy_score': _accuracy_score,
+                                               'f1_score': _f1_score,
+                                               'precision_score': _precision_score,
+                                               'recall_score': _recall_score},
+                          'type': 'mlp_classification_model'}
+    return postprocess_result
+
+
+def _mlp_classification_train(table, feature_cols, label_col, hidden_layer_sizes=(100,), activation='relu',
+                              solver='adam', alpha=0.0001, batch_size_auto=True, batch_size='auto',
+                              learning_rate='constant', learning_rate_init=0.001, max_iter=200, random_state=None,
+                              tol=0.0001):
+
+    _, features = check_col_type(table, feature_cols)
+    label = table[label_col]
+
+    preprocess_result = preprocess_(table, label_col, hidden_layer_sizes, batch_size_auto, batch_size)
+    hidden_layer_sizes = preprocess_result['update_param']['hidden_layer_sizes']
+
+    mlp_model = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, activation=activation, solver=solver, alpha=alpha, batch_size=batch_size, learning_rate=learning_rate, learning_rate_init=learning_rate_init, max_iter=max_iter, shuffle=True, random_state=random_state, tol=tol)
+    mlp_model.fit(features, label)
+
+    postprocess_result = postprocess_(table, feature_cols, label_col, mlp_model)
+    update_md = postprocess_result['update_md']
+    summary = update_md['Summary']
+
     label_name = {
         'hidden_layer_sizes': 'Hidden Layer Sizes',
         'activation': 'Activation Function',
@@ -101,7 +138,7 @@ def _mlp_classification_train(table, feature_cols, label_col, hidden_layer_sizes
         'random_state': 'Seed',
         'tol': 'Tolerance'}
     get_param = mlp_model.get_params()
-    param_table = pd.DataFrame.from_items([
+    param_table = pd.DataFrame.from_dict([
         ['Parameter', list(label_name.values())],
         ['Value', [get_param[x] for x in list(label_name.keys())]]
     ])
@@ -112,20 +149,17 @@ def _mlp_classification_train(table, feature_cols, label_col, hidden_layer_sizes
     | {result}
     | ### Parameters
     | {list_parameters}
-    """.format(result=pandasDF2MD(result_table), list_parameters=pandasDF2MD(param_table)
-               )))
+    """.format(result=summary, list_parameters=pandasDF2MD(param_table))))
 
     model = _model_dict('mlp_classification_model')
-    model['features'] = feature_cols
+    update_model_etc = postprocess_result['update_model_etc']
+    model.update(update_model_etc)
+    model['feature_cols'] = feature_cols
     model['label'] = label_col
     model['intercepts'] = mlp_model.intercepts_
     model['coefficients'] = mlp_model.coefs_
     model['class'] = mlp_model.classes_
     model['loss'] = mlp_model.loss_
-    model['accuracy_score'] = _accuracy_score
-    model['f1_score'] = _f1_score
-    model['precision_score'] = _precision_score
-    model['recall_score'] = _recall_score
     model['activation'] = activation
     model['solver'] = solver
     model['alpha'] = alpha
@@ -135,11 +169,11 @@ def _mlp_classification_train(table, feature_cols, label_col, hidden_layer_sizes
     model['max_iter'] = max_iter
     model['random_state'] = random_state
     model['tol'] = tol
-    model['mlp_model'] = mlp_model
+    model['classifier'] = mlp_model
     model['_repr_brtc_'] = rb.get()
     # model['summary'] = summary
 
-    return {'model' : model}
+    return {'model': model}
 
 
 def mlp_classification_predict(table, model, **params):
@@ -153,9 +187,15 @@ def mlp_classification_predict(table, model, **params):
 def _mlp_classification_predict(table, model, prediction_col='prediction', prob_prefix='probability',
                                  output_log_prob=False, log_prob_prefix='log_probability', thresholds=None,
                                  suffix='index'):
-    feature_cols = model['features']
+    # migration logic
+    if 'mlp_model' in model:
+        model['classifier'] = model['mlp_model']
+    if 'features' in model:
+        model['feature_cols'] = model['features']
+
+    feature_cols = model['feature_cols']
     _, features = check_col_type(table, feature_cols)
-    mlp_model = model['mlp_model']
+    mlp_model = model['classifier']
     classes = mlp_model.classes_
     len_classes = len(classes)
     is_binary = len_classes == 2

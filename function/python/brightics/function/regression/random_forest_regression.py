@@ -1,4 +1,3 @@
-
 """
     Copyright 2019 Samsung SDS
     
@@ -15,15 +14,17 @@
     limitations under the License.
 """
 
+import matplotlib
 import numexpr as ne
-import pandas as pd
 import numpy as np
+import pandas as pd
+
+matplotlib.rcParams['axes.unicode_minus'] = False
 import matplotlib.pyplot as plt
-from sklearn.ensemble import RandomForestRegressor 
+from sklearn.ensemble import RandomForestRegressor
 from brightics.common.repr import BrtcReprBuilder
 from brightics.common.repr import strip_margin
 from brightics.common.repr import plt2MD
-from brightics.common.repr import dict2MD
 from brightics.function.utils import _model_dict
 from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
@@ -31,18 +32,19 @@ from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate
 from brightics.common.validation import greater_than_or_equal_to
 from brightics.common.classify_input_type import check_col_type
+from brightics.common.data_export import PyPlotData, PyPlotMeta
 
 
 def random_forest_regression_train(table, group_by=None, **params):
     check_required_parameters(_random_forest_regression_train, params, ['table'])
-    
-    params = get_default_from_parameters_if_required(params,_random_forest_regression_train)
+
+    params = get_default_from_parameters_if_required(params, _random_forest_regression_train)
     param_validation_check = [greater_than_or_equal_to(params, 1, 'n_estimators'),
                               greater_than_or_equal_to(params, 1, 'max_depth'),
                               greater_than_or_equal_to(params, 1, 'min_samples_split'),
                               greater_than_or_equal_to(params, 1, 'min_samples_leaf')]
     validate(*param_validation_check)
-    
+
     if group_by is not None:
         return _function_by_group(_random_forest_regression_train, table, group_by=group_by, **params)
     else:
@@ -50,16 +52,15 @@ def random_forest_regression_train(table, group_by=None, **params):
 
 
 def _plot_feature_importances(feature_cols, regressor):
-    
     feature_importance = regressor.feature_importances_
     indices = np.argsort(feature_importance)
     sorted_feature_cols = np.array(feature_cols)[indices]
-    
+
     n_features = regressor.n_features_
     plt.barh(range(n_features), feature_importance[indices], color='b', align='center')
     for i, v in enumerate(feature_importance[indices]):
         plt.text(v, i, " {:.2f}".format(v), color='b', va='center', fontweight='bold')
-    
+
     plt.yticks(np.arange(n_features), sorted_feature_cols)
     plt.xlabel("Feature importance")
     plt.ylabel("Feature")
@@ -67,30 +68,79 @@ def _plot_feature_importances(feature_cols, regressor):
     fig_feature_importances = plt2MD(plt)
     plt.close()
     return fig_feature_importances
-    
-    
-def _random_forest_regression_train(table, feature_cols, label_col,
-                                 n_estimators=10, criterion="mse", max_depth=None, min_samples_split=2, min_samples_leaf=1,
-                                 min_weight_fraction_leaf=0, max_features="None",
-                                 max_leaf_nodes=None, min_impurity_decrease=0, random_state=None):   
-    
-    feature_names, X_train = check_col_type(table, feature_cols)
-    y_train = table[label_col]   
-    
+
+
+def preprocess_(max_features):
     if max_features == "None":
         max_features = None
-            
-    regressor = RandomForestRegressor(n_estimators =n_estimators,
-                                      criterion = criterion, 
-                                      max_depth= max_depth, 
-                                      min_samples_split = min_samples_split, 
-                                      min_samples_leaf = min_samples_leaf, 
-                                      min_weight_fraction_leaf = min_weight_fraction_leaf, 
-                                      max_features = max_features, 
-                                      max_leaf_nodes = max_leaf_nodes, 
-                                      min_impurity_decrease = min_impurity_decrease, 
+
+    preprocess_result = {'update_param': {'max_features': max_features},
+                         'estimator_class': RandomForestRegressor,
+                         'estimator_params': ['n_estimators', 'criterion', 'max_depth', 'min_samples_split',
+                                              'min_samples_leaf', 'min_weight_fraction_leaf', 'max_features',
+                                              'max_leaf_nodes', 'min_impurity_decrease', 'random_state']}
+    return preprocess_result
+
+
+def preprocess_hyperparam_(max_features):
+    max_features = [None if item == "None" else item for item in max_features]
+    res = {'update': {'max_features': max_features}}
+    return res
+
+
+def postprocess_(table, feature_cols, regressor):
+    feature_names, features = check_col_type(table, feature_cols)
+
+    feature_importance = regressor.feature_importances_
+    indices = np.argsort(feature_importance)
+    sorted_feature_cols = np.array(feature_cols)[indices]
+    n_features = regressor.n_features_
+
+    figs = PyPlotData()
+
+    meta = PyPlotMeta('fig_feature_importances',
+                      xlabel='Feature importance',
+                      ylabel='Feature',
+                      yticks={'ticks': np.arange(n_features), 'labels': sorted_feature_cols})
+    meta.barh(range(n_features),
+              feature_importance[indices], color='b', align='center')
+    for i, v in enumerate(feature_importance[indices]):
+        meta.text(v, i, " {:.2f}".format(v), color='b',
+                  va='center', fontweight='bold')
+    meta.tight_layout()
+
+    figs.addmeta(meta)
+    figs.compile()
+
+    postprocess_result = {'update_md': {'Feature Importance': figs.getMD('fig_feature_importances')},
+                          'type': 'random_forest_regression_model',
+                          'figs': figs}
+
+    return postprocess_result
+
+
+def _random_forest_regression_train(table, feature_cols, label_col, n_estimators=10, criterion="mse", max_depth=None,
+                                    min_samples_split=2, min_samples_leaf=1, min_weight_fraction_leaf=0,
+                                    max_features="None", max_leaf_nodes=None, min_impurity_decrease=0,
+                                    random_state=None,
+                                    _user_id=None):
+    feature_names, X_train = check_col_type(table, feature_cols)
+    y_train = table[label_col]
+
+    preprocess_result = preprocess_(max_features)
+    max_features = preprocess_result['update_param']['max_features']
+
+    regressor = RandomForestRegressor(n_estimators=n_estimators,
+                                      criterion=criterion,
+                                      max_depth=max_depth,
+                                      min_samples_split=min_samples_split,
+                                      min_samples_leaf=min_samples_leaf,
+                                      min_weight_fraction_leaf=min_weight_fraction_leaf,
+                                      max_features=max_features,
+                                      max_leaf_nodes=max_leaf_nodes,
+                                      min_impurity_decrease=min_impurity_decrease,
                                       random_state=random_state)
-    regressor.fit(X_train, y_train) 
+    regressor.fit(X_train, y_train)
 
     params = {'feature_cols': feature_cols,
               'label_col': label_col,
@@ -104,13 +154,14 @@ def _random_forest_regression_train(table, feature_cols, label_col,
               'max_leaf_nodes': max_leaf_nodes,
               'min_impurity_decrease': min_impurity_decrease,
               'random_state': random_state}
-    
+
     model = _model_dict('random_forest_regression_model')
     model['regressor'] = regressor
     model['params'] = params
 
-    fig_feature_importances = _plot_feature_importances(feature_names, regressor)
-           
+    postprocess_result = postprocess_(table, feature_cols, regressor)
+    fig_feature_importances = postprocess_result['update_md']['Feature Importance']
+
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     | ## Random Forest Regression Train Result
@@ -118,13 +169,17 @@ def _random_forest_regression_train(table, feature_cols, label_col,
     | ### Feature Importance
     | {fig_feature_importances}
     |
-    """.format(fig_feature_importances=fig_feature_importances))) 
-        
-    model['_repr_brtc_'] = rb.get()   
+    """.format(fig_feature_importances=fig_feature_importances)))
+
+    model['_repr_brtc_'] = rb.get()
     feature_importance = regressor.feature_importances_
-    feature_importance_table = pd.DataFrame([[feature_names[i],feature_importance[i]] for i in range(len(feature_names))],columns = ['feature_name','importance'])
+    feature_importance_table = pd.DataFrame([[feature_names[i], feature_importance[i]]
+                                             for i in range(len(feature_names))],
+                                            columns=['feature_name', 'importance'])
     model['feature_importance_table'] = feature_importance_table
-    return {'model' : model}
+    model['feature_cols'] = feature_cols
+    model['figures'] = postprocess_result['figs'].tojson()
+    return {'model': model}
 
 
 def random_forest_regression_predict(table, model, **params):
@@ -134,63 +189,80 @@ def random_forest_regression_predict(table, model, **params):
     else:
         return _random_forest_regression_predict(table, model, **params)
 
+
 def _string_make(character, index, path, start, array, split_feature_name, split_threshold):
     if index == 0:
-        return ' & ({} <= {})'.format(character,split_threshold[start])+path
+        return ' & ({} <= {})'.format(character, split_threshold[start]) + path
     else:
-        return ' & ({} > {})'.format(character,split_threshold[start])+path
+        return ' & ({} > {})'.format(character, split_threshold[start]) + path
 
-def _string_make_complex_version(character, index, path, start, split_feature_name, split_threshold, split_left_categories_values, split_right_categories_values):
+
+def _string_make_complex_version(character, index, path, start, split_feature_name, split_threshold,
+                                 split_left_categories_values, split_right_categories_values):
     if pd.isnull(split_threshold[start]):
         if index == 0:
             result = ''
             tmp = split_left_categories_values[start]
             for i in tmp:
-                result += " | ({} == '{}')".format(character,i)
+                result += " | ({} == '{}')".format(character, i)
             result = ' & ( ' + result[3:] + ' )'
-            return result+path
+            return result + path
         else:
             result = ''
             tmp = split_right_categories_values[start]
             for i in tmp:
-                result += " | ({} == '{}')".format(character,i)
+                result += " | ({} == '{}')".format(character, i)
             result = ' & ( ' + result[3:] + ' )'
-            return result+path
+            return result + path
     else:
         if index == 0:
-            return ' & ({} <= {})'.format(character,split_threshold[start])+path
+            return ' & ({} <= {})'.format(character, split_threshold[start]) + path
         else:
-            return ' & ({} > {})'.format(character,split_threshold[start])+path    
+            return ' & ({} > {})'.format(character, split_threshold[start]) + path
 
-def _path_find(start, children_array, array, split_feature_name, split_threshold,predict, result):
+
+def _path_find(start, children_array, array, split_feature_name, split_threshold, predict, result):
     paths = []
     start = array[start]
     for index, child in enumerate(children_array[start]):
         if child == -1:
             result.append(predict[start])
             return result, ['']
-        result, tmp_paths = _path_find(child, children_array, array, split_feature_name, split_threshold,predict, result)
+        result, tmp_paths = _path_find(child, children_array, array, split_feature_name, split_threshold, predict,
+                                       result)
         for path in tmp_paths:
-            paths.append(_string_make(split_feature_name[start], index, path, start,array, split_feature_name, split_threshold))
+            paths.append(_string_make(split_feature_name[start], index, path, start, array, split_feature_name,
+                                      split_threshold))
     return result, paths
 
-def _path_find_complex_version(start, children_array, array, split_feature_name, split_threshold, split_left_categories_values, split_right_categories_values, predict, result):
+
+def _path_find_complex_version(start, children_array, array, split_feature_name, split_threshold,
+                               split_left_categories_values, split_right_categories_values, predict, result):
     paths = []
     start = array[start]
     for index, child in enumerate(children_array[start]):
         if child == -1:
             result.append(predict[start])
             return result, ['']
-        result, tmp_paths = _path_find_complex_version(child, children_array, array, split_feature_name, split_threshold, split_left_categories_values, split_right_categories_values, predict, result)
+        result, tmp_paths = _path_find_complex_version(child, children_array, array, split_feature_name,
+                                                       split_threshold, split_left_categories_values,
+                                                       split_right_categories_values, predict, result)
         for path in tmp_paths:
-            paths.append(_string_make_complex_version(split_feature_name[start], index, path, start,split_feature_name, split_threshold, split_left_categories_values, split_right_categories_values))
+            paths.append(_string_make_complex_version(split_feature_name[start], index, path, start, split_feature_name,
+                                                      split_threshold, split_left_categories_values,
+                                                      split_right_categories_values))
     return result, paths
+
 
 def _random_forest_regression_predict(table, model, prediction_col='prediction'):
     out_table = table.copy()
     if 'regressor' in model:
         regressor = model['regressor']
-        _, test_data = check_col_type(table, model['params']['feature_cols'])
+        if 'feature_cols' in model:
+            feature_cols = model['feature_cols']
+        else:
+            feature_cols = model['params']['feature_cols']
+        _, test_data = check_col_type(table, feature_cols)
         test_data = np.array(test_data)
         out_table[prediction_col] = regressor.predict(test_data)
     else:
@@ -198,31 +270,32 @@ def _random_forest_regression_predict(table, model, prediction_col='prediction')
             feature_cols = model['feature_cols']
             _, test_data = check_col_type(table, feature_cols)
             model_table = model['table_1']
-            tree_indices = model_table.reset_index().groupby('tree_id').agg({'index':['min','max']}).values
+            tree_indices = model_table.reset_index().groupby('tree_id').agg({'index': ['min', 'max']}).values
             node_id_full = model_table.node_id.values
-            children_array_full = model_table[['left_nodeid','right_nodeid']].values
+            children_array_full = model_table[['left_nodeid', 'right_nodeid']].values
             predict_full = model_table.predict.values
             split_feature_name_full = model_table.split_feature_name.values
             split_threshold_full = model_table.split_threshold.values
             conclusion_list = []
             for i in tree_indices:
-                tmp_max = node_id_full[i[0]:i[1]+1].max()
-                array = np.empty(tmp_max+1,dtype = np.int32)
-                children_array = children_array_full[i[0]:i[1]+1]
-                predict = predict_full[i[0]:i[1]+1]
-                split_feature_name = split_feature_name_full[i[0]:i[1]+1]
-                split_threshold = split_threshold_full[i[0]:i[1]+1]
-                for index, value in enumerate(node_id_full[i[0]:i[1]+1]):
+                tmp_max = node_id_full[i[0]:i[1] + 1].max()
+                array = np.empty(tmp_max + 1, dtype=np.int32)
+                children_array = children_array_full[i[0]:i[1] + 1]
+                predict = predict_full[i[0]:i[1] + 1]
+                split_feature_name = split_feature_name_full[i[0]:i[1] + 1]
+                split_threshold = split_threshold_full[i[0]:i[1] + 1]
+                for index, value in enumerate(node_id_full[i[0]:i[1] + 1]):
                     array[value] = index
-                result=[]
-                result, expr_array = _path_find(1, children_array, array, split_feature_name, split_threshold, predict,result)
+                result = []
+                result, expr_array = _path_find(1, children_array, array, split_feature_name, split_threshold, predict,
+                                                result)
                 expr_array = [i[3:] for i in expr_array]
                 conclusion = [None] * len(table)
                 our_list = dict()
                 for i in feature_cols:
                     our_list[i] = table[i].values
                 for index, expr in enumerate(expr_array):
-                    conclusion = np.where(ne.evaluate(expr,local_dict=our_list),result[index],conclusion)
+                    conclusion = np.where(ne.evaluate(expr, local_dict=our_list), result[index], conclusion)
                 conclusion_list.append(conclusion)
             result = np.mean(np.array(conclusion_list), axis=0)
             out_table[prediction_col] = result
@@ -239,9 +312,9 @@ def _random_forest_regression_predict(table, model, prediction_col='prediction')
                     model_table = model['table_4']
                 else:
                     model_table = model['table_3']
-            tree_indices = model_table.reset_index().groupby('tree_id').agg({'index':['min','max']}).values
+            tree_indices = model_table.reset_index().groupby('tree_id').agg({'index': ['min', 'max']}).values
             node_id_full = model_table.node_id.values
-            children_array_full = model_table[['left_nodeid','right_nodeid']].values
+            children_array_full = model_table[['left_nodeid', 'right_nodeid']].values
             predict_full = model_table.predict.values
             split_feature_name_full = model_table.split_feature_name.values
             split_threshold_full = model_table.split_threshold.values
@@ -249,30 +322,32 @@ def _random_forest_regression_predict(table, model, prediction_col='prediction')
             split_right_categories_values_full = model_table.split_right_categories_values.values
             conclusion_list = []
             for i in tree_indices:
-                tmp_max = node_id_full[i[0]:i[1]+1].max()
-                array = np.empty(tmp_max+1,dtype = np.int32)
-                children_array = children_array_full[i[0]:i[1]+1]
-                predict = predict_full[i[0]:i[1]+1]
-                split_feature_name = split_feature_name_full[i[0]:i[1]+1]
-                split_threshold = split_threshold_full[i[0]:i[1]+1]
-                split_left_categories_values = split_left_categories_values_full[i[0]:i[1]+1]
-                split_right_categories_values = split_right_categories_values_full[i[0]:i[1]+1]
-                for index, value in enumerate(node_id_full[i[0]:i[1]+1]):
+                tmp_max = node_id_full[i[0]:i[1] + 1].max()
+                array = np.empty(tmp_max + 1, dtype=np.int32)
+                children_array = children_array_full[i[0]:i[1] + 1]
+                predict = predict_full[i[0]:i[1] + 1]
+                split_feature_name = split_feature_name_full[i[0]:i[1] + 1]
+                split_threshold = split_threshold_full[i[0]:i[1] + 1]
+                split_left_categories_values = split_left_categories_values_full[i[0]:i[1] + 1]
+                split_right_categories_values = split_right_categories_values_full[i[0]:i[1] + 1]
+                for index, value in enumerate(node_id_full[i[0]:i[1] + 1]):
                     array[value] = index
-                result=[]
-                result, expr_array = _path_find_complex_version(1, children_array, array, split_feature_name, split_threshold, split_left_categories_values, split_right_categories_values, predict, result)
+                result = []
+                result, expr_array = _path_find_complex_version(1, children_array, array, split_feature_name,
+                                                                split_threshold, split_left_categories_values,
+                                                                split_right_categories_values, predict, result)
                 expr_array = [i[3:] for i in expr_array]
                 conclusion = [None] * len(table)
                 our_list = dict()
                 for j in feature_cols:
                     if table[j].dtype == 'object':
-                        our_list[j] = np.array(table[j],dtype='|S')
+                        our_list[j] = np.array(table[j], dtype='|S')
                     else:
                         our_list[j] = table[j].values
                 for index, expr in enumerate(expr_array):
-                    conclusion = np.where(ne.evaluate(expr,local_dict=our_list),result[index],conclusion)
+                    conclusion = np.where(ne.evaluate(expr, local_dict=our_list), result[index], conclusion)
                 if 'gbt' in model['_type']:
-                    conclusion_list.append(conclusion*tree_weight_full[i[0]])
+                    conclusion_list.append(conclusion * tree_weight_full[i[0]])
                 else:
                     conclusion_list.append(conclusion)
             if 'gbt' in model['_type']:

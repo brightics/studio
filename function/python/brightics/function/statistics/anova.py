@@ -25,6 +25,9 @@ from brightics.common.validation import from_under
 from scipy.stats import bartlett
 import seaborn as sns
 import statsmodels.api as sm
+import matplotlib
+
+matplotlib.rcParams['axes.unicode_minus'] = False
 import matplotlib.pyplot as plt
 from statsmodels.formula.api import ols
 from statsmodels.sandbox.stats.multicomp import TukeyHSDResults
@@ -32,6 +35,8 @@ from statsmodels.stats.anova import anova_lm
 from statsmodels.stats.multicomp import pairwise_tukeyhsd
 import numpy as np
 import pandas as pd
+
+from brightics.common.data_export import PyPlotData, PyPlotMeta
 
 
 def bartletts_test(table, **params):
@@ -41,7 +46,7 @@ def bartletts_test(table, **params):
 
 def _bartletts_test(table, response_cols, factor_col):
     groups = table[factor_col].unique()
-    
+
     data_list = []
     stat_list = []
     p_list = []
@@ -52,16 +57,21 @@ def _bartletts_test(table, response_cols, factor_col):
         data_list.append(data)
         stat_list.append(stat_bart)
         p_list.append(p_bart)
-        
-    result_table = pd.DataFrame.from_items([ 
-        ['data', data_list],
-        ['estimate', stat_list],
-        ['p_value', p_list] 
-    ])
-    
+
+    # result_table = pd.DataFrame.from_items([
+    #     ['data', data_list],
+    #     ['estimate', stat_list],
+    #     ['p_value', p_list]
+    # ])
+    result_table = pd.DataFrame({
+        'data': data_list,
+        'estimate': stat_list,
+        'p_value': p_list
+    })
+
     result = dict()
     result['result_table'] = result_table
-    
+
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     ## Bartlett's Test Result
@@ -70,21 +80,21 @@ def _bartletts_test(table, response_cols, factor_col):
     |
     | {result_table}
     """.format(result_table=pandasDF2MD(result_table))))
-    
+
     result['_repr_brtc_'] = rb.get()
-        
+
     return {'result': result}
 
 
 def oneway_anova(table, group_by=None, **params):
     check_required_parameters(_oneway_anova, params, ['table'])
-    
+
     if group_by is not None:
         return _function_by_group(_oneway_anova, table, group_by=group_by, **params)
     else:
         return _oneway_anova(table, **params)
-    
-    
+
+
 def _oneway_anova(table, response_cols, factor_col):
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
@@ -93,46 +103,51 @@ def _oneway_anova(table, response_cols, factor_col):
     groups = table[factor_col].unique()
     groups.sort()
     sum_len = np.sum([len(str(group)) for group in groups])
-    
+
     result = dict()
     result['_grouped_data'] = dict()
-    
-    for response_col in response_cols:
-        data = table[response_col]
-        result['_grouped_data'][response_col] = dict()
-        
-        ax = sns.boxplot(x=factor_col, y=response_col, data=table, order=groups)
-        if sum_len > 512:
-            ax.set_xticklabels(ax.get_xticklabels(), rotation=90)
-        elif sum_len > 64:
-            ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
-            
-        fig_box = plt2MD(plt)
-        plt.clf()
 
-        model = ols("""Q('{response_col}') ~ C(Q('{factor_col}'))""".format(response_col=response_col, factor_col=factor_col), table).fit()  # TODO factor_col = class => error
+    for response_col in response_cols:
+
+        figs = PyPlotData()
+
+        result['_grouped_data'][response_col] = dict()
+
+        meta = PyPlotMeta('fig_box')
+        meta.boxplot_sns(x=factor_col, y=response_col,
+                         data=table, order=groups)
+        if sum_len > 512:
+            meta.set_xticklabels(rotation=90)
+        elif sum_len > 64:
+            meta.set_xticklabels(rotation=45)
+        figs.addmeta(meta)
+
+        model = ols("""Q('{response_col}') ~ C(Q('{factor_col}'))""".format(
+            response_col=response_col, factor_col=factor_col), table).fit()  # TODO factor_col = class => error
         anova = anova_lm(model)
-        
+
         index_list = anova.index.tolist()
         remove_list = ["C(Q('", "'))", "Q('", "')"]
         for v in remove_list:
             index_list = [i.replace(v, "") for i in index_list]
         anova.insert(0, '', index_list)
 
-        anova_df = pandasDF2MD(anova)
-        
+        anova_df = pandasDF2MD(anova.fillna(' '))
+
         p_value = anova["""PR(>F)"""][0]
-        
+
         residual = model.resid
-        
-        sns.distplot(residual)
-        distplot = plt2MD(plt)
-        plt.clf()
-        
-        sm.qqplot(residual, line='s')
-        qqplot = plt2MD(plt)
-        plt.clf()
-            
+
+        meta = PyPlotMeta('distplot')
+        meta.distplot_sns(residual)
+        figs.addmeta(meta)
+
+        meta = PyPlotMeta('qqplot')
+        meta.qqplot_sm(residual, line='s')
+        figs.addmeta(meta)
+
+        figs.compile()
+
         rb.addMD(strip_margin("""
         | ## {response_col} by {factor_col}
         | {fig_box}
@@ -144,10 +159,15 @@ def _oneway_anova(table, response_cols, factor_col):
         | {distplot}
         |
         | {qqplot}
-        """.format(response_col=response_col, factor_col=factor_col, fig_box=fig_box, anova_df=anova_df, distplot=distplot, qqplot=qqplot)))
-        
+        """.format(response_col=response_col, factor_col=factor_col,
+                   anova_df=anova_df,
+                   fig_box=figs.getMD('fig_box'),
+                   distplot=figs.getMD('distplot'),
+                   qqplot=figs.getMD('qqplot'))))
+
         result['_grouped_data'][response_col]['p_value'] = p_value
-        
+        result['_grouped_data'][response_col]['figures'] = figs.tojson()
+
     result['_repr_brtc_'] = rb.get()
     return {'result': result}
 
@@ -178,23 +198,25 @@ def _twoway_anova(table, response_cols, factor_cols):
     result['_grouped_data'] = dict()
 
     for response_col in response_cols:
-        data = table[response_col]
+
+        figs = PyPlotData()
+
         result['_grouped_data'][response_col] = dict()
 
         if n == 1:
-            ax = sns.boxplot(x=_factor_col, y=response_col, data=table, order=groups)
+            meta = PyPlotMeta('fig_box')
+            meta.boxplot_sns(x=_factor_col, y=response_col,
+                             data=table, order=groups)
             if sum_len > 512:
-                ax.set_xticklabels(ax.get_xticklabels(), rotation=90)
+                meta.set_xticklabels(rotation=90)
             elif sum_len > 64:
-                ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
-
-            fig_box = plt2MD(plt)
-            plt.clf()
+                meta.set_xticklabels(rotation=45)
+            figs.addmeta(meta)
 
         r = "Q('{r}')".format(r=response_col)
         factors = ["C(Q('{v}'))".format(v=v) for v in factor_cols]
         factors_col = " * ".join(v for v in factors)
-        
+
         model = ols("""{r} ~ {f}""".format(r=r, f=factors_col), table).fit()  # TODO: factor_col = class => error
         anova = anova_lm(model)
 
@@ -205,20 +227,22 @@ def _twoway_anova(table, response_cols, factor_cols):
 
         anova.insert(0, '', index_list)
         print(anova)
-        anova_df = pandasDF2MD(anova)
+        anova_df = pandasDF2MD(anova.fillna(' '))
         p_value = anova["""PR(>F)"""][0]
 
         residual = model.resid
 
-        sns.distplot(residual)
-        distplot = plt2MD(plt)
-        plt.clf()
+        meta = PyPlotMeta('distplot')
+        meta.distplot_sns(residual)
+        figs.addmeta(meta)
 
-        sm.qqplot(residual, line='s')
-        qqplot = plt2MD(plt)
-        plt.clf()
+        meta = PyPlotMeta('qqplot')
+        meta.qqplot_sm(residual, line='s')
+        figs.addmeta(meta)
 
         factor_col = ", ".join(v for v in factor_cols)
+
+        figs.compile()
 
         rb.addMD(strip_margin("""
         | ## {response_col} by {factor_col}
@@ -230,9 +254,12 @@ def _twoway_anova(table, response_cols, factor_cols):
         | {distplot}
         |
         | {qqplot}
-        """.format(response_col=response_col, factor_col=factor_col, anova_df=anova_df, distplot=distplot, qqplot=qqplot)))
+        """.format(response_col=response_col, factor_col=factor_col, anova_df=anova_df,
+                   distplot=figs.getMD('distplot'),
+                   qqplot=figs.getMD('qqplot'))))
 
         result['_grouped_data'][response_col]['p_value'] = p_value
+        result['_grouped_data'][response_col]['figures'] = figs.tojson()
 
     result['_repr_brtc_'] = rb.get()
     return {'result': result}
@@ -240,31 +267,30 @@ def _twoway_anova(table, response_cols, factor_cols):
 
 def tukeys_range_test(table, group_by=None, **params):
     check_required_parameters(_tukeys_range_test, params, ['table'])
-    
+
     params = get_default_from_parameters_if_required(params, _tukeys_range_test)
     param_validation_check = [from_under(params, 0.001, 0.9, 'alpha')]
     validate(*param_validation_check)
-    
+
     if group_by is not None:
         return _function_by_group(_tukeys_range_test, table, group_by=group_by, **params)
     else:
         return _tukeys_range_test(table, **params)
-    
-    
+
+
 def _tukeys_range_test(table, response_cols, factor_col, alpha=0.05):
-    
     rb = BrtcReprBuilder()
     rb.addMD("""## Tukey's range test Result""")
-    
+
     for response_col in response_cols:
         data = table[response_col]
         posthoc = pairwise_tukeyhsd(data, table[factor_col], alpha=alpha)
         posthoc_html = posthoc._results_table.as_html()
         posthoc.plot_simultaneous()
-        
+
         rb.addMD("""### {response_col}""".format(response_col=response_col))
         rb.addHTML(posthoc_html)
         rb.addPlt(plt)
         plt.clf()
-    
+
     return {'result': {'_repr_brtc_': rb.get()}}

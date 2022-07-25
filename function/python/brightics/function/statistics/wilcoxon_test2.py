@@ -54,11 +54,11 @@ def _wilcoxon_test2(table, first_col, second_col, zero_method='wilcox', correcti
     stats.append(stat)
     pvals.append(pval)
 
-    result_table = pd.DataFrame({'Alternative hypothesis': alter_hypothesis, 'Sum of differences ranks': stats, 'P-value': pvals})
+    result_table = pd.DataFrame({'alternative_hypothesis': alter_hypothesis, 'test_statistic': stats, 'p_value': pvals})
         
     rb.addMD(strip_margin("""
     | {table}
     """.format(table=pandasDF2MD(result_table))))
     result['_repr_brtc_'] = rb.get()
-        
+    result['result'] = result_table    
     return {'result': result}

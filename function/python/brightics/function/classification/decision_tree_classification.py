@@ -16,6 +16,8 @@
 
 import pandas as pd
 import numpy as np
+import matplotlib
+matplotlib.rcParams['axes.unicode_minus'] = False
 import matplotlib.pyplot as plt
 import numexpr as ne
 from sklearn.tree import DecisionTreeClassifier
@@ -32,6 +34,7 @@ from brightics.common.validation import greater_than_or_equal_to, greater_than, 
 from brightics.common.validation import raise_error
 import sklearn.utils as sklearn_utils
 from brightics.common.classify_input_type import check_col_type
+from brightics.common.data_export import PyPlotData, PyPlotMeta
 
 
 def decision_tree_classification_train(table, group_by=None, **params):
@@ -56,7 +59,76 @@ def decision_tree_classification_train(table, group_by=None, **params):
         return _decision_tree_classification_train(table, **params)
 
 
-def _decision_tree_classification_train(table, feature_cols, label_col,  # fig_size=np.array([6.4, 4.8]),
+def preprocess_(table, label_col, class_weight):
+    y_train = table[label_col]
+
+    if sklearn_utils.multiclass.type_of_target(y_train) == 'continuous':
+        raise_error('0718', 'label_col')
+
+    class_labels = sorted(set(y_train))
+    if class_weight is not None:
+        if len(class_weight) != len(class_labels):
+            raise ValueError("Number of class weights should match number of labels.")
+        else:
+            class_weight = {class_labels[i]: class_weight[i] for i in range(len(class_labels))}
+    preprocess_result = {'update_param': {'class_weight': class_weight},
+                         'estimator_class': DecisionTreeClassifier,
+                         'estimator_params': ['criterion', 'splitter', 'max_depth', 'min_samples_split',
+                                              'min_samples_leaf', 'min_weight_fraction_leaf', 'max_features',
+                                              'random_state', 'max_leaf_nodes', 'min_impurity_decrease',
+                                              'min_impurity_split', 'class_weight']}
+    return preprocess_result
+
+
+def postprocess_(table, feature_cols, classifier, display_plt):
+    feature_names, features = check_col_type(table, feature_cols)
+    feature_importance = classifier.feature_importances_
+    indices = np.argsort(feature_importance)
+    sorted_feature_cols = np.array(feature_names)[indices]
+    n_features = len(indices)
+
+    figs = PyPlotData()
+    if display_plt:
+        try:
+            from six import StringIO
+            from sklearn.tree import export_graphviz
+            import pydotplus
+            dot_data = StringIO()
+            export_graphviz(classifier, out_file=dot_data,
+                            feature_names=feature_names, class_names=classifier.classes_.astype(np.str),
+                            filled=True, rounded=True,
+                            special_characters=True)
+            graph = pydotplus.graph_from_dot_data(dot_data.getvalue())
+            figs.addpngfig('fig_tree', graph.create_png())
+        except:
+            msg = "Graphviz is needed to draw a Decision Tree graph. Please download it from http://graphviz.org/download/ and install it to your computer."
+            figs.addstr('fig_tree', msg)
+
+        meta = PyPlotMeta('fig_feature_importances',
+                          title='Feature Importances',
+                          xlabel='Relative importance',
+                          yticks={'ticks': range(n_features),
+                                  'labels': sorted_feature_cols})
+        meta.barh(range(n_features),
+                  feature_importance[indices], color='b', align='center')
+        for i, v in enumerate(feature_importance[indices]):
+            meta.text(v, i, " {:.2f}".format(v), color='b',
+                      va='center', fontweight='bold')
+        meta.tight_layout()
+
+        figs.addmeta(meta)
+        figs.compile()
+
+        postprocess_result = {'update_md': {'Decision Tree': figs.getMD('fig_tree'),
+                                            'Feature Importance': figs.getMD('fig_feature_importances')},
+                              'type': 'decision_tree_classification_model',
+                              'figs': figs}
+    else:
+        postprocess_result = {'type': 'decision_tree_classification_model'}
+    return postprocess_result
+
+
+def _decision_tree_classification_train(table, feature_cols, label_col, display_plt=True, # fig_size=np.array([6.4, 4.8]),
                                         criterion='gini', splitter='best', max_depth=None, min_samples_split=2,
                                         min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_features=None,
                                         random_state=None, max_leaf_nodes=None, min_impurity_decrease=0.0,
@@ -65,37 +137,16 @@ def _decision_tree_classification_train(table, feature_cols, label_col,  # fig_s
 
     feature_names, features = check_col_type(table, feature_cols)
     y_train = table[label_col]
-    
-    if(sklearn_utils.multiclass.type_of_target(y_train) == 'continuous'):
-        raise_error('0718', 'label_col')
 
-    class_labels = sorted(set(y_train))
-    if class_weight is not None:
-        if len(class_weight) != len(class_labels):
-            raise ValueError("Number of class weights should match number of labels.")
-        else:            
-            class_weight = {class_labels[i] : class_weight[i] for i in range(len(class_labels))}
-                        
+    preprocess_result = preprocess_(table, label_col, class_weight)
+    class_weight = preprocess_result['update_param']['class_weight']
+
     classifier = DecisionTreeClassifier(criterion, splitter, max_depth, min_samples_split, min_samples_leaf,
                                        min_weight_fraction_leaf, max_features, random_state, max_leaf_nodes,
                                        min_impurity_decrease, min_impurity_split, class_weight, presort)
-    classifier.fit(features, table[label_col],
-                   sample_weight, check_input, X_idx_sorted)
+    classifier.fit(features, y_train, sample_weight, check_input, X_idx_sorted)
 
-    try:
-        from sklearn.externals.six import StringIO
-        from sklearn.tree import export_graphviz
-        import pydotplus
-        dot_data = StringIO()
-        export_graphviz(classifier, out_file=dot_data,
-                        feature_names=feature_names, class_names=classifier.classes_.astype(np.str),
-                        filled=True, rounded=True,
-                        special_characters=True)
-        graph = pydotplus.graph_from_dot_data(dot_data.getvalue())
-        from brightics.common.repr import png2MD
-        fig_tree = png2MD(graph.create_png())
-    except:
-        fig_tree = "Graphviz is needed to draw a Decision Tree graph. Please download it from http://graphviz.org/download/ and install it to your computer."
+    postprocess_result = postprocess_(table, feature_cols, classifier, display_plt)
 
     # json
     model = _model_dict('decision_tree_classification_model')
@@ -114,43 +165,40 @@ def _decision_tree_classification_train(table, feature_cols, label_col,  # fig_s
     model['classifier'] = classifier
 
     # report
-    indices = np.argsort(feature_importance)
-    sorted_feature_cols = np.array(feature_names)[indices]
-
-    plt.title('Feature Importances')
-    plt.barh(range(len(indices)), feature_importance[indices], color='b', align='center')
-    for i, v in enumerate(feature_importance[indices]):
-        plt.text(v, i, " {:.2f}".format(v), color='b', va='center', fontweight='bold')
-    plt.yticks(range(len(indices)), sorted_feature_cols)
-    plt.xlabel('Relative Importance')
-    plt.xlim(0, 1.1)
-    plt.tight_layout()
-    fig_feature_importances = plt2MD(plt)
-    plt.clf()
 
     params = dict2MD(get_param)
-
-    # Add tree plot
     rb = BrtcReprBuilder()
-    rb.addMD(strip_margin("""
-    | ## Decision Tree Classification Train Result
-    | ### Decision Tree
-    | {fig_tree}
-    |
-    | ### Feature Importance
-    | {fig_feature_importances}
-    |
-    | ### Parameters
-    | {list_parameters}
-    |
-    """.format(fig_tree=fig_tree,
-               fig_feature_importances=fig_feature_importances,
-               list_parameters=params
-               )))
+    if display_plt:
+        rb.addMD(strip_margin("""
+        | ## Decision Tree Classification Train Result
+        | ### Decision Tree
+        | {fig_tree}
+        |
+        | ### Feature Importance
+        | {fig_feature_importances}
+        |
+        | ### Parameters
+        | {list_parameters}
+        |
+        """.format(fig_tree=postprocess_result['update_md']['Decision Tree'],
+                   fig_feature_importances=postprocess_result['update_md']['Feature Importance'],
+                   list_parameters=params)))
+    else:
+        rb.addMD(strip_margin("""
+        | ## Decision Tree Classification Train Result
+
+        | ### Parameters
+        | {list_parameters}
+        |
+        """.format(list_parameters=params)))
+
     model['_repr_brtc_'] = rb.get()
     feature_importance_table = pd.DataFrame([[feature_cols[i], feature_importance[i]] for i in range(len(feature_cols))], columns=['feature_name', 'importance'])
     model['feature_importance_table'] = feature_importance_table
-    return {'model' : model}
+    if display_plt:
+        model['figures'] = postprocess_result['figs'].tojson()
+
+    return {'model': model}
 
 
 def decision_tree_classification_predict(table, model, **params):
@@ -217,7 +265,9 @@ def _path_find_complex_version(start, children_array, array, split_feature_name,
     return result, paths
 
 
-def _decision_tree_classification_predict(table, model, prediction_col='prediction', prob_col_prefix='probability', suffix='index', check_input=True):
+def _decision_tree_classification_predict(table, model, prediction_col='prediction', prob_col_prefix='probability',
+                                          display_log_prob=False, log_prob_prefix='log_probability',
+                                          suffix='index', check_input=True):
     out_table = table.copy()
     feature_cols = model['feature_cols']
     
@@ -233,7 +283,14 @@ def _decision_tree_classification_predict(table, model, prediction_col='predicti
             suffixes = classes
         prob_col_name = ['{prob_col_prefix}_{suffix}'.format(prob_col_prefix=prob_col_prefix, suffix=suffix) for suffix in suffixes]
         out_col_prob = pd.DataFrame(data=prob, columns=prob_col_name)
-        out_table = pd.concat([out_table, out_col_prob], axis=1)
+        if display_log_prob:
+            log_prob = np.log(prob)
+            logprob_cols = ['{prefix}_{suffix}'.format(prefix=log_prob_prefix, suffix=suffix)
+                            for suffix in suffixes]
+            logprob_df = pd.DataFrame(data=log_prob, columns=logprob_cols)
+            out_table = pd.concat([out_table, out_col_prob, logprob_df], axis=1)
+        else:
+            out_table = pd.concat([out_table, out_col_prob], axis=1)
     else:
         if model['_type'] == 'decision_tree_model':
             model_table = model['table_1']

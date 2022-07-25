@@ -206,17 +206,9 @@ def _statistic_summary_groupby(table, input_cols, statistics, group_by=None):
         if 'avg' == st:
             agg_func.append(np.mean)
         if 'variance' == st:
-            # agg_func.append(np.var)
-            # the above implementation passed to the method .agg(...)
-            # seems to result in the sample variance as like pd.var
-            # which is equivalent to the following
-            agg_func.append('var')
+            agg_func.append(np.var)
         if 'stddev' == st:
-            # agg_func.append(np.std)
-            # the above implementation passed to the method .agg(...)
-            # seems to result in the sample stddev as like pd.std
-            # which is equivalent to the following
-            agg_func.append('std')
+            agg_func.append(np.std)
         if 'nrow' == st:
             agg_func.append('size')
         if 'num_of_value' == st:

@@ -145,6 +145,7 @@ def _collaborative_filtering_train(table, user_col , item_col, rating_col, N=10,
     centered_ratings = item_users.copy()
     
     num_item, num_user = item_users.shape
+    is_adjusted = method == 'adjusted'
     if centered:
         update_item = []
         update_user = []
@@ -243,7 +244,7 @@ def _collaborative_filtering_train(table, user_col , item_col, rating_col, N=10,
     parameters = dict()
     parameters['Number of Neighbors'] = k
     parameters['Based'] = based
-    if method == 'cosine':
+    if method == 'cosine' and not is_adjusted:
         parameters['Similarity method'] = 'Cosine'
     elif method == 'jaccard':
         parameters['Similarity method'] = 'Jaccard'
@@ -303,8 +304,17 @@ def collaborative_filtering_recommend(table, group_by=None, **params):
         return _collaborative_filtering_recommend(table, **params)
 
     
-def _collaborative_filtering_recommend(table, user_col , item_col, rating_col, N=10, filter=True, k=5, based='item', mode='Topn', method='cosine', weighted=True, centered=True, targets=None, normalize=True, workers=1, filter_minus=False, maintain_already_scored=True):
-    return _collaborative_filtering_train(table, user_col , item_col, rating_col, N, filter, k, based, mode, method, weighted, centered, targets, normalize, workers, filter_minus, maintain_already_scored)
+def _collaborative_filtering_recommend(table, user_col, item_col, rating_col, N=10, filter=True, k=5, based='item',
+                                       mode='Topn', method='cosine', weighted=True, centered=True, targets=None,
+                                       normalize=True, workers=1, filter_minus=False, maintain_already_scored=True,
+                                       use_user_col_name=False):
+    train_result = _collaborative_filtering_train(table, user_col, item_col, rating_col, N, filter, k, based, mode,
+                                                  method, weighted, centered, targets, normalize, workers, filter_minus,
+                                                  maintain_already_scored)
+    if use_user_col_name:
+        out_table = train_result['out_table']
+        out_table.columns.values[0] = user_col
+    return train_result
 
 
 def collaborative_filtering_predict(table, model, **params):

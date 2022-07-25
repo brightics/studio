@@ -232,7 +232,7 @@ def _one_hot_encoder2(table, input_cols, prefix='list', prefix_list=None, suffix
             raise_runtime_error('The number of Input Columns and the number of Prefixes should be equal.')
     number_distinct_classes = []
     for col_name in input_cols:
-        enc = OneHotEncoder(n_values=n_values, categorical_features=categorical_features, sparse=sparse, handle_unknown=handle_unknown)
+        enc = OneHotEncoder(sparse=sparse, handle_unknown=handle_unknown)
         le = LabelEncoder()
         distinct_classes = np.unique(out_table[col_name].values)
         number_distinct_classes.append(len(distinct_classes))

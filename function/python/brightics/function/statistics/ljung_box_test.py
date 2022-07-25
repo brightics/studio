@@ -48,8 +48,8 @@ def _ljung_box_test(table, input_cols, lags=None):
         
         lb_res = dict()
         lb_res['lags'] = range(1, len(lbvalue) + 1)
-        lb_res['test statistic'] = lbvalue
-        lb_res['p-value based on chi-square distribution'] = pvalue
+        lb_res['test_statistic'] = lbvalue
+        lb_res['p_value'] = pvalue
         lb_res = pd.DataFrame(lb_res)
             
         rb.addMD(strip_margin("""

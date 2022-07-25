@@ -16,8 +16,11 @@
 
 import pandas as pd
 import numpy as np
+from scipy import stats
 import itertools
 from brightics.common.repr import BrtcReprBuilder, strip_margin, pandasDF2MD, plt2MD
+import matplotlib
+matplotlib.rcParams['axes.unicode_minus'] = False
 import matplotlib.pyplot as plt
 from sklearn.metrics import explained_variance_score, mean_absolute_error, mean_squared_error, median_absolute_error, r2_score
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, confusion_matrix
@@ -30,6 +33,9 @@ from brightics.common.validation import validate, greater_than, greater_than_or_
     less_than_or_equal_to, raise_runtime_error
 from sklearn import preprocessing
 from brightics.common.validation import raise_runtime_error
+from .representative_evaluation_value import representative_evaluation_value
+from .cross_validator import cross_validator
+from .grid_search_cv import grid_search_cv
 
 
 def evaluate_regression(table, group_by=None, **params):
@@ -52,7 +58,8 @@ def _evaluate_regression(table, label_col, prediction_col):
     mape = _mean_absolute_percentage_error(label, predict)
     mdae = median_absolute_error(label, predict)
     r2 = r2_score(label, predict)
-                    
+    pearson_coef = stats.pearsonr(label, predict)
+
     # json  
     summary = dict()
     summary['label_col'] = label_col
@@ -63,11 +70,21 @@ def _evaluate_regression(table, label_col, prediction_col):
     summary['mean_absolute_error'] = mae
     summary['median_absolute_error'] = mdae
     summary['explained_variance_score'] = evs
-    
+    summary['pearson_correlation_coefficient'] = pearson_coef
+
     # report
-    all_dict_list = [{'r2_score': r2, 'mean_squared_error': mse, 'root_mean_squared_error': rmse, 'mean_absolute_error': mae, 'mean_absolute_percentage_error': mape, 'median_absolute_error': mdae, 'explained_variance_score': evs}]
+    all_dict_list = [{'r2_score': r2,
+                      'mean_squared_error': mse,
+                      'root_mean_squared_error': rmse,
+                      'mean_absolute_error': mae,
+                      'mean_absolute_percentage_error': mape,
+                      'median_absolute_error': mdae,
+                      'explained_variance_score': evs,
+                      'pearson_correlation_coefficient': pearson_coef}]
     all_df = pd.DataFrame(all_dict_list)
-    all_df = all_df[['r2_score', 'mean_squared_error', 'root_mean_squared_error', 'mean_absolute_error', 'mean_absolute_percentage_error', 'median_absolute_error', 'explained_variance_score']]
+    all_df = all_df[['r2_score', 'mean_squared_error', 'root_mean_squared_error', 'mean_absolute_error',
+                     'mean_absolute_percentage_error', 'median_absolute_error', 'explained_variance_score',
+                     'pearson_correlation_coefficient']]
     summary['metrics'] = all_df
             
     rb = BrtcReprBuilder()
@@ -214,6 +231,7 @@ def _plot_binary(label, probability, threshold=None, fig_size=(6.4, 4.8), pos_la
     
     fpr_prop = fpr[argmin]
     tpr_prop = tpr[argmin]
+    plt.figure(figsize=fig_size)
     plt.plot(threshold_roc, tpr, color='blue',
              label='TPR')
     plt.plot(threshold_roc, 1 - fpr, color='red',
@@ -252,6 +270,7 @@ def _plot_binary(label, probability, threshold=None, fig_size=(6.4, 4.8), pos_la
     step_kwargs = ({'step': 'post'}
                    if 'step' in signature(plt.fill_between).parameters
                    else {})
+    plt.figure(figsize=fig_size)
     plt.step(recall, precision, color='b', alpha=0.2, where='post')
     plt.fill_between(recall, precision, alpha=0.2, color='b', **step_kwargs)
     plt.xlabel('Recall')
@@ -265,6 +284,7 @@ def _plot_binary(label, probability, threshold=None, fig_size=(6.4, 4.8), pos_la
     plt.clf()
 
     threshold_pr = np.append(threshold_pr, 1) 
+    plt.figure(figsize=fig_size)
     plt.plot(threshold_pr, precision, color='blue',
              label='Precision')
     plt.plot(threshold_pr, recall, color='red',
@@ -283,6 +303,7 @@ def _plot_binary(label, probability, threshold=None, fig_size=(6.4, 4.8), pos_la
     neg_label = [cls for cls in classes if cls != pos_label][0]
     predict = probability.apply(lambda x: pos_label if x >= threshold else neg_label)
     
+    plt.figure(figsize=fig_size) 
     _plot_confusion_matrix(label, predict, [pos_label, neg_label],
                           normalize=False,
                           title='Confusion matrix',
@@ -309,7 +330,9 @@ def plot_roc_pr_curve(table, group_by=None, **params):
 def _plot_roc_pr_curve(table, label_col, probability_col, fig_w=6.4, fig_h=4.8, pos_label=None):
     label = table[label_col]
     probability = table[probability_col]
-    
+
+    if (pos_label not in np.unique(label)) and (pos_label is not None):
+        raise ValueError("The positive label does not exist.")
     threshold, fig_tpr_fpr, fig_roc, fig_precision_recall, fig_pr, fig_confusion = \
         _plot_binary(label, probability, fig_size=(fig_w, fig_h), pos_label=pos_label)
 
@@ -369,7 +392,7 @@ def _ndcg_k(k_value, num_users, documents, recommend_table):
 
 
 def evaluate_ranking_algorithm(table1, table2, user_col, item_col, evaluation_measure, rating_col=None, rating_edge=None, k_values=None):
-    none_str = 'None'
+    none_str = np.nan
     item_encoder = preprocessing.LabelEncoder()
     tmp_table_item_col = table1[item_col].values.tolist()
     tmp_table_item_col.append(none_str)
@@ -413,3 +436,6 @@ def evaluate_ranking_algorithm(table1, table2, user_col, item_col, evaluation_me
         result.append(['meanAveragePrecision', _map(num_users, documents, recommend_table)])
     result = pd.DataFrame(result, columns=['measure', 'value'])
     return {'out_table':result}
+
+
+from .model_interpretation_shap import model_interpretation_shap

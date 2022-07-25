@@ -50,34 +50,35 @@ def logistic_regression_train(table, group_by=None, **params):
         return _logistic_regression_train(table, **params)
 
 
-def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dual=False, tol=0.0001, C=1.0,
-                               fit_intercept=True, intercept_scaling=1, class_weight=None, random_state=None,
-                               solver='liblinear', max_iter=100, multi_class='ovr', verbose=0, warm_start=False,
-                               n_jobs=1):
-
-    feature_names, features = check_col_type(table, feature_cols)
-    features = pd.DataFrame(features, columns=feature_names)
-
+def preprocess_(table, label_col, class_weight):
     label = table[label_col]
 
-    if(sklearn_utils.multiclass.type_of_target(label) == 'continuous'):
+    if sklearn_utils.multiclass.type_of_target(label) == 'continuous':
         raise_error('0718', 'label_col')
-    
+
     class_labels = sorted(set(label))
     if class_weight is not None:
         if len(class_weight) != len(class_labels):
             raise ValueError("Number of class weights should match number of labels.")
-        else:             
-            class_weight = {class_labels[i] : class_weight[i] for i in range(len(class_labels))}
-        
-    lr_model = LogisticRegression(penalty, dual, tol, C, fit_intercept, intercept_scaling, class_weight, random_state,
-                                  solver, max_iter, multi_class, verbose, warm_start, n_jobs)
-    lr_model.fit(features, label)
-    intercept = lr_model.intercept_
-    coefficients = lr_model.coef_
-    classes = lr_model.classes_
+        else:
+            class_weight = {class_labels[i]: class_weight[i] for i in range(len(class_labels))}
+    preprocess_result = {'update_param': {'class_weight': class_weight},
+                         'estimator_class': LogisticRegression,
+                         'estimator_params': ['penalty', 'dual', 'tol', 'C', 'fit_intercept', 'intercept_scaling',
+                                              'class_weight', 'random_state', 'solver', 'max_iter', 'multi_class',
+                                              'verbose', 'warm_start', 'n_jobs']}
+    return preprocess_result
+
+
+def postprocess_(table, feature_cols, label_col, classifier, fit_intercept):
+    feature_names, features = check_col_type(table, feature_cols)
+    label = table[label_col]
+
+    intercept = classifier.intercept_
+    coefficients = classifier.coef_
+    classes = classifier.classes_
     is_binary = len(classes) == 2
-    prob = lr_model.predict_proba(features)
+    prob = classifier.predict_proba(features)
     prob_trans = prob.T
     classes_dict = dict()
     for i in range(len(classes)):
@@ -87,9 +88,9 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
     for i in range(len(table)):
         likelihood *= prob_trans[tmp_label[i]][i]
     if fit_intercept:
-        k = len(feature_cols) + 1
+        k = len(feature_names) + 1
     else:
-        k = len(feature_cols)
+        k = len(feature_names)
     aic = 2 * k - 2 * np.log(likelihood)
     bic = np.log(len(table)) * k - 2 * np.log(likelihood)
     if is_binary:
@@ -122,20 +123,22 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
 
         # print(math.log(likelihood))
 
-    if (fit_intercept == True):
-        summary = pd.DataFrame({'features': ['intercept'] + feature_names})        
+    if fit_intercept:
+        summary = pd.DataFrame({'features': ['intercept'] + feature_names})
         coef_trans = np.concatenate(([intercept], np.transpose(coefficients)), axis=0)
-            
+
     else:
         summary = pd.DataFrame({'features': feature_names})
         coef_trans = np.transpose(coefficients)
-        
+
     if not is_binary:
-            summary = pd.concat((summary, pd.DataFrame(coef_trans, columns=classes)), axis=1)
+        summary = pd.concat((summary, pd.DataFrame(coef_trans, columns=classes)), axis=1)
     else:
-            summary = pd.concat((summary, pd.DataFrame(coef_trans, columns=[classes[0]])), axis=1)
+        summary = pd.concat((summary, pd.DataFrame(coef_trans, columns=[classes[0]])), axis=1)
     if is_binary:
-        summary = pd.concat((summary, pd.DataFrame(std_err, columns=['standard_error']), pd.DataFrame(wald, columns=['wald_statistic']), pd.DataFrame(p_values, columns=['p_value'])), axis=1)
+        summary = pd.concat((summary, pd.DataFrame(std_err, columns=['standard_error']),
+                             pd.DataFrame(wald, columns=['wald_statistic']),
+                             pd.DataFrame(p_values, columns=['p_value'])), axis=1)
     else:
         columns = ['standard_error_{}'.format(classes[i]) for i in range(len(classes))]
         summary = pd.concat((summary, pd.DataFrame(std_err.T, columns=columns)), axis=1)
@@ -144,55 +147,84 @@ def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dua
             arrange_col.append(classes[i])
             arrange_col.append('standard_error_{}'.format(classes[i]))
         summary = summary[arrange_col]
+
     if is_binary:
-        rb = BrtcReprBuilder()
-        rb.addMD(strip_margin("""
-        | ## Logistic Regression Result
-        | ### Summary
-        | {table1}
-        |
-        | ##### Column '{small}' is the coefficients under the assumption ({small} = 0, {big} = 1).
-        |
-        | #### AIC : {aic}
-        |
-        | #### BIC : {bic}
-        """.format(small=classes[0], big=classes[1], table1=pandasDF2MD(summary, num_rows=100), aic=aic, bic=bic
-                   )))
+        note = "Column '{small}' is the coefficients under the assumption ({small} = 0, {big} = 1).".format(
+            small=classes[0], big=classes[1]
+        )
     else:
-        rb = BrtcReprBuilder()
-        rb.addMD(strip_margin("""
-        | ## Logistic Regression Result
-        | ### Summary
-        | {table1}
-        |
-        | ##### Each column whose name is one of classes of Label Column is the coefficients under the assumption it is 1 and others are 0.
-        |
-        | ##### For example, column '{small}' is the coefficients under the assumption ({small} = 1, others = 0).
-        |
-        | #### AIC : {aic}
-        |
-        | #### BIC : {bic}
-        """.format(small=classes[0], table1=pandasDF2MD(summary, num_rows=100), aic=aic, bic=bic
-                   )))
+        note = """Each column whose name is one of classes of Label Column is the coefficients under the assumption it is 1 and others are 0. For example, column '{small}' is the coefficients under the assumption ({small} = 1, others = 0).""".format(
+            small=classes[0]
+        )
+
+    update_model_etc = {'standard_errors': std_err}
+    if is_binary:
+        update_model_etc['wald_statistics'] = wald
+        update_model_etc['p_values'] = p_values
+
+    postprocess_result = {'update_md': {'Summary': summary,
+                                        'Note': note,
+                                        'AIC': aic,
+                                        'BIC': bic},
+                          'update_model_etc': update_model_etc,
+                          'type': 'logistic_regression_model'}
+
+    return postprocess_result
+
+
+def _logistic_regression_train(table, feature_cols, label_col, penalty='l2', dual=False, tol=0.0001, C=1.0,
+                               fit_intercept=True, intercept_scaling=1, class_weight=None, random_state=None,
+                               solver='liblinear', max_iter=100, multi_class='ovr', verbose=0, warm_start=False,
+                               n_jobs=1):
+
+    feature_names, features = check_col_type(table, feature_cols)
+    features = pd.DataFrame(features, columns=feature_names)
+
+    label = table[label_col]
+
+    preprocess_result = preprocess_(table, label_col, class_weight)
+    class_weight = preprocess_result['update_param']['class_weight']
+
+    classifier = LogisticRegression(penalty, dual, tol, C, fit_intercept, intercept_scaling, class_weight, random_state,
+                                    solver, max_iter, multi_class, verbose, warm_start, n_jobs)
+    classifier.fit(features, label)
+
+    postprocess_result = postprocess_(table, feature_cols, label_col, classifier, fit_intercept)
+    update_md = postprocess_result['update_md']
+    summary = update_md['Summary']
+    note = update_md['Note']
+    aic = update_md['AIC']
+    bic = update_md['BIC']
+
+    rb = BrtcReprBuilder()
+    rb.addMD(strip_margin("""
+    | ## Logistic Regression Result
+    | ### Summary
+    | {table1}
+    |
+    | ##### {note}
+    |
+    | #### AIC : {aic}
+    |
+    | #### BIC : {bic}
+    """.format(table1=pandasDF2MD(summary, num_rows=100), note=note, aic=aic, bic=bic)))
 
     model = _model_dict('logistic_regression_model')
-    model['standard_errors'] = std_err
+    update_model_etc = postprocess_result['update_model_etc']
+    model.update(update_model_etc)
     model['aic'] = aic
     model['bic'] = bic
-    if is_binary:
-        model['wald_statistics'] = wald
-        model['p_values'] = p_values
     model['features'] = feature_cols
     model['label'] = label_col
-    model['intercept'] = lr_model.intercept_
-    model['coefficients'] = lr_model.coef_
-    model['class'] = lr_model.classes_
+    model['intercept'] = classifier.intercept_
+    model['coefficients'] = classifier.coef_
+    model['class'] = classifier.classes_
     model['penalty'] = penalty
     model['solver'] = solver
-    model['lr_model'] = lr_model
+    model['classifier'] = classifier
     model['_repr_brtc_'] = rb.get()
     model['summary'] = summary
-    return {'model' : model}
+    return {'model': model}
 
 
 def logistic_regression_predict(table, model, **params):
@@ -206,9 +238,13 @@ def logistic_regression_predict(table, model, **params):
 def _logistic_regression_predict(table, model, prediction_col='prediction', prob_prefix='probability',
                                  output_log_prob=False, log_prob_prefix='log_probability', thresholds=None,
                                  suffix='index'):
-    if (table.shape[0] == 0):
+    # migration logic
+    if 'lr_model' in model:
+        model['classifier'] = model['lr_model']
+
+    if table.shape[0] == 0:
         new_cols = table.columns.tolist() + [prediction_col]
-        classes = model['lr_model'].classes_
+        classes = model['classifier'].classes_
         if suffix == 'index':
             prob_cols = [prob_prefix + '_{}'.format(i) for i in range(len(classes))]
         else:
@@ -227,7 +263,7 @@ def _logistic_regression_predict(table, model, prediction_col='prediction', prob
         feature_cols = model['features']
     else:
         feature_cols = model['feature_cols']
-    if 'lr_model' in model:
+    if 'classifier' in model:
         feature_names, features = check_col_type(table, feature_cols)
         features = pd.DataFrame(features, columns=feature_names)
     else:
@@ -254,8 +290,8 @@ def _logistic_regression_predict(table, model, prediction_col='prediction', prob
             if len(one_hot_input != 0):
                 features = one_hot_encoder(prefix='col_name', table=features, input_cols=features.columns[one_hot_input].tolist(), suffix='label')['out_table']
                 features = features[model['table_1']['features']]
-    if 'lr_model' in model:
-        lr_model = model['lr_model']
+    if 'classifier' in model:
+        lr_model = model['classifier']
         classes = lr_model.classes_
         len_classes = len(classes)
         is_binary = len_classes == 2
@@ -320,7 +356,7 @@ def _logistic_regression_predict(table, model, prediction_col='prediction', prob
         # FN-0613='%s' must have length equal to the number of classes.
         raise_error('0613', ['thresholds'])
     
-    if 'lr_model' in model:
+    if 'classifier' in model:
         prob = lr_model.predict_proba(features)
     else:
         features = features.values

@@ -38,3 +38,7 @@ from .unload import unload
 
 from .create_table import create_table
 from .create_table import set_data
+
+from .image import image_load
+from .load_vdb import load_vdb
+from .unload_vdb import unload_vdb

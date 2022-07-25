@@ -19,6 +19,7 @@ import math
 import pandas as pd
 import matplotlib
 matplotlib.use("agg")
+matplotlib.rcParams['axes.unicode_minus'] = False
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
@@ -33,6 +34,9 @@ from brightics.common.validation import greater_than_or_equal_to
 from brightics.common.validation import less_than_or_equal_to
 from brightics.common.validation import greater_than
 from brightics.common.validation import from_to
+from brightics.common.data_export import PyPlotData, PyPlotMeta
+from brightics.common.validation import raise_runtime_error
+
 
 #-----------------------------------------------------------------------------------------------------
 """
@@ -145,7 +149,7 @@ class _FPTree(object):
         return headers
 
     def _build_fptree(self, transactions, root_value,
-                     root_count, frequent, headers):
+                      root_count, frequent, headers):
         """
         Build the FP tree and return the root node.
         """
@@ -221,7 +225,7 @@ class _FPTree(object):
                 new_patterns[tuple(sorted(list(key) + [suffix]))] = patterns[key]
 
             new_patterns[tuple([self.root.value])] = self.root.count
-                
+
             return new_patterns
 
         return patterns
@@ -269,7 +273,7 @@ class _FPTree(object):
                 suffixes.append(node)
                 node = node.link
 
-            # For each occurrence of the item, 
+            # For each occurrence of the item,
             # trace the path back to the root node.
             for suffix in suffixes:
                 frequency = suffix.count
@@ -286,7 +290,7 @@ class _FPTree(object):
             # Now we have the input for a subtree,
             # so construct it and grab the patterns.
             subtree = _FPTree(conditional_tree_input, threshold,
-                             item, self.frequent[item])
+                              item, self.frequent[item])
             subtree_patterns = subtree._mine_patterns(threshold)
 
             # Insert subtree patterns into main patterns dictionary.
@@ -377,7 +381,7 @@ def association_rule(table, group_by=None, **params):
     params = get_default_from_parameters_if_required(params, _association_rule)
     param_validation_check = [from_to(params, 0, 1, 'min_support'),
                               from_to(params, 0, 1, 'min_confidence')]
-        
+
     validate(*param_validation_check)
     if group_by is not None:
         return _function_by_group(_association_rule, table, group_by=group_by, **params)
@@ -385,9 +389,13 @@ def association_rule(table, group_by=None, **params):
         return _association_rule(table, **params)
 
 
-def _association_rule(table, input_mode=None, array_input=None, mul_items=None, items=None, user_name=None, min_support=0.01, min_confidence=0.8, min_lift=-math.inf, max_lift=math.inf, min_conviction=-math.inf, max_conviction=math.inf):
+def _association_rule(table, input_mode=None, array_input=None, mul_items=None, mul_items_cols=None,
+                      items=None, user_name=None, min_support=0.01, min_confidence=0.8, min_lift=-math.inf,
+                      max_lift=math.inf, min_conviction=-math.inf, max_conviction=math.inf):
 
-    if input_mode == 'user_multiple':
+    if input_mode == 'user_multiple':  # "Multiple items" ("User - multiple items")
+        if mul_items is None or not mul_items:
+            raise_runtime_error("Select Item Columns.")
         transactions = []
         for column in mul_items:
             tmp = []
@@ -395,7 +403,7 @@ def _association_rule(table, input_mode=None, array_input=None, mul_items=None, 
                 if item is None:
                     tmp += [None]
                 else:
-                    tmp += ['{} : {}'.format(column, item)]            
+                    tmp += ['{} : {}'.format(column, item)]
             transactions += [tmp]
         transactions = list(np.transpose(transactions))
         for i in range(len(transactions)):
@@ -403,13 +411,19 @@ def _association_rule(table, input_mode=None, array_input=None, mul_items=None, 
                 tmp = set(transactions[i])
                 tmp.remove(None)
                 transactions[i] = np.array(list(tmp))
-    elif input_mode == 'transaction':
+    elif input_mode == 'transaction':  # "Array"
+        if array_input is None or not array_input:
+            raise_runtime_error("Select Input Column.")
         transactions = [list(set(transaction) - {None}) for transaction in np.array(table[array_input])]
-    else:
+    elif input_mode == 'transaction_col':  # "Columns"
+        if mul_items_cols is None or not mul_items_cols:
+            raise_runtime_error("Select Item Columns.")
+        transactions = [list(set(transaction) - {None}) for transaction in np.array(table[mul_items_cols])]
+    else:  # "User - Item" ("User - single item")
         if items is None:
-            raise Exception('Select Item Column')
+            raise_runtime_error('Select Item Column')
         if user_name is None:
-            raise Exception('Select User Column')
+            raise_runtime_error('Select User Column')
         table_erase_duplicates = table.drop_duplicates([items] + [user_name])
         table_erase_duplicates = table_erase_duplicates.reset_index()
         transactions = _table_to_transactions(table_erase_duplicates, items, user_name)
@@ -422,8 +436,8 @@ def _association_rule(table, input_mode=None, array_input=None, mul_items=None, 
     result = _dict_to_table(rules, len_trans)
     result = result[(result.lift >= min_lift) & (result.conviction >= min_conviction) & (result.lift <= max_lift) & (result.conviction <= max_conviction)]
     return {'out_table' : result}
-    
-    
+
+
 def _scaling(number_list):
     maximum = np.max(number_list)
     minimum = np.min(number_list)
@@ -431,7 +445,7 @@ def _scaling(number_list):
     for number in number_list:
         result += [(number - minimum) / (maximum - minimum) + 0.2]
     return result
-    
+
 
 def _n_blank_strings(number):
     result = ''
@@ -446,16 +460,18 @@ def association_rule_visualization(table, group_by=None, **params):
                               greater_than(params, 0, 'edge_length_scaling'),
                               greater_than(params, 0, 'node_size_scaling'),
                               greater_than(params, 0, 'font_size')]
-        
+
     validate(*param_validation_check)
     check_required_parameters(_association_rule_visualization, params, ['table'])
     if group_by is not None:
         return _function_by_group(_association_rule_visualization, table, group_by=group_by, **params)
     else:
-        return _association_rule_visualization(table, **params)    
+        return _association_rule_visualization(table, **params)
 
-    
+
 def _association_rule_visualization(table, option='multiple_to_single', edge_length_scaling=1, font_size=10, node_size_scaling=1, figure_size_muliplier=1, display_rule_num=False):
+
+    figs = PyPlotData()
 
     if(option == 'single_to_single'):
         result_network = table.copy()
@@ -511,7 +527,7 @@ def _association_rule_visualization(table, option='multiple_to_single', edge_len
                     node_color += [scaled_support[i] * 2500 * node_size_scaling]
                     break
         # if(scaling==True):
-       #     edge_color = [result_network['edge_colors'][n] for n in range(len(result_network['length_conse']))]
+        #     edge_color = [result_network['edge_colors'][n] for n in range(len(result_network['length_conse']))]
         # else:
         scaled_support = _scaling(result_network['confidence'])
         edge_size = [scaled_support[n] * 8 for n in range(len(result_network['length_conse']))]
@@ -519,15 +535,16 @@ def _association_rule_visualization(table, option='multiple_to_single', edge_len
         nx.draw(G, pos, node_color=node_color, edge_color=edge_color, node_size=node_color, arrowsize=20 * (0.2 + 0.8 * node_size_scaling), font_family='NanumGothic',
                 with_labels=True, cmap=plt.cm.Blues, edge_cmap=plt.cm.Reds, arrows=True, edge_size=edge_color, width=edge_size, font_size=font_size)
 
-        fig_digraph = plt2MD(plt)
-        
+        figs.addpltfig('fig_digraph', plt)
+        plt.clf()
+
         graph_min_support = np.min(nodes_table.support)
         graph_max_support = np.max(nodes_table.support)
         graph_min_confidence = np.min(result_network['confidence'])
         graph_max_confidence = np.max(result_network['confidence'])
         graph_min_lift = np.min(result_network['lift'])
         graph_max_lift = np.max(result_network['lift'])
-        
+
         rb = BrtcReprBuilder()
         rb.addMD(strip_margin("""
         | ### Network Digraph
@@ -536,8 +553,8 @@ def _association_rule_visualization(table, option='multiple_to_single', edge_len
         | ##### Edge size : confidence ({graph_min_confidence}~{graph_max_confidence})
         | {image1}
         |
-        """.format(image1=fig_digraph, graph_min_support=graph_min_support, graph_max_support=graph_max_support, graph_min_lift=graph_min_lift, graph_max_lift=graph_max_lift, graph_min_confidence=graph_min_confidence, graph_max_confidence=graph_max_confidence)))
-    
+        """.format(image1=figs.getMD('fig_digraph'), graph_min_support=graph_min_support, graph_max_support=graph_max_support, graph_min_lift=graph_min_lift, graph_max_lift=graph_max_lift, graph_min_confidence=graph_min_confidence, graph_max_confidence=graph_max_confidence)))
+
     elif(option == 'multiple_to_single'):
 
         result_network = table.copy()
@@ -585,13 +602,14 @@ def _association_rule_visualization(table, option='multiple_to_single', edge_len
 
         nx.draw(G, pos, node_color=nodes_color, node_size=nodes_size, font_family='NanumGothic',
                 with_labels=True, cmap=plt.cm.Reds, arrows=True, edge_color='Grey', font_weight='bold', arrowsize=20 * (0.2 + 0.8 * node_size_scaling), font_size=font_size)
-        fig_digraph = plt2MD(plt)
-        
+        figs.addpltfig('fig_digraph', plt)
+        plt.clf()
+
         graph_min_support = np.min(result_network.support)
         graph_max_support = np.max(result_network.support)
         graph_min_lift = np.min(result_network.lift)
         graph_max_lift = np.max(result_network.lift)
-        
+
         rb = BrtcReprBuilder()
         rb.addMD(strip_margin("""
         | ### Network Digraph
@@ -599,8 +617,8 @@ def _association_rule_visualization(table, option='multiple_to_single', edge_len
         | ##### Color of circle : lift ({graph_min_lift}~{graph_max_lift})
         | {image1}
         |
-        """.format(image1=fig_digraph, graph_min_support=graph_min_support, graph_max_support=graph_max_support, graph_min_lift=graph_min_lift, graph_max_lift=graph_max_lift)))
-        
+        """.format(image1=figs.getMD('fig_digraph'), graph_min_support=graph_min_support, graph_max_support=graph_max_support, graph_min_lift=graph_min_lift, graph_max_lift=graph_max_lift)))
+
     else:
         
         result_network = table.copy()
@@ -626,7 +644,7 @@ def _association_rule_visualization(table, option='multiple_to_single', edge_len
                 edges += [(result_network.antecedent[i][j], result_network['row_number'][i])]
             for j in range(len(result_network.consequent[i])):
                 edges += [(result_network['row_number'][i], result_network.consequent[i][j])]
-            nodes += [result_network['row_number'][i]]    
+            nodes += [result_network['row_number'][i]]
 
         G = nx.DiGraph()
         G.add_nodes_from(nodes)
@@ -646,13 +664,14 @@ def _association_rule_visualization(table, option='multiple_to_single', edge_len
 
         nx.draw(G, pos, node_color=nodes_color, node_size=nodes_size, font_family='NanumGothic',
                 with_labels=True, cmap=plt.cm.Reds, arrows=True, edge_color='Grey', font_weight='bold', arrowsize=20 * (0.2 + 0.8 * node_size_scaling), font_size=font_size)
-        fig_digraph = plt2MD(plt)
-        
+        figs.addpltfig('fig_digraph', plt)
+        plt.clf()
+
         graph_min_support = np.min(result_network.support)
         graph_max_support = np.max(result_network.support)
-        graph_min_lift = np.min(result_network.lift)    
+        graph_min_lift = np.min(result_network.lift)
         graph_max_lift = np.max(result_network.lift)
-        
+
         rb = BrtcReprBuilder()
         rb.addMD(strip_margin("""
         | ### Network Digraph
@@ -660,10 +679,11 @@ def _association_rule_visualization(table, option='multiple_to_single', edge_len
         | ##### Color of circle : lift ({graph_min_lift}~{graph_max_lift})
         | {image1}
         |
-        """.format(image1=fig_digraph, graph_min_support=graph_min_support, graph_max_support=graph_max_support, graph_min_lift=graph_min_lift, graph_max_lift=graph_max_lift)))
+        """.format(image1=figs.getMD('fig_digraph'), graph_min_support=graph_min_support, graph_max_support=graph_max_support, graph_min_lift=graph_min_lift, graph_max_lift=graph_max_lift)))
 
     model = _model_dict('Association rule')
     model['_repr_brtc_'] = rb.get()
+    model['figure'] = figs.tojson()
     # plt.figure(figsize=(6.4,4.8))
     return{'model' : model}
     

@@ -28,8 +28,10 @@ from .sample import random_sampling
 from .split_data import split_data
 from .json_extraction import flatten_json
 from .json_extraction import get_table
+from .json_extraction import get_image
 from .sql import execute as sql_execute
 from .sql import execute2 as sql_execute2
+from .sql import execute3 as sql_execute3
 from .svd import svd
 from .svd import svd2
 from .svd import svd_model
@@ -38,5 +40,5 @@ from .SMOTE import SMOTE
 from .under_sampling import under_sampling
 from .explode import explode
 from .tsne import tsne
+from .tsne2 import tsne2
 from .savgol_filter import savgol_filter
-

@@ -15,6 +15,8 @@
 """
 
 from gensim.models import FastText
+import matplotlib
+matplotlib.rcParams['axes.unicode_minus'] = False
 import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
 import pandas as pd
@@ -30,6 +32,7 @@ from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate
 from brightics.common.validation import greater_than_or_equal_to
+from brightics.common.data_export import PyPlotData, PyPlotMeta
 
 
 def fasttext(table, **params):
@@ -124,7 +127,8 @@ def _fasttext(table, input_col, sg=1, size=100, window=5, min_count=1,
     for word, pos in df.iterrows():
         ax.annotate(word, pos, fontsize=80)
     plt.show()
-    fig = plt2MD(plt)
+    figs = PyPlotData()
+    figs.addpltfig('fig', plt)
     plt.clf()
 
     rb = BrtcReprBuilder()
@@ -162,7 +166,8 @@ def _fasttext(table, input_col, sg=1, size=100, window=5, min_count=1,
                spearman_1_2=spearman_1[1], oov_ratio_1=oov_ratio_1,
                pearson_2_1=pearson_2[0], pearson_2_2=pearson_2[1], spearman_2_1=spearman_2[0],
                spearman_2_2=spearman_2[1], oov_ratio_2=oov_ratio_2,
-               topn=topn, topn_words=topn_words, params=dict2MD(params), fig=fig)))
+               topn=topn, topn_words=topn_words, params=dict2MD(params),
+               fig=figs.getMD('fig'))))
 
     vocab = list(ft.wv.vocab)
 
@@ -171,6 +176,7 @@ def _fasttext(table, input_col, sg=1, size=100, window=5, min_count=1,
     model['vocab'] = vocab
     model['ft'] = ft.wv
     model['_repr_brtc_'] = rb.get()
+    model['figures'] = figs.tojson()
 
     out_table = pd.DataFrame({'words': vocab, 'word_vectors': ft.wv[vocab].tolist()})
     return {'model': model, 'out_table': out_table}
