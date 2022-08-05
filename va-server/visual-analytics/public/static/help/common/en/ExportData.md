@@ -27,14 +27,15 @@ ExportData is the function of exporting data from Brightics repository to other 
 11. **Key Value** : The delimiter of key and value of map data in exporting csv file. It is only used when Export To is Repository or HDFS. Default value is Equal(=).
 12. **Map Start** : The start string of map data in exporting csv file. It is only used when Export To is Repository or HDFS. Default value is Left Curly Bracket([).
 13. **Map End** : The end string of map data in exporting csv file. It is only used when Export To is Repository or HDFS. Default value is Right Curly Bracket(]).
-14. **Ip**<b style='color:red'>*</b> : The ip(host) of the target HDFS file system. It is only used when Export To is HDFS.
-15. **Port**<b style='color:red'>*</b> : The port of the target HDFS file system. It is only used when Export To is HDFS. 
-16. **Datasource**<b style='color:red'>*</b> : The datasource of the target relational db. It is only used when Export To is Relational DB.
-17. **Table Name**<b style='color:red'>*</b> : The name of target table of exporting data in the relational db. It is only used when Export To is Relational DB.
-18. **Connection Timeout** : The timeout amounts of database connection. It is only used when Export To is Relational DB. Default value is 600. It must be greater than or equal to 0.
-19. **Login Timeout** : The timeout amounts of database login. It is only used when Export To is Relational DB. Default value is 600. It must be greater than or equal to 0.
-20. **Socket Timeout** : The timeout amounts of database socket communication. It is only used when Export To is Relational DB. Default value is 600. It must be greater than or equal to 0.
-21. **Lock Timeout** : The timeout amounts of database lock. It is only used when Export To is Relational DB. Default value is 600. It must be greater than or equal to 0.
+14. **Null Value** : The string representing null. 
+15. **Ip**<b style='color:red'>*</b> : The ip(host) of the target HDFS file system. It is only used when Export To is HDFS.
+16. **Port**<b style='color:red'>*</b> : The port of the target HDFS file system. It is only used when Export To is HDFS. 
+17. **Datasource**<b style='color:red'>*</b> : The datasource of the target relational db. It is only used when Export To is Relational DB.
+18. **Table Name**<b style='color:red'>*</b> : The name of target table of exporting data in the relational db. It is only used when Export To is Relational DB.
+19. **Connection Timeout(sec)** : The timeout amounts of database connection. It is only used when Export To is Relational DB. Default value is 600. It must be greater than or equal to 0.
+20. **Login Timeout(sec)** : The timeout amounts of database login. It is only used when Export To is Relational DB. Default value is 600. It must be greater than or equal to 0.
+21. **Socket Timeout(sec)** : The timeout amounts of database socket communication. It is only used when Export To is Relational DB. Default value is 600. It must be greater than or equal to 0.
+22. **Lock Timeout(sec)** : The timeout amounts of database lock. It is only used when Export To is Relational DB. Default value is 600. It must be greater than or equal to 0.
 
 ### Scala
 1. **input-path**<b style='color:red'>*</b> : Full path to the input file you want to copy from. Only path started with "/shared/upload/" or "/{userId}/upload/" is allowed.
@@ -50,17 +51,18 @@ ExportData is the function of exporting data from Brightics repository to other 
 11. **key-value-delimiter** : The delimiter of key and value of map data in exporting csv file. It is only used when 'copy-to' is 'alluxio' or 'hdfs'. Default value is equal(=).
 12. **map-start-string** : The start string of map data in exporting csv file. It is only used when 'copy-to' is 'alluxio' or 'hdfs'. Default value is left curly bracket([).
 13. **map-end-string** : The end string of map data in exporting csv file. It is only used when 'copy-to' is 'alluxio' or 'hdfs'. Default value is right curly bracket(]).
-14. **ip**<b style='color:red'>*</b> : The ip(host) of the target file system. It is only used when 'copy-to' is 'hdfs' or 'jdbc'.
-15. **port**<b style='color:red'>*</b> : The port of the target file system. It is only used when 'copy-to' is 'hdfs' or 'jdbc'.
-16. **db-type**<b style='color:red'>*</b> : The type of the target database. It is only used when 'copy-to' is 'jdbc'. Supported value are 'postgre'(PostgreSQL), 'oracle'(Oracle), 'mariadb'(MariaDB)
-17. **username**<b style='color:red'>*</b> : Database username. It is only used when 'copy-to' is 'jdbc'.
-18. **password**<b style='color:red'>*</b> : Database password. It is only used when 'copy-to' is 'jdbc'. 
-19. **db-name**<b style='color:red'>*</b> : Database name. It is only used when 'copy-to' is 'jdbc'. 
-20. **table-name**<b style='color:red'>*</b> : The name of target table of exporting data in the 'jdbc'. It is only used when 'copy-to' is 'jdbc'. 
-21. **connection-timeout** : The timeout amounts of database connection. It is only used when 'copy-to' is 'jdbc'. Default value is 600. It must be greater than or equal to 0.
-22. **login-timeout** : The timeout amounts of database login. It is only used when 'copy-to' is 'jdbc'. Default value is 600. It must be greater than or equal to 0.
-23. **socket-timeout** : The timeout amounts of database socket communication. It is only used when 'copy-to' is 'jdbc'. Default value is 600. It must be greater than or equal to 0.
-24. **lock-timeout** : The timeout amounts of database lock. It is only used when 'copy-to' is 'jdbc'. Default value is 600. It must be greater than or equal to 0.
+14. **null-value** : The string representing null. 
+15. **ip**<b style='color:red'>*</b> : The ip(host) of the target file system. It is only used when 'copy-to' is 'hdfs' or 'jdbc'.
+16. **port**<b style='color:red'>*</b> : The port of the target file system. It is only used when 'copy-to' is 'hdfs' or 'jdbc'.
+17. **db-type**<b style='color:red'>*</b> : The type of the target database. It is only used when 'copy-to' is 'jdbc'. Supported value are 'postgre'(PostgreSQL), 'oracle'(Oracle), 'mariadb'(MariaDB)
+18. **username**<b style='color:red'>*</b> : Database username. It is only used when 'copy-to' is 'jdbc'.
+19. **password**<b style='color:red'>*</b> : Database password. It is only used when 'copy-to' is 'jdbc'. 
+20. **db-name**<b style='color:red'>*</b> : Database name. It is only used when 'copy-to' is 'jdbc'. 
+21. **table-name**<b style='color:red'>*</b> : The name of target table of exporting data in the 'jdbc'. It is only used when 'copy-to' is 'jdbc'. 
+22. **connection-timeout** : The timeout amounts of database connection. It is only used when 'copy-to' is 'jdbc'. Default value is 600. It must be greater than or equal to 0.
+23. **login-timeout** : The timeout amounts of database login. It is only used when 'copy-to' is 'jdbc'. Default value is 600. It must be greater than or equal to 0.
+24. **socket-timeout** : The timeout amounts of database socket communication. It is only used when 'copy-to' is 'jdbc'. Default value is 600. It must be greater than or equal to 0.
+25. **lock-timeout** : The timeout amounts of database lock. It is only used when 'copy-to' is 'jdbc'. Default value is 600. It must be greater than or equal to 0.
 
 ## Example
 

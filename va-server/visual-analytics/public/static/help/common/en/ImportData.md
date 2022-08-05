@@ -25,14 +25,16 @@ ImportData is the function of importing data to Brightics repository from other 
 9. **Key Value** : The delimiter of key and value of map data in csv source file. It is only used when Import From is Repository or HDFS. Default value is Equal(=).
 10. **Map Start** : The start string of map data in csv source file. It is only used when Import From is Repository or HDFS. Default value is Left Curly Bracket([).
 11. **Map End** : The end string of map data in csv source file. It is only used when Import From is Repository or HDFS. Default value is Right Curly Bracket(]).
-12. **Ip**<b style='color:red'>*</b> : The ip(host) of the source HDFS file system. It is only used when Import From is HDFS.
-13. **Port**<b style='color:red'>*</b> : The port of the source HDFS file system. It is only used when Import From is HDFS. 
-14. **Datasource**<b style='color:red'>*</b> : The datasource of the source relational db. It is only used when Import From is Relational DB.
-15. **Table Name**<b style='color:red'>*</b> : The name of source data table in the relational db. It is only used when Import From is Relational DB.
-16. **Connection Timeout** : The timeout amounts of database connection. It is only used when Import From is Relational DB. Default value is 600. It must be greater than or equal to 0.
-17. **Execution Timeout** : The timeout amounts of database execution. It is only used when Import From is Relational DB. Default value is 600. It must be greater than or equal to 0.
-18. **Output Path**<b style='color:red'>*</b> : The path where the imported data is saved. Only path started with "/shared/upload/" or "/{userId}/upload/" is allowed.
-19. **Overwrite** : Logical value indicating whether existing file overwrite or not. Default value is True.
+12. **Null Value** : The string representing null.
+13. **NaN Value** : The string representing non-number. 
+14. **Ip**<b style='color:red'>*</b> : The ip(host) of the source HDFS file system. It is only used when Import From is HDFS.
+15. **Port**<b style='color:red'>*</b> : The port of the source HDFS file system. It is only used when Import From is HDFS. 
+16. **Datasource**<b style='color:red'>*</b> : The datasource of the source relational db. It is only used when Import From is Relational DB.
+17. **Table Name**<b style='color:red'>*</b> : The name of source data table in the relational db. It is only used when Import From is Relational DB.
+18. **Connection Timeout(sec)** : The timeout amounts of database connection. It is only used when Import From is Relational DB. Default value is 600. It must be greater than or equal to 0.
+19. **Execution Timeout(sec)** : The timeout amounts of database execution. It is only used when Import From is Relational DB. Default value is 600. It must be greater than or equal to 0.
+20. **Output Path**<b style='color:red'>*</b> : The path where the imported data is saved. Only path started with "/shared/upload/" or "/{userId}/upload/" is allowed.
+21. **Overwrite** : Logical value indicating whether existing file overwrite or not. Default value is False.
 
 ### Scala
 1. **copy-from**<b style='color:red'>*</b> : Source file system type to import data. It must be one of 'alluxio', 'hdfs', 'jdbc'
@@ -46,16 +48,18 @@ ImportData is the function of importing data to Brightics repository from other 
 9. **key-value-delimiter** : The delimiter of key and value of map data in csv source file. It is only used when 'copy-to' is 'alluxio' or 'hdfs'. Default value is equal(=).
 10. **map-start-string** : The start string of map data in csv source file. It is only used when 'copy-to' is 'alluxio' or 'hdfs'. Default value is left curly bracket([).
 11. **map-end-string** : The end string of map data in csv source file. It is only used when 'copy-to' is 'alluxio' or 'hdfs'. Default value is right curly bracket(]).
-12. **ip**<b style='color:red'>*</b> : The ip(host) of the source file system. It is only used when 'copy-to' is 'hdfs' or 'jdbc'.
-13. **port**<b style='color:red'>*</b> : The port of the source file system. It is only used when 'copy-to' is 'hdfs' or 'jdbc'.
-14. **db-type**<b style='color:red'>*</b> : The type of the source database. It is only used when 'copy-to' is 'jdbc'. Supported value are 'postgre'(PostgreSQL), 'oracle'(Oracle), 'mariadb'(MariaDB)
-15. **username**<b style='color:red'>*</b> : Database username. It is only used when 'copy-to' is 'jdbc'.
-16. **password**<b style='color:red'>*</b> : Database password. It is only used when 'copy-to' is 'jdbc'. 
-17. **db-name**<b style='color:red'>*</b> : Database name. It is only used when 'copy-to' is 'jdbc'. 
-18. **table-name**<b style='color:red'>*</b> : The name of source data table in the relational db. It is only used when 'copy-to' is 'jdbc'. 
-19. **connection-timeout** : The timeout amounts of database connection. It is only used when 'copy-to' is 'jdbc'. Default value is 600. It must be greater than or equal to 0.
-20. **execution-timeout** : The timeout amounts of database execution. It is only used when 'copy-to' is 'jdbc'. Default value is 600. It must be greater than or equal to 0.
-21. **is-delete** : Logical value indicating whether existing file overwrite or not. (Default : false)
+12. **null-value** : The string representing null.
+13. **nan-value** : The string representing non-number. 
+14. **ip**<b style='color:red'>*</b> : The ip(host) of the source file system. It is only used when 'copy-to' is 'hdfs' or 'jdbc'.
+15. **port**<b style='color:red'>*</b> : The port of the source file system. It is only used when 'copy-to' is 'hdfs' or 'jdbc'.
+16. **db-type**<b style='color:red'>*</b> : The type of the source database. It is only used when 'copy-to' is 'jdbc'. Supported value are 'postgre'(PostgreSQL), 'oracle'(Oracle), 'mariadb'(MariaDB)
+17. **username**<b style='color:red'>*</b> : Database username. It is only used when 'copy-to' is 'jdbc'.
+18. **password**<b style='color:red'>*</b> : Database password. It is only used when 'copy-to' is 'jdbc'. 
+19. **db-name**<b style='color:red'>*</b> : Database name. It is only used when 'copy-to' is 'jdbc'. 
+20. **table-name**<b style='color:red'>*</b> : The name of source data table in the relational db. It is only used when 'copy-to' is 'jdbc'. 
+21. **connection-timeout** : The timeout amounts of database connection. It is only used when 'copy-to' is 'jdbc'. Default value is 600. It must be greater than or equal to 0.
+22. **execution-timeout** : The timeout amounts of database execution. It is only used when 'copy-to' is 'jdbc'. Default value is 600. It must be greater than or equal to 0.
+23. **is-delete** : Logical value indicating whether existing file overwrite or not. (Default : false)
 
 ## Example
 

@@ -7,6 +7,7 @@ This function returns value for executed Python Script.
 ## Properties
 1. **Script**<b style='color:red'>*</b>: Python Script
 2. **Outputs**: Alias name for out tables.
+3. **Kernel**: Kernel to run the script.
 
 ## Tip
 1. **In Table Variable**: when [In Table Variable] button clicked, then "inputs[index]" will be entered into Script Editor<div style="width:247px; height:47px; background-image: url('function-resources/pythonscript/PythonScript.PNG');"></div>
