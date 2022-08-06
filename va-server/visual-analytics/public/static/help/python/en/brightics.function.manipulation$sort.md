@@ -19,14 +19,13 @@ Reference
 
 #### PARAMETER
 1. **Sort Rule**<b style="color:red">*</b>: Columns and sorting type (desc, asc)
-
+   - Allowed column type : Double, Float, Integer, Long, String
 2. **Group By**: Columns to group by
 
 
 ### Python
-#### USAGE
-```
-sort(table =, input_cols = , is_asc = , group_by = )
+```python
+sort(table, input_cols, is_asc, group_by = None)
 ```
 #### INPUT
 1. **table**<b style="color:red">*</b>: (Table) Data in a Table.
@@ -45,15 +44,19 @@ sort(table =, input_cols = , is_asc = , group_by = )
 
 ## Example
 ### VA
+**<a href="https://www.brightics.ai/docs/ai/v3.6/tutorials/07_data_refine?type=insight" target="_blank">[Related Tutorial]</a>**
 
 **<a href="/static/help/python/sample_model/sort.json" download>[Sample Model]</a>**
 
 <img src="/static/help/python/sample_model_img/sort.PNG"  width="800px" style="border: 1px solid gray" >
 
-In the tutorial workflow, sample_iris data is used as input of Sort function. The output of this function is a sorted output table according to a given rule. The parameter settings used in the function are shown below.
+In the tutorial workflow, sample_iris data is used as input of Sort function. The ouput of this function is a sorted output table according to a given rule. The parameter settings used in the function are shown below.
 
 ++Parameters++
-1. **Sort Rule**: (1) sepal_length, ASC, (2) sepal_width, DESC
+1. **input_cols**: sepal_length, sepal_width
+2. **is_asc**: True, False
+3. **group_by**: None
+
 
 ### Python
 ```

@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package sal2pandas;
+
+option java_package = "sql2pandas.calcitePandas";
+option java_multiple_files = true;
+
+
+// Interface exported by the server.
+service CalcitePythonService{
+    rpc setSchemaModel(IncomingMsg) returns(ReplyMsg) {}
+    rpc parseSql(IncomingMsg) returns (ReplyMsg) {}
+}
+
+message IncomingMsg{
+    string msg = 1;
+}
+
+message ReplyMsg {
+    string status = 1;
+    string msg = 2;
+    string detailMessage = 3;
+    string stackTrace = 4;
+}
+
+// python build command
+// cd src/grpc/
+// python -m grpc_tools.protoc -I../proto --python_out=. --grpc_python_out=. ../proto/calcitepython.proto

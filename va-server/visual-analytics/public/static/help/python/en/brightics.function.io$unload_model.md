@@ -8,11 +8,11 @@ This function stores (=unload) a trained model as a file. The stored models can 
 ## Properties
 ### VA
 #### INPUT
-1. **Target**<b style="color:red">*</b>:(Model) Pre-trained model to be stored as a file. 
+1. **Target**:(Model) Pre-trained model to be stored as a file. 
 #### OUTPUT
 1. **out-model**:(Model) A json file.    
 #### PARAMETER
-1. **Path**<b style="color:red">*</b>: Absolute path and name of the model file to be stored. 
+1. **Path**: Absolute path and name of the model file to be stored. 
 
 
 ## Example
@@ -26,5 +26,5 @@ This function stores (=unload) a trained model as a file. The stored models can 
 This model is a simple example for Unload Model function. In the example, the Unload Model function stores a trained model, that has been trained by Linear Regression Train Function. 
 
 ++Parameters++
-1. **Target**<b style="color:red">*</b>:Linear Regression Train
-2. **Path**<b style="color:red">*</b>: C:/brightics/models/LinearRegressionModel
+1. **Target**:Linear Regression Train
+2. **Path**: C:/brightics/models/LinearRegressionModel

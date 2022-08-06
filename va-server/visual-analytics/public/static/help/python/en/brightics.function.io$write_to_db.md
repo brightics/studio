@@ -16,14 +16,13 @@ This function has no output data.
 
 #### PARAMETER
 1. **Data Source**<b style="color:red">*</b>: Predefined datasource. List of datasources can be updated from Datasource Management dialog on GUI.
-2. **Table Name**<b style="color:red">*</b>: The Name of table will be created from the database.
-3. **If Exists**<b style="color:red">*</b>:  The action when the table name is duplicated.
+1. **Table Name**<b style="color:red">*</b>: The Name of table will be created from the database.
+1. **If Exists**<b style="color:red">*</b>:  The action when the table name is duplicated.
    - Available items
       - Fail (default): Function will failed.
       - Replace: Table will be replaced with newly created one.
       - Append: New data will be added from target table.
-4. **Schema**: Schema name   
-
+      
 ## Example
 ### VA
 
@@ -39,7 +38,6 @@ First, make sure that the data source from which the wanted datasets are handled
 This model is a simple example for Write to DB function. In the example, the Write to DB function receives a sample_iris data, and sends the data to a given data source by setting 'Table Name' to sample_iris and 'If Exists' to Fail. The parameter settings used in the function are shown below.
 
 ++Parameters++
-1. **Data Source**<b style="color:red">*</b>: 
-2. **Table Name**<b style="color:red">*</b>: sample_iris
-3. **If Exists**<b style="color:red">*</b>: Fail
-4. **Schema**: None
+1. **Data Source**: 
+2. **Table Name**: sample_iris
+3. **If Exists**: Fail

@@ -39,7 +39,7 @@ Reference
 #### USAGE
 
 ```
-plot_roc_pr_curve(table = , label_col = , probability_col = , pos_label = , fig_w = , fig_h = , group_by = )
+plot_roc_pr_curve(table, label_col, probability_col, pos_label=None, fig_w=6.4, fig_h=4.8, group_by=None)
 ```
 
 #### INPUT
@@ -64,6 +64,7 @@ plot_roc_pr_curve(table = , label_col = , probability_col = , pos_label = , fig_
 
 ## Example
 ### VA
+**<a href="https://www.brightics.ai/kr/docs/ai/s1.0/tutorials/86_1_py_Logistic_Regression?type=insight" target="_blank">[Related Tutorial]</a>**
 
 
 **<a href="/static/help/python/sample_model/Plot_ROC_and_PR_Curves.json" download>[Sample Model]</a>**
@@ -78,8 +79,8 @@ In this tutorial workflow, sample_iris data is splited to train_table and test_t
 1. **Label Column**<b style="color:red">*</b>: species
 2. **Probability Column**<b style="color:red">*</b>: probability_virginica
 3. **Positive Label**: virginica
-4. **Figure Width**: None
-5. **Figure Height**: None
+4. **Figure Width**: 6.4
+5. **Figure Height**: 4.8
 6. **Group By**: None
 
 

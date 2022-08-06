@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base href="<%- baseUrl %>" target="_blank">
+
     <title><%= title %></title>
-    <link href="favicon.ico" rel="icon" type="image/x-icon" />
+    <link href="favicon.ico" rel="icon" type="image/x-icon">
 
     <script src="js/plugins/babel-polyfill/polyfill.js"></script>
     <script src="js/plugins/css.escape/css.escape.js"></script>
@@ -33,27 +35,18 @@
         .language {
             float: right;
             font-size: 12px;
+            display:none;
         }
     </style>
-</head>
 
+</head>
 <body>
 <div class="bs-header bs-theme-brtc" id="content">
     <div class="container">
         <div class="language"></div>
-        <% if (lang === 'kr') { %>
-            <h2>함수 도움말</h2>
-            <p>
-                함수의 정의, 설명 및 파라미터들에 대한 형식과 설명을 제공합니다. 일부 함수 도움말은 예제 모델을
-                포함합니다.
-            </p>
-        <% } else { %>
-            <h2>Function Reference</h2>
-            <p>
-                The functions, as given by the document strings. The documents expected types and allowed features
-                for all functions, and all parameters available for the algorithms.
-            </p>
-        <% } %>
+        <h2>Function Reference</h2>
+        <p>The functions, as given by the document strings. The documents expected types and allowed features for all
+            functions, and all parameters available for the algorithms.</p>
     </div>
 </div>
 
@@ -61,24 +54,23 @@
     <!-- Example row of columns -->
     <div class="row">
         <div class="col-md-3">
-            <div
-                    class="bs-sidebar hidden-print"
-                    data-spy="affix"
-                    data-offset-top="205"
-                    data-offset-bottom="200"
-                    role="complementary"
-            >
+            <div class="bs-sidebar hidden-print" data-spy="affix" data-offset-top="205" data-offset-bottom="200"
+                 role="complementary">
                 <div class="searchbar"></div>
                 <ul class="nav bs-sidenav bs-theme-brtc">
                     <div class="form-group bs-docs-function-search">
-                        <input class="form-control" placeholder="Search Functions" />
+                        <input class="form-control" placeholder="Search Functions"></input>
                     </div>
                     <% for(var i in palette) { if (!palette[i].visible) continue; %>
                     <li class="<%= palette[i].key %>">
+
                         <a><%= palette[i].label %></a>
                         <ul class="nav">
-                            <% var functions = palette[i].functions; for(var f in functions) { if
-                            (!functions[f].visible) continue; %>
+                            <%
+                                var functions = palette[i].functions;
+                                    for(var f in functions) {
+                                if (!functions[f].visible) continue;
+                            %>
                             <li func="<%= functions[f].func %>" helper="<%= functions[f].helper %>"></li>
                             <% } %>
                         </ul>
@@ -88,39 +80,27 @@
             </div>
         </div>
         <div class="col-md-9" role="main">
-            <div class="panel bs-docs-function-note" style="display: none">
-                <div class="panel-heading">
-                    <h3 class="panel-title"><strong>Note</strong></h3>
-                </div>
+            <div class="panel bs-docs-function-note" style="display: none;">
+                <div class="panel-heading"><h3 class="panel-title"><strong>Note</strong></h3></div>
                 <div class="panel-body">
                     <ul>
-                        <% if (lang === 'kr') { %>
-                            <li>
-                                모든 분석 함수는 소수점 10자리까지를 사용합니다. 각 분석 함수의 결과가 소수점
-                                10자리까지 동일한 경우 차이는 무시됩니다.
+                        <li>A significant digit is 10 digits for all analytic functions. We ignore the differences
+                            between each value of outputs from analytic function results and help pages in case more
+                            than 10 significant digits are the same.
+                        </li>
+                        <% if ( version ) { %>
+                            <li>When you use train and predict functions, the order and the number of columns should be
+                                the same for both functions.
                             </li>
-                            <li>
-                                NaN 또는 null 과 같은 비정상 값은 전처리하는 것을 권장합니다. 데이터를 분석하기 전에
-                                Brightics의 전처리 함수들을 사용할 수 있습니다.
-                            </li>
-                            <li>함수의 실행결과는 같은 seed를 사용하더라도 시스템에 따라 다를 수 있습니다.</li>
-                            <li>
-                                일부 함수는 한글 도움말을 제공하지 않습니다. 한글 도움말을 지원하는 함수를
-                                지속적으로 늘려나갈 예정입니다.
-                            </li>
-                        <% } else { %>
-                            <li>
-                                A significant digit is 10 digits for all analytic functions. We ignore the
-                                differences between each value of outputs from analytic function results and help
-                                pages in case more than 10 significant digits are the same.
-                            </li>
-                            <li>
-                                We recommend you to preprocess abnormal values such as NaN or null beforehand. You
-                                can use Brightics preprocessing functions before analyzing data.
-                            </li>
-                            <li>
-                                The result of the function may vary depending on the system even if the same seed is
-                                used.
+                        <% } %>
+                        <li>We recommend you to preprocess abnormal values such as NaN or null beforehand. You can use
+                            Brightics preprocessing functions before analyzing data.
+                        </li>
+                        <li>The result of the function may vary depending on the system even if the same seed is used.
+                        </li>
+                        <% if ( version ) { %>
+                            <li>The results of Spark and Python functions may differ even if you use the same function
+                                due to the different internal algorithms.
                             </li>
                         <% } %>
                     </ul>
@@ -171,726 +151,581 @@
 <!-- <script src="js/va/brightics-va-realtime.js"></script> -->
 <!-- <script src="js/va/brightics-va-etlflow.js"></script> -->
 <!--<script src="js/va/brightics-va-visual.min.js"></script>-->
-<!--<script src="js/va/brightics-va-script.min.js"></script>-->
+<script src="js/va/brightics-va-script.min.js"></script>
 <!-- <script src="js/va/brightics-va-deeplearning.js"></script> -->
 
 <script>
-  const language = '<%= lang %>' || 'en';
-  const locale = language === 'kr' ? 'ko' : 'en';
 
-
-  var _render_docs_section = function () {
-    var status = '<%= status %>';
-    if (status !== 'ERRNOTFOUND') {
-      $('.bs-docs-function-note').css({
-        display: 'block'
-      });
-    }
-  };
-
-  var _render_external_link = function () {
-    $('.bs-docs-section.bs-theme-brtc a').each(function () {
-      if (
-        $(this).attr('href') &&
-        ($(this).attr('href').indexOf('http://') == 0 || $(this).attr('href').indexOf('https://') == 0)
-      ) {
-        $(this).attr('target', '_blank');
-      }
-    });
-  };
-
-  // var _render_format = function () {
-  //     // TODO: python tab 추가
-  //     var $formatDiv = $('<div></div>');
-  //     var $formatHeader = $('.bs-docs-section.bs-theme-brtc h2:contains("Format")')
-  //     var $formatContents = $formatHeader.nextUntil('h2');
-  //     $formatDiv.append($formatContents);
-  //     var $form_text = $formatDiv.find('h3:contains("Scala")').length > 0 ? 'Scala' : 'Python'
-  //     var $form_scala_header = $formatDiv.find('h3:contains("Scala")').length > 0 ?
-  //            $formatDiv.find('h3:contains("Scala")') : $formatDiv.find('h3:contains("Python")');
-  //     var $form_scala_contents = $form_scala_header.nextUntil('h3');
-  //     if (!$form_scala_contents.length) return;
-  //
-  //     var $tabPanel = $('' +
-  //             '<div role="tabpanel">' +
-  //             '   <ul class="nav nav-tabs" role="tablist">' +
-  //             '       <li role="presentation" class="active"><a href="#format_scala" role="tab" data-toggle="tab">'+ $form_text +'</a></li>' +
-  //             '   </ul>' +
-  //             '   <div class="tab-content">' +
-  //             '       <div role="tabpanel" class="tab-pane active" id="format_scala"></div>' +
-  //             '   </div>' +
-  //             '</div>');
-  //
-  //     $tabPanel.find('div#format_scala').append($form_scala_contents);
-  //     $formatHeader.after($tabPanel);
-  // };
-
-  var _render_description = function () {
-    var $descDiv = $('<div></div>');
-    var $descHeader = $('.bs-docs-section.bs-theme-brtc h2:contains("Description")');
-    var $descContents = $descHeader.nextUntil('h2');
-    $descDiv.append($descContents);
-    var $desc_va_header = $descDiv.find('h3:contains("VA")');
-    var $form_text = $descDiv.find('h3:contains("Scala")').length > 0 ? 'Scala' : 'Python';
-    var $desc_scala_header =
-      $descDiv.find('h3:contains("Scala")').length > 0
-        ? $descDiv.find('h3:contains("Scala")')
-        : $descDiv.find('h3:contains("Python")');
-
-    if ($desc_va_header.length || $desc_scala_header.length) {
-      var $desc_va_contents = $desc_va_header.nextUntil('h3');
-      var $desc_scala_contents = $desc_scala_header.nextUntil('h3');
-
-      var $tabPanel = $(
-        '' +
-        '<div role="tabpanel">' +
-        '   <ul class="nav nav-tabs" role="tablist">' +
-        '   </ul>' +
-        '   <div class="tab-content">' +
-        '   </div>' +
-        '</div>'
-      );
-
-      if ($desc_va_header.length) {
-        $tabPanel
-          .find('.nav.nav-tabs')
-          .append(
-            $(
-              '<li role="presentation"><a href="#description_va" role="tab" data-toggle="tab">VA</a></li>'
-            )
-          );
-        $tabPanel
-          .find('.tab-content')
-          .append($('<div role="tabpanel" class="tab-pane active" id="description_va"></div>'));
-      }
-      if ($desc_scala_header.length) {
-        $tabPanel
-          .find('.nav.nav-tabs')
-          .append(
-            $(
-              '<li role="presentation"><a href="#description_scala" role="tab" data-toggle="tab">' +
-              $form_text +
-              '</a></li>'
-            )
-          );
-        $tabPanel
-          .find('.tab-content')
-          .append($('<div role="tabpanel" class="tab-pane" id="description_scala"></div>'));
-      }
-
-      $tabPanel.find('.nav-tabs li:first').addClass('active');
-      $tabPanel.find('.tab-content div:first').addClass('active');
-
-      $tabPanel.find('div#description_va').append($desc_va_contents);
-      $tabPanel.find('div#description_scala').append($desc_scala_contents);
-      $descHeader.after($tabPanel);
-    } else {
-      $descHeader.after($descContents);
-    }
-  };
-
-  var _render_properties = function () {
-    var $propDiv = $('<div></div>');
-    var $propHeader = $('.bs-docs-section.bs-theme-brtc h2:contains("Properties")');
-    var $propContents = $propHeader.nextUntil('h2');
-    $propDiv.append($propContents);
-    var $prop_va_header = $propDiv.find('h3:contains("VA")');
-    // var $prop_scala_header = $propDiv.find('h3:contains("Scala")');
-
-    var $form_text = $propDiv.find('h3:contains("Scala")').length > 0 ? 'Scala' : 'Python';
-    var $prop_scala_header =
-      $propDiv.find('h3:contains("Scala")').length > 0
-        ? $propDiv.find('h3:contains("Scala")')
-        : $propDiv.find('h3:contains("Python")');
-
-    if ($prop_va_header.length || $prop_scala_header.length) {
-      var $prop_va_contents = $prop_va_header.nextUntil('h3');
-      var $prop_scala_contents = $prop_scala_header.nextUntil('h3');
-
-      var $tabPanel = $(
-        '' +
-        '<div role="tabpanel">' +
-        '   <ul class="nav nav-tabs" role="tablist">' +
-        '   </ul>' +
-        '   <div class="tab-content">' +
-        '   </div>' +
-        '</div>'
-      );
-
-      if ($prop_va_header.length) {
-        $tabPanel
-          .find('.nav.nav-tabs')
-          .append(
-            $(
-              '<li role="presentation"><a href="#properties_va" role="tab" data-toggle="tab">VA</a></li>'
-            )
-          );
-        $tabPanel
-          .find('.tab-content')
-          .append($('<div role="tabpanel" class="tab-pane" id="properties_va"></div>'));
-      }
-      if ($prop_scala_header.length) {
-        $tabPanel
-          .find('.nav.nav-tabs')
-          .append(
-            $(
-              '<li role="presentation"><a href="#properties_scala" role="tab" data-toggle="tab">' +
-              $form_text +
-              '</a></li>'
-            )
-          );
-        $tabPanel
-          .find('.tab-content')
-          .append($('<div role="tabpanel" class="tab-pane" id="properties_scala"></div>'));
-      }
-
-      $tabPanel.find('.nav-tabs li:first').addClass('active');
-      $tabPanel.find('.tab-content div:first').addClass('active');
-
-      $tabPanel.find('div#properties_va').append($prop_va_contents);
-      $tabPanel.find('div#properties_scala').append($prop_scala_contents);
-      $propHeader.after($tabPanel);
-    } else {
-      $propHeader.after($propContents);
-    }
-  };
-
-  var _render_constraint = function () {
-    var $constDiv = $('<div></div>');
-    var $constHeader = $('.bs-docs-section.bs-theme-brtc h2:contains("Constraint")');
-    var $constContents = $constHeader.nextUntil('h2');
-    $constDiv.append($constContents);
-    var $const_va_header = $constDiv.find('h3:contains("VA")');
-    var $form_text = $constDiv.find('h3:contains("Scala")').length > 0 ? 'Scala' : 'Python';
-    var $const_scala_header =
-      $constDiv.find('h3:contains("Scala")').length > 0
-        ? $constDiv.find('h3:contains("Scala")')
-        : $constDiv.find('h3:contains("Python")');
-
-    if ($const_va_header.length || $const_scala_header.length) {
-      var $const_va_contents = $const_va_header.nextUntil('h3');
-      var $const_scala_contents = $const_scala_header.nextUntil('h3');
-
-      var $tabPanel = $(
-        '' +
-        '<div role="tabpanel">' +
-        '   <ul class="nav nav-tabs" role="tablist">' +
-        '   </ul>' +
-        '   <div class="tab-content">' +
-        '   </div>' +
-        '</div>'
-      );
-
-      if ($const_va_header.length) {
-        $tabPanel
-          .find('.nav.nav-tabs')
-          .append(
-            $(
-              '<li role="presentation"><a href="#constraint_va" role="tab" data-toggle="tab">VA</a></li>'
-            )
-          );
-        $tabPanel
-          .find('.tab-content')
-          .append($('<div role="tabpanel" class="tab-pane" id="constraint_va"></div>'));
-      }
-      if ($const_scala_header.length) {
-        $tabPanel
-          .find('.nav.nav-tabs')
-          .append(
-            $(
-              '<li role="presentation"><a href="#constraint_scala" role="tab" data-toggle="tab">' +
-              $form_text +
-              '</a></li>'
-            )
-          );
-        $tabPanel
-          .find('.tab-content')
-          .append($('<div role="tabpanel" class="tab-pane" id="constraint_scala"></div>'));
-      }
-
-      $tabPanel.find('.nav-tabs li:first').addClass('active');
-      $tabPanel.find('.tab-content div:first').addClass('active');
-
-      $tabPanel.find('div#constraint_va').append($const_va_contents);
-      $tabPanel.find('div#constraint_scala').append($const_scala_contents);
-      $constHeader.after($tabPanel);
-    } else {
-      $constHeader.after($constContents);
-    }
-  };
-
-  var _render_table = function () {
-    $('.bs-docs-section.bs-theme-brtc table').each(function () {
-      $(this).addClass('table');
-      $(this).wrap('<div style="overflow: auto"></div>');
-    });
-  };
-
-  var _render_example = function () {
-    $('.bs-docs-section.bs-theme-brtc h2:contains("Example")').each(function (index) {
-      var $examDiv = $('<div></div>');
-      var $examHeader = $(this);
-      var $examContents = $examHeader.nextUntil('h2');
-      $examDiv.append($examContents);
-      var $exam_va_header = $examDiv.find('h3:contains("VA")');
-      var $form_text = $examDiv.find('h3:contains("Scala")').length > 0 ? 'Scala' : 'Python';
-      var $exam_scala_header =
-        $examDiv.find('h3:contains("Scala")').length > 0
-          ? $examDiv.find('h3:contains("Scala")')
-          : $examDiv.find('h3:contains("Python")');
-
-      var exam_id = 'example_' + index;
-
-      if ($exam_va_header.length || $exam_scala_header.length) {
-        var $inTableHeader = $examDiv.find('h5:contains("In")');
-        var $outTableHeader = $examDiv.find('h5:contains("Out")');
-        var $tableStart = $inTableHeader.length ? $inTableHeader : $outTableHeader;
-        var $exam_va_contents = $exam_scala_header.length
-          ? $exam_va_header.nextUntil('h3')
-          : $exam_va_header.nextUntil($tableStart);
-        var $exam_scala_contents = $exam_scala_header.nextUntil($tableStart);
-        var $tableArea = $tableStart.prev().nextAll();
-
-        var $examTab = $(
-          '' +
-          '<div role="tabpanel">' +
-          '   <ul class="nav nav-tabs" role="tablist">' +
-          '   </ul>' +
-          '   <div class="tab-content">' +
-          '   </div>' +
-          '</div>'
-        );
-
-        if ($exam_va_header.length) {
-          $examTab
-            .find('.nav.nav-tabs')
-            .append(
-              $(
-                '<li role="presentation"><a href="#' +
-                exam_id +
-                '_va" role="tab" data-toggle="tab">VA</a></li>'
-              )
-            );
-          $examTab
-            .find('.tab-content')
-            .append($('<div role="tabpanel" class="tab-pane" id="' + exam_id + '_va"></div>'));
+    var _render_docs_section = function () {
+        var status = '<%= status %>';
+        if (status !== 'ERRNOTFOUND') {
+            $('.bs-docs-function-note').css({display: 'block'});
         }
-        if ($exam_scala_header.length) {
-          $examTab
-            .find('.nav.nav-tabs')
-            .append(
-              $(
-                '<li role="presentation"><a href="#' +
-                exam_id +
-                '_scala" role="tab" data-toggle="tab">' +
-                $form_text +
-                '</a></li>'
-              )
-            );
-          $examTab
-            .find('.tab-content')
-            .append($('<div role="tabpanel" class="tab-pane" id="' + exam_id + '_scala"></div>'));
-        }
+    }
 
-        $examTab.find('.nav-tabs li:first').addClass('active');
-        $examTab.find('.tab-content div:first').addClass('active');
-
-        $examTab.find('div#' + exam_id + '_va').append($exam_va_contents);
-        $examTab.find('div#' + exam_id + '_scala').append($exam_scala_contents);
-        $examHeader.after($examTab);
-        $examTab.after($tableArea);
-      } else {
-        $examHeader.after($examContents);
-      }
-    });
-  };
-
-  var _render_sidebar = function () {
-    const type = '<%= mtype %>';
-    const _this = this;
-    const option = {
-      url: '/api/va/v2/studio/palette/' + type,
-      type: 'GET',
-      contentType: 'application/json; charset=utf-8',
-      blocking: false
-    };
-    $.ajax(option).done(function (data) {
-      let modelType = 'DataFlow';
-
-      const addonfunctionOpt = {
-        url: '/api/va/v3/ws/functions',
-        type: 'GET',
-        blocking: false
-      };
-      $.ajax(addonfunctionOpt).done(function (functions) {
-        var func2spec = {};
-        functions.forEach(function (spec) {
-          if(spec.label && spec.label[locale]) spec.label = spec.label[locale];
-          func2spec[spec.func] = spec;
+    var _render_external_link = function () {
+        $('.bs-docs-section.bs-theme-brtc a').each(function () {
+            if ($(this).attr('href') && ($(this).attr('href').indexOf('http://') == 0 || $(this).attr('href').indexOf('https://') == 0)) {
+                $(this).attr('target', '_blank');
+            }
         });
-        $('.nav.bs-sidenav > li').each(function (index, el) {
-          $(el)
-            .find('ul > li')
-            .each(function (index, element) {
-              var context = 'scala';
-              var func = $(element).attr('func');
-              var operator, label, modelType = 'DataFlow';
+    };
 
-              if (modelType) {
-                // var funcSpec = FunctionSpecManager.getFunctionSpecByFunc(func);
-                var funcSpec = Brightics.VA.Implementation[modelType].Functions[func];
-                if (funcSpec && funcSpec.defaultFnUnit) {
-                  context = funcSpec.context || funcSpec.defaultFnUnit.context || context;
-                  if (funcSpec.category === 'control' || funcSpec.category === 'process') {
-                    context = 'common';
-                  }
-                  operator = funcSpec.defaultFnUnit.name;
-                  if (
-                    funcSpec.defaultFnUnit.name === 'Subflow' ||
-                    funcSpec.defaultFnUnit.name === 'PyFunction' ||
-                    funcSpec.defaultFnUnit.name === 'Python' ||
-                    funcSpec.defaultFnUnit.name === 'SQLExecutor'
-                  ) {
-                    operator = funcSpec.defaultFnUnit.func;
-                  } else if (funcSpec.defaultFnUnit.func === 'addFunctionColumnsPython') {
-                    operator = 'brightics.function.extraction$add_function_columns';
-                  }
-                  label = funcSpec.defaultFnUnit.display.label;
-                } else {
-                  funcSpec = func2spec[func];
-                  if (!funcSpec) return;
-                  if (funcSpec.context) context = funcSpec.context;
-                  operator = funcSpec.name;
-                  label = funcSpec.label;
+    // var _render_format = function () {
+    //     // TODO: python tab 추가
+    //     var $formatDiv = $('<div></div>');
+    //     var $formatHeader = $('.bs-docs-section.bs-theme-brtc h2:contains("Format")')
+    //     var $formatContents = $formatHeader.nextUntil('h2');
+    //     $formatDiv.append($formatContents);
+    //     var $form_text = $formatDiv.find('h3:contains("Scala")').length > 0 ? 'Scala' : 'Python'
+    //     var $form_scala_header = $formatDiv.find('h3:contains("Scala")').length > 0 ?
+    //            $formatDiv.find('h3:contains("Scala")') : $formatDiv.find('h3:contains("Python")');
+    //     var $form_scala_contents = $form_scala_header.nextUntil('h3');
+    //     if (!$form_scala_contents.length) return;
+    //
+    //     var $tabPanel = $('' +
+    //             '<div role="tabpanel">' +
+    //             '   <ul class="nav nav-tabs" role="tablist">' +
+    //             '       <li role="presentation" class="active"><a href="#format_scala" role="tab" data-toggle="tab">'+ $form_text +'</a></li>' +
+    //             '   </ul>' +
+    //             '   <div class="tab-content">' +
+    //             '       <div role="tabpanel" class="tab-pane active" id="format_scala"></div>' +
+    //             '   </div>' +
+    //             '</div>');
+    //
+    //     $tabPanel.find('div#format_scala').append($form_scala_contents);
+    //     $formatHeader.after($tabPanel);
+    // };
+
+    var _render_description = function () {
+        var $descDiv = $('<div></div>');
+        var $descHeader = $('.bs-docs-section.bs-theme-brtc h2:contains("Description")');
+        var $descContents = $descHeader.nextUntil('h2');
+        $descDiv.append($descContents);
+        var $desc_va_header = $descDiv.find('h3:contains("VA")');
+        var $form_text = $descDiv.find('h3:contains("Scala")').length > 0 ? 'Scala' : 'Python'
+        var $desc_scala_header = $descDiv.find('h3:contains("Scala")').length > 0 ?
+            $descDiv.find('h3:contains("Scala")') : $descDiv.find('h3:contains("Python")');
+
+        if ($desc_va_header.length || $desc_scala_header.length) {
+            var $desc_va_contents = $desc_va_header.nextUntil('h3');
+            var $desc_scala_contents = $desc_scala_header.nextUntil('h3');
+
+            var $tabPanel = $('' +
+                '<div role="tabpanel">' +
+                '   <ul class="nav nav-tabs" role="tablist">' +
+                '   </ul>' +
+                '   <div class="tab-content">' +
+                '   </div>' +
+                '</div>');
+
+            if ($desc_va_header.length) {
+                $tabPanel.find('.nav.nav-tabs').append($('<li role="presentation"><a href="#description_va" role="tab" data-toggle="tab">VA</a></li>'));
+                $tabPanel.find('.tab-content').append($('<div role="tabpanel" class="tab-pane active" id="description_va"></div>'));
+            }
+            if ($desc_scala_header.length) {
+                $tabPanel.find('.nav.nav-tabs').append($('<li role="presentation"><a href="#description_scala" role="tab" data-toggle="tab">' + $form_text + '</a></li>'));
+                $tabPanel.find('.tab-content').append($('<div role="tabpanel" class="tab-pane" id="description_scala"></div>'));
+            }
+
+            $tabPanel.find('.nav-tabs li:first').addClass('active');
+            $tabPanel.find('.tab-content div:first').addClass('active');
+
+            $tabPanel.find('div#description_va').append($desc_va_contents);
+            $tabPanel.find('div#description_scala').append($desc_scala_contents);
+            $descHeader.after($tabPanel);
+        } else {
+            $descHeader.after($descContents);
+        }
+
+    }
+
+    var _render_properties = function () {
+        var $propDiv = $('<div></div>');
+        var $propHeader = $('.bs-docs-section.bs-theme-brtc h2:contains("Properties")');
+        var $propContents = $propHeader.nextUntil('h2');
+        $propDiv.append($propContents);
+        var $prop_va_header = $propDiv.find('h3:contains("VA")');
+        // var $prop_scala_header = $propDiv.find('h3:contains("Scala")');
+
+        var $form_text = $propDiv.find('h3:contains("Scala")').length > 0 ? 'Scala' : 'Python'
+        var $prop_scala_header = $propDiv.find('h3:contains("Scala")').length > 0 ?
+            $propDiv.find('h3:contains("Scala")') : $propDiv.find('h3:contains("Python")');
+
+        if ($prop_va_header.length || $prop_scala_header.length) {
+            var $prop_va_contents = $prop_va_header.nextUntil('h3');
+            var $prop_scala_contents = $prop_scala_header.nextUntil('h3');
+
+            var $tabPanel = $('' +
+                '<div role="tabpanel">' +
+                '   <ul class="nav nav-tabs" role="tablist">' +
+                '   </ul>' +
+                '   <div class="tab-content">' +
+                '   </div>' +
+                '</div>');
+
+            if ($prop_va_header.length) {
+                $tabPanel.find('.nav.nav-tabs').append($('<li role="presentation"><a href="#properties_va" role="tab" data-toggle="tab">VA</a></li>'));
+                $tabPanel.find('.tab-content').append($('<div role="tabpanel" class="tab-pane" id="properties_va"></div>'));
+            }
+            if ($prop_scala_header.length) {
+                $tabPanel.find('.nav.nav-tabs').append($('<li role="presentation"><a href="#properties_scala" role="tab" data-toggle="tab">' + $form_text + '</a></li>'));
+                $tabPanel.find('.tab-content').append($('<div role="tabpanel" class="tab-pane" id="properties_scala"></div>'));
+            }
+
+            $tabPanel.find('.nav-tabs li:first').addClass('active');
+            $tabPanel.find('.tab-content div:first').addClass('active');
+
+            $tabPanel.find('div#properties_va').append($prop_va_contents);
+            $tabPanel.find('div#properties_scala').append($prop_scala_contents);
+            $propHeader.after($tabPanel);
+        } else {
+            $propHeader.after($propContents);
+        }
+    };
+
+    var _render_constraint = function () {
+        var $constDiv = $('<div></div>');
+        var $constHeader = $('.bs-docs-section.bs-theme-brtc h2:contains("Constraint")');
+        var $constContents = $constHeader.nextUntil('h2');
+        $constDiv.append($constContents);
+        var $const_va_header = $constDiv.find('h3:contains("VA")');
+        var $form_text = $constDiv.find('h3:contains("Scala")').length > 0 ? 'Scala' : 'Python'
+        var $const_scala_header = $constDiv.find('h3:contains("Scala")').length > 0 ?
+            $constDiv.find('h3:contains("Scala")') : $constDiv.find('h3:contains("Python")');
+
+        if ($const_va_header.length || $const_scala_header.length) {
+            var $const_va_contents = $const_va_header.nextUntil('h3');
+            var $const_scala_contents = $const_scala_header.nextUntil('h3');
+
+            var $tabPanel = $('' +
+                '<div role="tabpanel">' +
+                '   <ul class="nav nav-tabs" role="tablist">' +
+                '   </ul>' +
+                '   <div class="tab-content">' +
+                '   </div>' +
+                '</div>');
+
+            if ($const_va_header.length) {
+                $tabPanel.find('.nav.nav-tabs').append($('<li role="presentation"><a href="#constraint_va" role="tab" data-toggle="tab">VA</a></li>'));
+                $tabPanel.find('.tab-content').append($('<div role="tabpanel" class="tab-pane" id="constraint_va"></div>'));
+            }
+            if ($const_scala_header.length) {
+                $tabPanel.find('.nav.nav-tabs').append($('<li role="presentation"><a href="#constraint_scala" role="tab" data-toggle="tab">' + $form_text + '</a></li>'));
+                $tabPanel.find('.tab-content').append($('<div role="tabpanel" class="tab-pane" id="constraint_scala"></div>'));
+            }
+
+            $tabPanel.find('.nav-tabs li:first').addClass('active');
+            $tabPanel.find('.tab-content div:first').addClass('active');
+
+            $tabPanel.find('div#constraint_va').append($const_va_contents);
+            $tabPanel.find('div#constraint_scala').append($const_scala_contents);
+            $constHeader.after($tabPanel);
+        } else {
+            $constHeader.after($constContents);
+        }
+    }
+
+    var _render_table = function () {
+        $('.bs-docs-section.bs-theme-brtc table').each(function () {
+            $(this).addClass('table');
+            $(this).wrap('<div style="overflow: auto"></div>');
+        });
+    };
+
+    var _render_example = function () {
+
+        $('.bs-docs-section.bs-theme-brtc h2:contains("Example")').each(function (index) {
+            var $examDiv = $('<div></div>');
+            var $examHeader = $(this);
+            var $examContents = $examHeader.nextUntil('h2');
+            $examDiv.append($examContents);
+            var $exam_va_header = $examDiv.find('h3:contains("VA")');
+            var $form_text = $examDiv.find('h3:contains("Scala")').length > 0 ? 'Scala' : 'Python'
+            var $exam_scala_header = $examDiv.find('h3:contains("Scala")').length > 0 ?
+                $examDiv.find('h3:contains("Scala")') : $examDiv.find('h3:contains("Python")');
+
+            var exam_id = 'example_' + index;
+
+            if ($exam_va_header.length || $exam_scala_header.length) {
+                var $inTableHeader = $examDiv.find('h5:contains("In")');
+                var $outTableHeader = $examDiv.find('h5:contains("Out")');
+                var $tableStart = $inTableHeader.length ? $inTableHeader : $outTableHeader;
+                var $exam_va_contents = $exam_scala_header.length ? $exam_va_header.nextUntil('h3') : $exam_va_header.nextUntil($tableStart);
+                var $exam_scala_contents = $exam_scala_header.nextUntil($tableStart);
+                var $tableArea = $tableStart.prev().nextAll();
+
+                var $examTab = $('' +
+                    '<div role="tabpanel">' +
+                    '   <ul class="nav nav-tabs" role="tablist">' +
+                    '   </ul>' +
+                    '   <div class="tab-content">' +
+                    '   </div>' +
+                    '</div>');
+
+                if ($exam_va_header.length) {
+                    $examTab.find('.nav.nav-tabs').append($('<li role="presentation"><a href="#' + exam_id + '_va" role="tab" data-toggle="tab">VA</a></li>'));
+                    $examTab.find('.tab-content').append($('<div role="tabpanel" class="tab-pane" id="' + exam_id + '_va"></div>'));
                 }
-              } else {
-                operator = func;
-                label = func;
-              }
+                if ($exam_scala_header.length) {
+                    $examTab.find('.nav.nav-tabs').append($('<li role="presentation"><a href="#' + exam_id + '_scala" role="tab" data-toggle="tab">' + $form_text + '</a></li>'));
+                    $examTab.find('.tab-content').append($('<div role="tabpanel" class="tab-pane" id="' + exam_id + '_scala"></div>'));
+                }
 
-              var qs = [
-                ['type', type],
-                ['context', context],
-                ['func', func]
-              ]
-                .map(function (x) {
-                  return x.join('=');
+                $examTab.find('.nav-tabs li:first').addClass('active');
+                $examTab.find('.tab-content div:first').addClass('active');
+
+                $examTab.find('div#' + exam_id + '_va').append($exam_va_contents);
+                $examTab.find('div#' + exam_id + '_scala').append($exam_scala_contents);
+                $examHeader.after($examTab);
+                $examTab.after($tableArea);
+            } else {
+                $examHeader.after($examContents);
+            }
+        });
+
+    };
+
+    var _render_sidebar = function () {
+        var type = '<%= mtype %>'
+        var _this = this;
+        var option = {
+            url: 'api/va/v2/studio/palette/' + type,
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',
+            blocking: false
+        };
+        $.ajax(option).done(function (data) {
+            var modelType;
+            if (type === 'data') modelType = 'DataFlow';
+            else if (type === 'deeplearning') modelType = 'DeepLearning';
+            else if (type === 'script') modelType = 'Script';
+            else if (type === 'control') modelType = 'ControlFlow';
+
+            var functions = Brightics.VA.Implementation[modelType].Functions;
+
+            if (modelType !== 'Script') {
+                for (var f in functions) {
+                    if (!functions[f].defaultFnUnit) continue;
+
+                    var func = functions[f].defaultFnUnit.func;
+                    var category = functions[f].category;
+
+                    if (category === 'bigdata') continue;
+
+                    var exist = false;
+
+                    for (var c in data) {
+                        if(!data[c].visible) continue;
+                        if (data[c].key === category) {
+                            for (var k in data[c].functions) {
+                                var fnUnit = data[c].functions[k];
+                                if (fnUnit.func === func) {
+                                    exist = true;
+                                    break;
+                                }
+                            }
+                            if (!exist) {
+                                $('\.' + category + '> .nav').append('<li func="' + func + '" helper=""></li>')
+                            }
+                        }
+                    }
+                }
+            }
+            var addonfunctionOpt = {
+                url: 'api/va/v3/ws/functions',
+                type: 'GET',
+                blocking: false
+            };
+            $.ajax(addonfunctionOpt).done(function (functions) {
+                var func2spec = {}
+                functions.forEach(function (spec) {
+                    func2spec[spec.func] = spec
                 })
-                .join('&');
-              if (language && (context === 'python'|| context==='r')) {
-                qs += '&lang=' + language;
-              }
-              $(element).attr('id', operator);
-              $(element).addClass(context);
-              $(element).append(
-                '<a func-anchor="true" href="/api/va/v2/help/function/' +
-                operator +
-                '?' +
-                qs +
-                '">' +
-                label +
-                '</a>'
-              );
+                $('.nav.bs-sidenav > li').each(function (index, el) {
+                    $(el).find('ul > li').each(function (index, element) {
+                        var context = 'scala';
+                        var func = $(element).attr('func');
+                        var operator, label, modelType;
+                        if (type === 'data') modelType = 'DataFlow';
+                        else if (type === 'deeplearning') modelType = 'DeepLearning';
 
-              var helperNm = $(element).attr('helper');
-              if (helperNm) {
-                var $helperPage = $('' + '<ul class="nav">' + '   <li></li>' + '</ul>');
+                        if (modelType) {
+                            var funcSpec = Brightics.VA.Implementation[modelType].Functions[func];
+                            if (funcSpec) {
+                                context = funcSpec.context || funcSpec.defaultFnUnit.context || context;
+                                if (funcSpec.category === 'control' || funcSpec.category === 'process') {
+                                    context = 'common';
+                                }
+                                try {
+                                    operator = funcSpec.propertiesPanel.prototype.getPrimaryOperation();
+                                } catch (err) {
+                                    operator = funcSpec.defaultFnUnit.name;
+                                }
+                                label = funcSpec.defaultFnUnit.display.label;
+                            } else {
+                                funcSpec = func2spec[func];
+                                if (!funcSpec) return;
+                                if (funcSpec.context) context = funcSpec.context;
+                                operator = funcSpec.name;
+                                label = funcSpec.label;
+                            }
+                        } else {
+                            operator = func;
+                            label = func;
+                        }
 
-                $(element).append($helperPage);
-                var helperSpec = Brightics.VA.Implementation[modelType].Helpers[helperNm];
-                var helperLabel = helperSpec.label || helperNm;
-                var helperOperator = helperSpec.operation || helperNm;
-                var helperFunc = helperSpec.func || helperNm;
-                var helperContext = helperSpec.context || 'scala';
-                $helperPage.find('li').attr('id', helperOperator);
-                var url =
-                  '/api/va/v2/help/function/' +
-                  helperOperator +
-                  '?type=' +
-                  type +
-                  '&context=' +
-                  helperContext +
-                  '&func=' +
-                  helperFunc;
-                if (language && (helperContext === 'python'|| helperContext==='r')) {
-                  url += '&lang=' + language;
+                        var qs = [
+                            ['type', type],
+                            ['context', context],
+                            ['func', func]
+                        ].map(function (x) {
+                            return x.join('=');
+                        }).join('&');
+                        var language = $.cookie('language');
+                        if (language !== 'en') {
+                            qs += '&lang=' + language
+                        }
+                        $(element).attr('id', operator);
+                        $(element).addClass(context);
+                        $(element).append('<a func-anchor="true" href="/api/va/v2/help/function/' + operator + '?' + qs + '">' + label + '</a>');
+
+                        var helperNm = $(element).attr('helper');
+                        if (helperNm) {
+                            var $helperPage = $('' +
+                                '<ul class="nav">' +
+                                '   <li></li>' +
+                                '</ul>');
+
+                            $(element).append($helperPage)
+                            var helperSpec = Brightics.VA.Implementation[modelType].Helpers[helperNm];
+                            var helperLabel = helperSpec.label || helperNm;
+                            var helperOperator = helperSpec.operation || helperNm;
+                            var helperFunc = helperSpec.func || helperNm;
+                            var helperContext = helperSpec.context || 'scala';
+                            $helperPage.find('li').attr('id', helperOperator);
+                            var url = '/api/va/v2/help/function/' + helperOperator + '?type=' + type + '&context=' + helperContext + '&func=' + helperFunc;
+                            if (language !== 'en') {
+                                url += '&lang=' + language
+                            }
+                            $helperPage.find('li').append('<a func-anchor="true" href="' + url + '">' + helperLabel + '</a>');
+                        }
+                    });
+                })
+                var udfOpt = {
+                    url: 'api/va/v3/ws/udfs',
+                    type: 'GET',
+                    blocking: false,
+                    complete: function () {
+                        _select_sidebar();
+                    }
+                };
+                $.ajax(udfOpt).done(function (functions) {
+                    var func2udf = {};
+                    functions.forEach(function (element) {
+                        var func = element.id;
+                        try {
+                            func2udf[func] = JSON.parse(element.contents);
+                        } catch (e) {
+                            func2udf[func] = {};
+                        }
+                    })
+                    $('.nav.bs-sidenav > li').each(function (index, el) {
+                        $(el).find('ul > li').each(function (index, element) {
+                            var context = 'scala';
+                            var func = $(element).attr('func');
+                            var operator, label, modelType;
+                            if (type === 'data') modelType = 'DataFlow';
+                            else if (type === 'deeplearning') modelType = 'DeepLearning';
+
+                            funcSpec = func2udf[func];
+                            if(!funcSpec) return;
+                            operator = func
+                            context = funcSpec.context
+                            label = funcSpec.label;
+
+                            var qs = [
+                                ['type', type],
+                                ['context', context],
+                                ['func', func]
+                            ].map(function (x) {
+                                return x.join('=');
+                            }).join('&');
+
+                            $(element).attr('id', 'udf_' + operator);
+                            $(element).addClass(context);
+                            var language = $.cookie('language');
+                            if (language !== 'en') {
+                                qs += '&lang=' + language
+                            }
+                            $(element).append('<div class="docs-icon"></div><a func-anchor="true" href="/api/va/v2/help/function/udf_' + operator + '?' + qs + '">' + label + '</a>');
+
+                            var helperNm = $(element).attr('helper');
+                            if (helperNm) {
+                                var $helperPage = $('' +
+                                    '<ul class="nav">' +
+                                    '   <li></li>' +
+                                    '</ul>');
+
+                                $(element).append($helperPage)
+                                var helperSpec = Brightics.VA.Implementation[modelType].Helpers[helperNm];
+                                var helperLabel = helperSpec.label || helperNm;
+                                var helperOperator = helperSpec.operation || helperNm;
+                                var helperFunc = helperSpec.func || helperNm;
+                                var helperContext = helperSpec.context || 'scala';
+                                var url = '/api/va/v2/help/function/' + helperOperator + '?type=' + type + '&context=' + helperContext + '&func=' + helperFunc;
+                                if (language !== 'en') {
+                                    url += '&lang=' + language
+                                }
+                                $helperPage.find('li').attr('id', helperOperator);
+                                $helperPage.find('li').append('<a func-anchor="true" href="' + url + '">' + helperLabel + '</a>');
+                            }
+                        });
+                    });
+                })
+            });
+        })
+    }
+
+    var _select_sidebar = function () {
+        var operator = '<%= operator %>';
+        var type = '<%= mtype %>';
+        if (operator) {
+            var label;
+            if (type === 'scala') {
+                label = operator;
+                $('.bs-docs-function-search').hide();
+            } else {
+                var selector = (function (str) {
+                    var value = '';
+                    for (var i = 0; i < str.length; i++) {
+                        if (str[i] === '.' || str[i] === ',' || str[i] === '$')
+                            value += '\\' + str[i];
+                        else
+                            value += str[i];
+                    }
+                    return value;
+                })(operator)
+                $('.nav.bs-sidenav.bs-theme-brtc #' + selector).addClass('active');
+                $('.nav.bs-sidenav.bs-theme-brtc #' + selector).parentsUntil('.nav.bs-sidenav', 'li').addClass('active');
+
+                label = $('.nav.bs-sidenav.bs-theme-brtc #' + selector + ' > a').html();
+            }
+
+            if (label) {
+                var $formatHeader = $('.bs-docs-section.bs-theme-brtc > h2:contains("Format")');
+                if ($formatHeader.length) $formatHeader.replaceWith('<h1>' + label + '</h1>');
+                // else $('.bs-docs-section.bs-theme-brtc > h2:first').before($('<h1>' + label + '</h1>'));
+            }
+        }
+
+        $('.nav.bs-sidenav.bs-theme-brtc > li').click(function () {
+            $('.nav.bs-sidenav.bs-theme-brtc > li').removeClass('active');
+            $(this).addClass('active');
+        });
+    };
+
+    var _render_searchbar = function () {
+        $('.form-control').on('keyup', function (e) {
+            var keyword = $('.form-control').val();
+            $('.nav.bs-sidenav.bs-theme-brtc > li').removeClass('searched');
+            $('.nav.bs-sidenav.bs-theme-brtc > li > ul > li').removeClass('searched');
+            if (keyword.trim() === '') return;
+            $('.nav.bs-sidenav.bs-theme-brtc > li > ul > li').each(function (index, el) {
+                if ($(el).find('a').text().toLowerCase().indexOf(keyword.toLowerCase()) > -1) {
+                    $(el).addClass('searched');
+                    $(el).parent().closest('li').addClass('searched');
                 }
-                $helperPage
-                  .find('li')
-                  .append('<a func-anchor="true" href="' + url + '">' + helperLabel + '</a>');
-              }
             });
         });
-        var udfOpt = {
-          url: '/api/va/v3/ws/udfs',
-          type: 'GET',
-          blocking: false,
-          complete: function () {
-            _select_sidebar();
-          }
-        };
-        $.ajax(udfOpt).done(function (functions) {
-          var func2udf = {};
-          functions.forEach(function (element) {
-            var func = element.id;
-            try {
-              func2udf[func] = JSON.parse(element.contents);
-            } catch (e) {
-              func2udf[func] = {};
+    };
+
+    var _render_language = function () {
+        var language = $.cookie('language');
+        var source = [{text: "Global/English", value: 'en'}, {text: "Korean/한국어", value: "kr"}];
+        var selectedIndex = 0;
+        for (sIdx in source) {
+            if (source[sIdx].value === language) {
+                selectedIndex = sIdx
             }
-          });
-          $('.nav.bs-sidenav > li').each(function (index, el) {
-            $(el)
-              .find('ul > li')
-              .each(function (index, element) {
-                var context = 'scala';
-                var func = $(element).attr('func');
-                var operator, label, modelType;
-                if (type === 'data') modelType = 'DataFlow';
-                else if (type === 'deeplearning') modelType = 'DeepLearning';
-
-                funcSpec = func2udf[func];
-                if (!funcSpec) return;
-                operator = func;
-                context = funcSpec.context;
-                label = funcSpec.label;
-
-                var qs = [
-                  ['type', type],
-                  ['context', context],
-                  ['func', func]
-                ]
-                  .map(function (x) {
-                    return x.join('=');
-                  })
-                  .join('&');
-
-                $(element).attr('id', 'udf_' + operator);
-                $(element).addClass(context);
-                if (language && (context === 'python' || context === 'python')) {
-                  qs += '&lang=' + language;
-                }
-                $(element).append(
-                  '<div class="docs-icon"></div><a func-anchor="true" href="/api/va/v2/help/function/udf_' +
-                  operator +
-                  '?' +
-                  qs +
-                  '">' +
-                  label +
-                  '</a>'
-                );
-
-                var helperNm = $(element).attr('helper');
-                if (helperNm) {
-                  var $helperPage = $('' + '<ul class="nav">' + '   <li></li>' + '</ul>');
-
-                  $(element).append($helperPage);
-                  var helperSpec = Brightics.VA.Implementation[modelType].Helpers[helperNm];
-                  var helperLabel = helperSpec.label || helperNm;
-                  var helperOperator = helperSpec.operation || helperNm;
-                  var helperFunc = helperSpec.func || helperNm;
-                  var helperContext = helperSpec.context || 'scala';
-                  var url =
-                    '/api/va/v2/help/function/' +
-                    helperOperator +
-                    '?type=' +
-                    type +
-                    '&context=' +
-                    helperContext +
-                    '&func=' +
-                    helperFunc;
-                  if (language && (helperContext === 'python'||helperContext === 'r')) {
-                    url += '&lang=' + language;
-                  }
-                  $helperPage.find('li').attr('id', helperOperator);
-                  $helperPage
-                    .find('li')
-                    .append(
-                      '<a func-anchor="true" href="' + url + '">' + helperLabel + '</a>'
-                    );
-                }
-              });
-          });
+        }
+        $('.language').jqxDropDownList({
+            source: source,
+            selectedIndex: selectedIndex,
+            checkboxes: false,
+            width: 120,
+            height: 25,
+            dropDownHeight: 52,
+            openDelay: 0,
+            closeDelay: 0,
+            displayMember: 'text',
+            valueMember: 'value'
         });
-      });
-    });
-  };
 
-  var _select_sidebar = function () {
-    var operator = '<%= operator %>';
-    var type = '<%= mtype %>';
-    if (operator) {
-      var label;
-      if (type === 'scala') {
-        label = operator;
-        -$('.bs-docs-function-search').hide();
-      } else {
-        var selector = (function (str) {
-          var value = '';
-          for (var i = 0; i < str.length; i++) {
-            if (str[i] === '.' || str[i] === ',' || str[i] === '$') value += '\\' + str[i];
-            else value += str[i];
-          }
-          return value;
-        })(operator);
-
-        if (selector === 'AddFunctionColumn') {
-          selector = 'numericalVariableDerivation';
-        } else if (selector === 'Load') {
-          selector = 'load';
-        } else if (selector === 'DBReader') {
-          selector = 'dbReader';
-        } else if (selector === 'OptPreprocessing') {
-          selector = 'optPreprocessing';
-        } else if (selector === 'LocalOptimization') {
-          selector = 'localOptimization';
-        } else if (selector === 'GlobalOptimization') {
-          selector = 'globalOptimization';
-        } else if (selector === 'ParameterStudies') {
-          selector = 'parameterStudies';
-        } else if (selector === 'DesignOfExperiments') {
-          selector = 'designOfExperiments';
-        } else if (selector === 'Sampling') {
-          selector = 'sampling';
-        } else if (selector === 'SQLExecutor') {
-          selector = 'queryExecutor';
+        function getUrlParams() {
+            var params = {};
+            window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (str, key, value) {
+                params[key] = value;
+            });
+            return params;
         }
 
-        $('.nav.bs-sidenav.bs-theme-brtc #' + selector).addClass('active');
-        $('.nav.bs-sidenav.bs-theme-brtc #' + selector)
-          .parentsUntil('.nav.bs-sidenav', 'li')
-          .addClass('active');
-
-        label = $('.nav.bs-sidenav.bs-theme-brtc #' + selector + ' > a').html();
-      }
-
-      if (label) {
-        var $formatHeader = $('.bs-docs-section.bs-theme-brtc > h2:contains("Format")');
-        if ($formatHeader.length) $formatHeader.replaceWith('<h1>' + label + '</h1>');
-        // else $('.bs-docs-section.bs-theme-brtc > h2:first').before($('<h1>' + label + '</h1>'));
-      }
-    }
-
-    $('.nav.bs-sidenav.bs-theme-brtc > li').click(function () {
-      $('.nav.bs-sidenav.bs-theme-brtc > li').removeClass('active');
-      $(this).addClass('active');
-    });
-  };
-
-  var _render_searchbar = function () {
-    $('.form-control').on('keyup', function (e) {
-      var keyword = $('.form-control').val();
-      $('.nav.bs-sidenav.bs-theme-brtc > li').removeClass('searched');
-      $('.nav.bs-sidenav.bs-theme-brtc > li > ul > li').removeClass('searched');
-      if (keyword.trim() === '') return;
-      $('.nav.bs-sidenav.bs-theme-brtc > li > ul > li').each(function (index, el) {
-        if ($(el).find('a').text().toLowerCase().indexOf(keyword.toLowerCase()) > -1) {
-          $(el).addClass('searched');
-          $(el).parent().closest('li').addClass('searched');
+        function queryStr(originParam){
+            return Object.entries(originParam).map(function (param) {
+                return param[0] + '=' + param[1]
+            }).join('&')
         }
-      });
-    });
-  };
 
-  var _render_language = function () {
-    var source = [
-      {
-        text: 'Global/English',
-        value: 'en'
-      },
-      {
-        text: 'Korean/한국어',
-        value: 'kr'
-      }
-    ];
-    var selectedIndex = 0;
-    for (sIdx in source) {
-      if (source[sIdx].value === language) {
-        selectedIndex = sIdx;
-      }
-    }
-    $('.language').jqxDropDownList({
-      source: source,
-      selectedIndex: selectedIndex,
-      checkboxes: false,
-      width: 120,
-      height: 25,
-      dropDownHeight: 52,
-      openDelay: 0,
-      closeDelay: 0,
-      displayMember: 'text',
-      valueMember: 'value'
-    });
+        var originParam = getUrlParams();
 
-    function getUrlParams() {
-      var params = {};
-      window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (str, key, value) {
-        params[key] = value;
-      });
-      return params;
-    }
+        $('.language').on('select', function (event) {
+            var args = event.args;
+            var item = $('.language').jqxDropDownList('getItem', args.index);
+            if (item != null) {
+                if (item.value === 'kr') {
+                    originParam.lang = item.value;
+                } else {
+                    delete originParam.lang;
+                }
+                $.cookie('language', item.value)
+                window.location.href = window.location.pathname + '?' +  queryStr(originParam);
+            }
+        });
 
-    function queryStr(originParam) {
-      return Object.entries(originParam)
-        .map(function (param) {
-          return param[0] + '=' + param[1];
-        })
-        .join('&');
-    }
-
-    var originParam = getUrlParams();
-
-    $('.language').on('select', function (event) {
-      var args = event.args;
-      var item = $('.language').jqxDropDownList('getItem', args.index);
-      if (item != null) {
-        if (item.value === 'kr') {
-          originParam.lang = item.value;
+        //초기 Cookie 값으로 redirect 하기 위한 로직
+        if (language === 'kr') {
+            if (!originParam.lang) {
+                originParam.lang = language;
+                window.location.href = window.location.pathname + '?' + queryStr(originParam);
+            }
         } else {
-          delete originParam.lang;
+            if (originParam.lang) {
+                delete originParam.lang;
+                window.location.href = window.location.pathname + '?' + queryStr(originParam);
+            }
         }
-        window.location.href = window.location.pathname + '?' + queryStr(originParam);
-      }
-    });
-
-    //초기 Cookie 값으로 redirect 하기 위한 로직
-    if (originParam.context === 'python'|| originParam.context === 'r') {
-      if (language === 'kr') {
-        if (!originParam.lang) {
-          originParam.lang = language;
-          window.location.href = window.location.pathname + '?' + queryStr(originParam);
-        }
-      } else {
-        if (originParam.lang) {
-          delete originParam.lang;
-          window.location.href = window.location.pathname + '?' + queryStr(originParam);
-        }
-      }
-    } else {
-      $('.language').hide();
     }
-  };
 
-  window.onload = function () {
-    _render_language();
-    _render_docs_section();
-    _render_external_link();
-    _render_table();
-    // _render_format();
-    _render_description();
-    _render_properties();
-    _render_constraint();
-    _render_example();
-    _render_sidebar();
-    _render_searchbar();
-    $(window).click(function (e) {
-      var href = e.target.getAttribute('href');
-      if (href && e.target.hasAttribute('func-anchor')) {
-        e.preventDefault();
-        location.replace(href);
-      }
-    });
-  };
+    window.onload = function () {
+        _render_language();
+        _render_docs_section();
+        _render_external_link();
+        _render_table();
+        // _render_format();
+        _render_description();
+        _render_properties();
+        _render_constraint();
+        _render_example();
+        _render_sidebar();
+        _render_searchbar();
+        $(window).click(function (e) {
+            var href = e.target.getAttribute('href');
+            if (href && e.target.hasAttribute('func-anchor')) {
+                e.preventDefault();
+                location.replace(href);
+            }
+        })
+    };
 </script>
 </body>
 </html>

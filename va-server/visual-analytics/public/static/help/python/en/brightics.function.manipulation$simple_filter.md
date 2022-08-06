@@ -18,14 +18,13 @@ Reference
 1. **table**: (Table) Filtered output table according to a specified rule. 
 
 #### PARAMETER
-1. **Condition**<b style="color:red">*</b> : Choose main operators, columns, operators and operands.
+1. **Filter**<b style="color:red">*</b>:
+   - **Condition**<b style="color:red">*</b> : Choose main operators, columns, operators and operands.
 
 
 ### Python
-
-#### USAGE
-```
-simple_filter(table =, main_operator =, input_cols =, operators =, operands = )
+```python
+simple_filter(table, main_operator, input_cols, operators, operands)
 ```
 
 #### INPUT
@@ -42,13 +41,14 @@ simple_filter(table =, main_operator =, input_cols =, operators =, operands = )
     - Type: list[str]
 3. **operators**<b style="color:red">*</b>: Operators for the filter formula.
     - Type: list[str]
-    - Default / Range: == (== | != | In | Not In | Starts With | Ends With | Contain | Not Contain)
+    - Default / Range: (== | != | In | Not In | Starts With | Ends With | Contain | Not Contain)
 4. **operands**<b style="color:red">*</b>: Operands for the filter formula. 
     - Type: list[str]
 
 
 ## Example
 ### VA
+**<a href="https://www.brightics.ai/docs/ai/v3.6/tutorials/07_data_refine?type=insight" target="_blank">[Related Tutorial]</a>**
 
 **<a href="/static/help/python/sample_model/filter.json" download>[Sample Model]</a>**
 
@@ -57,7 +57,10 @@ simple_filter(table =, main_operator =, input_cols =, operators =, operands = )
 In the tutorial workflow, sample_iris data is used as input of Filter function. The ouput of this function is a filtered output table according to a given rule. The parameter settings used in the function are shown below.
 
 ++Parameters++
-1. **Condition**<b style="color:red">*</b>: And, species, ==, 'setosa'
+1. **main_operator**: And
+2. **input_cols**: species
+3. **operators**: ==
+4. **operands**: setosa
 
 
 ### Python
