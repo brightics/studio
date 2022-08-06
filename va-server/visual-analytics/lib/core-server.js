@@ -1,5 +1,3 @@
-var request = __REQ_request;
-
 var URI_CORE_SERVER = 'http://localhost:9097';
 
 const

@@ -68,18 +68,6 @@ var updateRole = function (req, res, nex) {
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_AUTHORIZATION_UPDATE, task);
 };
 
-var listPermission = function (req, res, nex) {
-    var task = function (permissions) {
-        var opt = {};
-        __BRTC_DAO.permission.selectAll(opt, function (err) {
-            __BRTC_ERROR_HANDLER.sendServerError(res, err);
-        }, function (result) {
-            res.json(result);
-        });
-    };
-    _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_AUTHORIZATION_READ, task);
-};
-
 var listPermissionResourceTypeByUserId = function (req, res, nex) {
     var opt = {'user_id': req.params.userId};
     __BRTC_DAO.permission.selectPermissionResourceTypeByUserId(opt, function (err) {

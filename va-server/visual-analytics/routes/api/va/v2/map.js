@@ -1,5 +1,4 @@
 var router = __REQ_express.Router();
-var request = __REQ_request;
 
 var listMaps = function (req, res) {
     var list = [];

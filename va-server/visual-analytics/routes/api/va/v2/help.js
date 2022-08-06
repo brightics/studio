@@ -1,175 +1,144 @@
-var router = __REQ_express.Router();
+const fs = require('fs');
+const path = require('path');
+const express = require('express');
+const jsdom = require('jsdom');
+const MarkdownIt = require('markdown-it');
+const router = express.Router();
 
-var jsdom = require("jsdom");
-var MarkdownIt = require("markdown-it");
+const { getPalette } = require('../v3/functions');
 
-var getPalette = require("../v3/functions").getPalette;
-var getPaletteModelType = require("../v3/functions").getPaletteModelType;
-var getPaletteByModelType = require("../../../../lib/merge-palette");
+const md = new MarkdownIt({
+  html: true
+}).use(require('markdown-it-ins'));
 
-var md = new MarkdownIt({
-    html: true
-}).use(require("markdown-it-ins"));
+const ejsNm = 'function-reference';
+const title = 'Brightics Documentation';
 
-var subPath = __BRTC_CONF['sub-path'] || '';
-var subPathUrl = subPath ? ('/' + subPath) : ('');
-var baseUrl = __BRTC_CONF['callback-host'] + subPathUrl + '/';
-
-var responseFunctionHelp_DL = function (req, res, operation, palette, addon_js) {
-    __REQ_fs.readFile(
-      __REQ_path.join(
-          __dirname,
-          "../../../../public/static/help/scala/" + operation + ".md"
-      ),
-      {encoding: "utf-8"},
-      function (err, data) {
-        var innerHtml;
-        var status;
-        if (!err) {
-          innerHtml = md.render(data);
-          status = "SUCCESS";
-        } else {
-          innerHtml = md.render(
-              "### Sorry, this page is not available. Please contact Administrator."
-          );
-          status = "ERRNOTFOUND";
-        }
-        var ejsNm = "function-reference";
-
-        for (var i in palette) {
-          var functions = palette[i].functions;
-          for (var f in functions) {
-            console.log(f + " : " + functions[f].func);
-          }
-        }
-        return res.render(ejsNm, {
-          title: "Brightics Documentation",
-          baseUrl: baseUrl,
-          palette: palette,
-          addon_js: addon_js ? addon_js.join("\n") : "",
-          operatorHtml: innerHtml,
-          operator: operation,
-          mtype: req.query.type,
-          status: status,
-          subPath: subPath,
-          version: __BRTC_CONF["use-spark"]
-        });
+const renderEjs = (req, res, ejsNm, title, palette, innerHtml, operation, status, lang) => {
+  return res.render(ejsNm, {
+    title: title,
+    palette: palette,
+    operatorHtml: innerHtml,
+    operator: operation,
+    mtype: req.query.type,
+    status: status,
+    lang
   });
-}
+};
+
+const renderEjsByFileSystem = (req, res, func2spec, targetFunc, operation, palette, lang, context) => {
+  let filename = operation;
+  if (func2spec[targetFunc] && func2spec[targetFunc].name) {
+    filename = func2spec[targetFunc].name;
+  }
+  switch (operation) {
+    case 'numericalVariableDerivation':
+      filename = 'AddFunctionColumn';
+      break;
+    case 'load':
+      filename = 'Load';
+      break;
+    case 'dbReader':
+      filename = 'DBReader';
+      break;
+    case 'loadDpData':
+      filename = 'LoadDpData';
+      break;
+    case 'refine':
+      filename = 'RefineData';
+      break;
+    case 'queryExecutor':
+      filename = 'SQLExecutor';
+      break;
+  }
+  const helpReadCallback = function (err, data) {
+    let innerHtml;
+    let status;
+    if (!err) {
+      innerHtml = md.render(data);
+      status = 'SUCCESS';
+    } else {
+      innerHtml =
+        '' +
+        '<style>' +
+        '.brtc-ul li' +
+        '{' +
+        'margin-bottom: 5px;' +
+        'list-style-type: decimal;' +
+        '}' +
+        '.panel-heading' +
+        '{' +
+        'padding: 10px 15px;' +
+        'border-bottom: 1px solid transparent;' +
+        'border-top-right-radius: 3px;' +
+        'border-top-left-radius: 3px;' +
+        'background-color: #EEEEEE;' +
+        'font-weight: 500;' +
+        '}' +
+        '</style>' +
+        '<div class="panel bs-docs-function-note" style="display: block;">' +
+        '<div class="panel-heading"><h3 class="panel-title"><strong>Note</strong></h3></div>' +
+        '<div class="panel-body">' +
+        '<ul class="brtc-ul">' +
+        '<li>A significant digit is 10 digits for all analytic functions. We ignore the differences between each value of outputs from analytic function results and help pages in case more than 10 significant digits are the same.</li>' +
+        '<li>When you use train and predict functions, the order and the number of columns should be the same for both functions.</li>' +
+        '<li>We recommend you to preprocess abnormal values such as NaN or null beforehand. You can use Brightics preprocessing functions before analyzing data.</li>' +
+        '<li>The result of the function may vary depending on the system even if the same seed is used.</li>' +
+        '<li>The results of Spark and Python functions may differ even if you use the same function because of the internal algorithms are different.</li>' +
+        '</ul>';
+
+      status = 'ERRNOTFOUND';
+    }
+    renderEjs(req, res, ejsNm, title, palette, innerHtml, operation, status, lang);
+  };
+
+  let filePath = path.join(
+    __dirname,
+    `../../../../public/static/help/${context}/${lang ? lang : 'en'}/${filename}.md`
+  );
+  if (!fs.existsSync(filePath)) {
+    filePath = path.join(__dirname, `../../../../public/static/help/${context}/en/${filename}.md`);
+  }
+  fs.readFile(filePath, { encoding: 'utf-8' }, helpReadCallback);
+};
+
 
 var responseFunctionHelp = function(req, res, operation, palette, fileContents, targetFunc, lang ) {
+  let status = 'ERRNOTFOUND';
   try {
-    var availableContext = ["common", "python", "scala"];
-    var filename = operation;
+    const availableContext = ['common', 'python'];
+    // let filename = operation;
 
-    var context =
+    const context =
       req.query.context &&
-      availableContext.some(function(value) {
+      availableContext.some(function (value) {
         return value === req.query.context;
       })
         ? req.query.context
-        : "";
-    let func2spec = {};
-    fileContents.forEach(json => {
-      let spec = json.specJson;
+        : '';
+
+    const func2spec = {};
+    fileContents.forEach((json) => {
+      const spec = json.specJson;
       func2spec[spec.func] = spec;
       if (json.md) {
-        func2spec[spec.func]["md"] = json.md;
+        func2spec[spec.func]['md'] = json.md;
       }
     });
-    if ( func2spec[targetFunc] && func2spec[targetFunc]["md"]) {
-      var innerHtml;
-      var status;
 
-      innerHtml = md.render(func2spec[targetFunc]["md"][lang] || func2spec[targetFunc]["md"]['en'] || func2spec[targetFunc]["md"]);
-
-      status = "SUCCESS";
-
-      var ejsNm = "function-reference";
-      return res.render(ejsNm, {
-        title: "Brightics Documentation",
-        baseUrl: baseUrl,
-        palette: palette,
-        operatorHtml: innerHtml,
-        operator: operation,
-        mtype: req.query.type,
-        status: status,
-        subPath: subPath,
-        version: __BRTC_CONF["use-spark"]
-      });
-
-    } else {
-      filename =
-        func2spec[targetFunc] && func2spec[targetFunc].name
-          ? func2spec[targetFunc].name
-          : filename;
-      var helpReadCallback = function(err, data){
-        var innerHtml;
-        var status;
-        if (!err) {
-          innerHtml = md.render(data);
-          status = "SUCCESS";
-        } else {
-          innerHtml =
-            "" +
-            "<style>" +
-            ".brtc-ul li" +
-            "{" +
-            "margin-bottom: 5px;" +
-            "list-style-type: decimal;" +
-            "}" +
-            ".panel-heading" +
-            "{" +
-            "padding: 10px 15px;" +
-            "border-bottom: 1px solid transparent;" +
-            "border-top-right-radius: 3px;" +
-            "border-top-left-radius: 3px;" +
-            "background-color: #EEEEEE;" +
-            "font-weight: 500;" +
-            "}" +
-            "</style>" +
-            '<div class="panel bs-docs-function-note" style="display: block;">' +
-            '<div class="panel-heading"><h3 class="panel-title"><strong>Note</strong></h3></div>' +
-            '<div class="panel-body">' +
-            '<ul class="brtc-ul">' +
-            "<li>A significant digit is 10 digits for all analytic functions. We ignore the differences between each value of outputs from analytic function results and help pages in case more than 10 significant digits are the same.</li>" +
-            "<li>When you use train and predict functions, the order and the number of columns should be the same for both functions.</li>" +
-            "<li>We recommend you to preprocess abnormal values such as NaN or null beforehand. You can use Brightics preprocessing functions before analyzing data.</li>" +
-            "<li>The result of the function may vary depending on the system even if the same seed is used.</li>" +
-            "<li>The results of Spark and Python functions may differ even if you use the same function because of the internal algorithms are different.</li>" +
-            "</ul>";
-          "</div>" + "</div>";
-
-          status = "ERRNOTFOUND";
-        }
-        var ejsNm = "function-reference";
-        return res.render(ejsNm, {
-          title: "Brightics Documentation",
-          baseUrl: baseUrl,
-          palette: palette,
-          operatorHtml: innerHtml,
-          operator: operation,
-          mtype: req.query.type,
-          status: status,
-          subPath: subPath,
-          version: __BRTC_CONF["use-spark"]
-        });
-      };
-
-      var filePath = __REQ_path.join(
-        __dirname,
-        `../../../../public/static/help/${context}/${lang ? lang : "en"}/${filename}.md`
+    if (func2spec[targetFunc] && func2spec[targetFunc]['md']) {
+      const innerHtml = md.render(
+        func2spec[targetFunc]['md'][lang] || func2spec[targetFunc]['md']['en'] || func2spec[targetFunc]['md']
       );
-      if (!__REQ_fs.existsSync(filePath)) {
-        filePath = __REQ_path.join(
-          __dirname,
-          `../../../../public/static/help/${context}/en/${filename}.md`
-        );
-      }
-      __REQ_fs.readFile(filePath, { encoding: "utf-8" }, helpReadCallback);
+      status = 'SUCCESS';
+      renderEjs(req, res, ejsNm, title, palette, innerHtml, operation, status, lang);
+    } else {
+      renderEjsByFileSystem(req, res, func2spec, targetFunc, operation, palette, lang, context);
     }
   } catch (err) {
-    console.log(err);
+    const innerHtml =
+      '<h3>&nbsp;</h3><h5>Sorry, the help document is not found. Please contact the administrator.</h5>';
+    renderEjs(req, res, ejsNm, title, palette, innerHtml, operation, status, lang);
   }
 };
 
@@ -196,7 +165,6 @@ var renderDBContentFunctionHelper = function(req, res, operation, targetFunc, la
       var ejsNm = "function-reference";
       return res.render(ejsNm, {
         title: "Brightics Documentation",
-        baseUrl: baseUrl,
         palette: palette,
         operatorHtml: innerHtml,
         operator: operation,
@@ -214,28 +182,28 @@ var renderDBContentFunctionHelper = function(req, res, operation, targetFunc, la
 var renderDataFlowFunctionHelper = function( req, res, operation, targetFunc, lang ) {
   getPalette(req, res)
     .then(({ palette, fileContents }) => {
-      for (var f in fileContents) {
-        var func = fileContents[f].specJson.func;
-        var category = fileContents[f].specJson.category;
-
-        var exist = false;
-        var obj = { func: func, visible: true };
-
-        for (var c in palette) {
-          if (palette[c].key === category) {
-            for (var k in palette[c].functions) {
-              var fnUnit = palette[c].functions[k];
-              if (fnUnit.func === func) {
-                exist = true;
-                break;
-              }
-            }
-            if (!exist && category !== "udf") {
-              palette[c].functions.push(obj);
-            }
-          }
-        }
-      }
+      // for (var f in fileContents) {
+      //   var func = fileContents[f].specJson.func;
+      //   var category = fileContents[f].specJson.category;
+      //
+      //   var exist = false;
+      //   var obj = { func: func, visible: true };
+      //
+      //   for (var c in palette) {
+      //     if (palette[c].key === category) {
+      //       for (var k in palette[c].functions) {
+      //         var fnUnit = palette[c].functions[k];
+      //         if (fnUnit.func === func) {
+      //           exist = true;
+      //           break;
+      //         }
+      //       }
+      //       if (!exist && category !== "udf") {
+      //         palette[c].functions.push(obj);
+      //       }
+      //     }
+      //   }
+      // }
       responseFunctionHelp( req, res, operation, palette, fileContents, targetFunc, lang );
     })
     .catch(() => {
@@ -247,22 +215,12 @@ var renderFunctionHelp = function(req, res) {
   try {
     var operation = req.params.name || "_default";
     var targetFunc = req.query.func;
-    var lang = req.query.lang;
+    var lang = req.query.lang || 'en';
 
     if (operation.startsWith("udf_") || operation==='DistributedJdbcLoader') {
       renderDBContentFunctionHelper(req, res, operation, targetFunc, lang);
     }else {
-      var modelType = req.query.type;
-      if (modelType === "deeplearning") {
-          var palette = getPaletteByModelType(modelType);
-          responseFunctionHelp_DL(req, res, operation, palette);
-      } else if (modelType === "script") {
-        getPaletteModelType(req, res, modelType).then(({ palette }) => {
-            responseFunctionHelp(req, res, operation, palette, [], targetFunc, lang);
-        });
-      } else {
-        renderDataFlowFunctionHelper(req, res, operation, targetFunc, lang);
-      }
+      renderDataFlowFunctionHelper(req, res, operation, targetFunc, lang);
     }
   } catch (err) {
     __BRTC_ERROR_HANDLER.sendError(res, 35021);
@@ -272,9 +230,9 @@ var renderFunctionHelp = function(req, res) {
 var extractFormatString = function(docString, callback) {
   var htmlString = docString;
   var jquery = __REQ_fs.readFileSync(
-      __REQ_path.join(__dirname,
-          "../../../../public/js/plugins/jquery/jquery.min.js"),
-      "utf8"
+    __REQ_path.join(__dirname,
+      "../../../../public/js/plugins/jquery/jquery.min.js"),
+    "utf8"
   );
   jsdom.env({
     src: [jquery],
@@ -357,7 +315,7 @@ const downloadExampleModelJson = function(req, res) {
     if (modelContents !== '') {
       res.send(JSON.stringify(modelContents));
     } else {
-        __BRTC_ERROR_HANDLER.sendError(res, 35021);
+      __BRTC_ERROR_HANDLER.sendError(res, 35021);
     }
   });
 };

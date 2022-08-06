@@ -43,8 +43,7 @@ var parseStagingData = function (body) {
     if (arrColIndexes.length > 0) {
         for (var r in resultSet.data) {
             var row = resultSet.data[r];
-            for (var a in arrColIndexes) {
-                var idx = arrColIndexes[a];
+            for (var idx of arrColIndexes) {
                 if (row[idx].length > 10) {
                     row[idx].splice(10, row[idx].length - 10);
                 }

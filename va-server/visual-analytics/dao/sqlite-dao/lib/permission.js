@@ -160,8 +160,7 @@ module.exports = {
                         batchUpdate(PERMISSION_DELETE_DEFAULT, [['monitoring']]);
                     }
 
-
-                    if (doneCallback) doneCallback(result.rows, result, DDL_CHECK_TABLE, ['brtc_permission']);
+                    doneCallback(result.rows, result, DDL_CHECK_TABLE, ['brtc_permission']);
                 });
 
                 query('select * from brtc_permission where resource_type = \'datasource\'', [], errCallback, batch([

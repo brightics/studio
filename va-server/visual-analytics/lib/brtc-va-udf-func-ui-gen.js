@@ -156,7 +156,7 @@ var _gen_addExistFnUnitRule = function () {
     return lines;
 };
 
-var _gen_createContentsAreaControls = function (fnUnit, properties) {
+var _gen_createContentsAreaControls = function (properties) {
     var lines = [];
 
     lines.push('__clazz__Properties.prototype.createContentsAreaControls = function ($parent) {');
@@ -185,7 +185,7 @@ var _gen_createContentsAreaControls = function (fnUnit, properties) {
     return lines;
 };
 
-var _gen_fillControlValues = function (fnUnit, properties) {
+var _gen_fillControlValues = function (properties) {
     var lines = [];
     lines.push('__clazz__Properties.prototype.fillControlValues = function () {');
 
@@ -258,7 +258,7 @@ var _gen_createColumnsControl = function (fnUnit, property) {
     return lines;
 };
 
-var _gen_createNumericInputControl = function (fnUnit, property) {
+var _gen_createNumericInputControl = function (property) {
     var lines = [];
     lines.push('__clazz__Properties.prototype.create' + camelize(property.param) + 'Control = function ($parent) {');
 
@@ -281,7 +281,7 @@ var _gen_createNumericInputControl = function (fnUnit, property) {
     return lines;
 };
 
-var _gen_createRadioButtonControl = function (fnUnit, property) {
+var _gen_createRadioButtonControl = function (property) {
     var lines = [];
     lines.push('__clazz__Properties.prototype.create' + camelize(property.param) + 'Control = function ($parent) {');
 
@@ -314,7 +314,7 @@ var _gen_createRadioButtonControl = function (fnUnit, property) {
     return lines;
 };
 
-var _gen_createCheckBoxControl = function (fnUnit, property) {
+var _gen_createCheckBoxControl = function (property) {
     var lines = [];
     lines.push('__clazz__Properties.prototype.create' + camelize(property.param) + 'Control = function ($parent) {');
 
@@ -361,7 +361,7 @@ var _gen_createCheckBoxControl = function (fnUnit, property) {
     return lines;
 };
 
-var _gen_createInputControl = function (fnUnit, property) {
+var _gen_createInputControl = function (property) {
     var lines = [];
     lines.push('__clazz__Properties.prototype.create' + camelize(property.param) + 'Control = function ($parent) {');
 
@@ -383,7 +383,7 @@ var _gen_createInputControl = function (fnUnit, property) {
     return lines;
 };
 
-var _gen_createMultiLineInputControl = function (fnUnit, property) {
+var _gen_createMultiLineInputControl = function (property) {
     var lines = [];
     lines.push('__clazz__Properties.prototype.create' + camelize(property.param) + 'Control = function ($parent) {');
 
@@ -405,7 +405,7 @@ var _gen_createMultiLineInputControl = function (fnUnit, property) {
     return lines;
 };
 
-var _gen_createCodeMirrorInputControl = function (fnUnit, property) {
+var _gen_createCodeMirrorInputControl = function (property) {
     var lines = [];
     lines.push('__clazz__Properties.prototype.create' + camelize(property.param) + 'Control = function ($parent) {');
 
@@ -452,7 +452,7 @@ var _gen_renderColumnsControl = function (fnUnit, property) {
     return lines;
 };
 
-var _gen_renderNumericInputControl = function (fnUnit, property) {
+var _gen_renderNumericInputControl = function (property) {
     var lines = [];
     lines.push('__clazz__Properties.prototype.render' + camelize(property.param) + 'Control = function ($parent) {');
 
@@ -474,7 +474,7 @@ var _gen_renderNumericInputControl = function (fnUnit, property) {
     return lines;
 };
 
-var _gen_renderRadioButtonControl = function (fnUnit, property) {
+var _gen_renderRadioButtonControl = function (property) {
     var lines = [];
     lines.push('__clazz__Properties.prototype.render' + camelize(property.param) + 'Control = function ($parent) {');
 
@@ -491,7 +491,7 @@ var _gen_renderRadioButtonControl = function (fnUnit, property) {
     return lines;
 };
 
-var _gen_renderCheckBoxControl = function (fnUnit, property) {
+var _gen_renderCheckBoxControl = function (property) {
     var lines = [];
     lines.push('__clazz__Properties.prototype.render' + camelize(property.param) + 'Control = function ($parent) {');
 
@@ -514,7 +514,7 @@ var _gen_renderCheckBoxControl = function (fnUnit, property) {
     return lines;
 };
 
-var _gen_renderInputControl = function (fnUnit, property) {
+var _gen_renderInputControl = function (property) {
     var lines = [];
     lines.push('__clazz__Properties.prototype.render' + camelize(property.param) + 'Control = function ($parent) {');
     lines.push('    var _this = this;');
@@ -535,7 +535,7 @@ var _gen_renderInputControl = function (fnUnit, property) {
     return lines;
 };
 
-var _gen_renderMultiLineInputControl = function (fnUnit, property) {
+var _gen_renderMultiLineInputControl = function (property) {
     var lines = [];
     lines.push('__clazz__Properties.prototype.render' + camelize(property.param) + 'Control = function ($parent) {');
 
@@ -559,7 +559,7 @@ var _gen_renderMultiLineInputControl = function (fnUnit, property) {
     return lines;
 };
 
-var _gen_renderCodeMirrorInputControl = function (fnUnit, property) {
+var _gen_renderCodeMirrorInputControl = function (property) {
     var lines = [];
     lines.push('__clazz__Properties.prototype.render' + camelize(property.param) + 'Control = function ($parent) {');
     lines.push('    var _this = this;');
@@ -630,8 +630,8 @@ var _gen_PropertiesPanelClass = function (env) {
     header.push(' *                           Properties Panel                              ');
     header.push(' *');
     var comments = JSON.stringify(properties, null, 4).split('\n');
-    for (var i in comments) {
-        header.push(' * ' + comments[i]);
+    for (var comment of comments) {
+        header.push(' * ' + comment);
     }
     header.push(' *************************************************************************/');
 
@@ -651,7 +651,7 @@ var _gen_PropertiesPanelClass = function (env) {
         '',
     ];
 
-    body = body.concat(_gen_createContentsAreaControls(fnUnit, properties));
+    body = body.concat(_gen_createContentsAreaControls(properties));
 
     var hasColumnSelector = false;
     var hasCodeMirror = false;
@@ -661,23 +661,23 @@ var _gen_PropertiesPanelClass = function (env) {
             body = body.concat(_gen_renderColumnsControl(fnUnit, properties[i]));
             hasColumnSelector = true;
         } else if (properties[i].control.type === 'NumericInput') {
-            body = body.concat(_gen_createNumericInputControl(fnUnit, properties[i]));
-            body = body.concat(_gen_renderNumericInputControl(fnUnit, properties[i]));
+            body = body.concat(_gen_createNumericInputControl(properties[i]));
+            body = body.concat(_gen_renderNumericInputControl(properties[i]));
         } else if (properties[i].control.type === 'RadioButton') {
-            body = body.concat(_gen_createRadioButtonControl(fnUnit, properties[i]));
-            body = body.concat(_gen_renderRadioButtonControl(fnUnit, properties[i]));
+            body = body.concat(_gen_createRadioButtonControl(properties[i]));
+            body = body.concat(_gen_renderRadioButtonControl(properties[i]));
         } else if (properties[i].control.type === 'CheckBox') {
-            body = body.concat(_gen_createCheckBoxControl(fnUnit, properties[i]));
-            body = body.concat(_gen_renderCheckBoxControl(fnUnit, properties[i]));
+            body = body.concat(_gen_createCheckBoxControl(properties[i]));
+            body = body.concat(_gen_renderCheckBoxControl(properties[i]));
         } else if (properties[i].control.type === 'Input') {
-            body = body.concat(_gen_createInputControl(fnUnit, properties[i]));
-            body = body.concat(_gen_renderInputControl(fnUnit, properties[i]));
+            body = body.concat(_gen_createInputControl(properties[i]));
+            body = body.concat(_gen_renderInputControl(properties[i]));
         } else if (properties[i].control.type === 'MultiLineInput') {
-            body = body.concat(_gen_createMultiLineInputControl(fnUnit, properties[i]));
-            body = body.concat(_gen_renderMultiLineInputControl(fnUnit, properties[i]));
+            body = body.concat(_gen_createMultiLineInputControl(properties[i]));
+            body = body.concat(_gen_renderMultiLineInputControl(properties[i]));
         } else if (properties[i].control.type === 'CodeMirrorInput') {
-            body = body.concat(_gen_createCodeMirrorInputControl(fnUnit, properties[i]));
-            body = body.concat(_gen_renderCodeMirrorInputControl(fnUnit, properties[i]));
+            body = body.concat(_gen_createCodeMirrorInputControl(properties[i]));
+            body = body.concat(_gen_renderCodeMirrorInputControl(properties[i]));
             hasCodeMirror = true;
         }
     }
@@ -685,10 +685,10 @@ var _gen_PropertiesPanelClass = function (env) {
     body = body.concat(_gen_renderValidation());
 
     if (hasColumnSelector) {
-        body = body.concat(_gen_fillControlValues(fnUnit, properties));
+        body = body.concat(_gen_fillControlValues(properties));
     }
     if (hasCodeMirror) {
-        body = body.concat(_gen_fillControlValues(fnUnit, properties));
+        body = body.concat(_gen_fillControlValues(properties));
     }
 
     body.push('__clazz__Properties.prototype.getPrimaryOperation = function () {');
@@ -791,9 +791,7 @@ var generateSnippet = function (options) {
 
     body.push('');
 
-    for (var i in body) {
-        body[i] = '    ' + body[i];
-    }
+    body = body.map(data => `    ${data}`);
 
     var footer = [
         '}).call(this);',

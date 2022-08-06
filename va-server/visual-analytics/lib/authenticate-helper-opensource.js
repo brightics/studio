@@ -1,5 +1,4 @@
 var request = __REQ_request;
-var passport = require('passport');
 
 var url = require('url');
 

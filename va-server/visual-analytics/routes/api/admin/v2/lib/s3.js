@@ -2,7 +2,7 @@ var router = __REQ_express.Router();
 var request = __REQ_request;
 var decryptRSA = require('../../../../../lib/rsa').decryptRSA;
 
-const responseHandler = (req, res, expectedCode = 200) => {
+const responseHandler = (res, expectedCode = 200) => {
     return function (error, response, body) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
@@ -97,7 +97,7 @@ var createDatasource = function (req, res) {
         var options = __BRTC_CORE_SERVER.createRequestOptions('POST', '/api/core/v2/entity/s3');
         __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
         options.body = JSON.stringify(getDecryptedDatasource(req));
-        request(options, responseHandler(req, res, 201));
+        request(options, responseHandler(res, 201));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_DATASOURCE_UPDATE, task);
 };
@@ -109,7 +109,7 @@ var deleteDatasource = function (req, res) {
         var datasourceName = req.params.datasourceName;
         var options = __BRTC_CORE_SERVER.createRequestOptions('DELETE', '/api/core/v2/entity/s3/' + datasourceName);
         __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-        request(options, responseHandler(req, res, 204));
+        request(options, responseHandler(res, 204));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_DATASOURCE_DELETE, task);
 };

@@ -88,7 +88,7 @@ var query = function (__sql, _args, _errCallback, _doneCallback) {
         type = 'ddl_check';
     }
 
-    const convert = (data, t) => {
+    const convert = (data) => {
         if (type === 'ddl_check') {
             if (!data) return undefined;
             const res = data.map((d) => {
@@ -124,7 +124,7 @@ var query = function (__sql, _args, _errCallback, _doneCallback) {
             console.log(sql);
             console.error(err);
         }
-        doneCallback(...convert(result, type));
+        doneCallback(...convert(result));
     });
 };
 

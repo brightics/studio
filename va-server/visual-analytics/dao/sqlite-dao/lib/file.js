@@ -45,12 +45,6 @@ const FILE_SELECT_BY_PROJECT_DEFAULT = 'SELECT * FROM brtc_file WHERE project_id
 const FILE_SELECT_BY_ID_DEFAULT = 'SELECT * FROM brtc_file WHERE id=$1 AND project_id=$2';
 const FILE_SELECT_BY_FILE_DEFAULT = 'SELECT * FROM brtc_file WHERE project_id = (SELECT project_id FROM brtc_file WHERE id=$1 )';
 
-const FILE_SELECT_FOR_UPDATE = `
-    SELECT * FROM brtc_file
-    WHERE id=$1 AND project_id=$2 AND (event_key=$3 OR event_key IS NULL)
-`;
-
-
 const FILE_CREATE_DEFAULT = `
     INSERT INTO brtc_file
     (id, project_id, label, contents, description, creator, create_time, updater, update_time, event_key, type, tag)

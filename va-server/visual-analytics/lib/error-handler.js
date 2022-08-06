@@ -61,11 +61,16 @@ var writeLog = function (res, error) {
     log.error(message);
 };
 
+const createError = (messages) => {
+    const errors = Array.isArray(messages.errors) ? messages.errors[0] : {};
+    const error = new Error(errors.message);
+    if (errors.detailMessage) error.stack = errors.detailMessage;
+    return error;
+}
+
 var sendMessage = function (res, messages, status) {
     res.status(status || 400).json(messages);
-    var error = new Error(messages.errors[0].message, messages.errors[0].code || messages.errors[0].errorCode);
-    if (messages.errors[0].detailMessage) error.stack = messages.errors[0].detailMessage;
-    writeLog(res, error);
+    writeLog(res, createError(messages));
 };
 
 var sendError = function (res, code, message) {
@@ -78,9 +83,7 @@ var sendError = function (res, code, message) {
         messages.errors[0].message += ' ' + message;
     }
     res.status(400).json(messages);
-    var error = new Error(messages.errors[0].message, messages.errors[0].code || messages.errors[0].errorCode);
-    if (messages.errors[0].detailMessage) error.stack = messages.errors[0].detailMessage;
-    writeLog(res, error);
+    writeLog(res, createError(messages));
 };
 
 var sendNotAllowedError = function (res) {
@@ -93,7 +96,7 @@ var sendNotAllowedError = function (res) {
         ]
     };
     res.status(403).json(messages);
-    writeLog(res, new Error(messages.errors[0].message, messages.errors[0].code));
+    writeLog(res, createError(messages));
 };
 
 var sendNotAllowedError2 = function (res) {
@@ -106,7 +109,7 @@ var sendNotAllowedError2 = function (res) {
         ]
     };
     res.status(550).json(messages);
-    writeLog(res, new Error(messages.errors[0].message, messages.errors[0].code));
+    writeLog(res, createError(messages));
 };
 
 var sendServerError = function (res, error) {
@@ -122,9 +125,7 @@ var sendServerError = function (res, error) {
     if (error.stack) messages.errors[0].detailMessage = error.stack;
 
     res.status(500).json(messages);
-    error = new Error(messages.errors[0].message, messages.errors[0].code || messages.errors[0].errorCode);
-    if (messages.errors[0].detailMessage) error.stack = messages.errors[0].detailMessage;
-    writeLog(res, error);
+    writeLog(res, createError(messages));
 };
 
 var checkParams = function (arr) {
