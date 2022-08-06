@@ -1,5 +1,3 @@
-var request = __REQ_request;
-
 var subPath = __BRTC_CONF['sub-path'] || '';
 var subPathUrl = subPath ? ('/' + subPath) : ('');
 

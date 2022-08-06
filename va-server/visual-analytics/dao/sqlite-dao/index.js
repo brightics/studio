@@ -20,5 +20,6 @@ module.exports = extend(true, {},
     require('./lib/function-label'),
     require('./lib/addon-function'),
     require('./lib/tools-function'),
-    require('./lib/tools-project')
+    require('./lib/tools-project'),
+    require('./lib/function-favorite')
 );

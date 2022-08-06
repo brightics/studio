@@ -10,17 +10,6 @@ var baseUrl = __BRTC_CONF['callback-host'] + subPathUrl + '/';
 
 var getFirstErrorMsg = require('../../lib/get-err-from-jobstatus');
 
-var _executeInPermission = function (req, res, perm, task) {
-    var permHandler = __BRTC_PERM_HELPER.checkPermission(req, [__BRTC_PERM_HELPER.PERMISSION_RESOURCE_TYPES.PUBLISH], perm);
-    permHandler.on('accept', task);
-    permHandler.on('deny', function (permissions) {
-        __BRTC_ERROR_HANDLER.sendNotAllowedError(res);
-    });
-    permHandler.on('fail', function (err) {
-        __BRTC_ERROR_HANDLER.sendServerError(res, err);
-    });
-};
-
 var convertResultSet = function (resultSet) {
     var temp = JSON.parse(JSON.stringify(resultSet));
     if (temp.data instanceof Object && !(temp.data instanceof Array) ) {
@@ -58,8 +47,7 @@ var parseStagingData = function (body) {
     if (arrColIndexes.length > 0) {
         for (var r in resultSet.data) {
             var row = resultSet.data[r];
-            for (var a in arrColIndexes) {
-                var idx = arrColIndexes[a];
+            for (var idx of arrColIndexes) {
                 if (row[idx].length > 10) {
                     row[idx].splice(10, row[idx].length - 10);
                 }

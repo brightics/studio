@@ -1,8 +1,3 @@
-/**
- * Created by sds on 2018-09-27.
- */
-var request = __REQ_request;
-
 var URI_SCHEDULER_SERVER = 'http://localhost:9099';
 
 var setBearerToken = function (options, token) {

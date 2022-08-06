@@ -38,12 +38,10 @@ var query = function (sql, args, _errCallback, _doneCallback) {
             if (handleError(err)) return;
             done();
 
-            if (doneCallback) {
-                if (result.command === 'INSERT' || result.command === 'UPDATE' || result.command === 'DELETE') {
-                    doneCallback(result.rowCount, result, sql, args);
-                } else {
-                    doneCallback(result.rows, result, sql, args);
-                }
+            if (result.command === 'INSERT' || result.command === 'UPDATE' || result.command === 'DELETE') {
+                doneCallback(result.rowCount, result, sql, args);
+            } else {
+                doneCallback(result.rows, result, sql, args);
             }
         });
     });
@@ -100,7 +98,7 @@ var transaction = function (executeCallback, _errCallback, _doneCallback) {
         var tx = new Transaction(client);
         var result = executeCallback(tx);
 
-        if (doneCallback) doneCallback(result);
+        doneCallback(result);
     });
 };
 

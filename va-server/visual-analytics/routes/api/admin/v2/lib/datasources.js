@@ -2,7 +2,7 @@ var router = __REQ_express.Router();
 var request = __REQ_request;
 var decryptRSA = require('../../../../../lib/rsa').decryptRSA;
 
-const coreResponseHandler = (req, res) => {
+const coreResponseHandler = (res) => {
     return function (error, response, body) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
@@ -107,7 +107,7 @@ var createDatasource = function (req, res) {
         var options = __BRTC_CORE_SERVER.createRequestOptions('PUT', '/api/core/v2/datasources');
         __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
         options.body = JSON.stringify(getDecryptedDatasource(req));
-        request(options, coreResponseHandler(req, res));
+        request(options, coreResponseHandler(res));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_DATASOURCE_UPDATE, task);
 };
@@ -117,7 +117,7 @@ var updateDatasource = function (req, res) {
         var options = __BRTC_CORE_SERVER.createRequestOptions('POST', '/api/core/v2/datasources');
         __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
         options.body = JSON.stringify(getDecryptedDatasource(req));
-        request(options, coreResponseHandler(req, res));
+        request(options, coreResponseHandler(res));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_DATASOURCE_UPDATE, task);
 };
@@ -127,7 +127,7 @@ var deleteDatasource = function (req, res) {
         var datasourceName = req.params.datasourceName;
         var options = __BRTC_CORE_SERVER.createRequestOptions('DELETE', '/api/core/v2/datasources/' + datasourceName);
         __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-        request(options, coreResponseHandler(req, res));
+        request(options, coreResponseHandler(res));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_DATASOURCE_DELETE, task);
 };
@@ -137,7 +137,7 @@ var deleteDatasources = function (req, res) {
         var options = __BRTC_CORE_SERVER.createRequestOptions('DELETE', '/api/core/v2/datasources'); // core 와 API 정의 필요
         __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
         options.body = JSON.stringify(req.body);
-        request(options, coreResponseHandler(req, res));
+        request(options, coreResponseHandler(res));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_DATASOURCE_DELETE, task);
 };

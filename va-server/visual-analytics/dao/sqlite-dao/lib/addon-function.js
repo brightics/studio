@@ -3,7 +3,6 @@ var common = require('./common');
 const getQuery = require('./query-utils').getQuery;
 const DDL_CHECK_TABLE_DEFAULT = common.DDL_CHECK_TABLE;
 var query = common.query;
-var batchUpdate = common.batchUpdate;
 
 const DDL_CREATE_ADDON_FUNCTION_TABLE_DEFAULT = '' +
     'CREATE TABLE brtc_addon_function (' +

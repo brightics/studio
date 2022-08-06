@@ -5,7 +5,7 @@ var MessageFormat = require('messageformat');
 var mf = new MessageFormat('en');
 
 
-const responseHandler = (req, res, parse = false, withResult = false) => {
+const responseHandler = (res, parse = false, withResult = false) => {
     return function (error, response, body) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
@@ -39,7 +39,7 @@ var _executeInPermission = function (req, res, perm, task) {
 var listSchedules = function (req, res) {
     var options = __BRTC_SCHEDULER_SERVER.createRequestOptions('GET', '/api/v2/schedules');
     __BRTC_SCHEDULER_SERVER.setBearerToken(options, req.accessToken);
-    request(options, responseHandler(req, res, true, true));
+    request(options, responseHandler(res, true, true));
     // function (error, response, body) {
     //     if (error) {
     //         __BRTC_ERROR_HANDLER.sendServerError(res, error);
@@ -77,7 +77,7 @@ var listSchedules = function (req, res) {
 var listScheduleHistories = function (req, res) {
     var options = __BRTC_SCHEDULER_SERVER.createRequestOptions('GET', '/api/v2/schedulehistories');
     __BRTC_SCHEDULER_SERVER.setBearerToken(options, req.accessToken);
-    request(options, responseHandler(req, res, true, true));
+    request(options, responseHandler(res, true, true));
     // function (error, response, body) {
     //     if (error) {
     //         __BRTC_ERROR_HANDLER.sendServerError(res, error);
@@ -117,7 +117,7 @@ var createSchedule = function (req, res) {
         __BRTC_SCHEDULER_SERVER.setBearerToken(options, req.accessToken);
         delete req.body.reportContents;
         options.body = JSON.stringify(req.body);
-        request(options, responseHandler(req, res));
+        request(options, responseHandler(res));
         // function (error, response, body) {
         //     if (error) {
         //         __BRTC_ERROR_HANDLER.sendServerError(res, error);
@@ -138,7 +138,7 @@ var updateSchedule = function (req, res) {
         var options = __BRTC_SCHEDULER_SERVER.createRequestOptions('POST', '/api/v2/schedule/modify/');
         __BRTC_SCHEDULER_SERVER.setBearerToken(options, req.accessToken);
         options.body = JSON.stringify(req.body);
-        request(options, responseHandler(req, res));
+        request(options, responseHandler(res));
         // function (error, response, body) {
         //     if (error) {
         //         __BRTC_ERROR_HANDLER.sendServerError(res, error);
@@ -158,7 +158,7 @@ var deleteSchedule = function (req, res) {
     var task = function (permissions) {
         var options = __BRTC_SCHEDULER_SERVER.createRequestOptions('DELETE', '/api/v2/schedule/delete/' + req.body.scheduleId + '/' + req.body.requestUser);
         __BRTC_SCHEDULER_SERVER.setBearerToken(options, req.accessToken);
-        request(options, responseHandler(req, res));
+        request(options, responseHandler(res));
         // function (error, response, body) {
         //     if (error) {
         //         __BRTC_ERROR_HANDLER.sendServerError(res, error);
@@ -178,7 +178,7 @@ var abortSchedule = function (req, res) {
     var task = function (permissions) {
         var options = __BRTC_SCHEDULER_SERVER.createRequestOptions('DELETE', '/api/v2/schedule/abort/' + req.body.scheduleId + '/' + req.body.requestUser);
         options.body = JSON.stringify(req.body);
-        request(options, responseHandler(req, res));
+        request(options, responseHandler(res));
         // function (error, response, body) {
         //     if (error) {
         //         __BRTC_ERROR_HANDLER.sendServerError(res, error);
@@ -194,27 +194,6 @@ var abortSchedule = function (req, res) {
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_SCHEDULE_UPDATE, task);
 };
 
-var getReport = function (req, res) {
-    var compile = mf.compile('/api/v2/scheduletask/{taskId}');
-    var url = compile({
-        taskId: encodeURI(req.params.taskId),
-    });
-    var options = __BRTC_SCHEDULER_SERVER.createRequestOptions('GET', url);
-    __BRTC_SCHEDULER_SERVER.setBearerToken(options, req.accessToken);
-    request(options, responseHandler(req, res, true));
-    // function (error, response, body) {
-    //     if (error) {
-    //         __BRTC_ERROR_HANDLER.sendServerError(res, error);
-    //     } else {
-    //         if (response.statusCode === 200) {
-    //             res.json(JSON.parse(body));
-    //         } else {
-    //             __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
-    //         }
-    //     }
-    // });
-};
-
 var getErrorMessage = function (req, res) {
     var compile = mf.compile('/api/core/v2/jobstatuserror/{jobId}');
     var url = compile({
@@ -222,7 +201,7 @@ var getErrorMessage = function (req, res) {
     });
     var options = __BRTC_SCHEDULER_SERVER.createRequestOptions('GET', url);
     __BRTC_SCHEDULER_SERVER.setBearerToken(options, req.accessToken);
-    request(options, responseHandler(req, res, true));
+    request(options, responseHandler(res, true));
     // function (error, response, body) {
     //     if (error) {
     //         __BRTC_ERROR_HANDLER.sendServerError(res, error);
@@ -298,7 +277,7 @@ var forceReadySchedule = function (req, res) {
     var task = function (permissions) {
         var options = __BRTC_SCHEDULER_SERVER.createRequestOptions('POST', '/api/v2/schedule/forceready/' + req.body.scheduleId + '/' + req.body.requestUser);
         options.body = JSON.stringify(req.body);
-        request(options, responseHandler(req, res));
+        request(options, responseHandler(res));
         // function (error, response, body) {
         //     if (error) {
         //         __BRTC_ERROR_HANDLER.sendServerError(res, error);
@@ -318,7 +297,7 @@ var forceDeleteSchedule = function (req, res) {
     var task = function (permissions) {
         var options = __BRTC_SCHEDULER_SERVER.createRequestOptions('DELETE', '/api/v2/schedule/forcedelete/' + req.body.scheduleId + '/' + req.body.requestUser);
         options.body = JSON.stringify(req.body);
-        request(options, responseHandler(req, res));
+        request(options, responseHandler(res));
         // function (error, response, body) {
         //     if (error) {
         //         __BRTC_ERROR_HANDLER.sendServerError(res, error);

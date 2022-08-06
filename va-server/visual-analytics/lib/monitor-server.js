@@ -1,7 +1,6 @@
 /**
  * Created by sds on 2018-09-27.
  */
-var request = __REQ_request;
 
 var URI_MONITOR_SERVER = 'http://localhost:9100';
 
