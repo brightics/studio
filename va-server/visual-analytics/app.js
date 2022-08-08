@@ -295,6 +295,7 @@ var server = http.createServer(app).listen(__BRTC_CONF.port, __BRTC_CONF.host ||
     __BRTC_DAO.addon_function.checkSchema(handleError, handleSuccess);
     __BRTC_DAO.tools_project.checkSchema(handleError, handleSuccess);
     __BRTC_DAO.tools_function.checkSchema(handleError, handleSuccess);
+    __BRTC_DAO.function.favorite.checkSchema(handleError, handleSuccess);
 });
 
 server.timeout = 2 * 60 * 60 * 1000;
