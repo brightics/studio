@@ -16,23 +16,21 @@
 
 import pandas as pd
 
-from .calcitepython.Sql2Pandas import Sql2Pandas
 
+def logical_union(rel, table_space, field_space):
 
-def execute2(tables=[pd.DataFrame()], query="select 1"):
-    """
-        tables: list of Pandas dataframes
-        query: SQL query statement, ex) 'select 5'
-    """
+    is_all = rel['all']
+    fields = rel['field']
+    enum_name = rel['enum_name']
+    inputs = rel['inputs']
+    top = table_space[inputs[0]]
+    bottom = table_space[inputs[1]]
 
-    enum_table_names = ['TABLE' + str(i) for i in range(0, len(tables))]
-    input_tables = dict(zip(enum_table_names, tables))
+    bottom.columns = top.columns
+    union_table = pd.concat([top, bottom])
+    field_space[enum_name] = field_space[inputs[0]]
 
-    for i, enum_name in enumerate(enum_table_names):
-        query = query.replace("""#{{DF({i})}}""".format(i=i), enum_name)
+    if not is_all:
+        union_table.drop_duplicates(inplace=True)
 
-    Sql2Pandas.set_tables(input_tables)
-    result_df = Sql2Pandas.execute_sql_query(query)
-    Sql2Pandas.reset()
-
-    return {'out_table': result_df}
+    table_space[enum_name] = union_table

@@ -105,8 +105,8 @@ regular expression related functions
 """
 
 regexp = lambda exp, str_: False if re.search(exp, str_) is None else True
-
 regexp_replace = lambda initial_str, pattern, replacement: re.sub(pattern, replacement, initial_str)
+
 
 def regexp_extract(subject, pattern, *index):  # todo index??
 
