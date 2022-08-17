@@ -30,8 +30,6 @@ def profile_table(table, group_by=None, **params):
     check_required_parameters(_profile_table, params, ['table'])
 
     params = get_default_from_parameters_if_required(params, _profile_table)
-    param_validation_check = []
-    validate(*param_validation_check)
 
     if group_by is not None:
         return _function_by_group(_profile_table, table, group_by=group_by, **params)
