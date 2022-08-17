@@ -16,9 +16,6 @@
 
 import pandas
 import pandas_profiling as pd_profiling
-from .profile_table_pandas_compat_fix import describe_fix
-if pandas.__version__ == "1.0.4":
-    pd_profiling.describe = describe_fix
 
 
 from brightics.common.repr import BrtcReprBuilder
@@ -33,8 +30,7 @@ def profile_table(table, group_by=None, **params):
     check_required_parameters(_profile_table, params, ['table'])
 
     params = get_default_from_parameters_if_required(params, _profile_table)
-    param_validation_check = [greater_than_or_equal_to(params, 1, 'bins'),
-                              greater_than(params, 0.0, 'correlation_threshold')]
+    param_validation_check = []
     validate(*param_validation_check)
 
     if group_by is not None:
@@ -43,10 +39,10 @@ def profile_table(table, group_by=None, **params):
         return _profile_table(table, **params)
 
 
-def _profile_table(table, bins=10, check_correlation=False, correlation_threshold=0.9, correlation_overrides=None):
+def _profile_table(table, minimal=False):
     rb = BrtcReprBuilder()
     
-    profile = pd_profiling.ProfileReport(table, bins=bins, check_correlation=check_correlation, correlation_threshold=correlation_threshold, correlation_overrides=correlation_overrides)
+    profile = pd_profiling.ProfileReport(table, minimal=minimal)
     rb.addHTML(profile.html)
     summary = dict()
     summary['_repr_brtc_'] = rb.get()
