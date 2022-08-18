@@ -32,7 +32,7 @@ def timeseries_decomposition(table, group_by=None, **params):
     len_table = len(table)
     check_required_parameters(_timeseries_decomposition, params, ['table'])
     params = get_default_from_parameters_if_required(params, _timeseries_decomposition)
-    param_validation_check = [from_under(params, 1, len_table, 'frequency'),
+    param_validation_check = [from_under(params, 1, len_table, 'period'),
                               greater_than_or_equal_to(params, 0, 'extrapolate_trend')]
     validate(*param_validation_check)
     if group_by is not None:
@@ -41,9 +41,9 @@ def timeseries_decomposition(table, group_by=None, **params):
         return _timeseries_decomposition(table, **params)
 
 
-def _timeseries_decomposition(table, input_col, frequency, model_type='additive', filteration=None, two_sided=True, extrapolate_trend=0):
+def _timeseries_decomposition(table, input_col, period, model_type='additive', filteration=None, two_sided=True, extrapolate_trend=0):
     out_table = table.copy()
-    decomposition = sm.tsa.seasonal_decompose(out_table[input_col], model=model_type, filt=filteration, freq=frequency, two_sided=two_sided, extrapolate_trend=extrapolate_trend)
+    decomposition = sm.tsa.seasonal_decompose(out_table[input_col], model=model_type, filt=filteration, period=period, two_sided=two_sided, extrapolate_trend=extrapolate_trend)
     decomposition.plot()
 
     figs = PyPlotData()
