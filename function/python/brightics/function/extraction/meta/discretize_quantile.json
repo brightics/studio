@@ -8,12 +8,21 @@
         "func": "brightics.function.extraction$discretize_quantile34662",
         "name": "brightics.function.extraction$discretize_quantile",
         "context": "python",
-        "label": {"en": "Discretize Quantile", "ko": "한글 - Discretize Quantile"},
+        "label": {
+            "en": "Discretize Quantile", 
+            "ko": "분위수 이산화"
+        },
         "description": "Data binning (also called Discrete binning or bucketing) is a data pre-processing technique used to reduce the effects of minor observation errors. The original data values which fall into a given small interval, a bin, are replaced by a value representative of that interval, often the central value. It is a form of quantization. Statistical data binning is a way to group numbers of more or less continuous values into a smaller number of \"bins\". For example, if you have data about a group of people, you might want to arrange their ages into a smaller number of age intervals (for example, grouping every five years together). It can also be used in multivariate statistics, binning in several dimensions at once.",
-        "tags": [
-            "quantile",
-            "discretize"
-        ],
+        "tags": {
+            "en": [
+                "quantile",
+                "discretize"
+            ],
+            "ko": [
+                "분위수", 
+                "이산화"
+            ]
+        },
         "version": "3.6",
         "inputs": {
             "table": ""
@@ -95,7 +104,10 @@
                 "multiple": true
             }
         ],
-        "summary": {"en": "This function discretizes variable into equal-sized buckets, based on sample quantiles.", "ko": "한글 - This function discretizes variable into equal-sized buckets, based on sample quantiles."}
+        "summary": {
+            "en": "This function discretizes variable into equal-sized buckets, based on sample quantiles.", 
+            "ko": "샘플 분위수(sample quantiles)를 기반으로 변수를 동일한 크기의 버킷으로 이산화합니다."
+        }
     },
     "md": {
         "en": "# Discretize Quantile\nThis function discretizes variable into equal-sized buckets, based on sample quantiles.\n\n## Description\nData binning (also called Discrete binning or bucketing) is a data pre-processing technique used to reduce the effects of minor observation errors. The original data values which fall into a given small interval, a bin, are replaced by a value representative of that interval, often the central value. It is a form of quantization. Statistical data binning is a way to group numbers of more or less continuous values into a smaller number of \"bins\". For example, if you have data about a group of people, you might want to arrange their ages into a smaller number of age intervals (for example, grouping every five years together). It can also be used in multivariate statistics, binning in several dimensions at once.\n\nReference\n- <https://en.wikipedia.org/wiki/Data_binning>\n\n\n## Properties\n### VA\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) Data table which contains a numeric column.\n#### OUTPUT\n1. **out_table**: (Table) Data table with a bucket number column appended.\n2. **model**: (Model) Result discretize quantile model.\n#### PARAMETER\n1. **Input Column**<b style=\"color:red\">*</b>: Columns to select as an input. Available are Integer, Long, Float, and Double type columns.\n\n2. **Number of Buckets**: Number of buckets. 10 for deciles, 4 for quartiles, etc. An array of quantiles, e.g. [0, .25, .5, .75, 1.] for quartiles, is also available.\n\n3. **Out Column Name**: Name of the new column to be added.\n\n4. **Group By**: Columns to group by.\n\n\n### Python\n#### USAGE\n\n```\ndiscretize_quantile(table = , input_col = , num_of_buckets = , out_col_name = , group_by = )\n```\n\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) Data table which contains a numeric column.\n#### OUTPUT\n1. **out_table**: (Table) Data table with a bucket number column appended.\n2. **model**: (Model) Result discretize quantile model.\n#### PARAMETER\n1. **input_col**<b style=\"color:red\">*</b>: Columns to select as an input. Available are Integer, Long, Float, and Double type columns.\n\t* Type: *str*\n2. **num_of_buckets**: Number of buckets. 10 for deciles, 4 for quartiles, etc. An array of quantiles, e.g. [0, .25, .5, .75, 1.] for quartiles, is also available.\n\t* Type: *int*\n\t* Default / Range: 2 (value >= 1)\n3. **out_col_name**: Name of the new column to be added.\n\t* Type: *str*\n\t* Default: bucket_number\n4. **group_by**: Columns to group by.\n\t* Type: *list[str]*\n\n## Example\n### VA\n\n**<a href=\"/api/va/v2/help/downloads/brightics.function.extraction$discretize_quantile34662/example-model/Discretize Quantile.json\" download>[Sample Model]</a>**\n\n\n<img src=\"/api/va/v2/help/images/brightics.function.extraction$discretize_quantile34662/discretize_quantile.png\"  width=\"800px\" style=\"border: 1px solid gray\" >\n\nIn this tutorial workflow, sample_iris data is used to discretize quantile. The data table with bucket index column is returned as the output table. The generated model is afterward applied to another data set via another function. The parameter settings used in the function are shown below.\n\n++Parameters++\n1. **Input Column**<b style=\"color:red\">*</b>: sepal_length\n2. **Number of Buckets**: 4\n3. **Out Column Name**: bucket_number\n4. **Group By**: None\n\n\n### Python\n\n```\nfrom brightics.function.extraction import discretize_quantile\nres = discretize_quantile(table=inputs[0],\n                                input_col='sepal_length',\n                                num_of_buckets=2,\n                                out_col_name='bucket_number',\n                                group_by=None)\ndf, model = res['out_table'], res['model']\n```\nIn this Python script, sample_iris data is used to discretize quantile. The data table with bucket index column is returned as the output table. The generated model is afterward applied to another data set via another function. The parameter settings used in the function are shown below.\n\n",

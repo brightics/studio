@@ -8,9 +8,19 @@
         "func": "brightics.function.extraction$bucketizer80870",
         "name": "brightics.function.extraction$bucketizer",
         "context": "python",
-        "label": {"en": "Bucketizer", "ko": "한글 - Bucketizer"},
+        "label": {
+            "en": "Bucketizer", 
+            "ko": "버킷타이저"
+        },
         "description": "Bucketizer transforms a column of continuous features to a column of feature buckets. The buckets are specified by users through a parameter called split. ",
-        "tags": [],
+        "tags": {
+            "en": [
+            ],
+            "ko": [
+                "버킷타이저",
+                "버킷"
+            ]
+        },
         "version": "3.6",
         "inputs": {
             "table": ""
@@ -177,7 +187,10 @@
                 "placeHolder": "Enter value"
             }
         ],
-        "summary": {"en": "Grouping continuous data to buckets.", "ko": "한글 - Grouping continuous data to buckets."}
+        "summary": {
+            "en": "Grouping continuous data to buckets using splits.", 
+            "ko": "분할(splits)을 사용하여 연속 데이터를 버킷으로 그룹화합니다."
+        }
     },
     "md": {
         "en": "# Bucketizer\nGrouping continuous data to buckets.\n\n## Description\nBucketizer transforms a column of continuous features to a column of feature buckets. The buckets are specified by users through a parameter called split. \n\n\n\n## Properties\n### VA\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) Input table \n#### OUTPUT\n1. **out_table**: (Table) Result table with a new column containing the index of the bucket. \n#### PARAMETER\n1. **Input Column**<b style=\"color:red\">*</b>: Column name to deal with. From the input table, one column can be selected (It should be number type column).\n\n2. **Bucket Type**: Type of bucket related to left/right opening and closing.\n\n3. **Splits Type**: Types of split for mapping continuous data into buckets.\n    * Example\n        * Splits : ( 10, 20, 30 ) -> buckets : [10,20), [20,30) \n        * The format of Splits List format(String) : 10, 20, 30, 40, 50\n        * Range format : 10 to 50 by 10.\n        \n4. **Splits**: Input list of split points\n\n5. **From**: Smallest reference point for bucketization.\n\n6. **To**: Largest reference point for bucketization.\n\n7. **By**: Spacing of reference points for bucketization. \n\n8. **New Column Name**: New column name. (Default : input column name + \"_bucketed\" ) Note that only English and Korean alphabets, decimal digits that is not first, and an underscore(_) are available for a column name.\n\n### Python\n#### USAGE\n\n```\nbucketizer(table = , input_cols = , bucket_type = , radio_splits = , splits = , splits_from = , splits_to = , splits_by = , new_name = )\n```\n\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) Input table \n#### OUTPUT\n1. **out_table**: (Table) Result table with a new column containing the index of the bucket. \n#### PARAMETER\n1. **input_cols**<b style=\"color:red\">*</b>: Column name to deal with. From the input table, one column can be selected (It should be number type column).\n\t* Type: *str*\n2. **bucket_type**: Type of opening and closing for splitting the bucket.\n    * Available items\n      * Left Closed, Right Open (default)\n      * Right Closed, Left Open\n\t* Type: *str*\n\t* Default / Range: left_closed ( left_closed | right_closed )\n3. **radio_splits**: Types of split for mapping continuous data into buckets. \n    * Splits : ( 10, 20, 30 ) -> buckets : [10,20), [20,30) \n    * The format of Splits List format(String) : 10, 20, 30, 40, 50\n    * Range format : 10 to 50 by 10.\n\n    * Available items\n      * List Format (default)\n      * Range Format\n\t  * Type: *str*\n\t  * Default / Range: array ( array | from_to_by )\n4. **splits**: Input list of split points\n\t* Type: *str*\n5. **splits_from**: Smallest reference point for bucketization.\n \t* Type: *double*\n\n6. **splits_to**: Largest reference point for bucketization.\n    * Type: *double*  \n\n7. **splits_by**: Spacing of reference points for bucketization. \n   * Type: *double*\n\t\n8. **new_name**: New column name. (Default : input column name + \"_bucketed\" ) Note that only English and Korean alphabets, decimal digits that is not first, and an underscore(_) are available for a column name.\n\t* Type: *str*\n\n\n## Example\n### VA\n\n**<a href=\"/api/va/v2/help/downloads/brightics.function.extraction$bucketizer80870/example-model/bucketizer.json\" download>[Sample Model]</a>**\n\n\n<img src=\"/api/va/v2/help/images/brightics.function.extraction$bucketizer80870/bucketizer.PNG\"  width=\"800px\" style=\"border: 1px solid gray\" >\n\nThis model shows a simple example of Buketizer function. Each row are assigned with a bucket number based on the value of sepal_length and the bucket definition. \n\n++Parameters++\n1. **Input Column**<b style=\"color:red\">*</b>: sepal_length\n2. **Bucket Type**: Left Closed, Right Open \n3. **Splits Type**:  List Format\n4. **Splits**: 2, 4, 6, 8, 10\n8. **New Column Name**: new_col\n\n### Python\n\n```\nfrom brightics.function.extraction import bucketizer\ninput_table = inputs[0]\nres = bucketizer(table = input_table, \n\t\tinput_cols = \"sepal_length\",\n\t\tradio_splits = 'array',\t\n\t\tsplits = [2, 4, 6, 8, 10],\n\t\tnew_name = 'new_col')\noutput = res['out_table']\n```\n\nIn this python script, Bucketizer function is applied to the input data to bucketize a given column according to the number of splits. \n\n",

@@ -8,9 +8,19 @@
         "func": "brightics.function.recommendation$als_predict50130",
         "name": "brightics.function.recommendation$als_predict",
         "context": "python",
-        "label": {"en": "ALS Predict", "ko": "한글 - ALS Predict"},
+        "label": {
+            "en": "ALS Predict", 
+            "ko": "ALS 예측"
+        },
         "description": "Matrix factorization is a class of collaborative filtering algorithms used in recommender systems. Matrix factorization algorithms work by decomposing the user-item iteraction matrix into the product of two lower dimensionality rectangular matrices. One matrix is a user latent vector where rows represent users and columns are latent factors. The other matrix is a item latent vector where rows are latent factors and columns represent items. And Rating of item _i_ given by user _u_ can be expressed as a dot product of the user latent vector and the item latent vector.\n\nALS(Alternating Least Squares) is also a matrix factorization algorithm and it runs itself in a parallel fashion. The idea behind ALS is to minimize two loss funcitions alternatively. It first holds user matrix fixed and runs gradient descent with item matrix. Then it holds item matrix fixed and runs gradient descent with user matrix. ALS is doing a pretty good job at solving scalability and sparseness of the ratings data, and it's simple and scales well to very large datasets.",
-        "tags": [],
+        "tags": {
+            "en": [
+            ],
+            "ko": [
+                "ALS",
+                "예측"
+            ]
+        },
         "version": "3.6",
         "inputs": {
             "table": "",
@@ -45,7 +55,10 @@
                 "placeHolder": "prediction"
             }
         ],
-        "summary": {"en": "This function predicts ratings for user-item pairs by using the ALS(Alternating Least Squares) algorithm based recommender model.", "ko": "한글 - This function predicts ratings for user-item pairs by using the ALS(Alternating Least Squares) algorithm based recommender model."}
+        "summary": {
+            "en": "This function predicts ratings for user-item pairs by using the ALS(Alternating Least Squares) algorithm based recommender model.", 
+            "ko": "ALS(alternating least squares) 알고리즘 기반 추천 모델을 사용하여 사용자-항목 쌍에 대한 평가를 예측합니다."
+        }
     },
     "md": {
         "en": "# ALS Predict\nThis function predicts ratings for user-item pairs by using the ALS(Alternating Least Squares) algorithm based recommender model.\n\n## Description\nMatrix factorization is a class of collaborative filtering algorithms used in recommender systems. Matrix factorization algorithms work by decomposing the user-item iteraction matrix into the product of two lower dimensionality rectangular matrices. One matrix is a user latent vector where rows represent users and columns are latent factors. The other matrix is a item latent vector where rows are latent factors and columns represent items. And Rating of item _i_ given by user _u_ can be expressed as a dot product of the user latent vector and the item latent vector.\n\nALS(Alternating Least Squares) is also a matrix factorization algorithm and it runs itself in a parallel fashion. The idea behind ALS is to minimize two loss funcitions alternatively. It first holds user matrix fixed and runs gradient descent with item matrix. Then it holds item matrix fixed and runs gradient descent with user matrix. ALS is doing a pretty good job at solving scalability and sparseness of the ratings data, and it's simple and scales well to very large datasets.\n\nReference\n+ <https://en.wikipedia.org/wiki/Matrix_factorization_(recommender_systems)>\n+ <http://stanford.edu/~rezab/classes/cme323/S15/notes/lec14.pdf>\n+ <https://towardsdatascience.com/prototyping-a-recommender-system-step-by-step-part-2-alternating-least-square-als-matrix-4a76c58714a1>\n\n\n## Properties\n### VA\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) Data in a Table. It must contain `User Column`, `Item Column` used in model training.\n2. **model**<b style=\"color:red\">*</b>: (Model) Trained ALS recommender model.\n#### OUTPUT\n1. **table**: (Table) A table that contains user-item pairs with predicted ratings as `Prediction Column Name`.\n#### PARAMETER\n1. **Prediction Column Name**: A name of prediction column.\n\n\n### Python\n#### USAGE\n\n```\nals_predict(table = , model = , prediction_col = )\n```\n\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) Data in a Table. It must contain `user_col`, `item_col` used in model training.\n2. **model**<b style=\"color:red\">*</b>: (Model) Trained ALS recommender model.\n#### OUTPUT\n1. **out_table**: A table that contains user-item pairs with predicted ratings as `prediction_col`.\n#### PARAMETER\n1. **prediction_col**: A name of prediction column.\n\t* Type: *str*\n\t* Default / Range : 'prediction'\n\n## Example\n### VA\n\n\n**<a href=\"/api/va/v2/help/downloads/brightics.function.recommendation$als_predict50130/example-model/brightics.function.recommendation$als.json\" download>[Sample Model]</a>**\n\n\n<img src=\"/api/va/v2/help/images/brightics.function.recommendation$als_predict50130/brightics.function.recommendation$als_predict.PNG\"  width=\"800px\" style=\"border: 1px solid gray\" >\n\n<br>In this tutorial workflow, sample_ALSTrain is used to train a recommender system by using the ALS(Alternating Least Squares) algorithm to learn latent factors. The generated model is afterward applied to a test data set to predict the value of _rating_, by using ALS Predict function. The parameter settings used in the function are shown below.\n\n++Parameters++\n1. **Prediction Column Name**: prediction \n\n\n### Python\n\n```\nfrom brightics.function.recommendation import als_predict\ninput_table = inputs[1]\ninput_model = models[0]\nresult = als_predict(table=input_table, model=input_model, prediction_col='prediction')\noutput = result['out_table']\n```\n<br>In this python script, trained ALS recommender model is applied to a test data set to predict the value of _rating_, by using ALS Predict function.\n\n\n",
