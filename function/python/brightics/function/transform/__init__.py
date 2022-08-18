@@ -31,7 +31,6 @@ from .json_extraction import get_table
 from .json_extraction import get_image
 from .sql import execute as sql_execute
 from .sql import execute2 as sql_execute2
-from .sql import execute3 as sql_execute3
 from .svd import svd
 from .svd import svd2
 from .svd import svd_model

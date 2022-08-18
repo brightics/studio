@@ -35,8 +35,6 @@ def _get_serialized_cols(table):
 
 
 def _is_serialized(obj):
-    if not isinstance(obj, bytes):
-        return False
     try:
         _deserialize(obj)
         return True
@@ -65,8 +63,7 @@ def _get_columns_to_serialize(table):
     cols = dtypes.index
     
     def _need_serialize(col, tpe, table):
-        return (len(table[col].index) and tpe == 'object' and not _is_string(table[col]))\
-               or np.issubdtype(tpe, np.datetime64)
+        return (tpe == 'object' and not _is_string(table[col])) or np.issubdtype(tpe, np.datetime64)
     
     def _is_string(series):
         n_sample = np.min((series.size, 100))

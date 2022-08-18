@@ -29,6 +29,4 @@ from .arima import arima_predict
 from .arima import auto_arima_train
 from .arima import auto_arima_predict
 from .autocorrelation import autocorrelation
-from .spcrule import spcrule
-from .spcrule_summ import spcrule_summ
 from .linear_sampling import linear_sampling
