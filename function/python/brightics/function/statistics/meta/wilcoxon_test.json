@@ -9,11 +9,21 @@
         "func": "brightics.function.statistics$wilcoxon_test",
         "name": "brightics.function.statistics$wilcoxon_test",
         "context": "python",
-        "label": "Wilcoxon Test",
+        "label": {
+            "en": "Wilcoxon Test", 
+            "ko": "윌콕슨 검정"
+        },
         "description": "The Wilcoxon test(Wilcoxon signed-rank test) is a non-parametric statistical hypothesis test used to compare two related samples, matched samples, or repeated measurements on a single sample to assess whether their population mean ranks differ. It can be used as an alternative to the paired Student's t-test when the distribution of the differences between the two samples cannot be assumed to be normally distributed. This test is a nonparametric test that can be used to determine whether two dependent samples were selected from populations having the same distribution.\n\nReference\n+ <https://en.wikipedia.org/wiki/Wilcoxon_signed-rank_test>",
-        "tags": [
-            "statistics"
-        ],
+        "tags": {
+            "en": [
+                "statistics"
+            ],
+            "ko": [
+                "윌콕슨",
+                "검정",
+                "윌콕슨 검정"
+            ]
+        },
         "version": "3.6",
         "inputs": {
             "table": ""
@@ -113,7 +123,10 @@
                 "multiple": true
             }
         ],
-        "summary": "This function is for Wilcoxon Test in statistics."
+        "summary": {
+            "en": "This function is for Wilcoxon Test in statistics.", 
+            "ko": "두 개의 종속 표본을 분포가 동일한 모집단에서 선택했는지 여부를 확인하는 데 사용되는 윌콕슨 검정을 수행합니다."
+        }
     },
 	"md" : {
 		"en" : "# Wilcoxon Test\r\nThis function is for Wilcoxon Test in statistics.\r\n\r\n## Description\r\nThe Wilcoxon test(Wilcoxon signed-rank test) is a non-parametric statistical hypothesis test used to compare two related samples, matched samples, or repeated measurements on a single sample to assess whether their population mean ranks differ. It can be used as an alternative to the paired Student's t-test when the distribution of the differences between the two samples cannot be assumed to be normally distributed. This test is a nonparametric test that can be used to determine whether two dependent samples were selected from populations having the same distribution.\r\n\r\nReference\r\n+ <https://en.wikipedia.org/wiki/Wilcoxon_signed-rank_test>\r\n\r\n\r\n\r\n## Properties\r\n### VA\r\n#### INPUT\r\n1. **table**<b style=\"color:red\">*</b>: (Table) Data in a Table.\r\n#### OUTPUT\r\n1. **result**: (Model) It shows the result of Wilcoxon Test.\r\n#### PARAMETER\r\n1. **Response Column**<b style=\"color:red\">*</b>: Column to select as response.\r\n\r\n2. **Factor Column**<b style=\"color:red\">*</b>:  Column to select as factor.\r\n\r\n3. **Zero Method**: Choose a method of handling ties at zero. `pratt` includes zero-differences in the ranking process, but drops the ranks of the zeros. `wilcox` discards all zero-differences, the default. `zsplit` includes zero-differences in the ranking process and split the zero rank between positive and negative ones.\r\n    * Available Options : `pratt`, `wilcox`, `zsplit` \r\n4. **Correction**: If `True`, apply continuity correction by adjusting the Wilcoxon rank statistic by 0.5 towards the mean value when computing the z-statistic.\r\n\t* Available Options : `True`, `False`\r\n5. **Group By**: Columns to group by.\r\n\r\n\r\n\r\n### Python\r\n#### USAGE\r\n\r\n```\r\nwilcoxon_test(table, response_col, factor_col, zero_method='wilcox', correction=False, group_by=None)\r\n```\r\n\r\n#### INPUT\r\n1. **table**<b style=\"color:red\">*</b>: (Table) Data in a Table.\r\n#### OUTPUT\r\n1. **result**:  (Model) It shows the result of Wilcoxon Test.\r\n#### PARAMETER\r\n1. **response_col**<b style=\"color:red\">*</b>: Column to select as response.\r\n\t* Type: *str*\r\n2. **factor_col**<b style=\"color:red\">*</b>:  Column to select as factor.\r\n\t* Type: *str*\r\n3. **zero_method**: Choose a method of handling ties at zero. `pratt` includes zero-differences in the ranking process, but drops the ranks of the zeros. `wilcox` discards all zero-differences, the default. `zsplit` includes zero-differences in the ranking process and split the zero rank between positive and negative ones.\r\n\t* Type: *str*\r\n\t* Default / Range: wilcox ( prattwilcox  | wilcox | zsplit )\r\n4. **correction**: If `True`, apply continuity correction by adjusting the Wilcoxon rank statistic by 0.5 towards the mean value when computing the z-statistic.\r\n   - Type: _bool_\r\n\t* Default / Range: False\r\n5. **group_by**: Columns to group by.\r\n   - Type : _list_[_str_]\r\n\r\n\r\n## Example\r\n### VA\r\n\r\n\r\n\r\n**<a href=\"/api/va/v2/help/downloads/brightics.function.statistics$wilcoxon_test/example-model/brightics.function.statistics$wilcoxon_test.json\" download>[Sample Model]</a>**\r\n\r\n\r\n<img src=\"/api/va/v2/help/images/brightics.function.statistics$wilcoxon_test/brightics.function.statistics$wilcoxon_test.png\"  width=\"800px\" style=\"border: 1px solid gray\" >\r\n\r\n\r\n<br>In this tutorial workflow, sample_iris data is used for Wilcoxon Test. _sepal\\_length_ is used as `Response Column` and _species_ is used as `Factor Column`. The parameter settings used in the function are shown below. \r\n\r\n++Parametersres++\r\n1. **Response Column**<b style=\"color:red\">*</b> : sepal_length\r\n2. **Factor Column**<b style=\"color:red\">*</b> : species\r\n3. **Zero Method** : wilcox\r\n4. **Crrection** : False\r\n5. **Group By** : None\r\n\r\n### Python\r\n```\r\nfrom brightics.function.statistics import wilcoxon_test\r\ninput_table = inputs[0]\r\nresult = wilcoxon_test(table=input_table, \r\n                       response_col='sepal_length',\r\n                       factor_col='species', \r\n                       zero_method='wilcox',\r\n                       correction=False, \r\n                       group_by=None)\r\noutput = result['result']\r\n```\r\n\r\n<br>In this python script, sample_iris data is used for Wilcoxon Test.  _sepal\\_length_ is used as `response_col` and _species_ is used as `factor_col`.\r\n\r\n",

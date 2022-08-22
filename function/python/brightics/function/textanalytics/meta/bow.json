@@ -8,9 +8,20 @@
         "func": "brightics.function.textanalytics$bow74222",
         "name": "brightics.function.textanalytics$bow",
         "context": "python",
-        "label": {"en": "Bag of Words", "ko": "한글 - Bag of Words"},
+        "label": {
+            "en": "Bag of Words", 
+            "ko": "단어 가방 (Bag of Words)"
+        },
         "description": "The bag-of-words model is a simplifying representation used in natural language processing and information retrieval (IR). In this model, a text (such as a sentence or a document) is represented as the bag (multiset) of its words, disregarding grammar and even word order but keeping multiplicity. The bag-of-words model is commonly used in methods of document classification where the (frequency of) occurrence of each word is used as a feature for training a classifier.\n\nReference: \n+ <https://en.wikipedia.org/wiki/Bag-of-words_model>",
-        "tags": [],
+        "tags": {
+            "en": [
+            ],
+            "ko": [
+                "단어",
+                "가방",
+                "단어 가방"
+            ]
+        },
         "version": "3.6",
         "inputs": {
             "table": ""
@@ -103,7 +114,10 @@
                 "multiple": true
             }
         ],
-        "summary": {"en": "This function returns bag of word Table from tokenized text data.", "ko": "한글 - This function returns bag of word Table from tokenized text data."}
+        "summary": {
+            "en": "This function returns bag of word Table from tokenized text data.", 
+            "ko": "토큰화된 텍스트 데이터에서 단어 가방 (Bag of Words) 테이블을 출력합니다."
+        }
     },
     "md": {
         "en": "# Bag of Words\nThis function returns bag of word Table from tokenized text data.\n\n## Description\nThe bag-of-words model is a simplifying representation used in natural language processing and information retrieval (IR). In this model, a text (such as a sentence or a document) is represented as the bag (multiset) of its words, disregarding grammar and even word order but keeping multiplicity. The bag-of-words model is commonly used in methods of document classification where the (frequency of) occurrence of each word is used as a feature for training a classifier.\n\nReference: \n+ <https://en.wikipedia.org/wiki/Bag-of-words_model>\n\n\n\n## Properties\n### VA\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) Data in a Table.\n#### OUTPUT\n1. **model**: (Model) Bag of words Model.\n2. **out_table**: (Table) Bag of words Table.\n#### PARAMETER\n1. **Input Column**<b style=\"color:red\">*</b>: Columns to select as input. Only List of String type columns are possible.\n\n2. **Minimum Number of Occurrence**: Keep tokens which are contained in at least `Minimum Number of Occurrence` documents.\n\n3. **Maximum Fraction of Occurrence**: Keep tokens which are contained in no more than `Maximum Fraction of Occurrence` documents (fraction of total corpus size).\n\n4. **N most Frequent**:  Keep only the `N most Frequent` most frequent tokens.\n\n5. **Group By**: Columns to group by.\n\n\n### Python\n#### USAGE\n\n```\nbow(table = , input_col = , no_below = , no_above = , keep_n = , group_by = )\n```\n\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) Data in a Table.\n#### OUTPUT\n1. **model**: (Model) Bag of words Model.\n2. **out_table**: (Table) Bag of words Table.\n#### PARAMETER\n1. **input_col**<b style=\"color:red\">*</b>: Columns to select as input. Only List of String type columns are possible.\n\t* Type: *str*\n2. **no_below**: Keep tokens which are contained in at least `no_below` documents.\n\t* Type: *int*\n\t* Default / Range: 1 (value >= 0)\n3. **no_above**: Keep tokens which are contained in no more than `no_above` documents (fraction of total corpus size).\n\t* Type: *float*\n\t* Default / Range: 0.8 (1.0 >= value > 0.0)\n4. **keep_n**:  Keep only the `keep_n` most frequent tokens.\n\t* Type: *int*\n\t* Default / Range: 10000 (value >= 1)\n5. **group_by**: Columns to group by.\n\t* Type: *list[str]*\n\n## Example\n### VA\n\n**<a href=\"/api/va/v2/help/downloads/brightics.function.textanalytics$bow74222/example-model/brightics.function.textanalytics$bow.json\" download>[Sample Model]</a>**\n\n\n<img src=\"/api/va/v2/help/images/brightics.function.textanalytics$bow74222/brightics.function.textanalytics$bow.PNG\"  width=\"800px\" style=\"border: 1px solid gray\" >\n\n\n<br>In this tutorial workflow, sample_data_tokenizer_eng data is used as input of Bag of Words function after tokenizing. The outputs of this function is a bag of words models and bag of words Table.\nThe parameter settings used in the function are shown below. \n\n##### ++Parameters++\n1. **Input Column**<b style='color:red'>*</b> : tokenized_document\n2. **Minimum Number of Occurrence** : 1\n3. **Maximum Fraction of Occurrence** : 0.8\n4. **N most Frequent** :  10000\n5. **Group By** : None\n\n\n### Python\n```\nfrom brightics.function.textanalytics import bow\ninput_table = inputs[0]\nresult = bow(table=input_table, input_col='tokenized_text',\n             add_words=['hi', 'hello'], no_below=1, no_above=0.8,\n             keep_n=10000, group_by=None)\noutput_model = result['model']\noutput_table = result['out_table']\n```\n\n<br>In this python script, sample_data_tokenizer_eng data is used as input of bow function after tokenizing. The outputs of this function is a bag of words models and bag of words Table.",

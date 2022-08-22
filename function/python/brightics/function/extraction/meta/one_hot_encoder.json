@@ -9,17 +9,29 @@
         "func": "brightics.function.extraction$one_hot_encodercoder",
         "name": "brightics.function.extraction$one_hot_encoder",
         "context": "python",
-        "label": "One Hot Encoder",
+        "label": {
+            "en": "One Hot Encoder", 
+            "ko": "0/1 부호화"
+        },
         "description": "In machine learning, one-hot is a group of bits among which the legal combinations of values are only those with a single high (1) bit and all the others low (0). A similar implementation in which all bits are '1' except one '0' is sometimes called one-cold. In statistics, dummy variables represent a similar technique for representing categorical data.",
-        "tags": [
-            "one",
-            "hot",
-            "encoder",
-            "preprocessing",
-            "add columns",
-            "add",
-            "column"
-        ],
+        "tags": {
+            "en": [
+                "one",
+                "hot",
+                "encoder",
+                "preprocessing",
+                "add columns",
+                "add",
+                "column"
+            ],
+            "ko": [
+                "부호화",
+                "0-1",
+                "전처리",
+                "열추가",
+                "컬럼"
+            ]
+        },
         "version": "3.6",
         "inputs": {
             "table": ""
@@ -149,7 +161,10 @@
                 "multiple": true
             }
         ],
-        "summary": "This function encodes categorical integer features using a one-hot, also known as one-of-K, scheme."
+        "summary": {
+            "en": "This function encodes categorical integer features using a one-hot, also known as one-of-K, scheme.", 
+            "ko": "one-of-K라고도 하는 원핫 체계를 사용하여 범주형 변수들을 인코딩합니다."
+        }
     },
     "md": {
         "en": "# One Hot Encoder\r\nThis function encodes categorical integer features using a one-hot, also known as one-of-K, scheme.\r\n\r\n## Description\r\nIn machine learning, one-hot is a group of bits among which the legal combinations of values are only those with a single high (1) bit and all the others low (0). A similar implementation in which all bits are '1' except one '0' is sometimes called one-cold. In statistics, dummy variables represent a similar technique for representing categorical data.\r\n\r\nReference\r\n- <https://en.wikipedia.org/wiki/One-hot>\r\n\r\n\r\n## Properties\r\n### VA\r\n#### INPUT\r\n1. **table**<b style=\"color:red\">*</b>: (Table) Data table with at least one categorical column.\r\n#### OUTPUT\r\n1. **out_table**: (Table) Data table with one-hot encoded columns appended.\r\n2. **model**: (Model) Result one hot encoder model. This model is used as an input of One Hot Encoder Model function.\r\n#### PARAMETER\r\n1. **Input Columns**<b style=\"color:red\">*</b>: Columns to select as an input. Available are Integer, Long, Float, Double, and String type columns.\r\n\r\n2. **Prefix Type**: Prefix type for newly added columns.\r\n   - Available Options: `Use existing column name(s)`, `Enter new column name(s)`\r\n\r\n3. **Prefix(es)**: List of prefix name(s). The length of this list should be equal to the length of input columns. This option is available when Prefix Type is set to `Enter new column name(s)`.\r\n\r\n4. **Suffix Type**: Suffix type for newly added columns. Available are index, which yields integer indices starting with 0, and label, which yields label suffix same as the category values.\r\n   - Available Options: `Index`, `Label`\r\n\r\n5. **Drop Last**: Whether to drop the last column.\r\n   - Available Option: `True`, `False`\r\n\r\n\t* Default value: false \r\n6. **Group By**: Columns to group by.\r\n\r\n\r\n### Python\r\n#### USAGE\r\n\r\n```\r\none_hot_encoder(table, input_cols, prefix='col_name', prefix_list=None, suffix='index', n_values='auto', categorical_features='all', handle_unknown='error', drop_last=False, group_by=None)\r\n```\r\n\r\n#### INPUT\r\n1. **table**<b style=\"color:red\">*</b>: (Table) Data table with at least one categorical column.\r\n#### OUTPUT\r\n1. **out_table**: (Table) Data table with one-hot encoded columns appended.\r\n2. **model**: (Model) Result one hot encoder model. This model is used as an input of One Hot Encoder Model function.\r\n#### PARAMETER\r\n1. **input_cols**<b style=\"color:red\">*</b>: Columns to select as an input. Available are Integer, Long, Float, Double, and String type columns.\r\n\t* Type: *list[str]*\r\n2. **prefix**: Prefix type for newly added columns.\r\n\t* Type: *str*\r\n\t* Default / Range: col_name ( col_name | list )\r\n3. **prefix_list**: List of prefix name(s). The length of this list should be equal to the length of input columns.\r\n\t* Type: *list[str]*\r\n4. **suffix**: Suffix type for newly added columns. Available are index, which yields integer indices starting with 0, and label, which yields label suffix same as the category values.\r\n\t* Type: *str*\r\n\t* Default / Range: index ( index | label )\r\n5. **drop_last**: Whether to drop the last column.\r\n\t* Type: *bool*\r\n\t* Default value: false \r\n6. **group_by**: Columns to group by.\r\n\t* Type: *list[str]*\r\n\r\n## Example\r\n### VA\r\n\r\n**<a href=\"/api/va/v2/help/downloads/brightics.function.extraction$one_hot_encodercoder/example-model/One Hot Encoder.json\" download>[Sample Model]</a>**\r\n\r\n\r\n<img src=\"/api/va/v2/help/images/brightics.function.extraction$one_hot_encodercoder/one hot encoder.png\"  width=\"800px\" style=\"border: 1px solid gray\" >\r\n\r\nIn this tutorial workflow, sample_iris data is used to apply one hot eoncoder. The data table with one-hot encoded vectors appended as columns is returned as the output table. The generated model is afterward applied to another data set via One Hot Encoder Model function. The parameter settings used in the function are shown below.\r\n\r\n++Parameters++\r\n1. **Input Columns**<b style=\"color:red\">*</b>: species\r\n2. **Prefix Type**: Use existing column name(s)\r\n3. **Prefix(es)**: None\r\n4. **Suffix Type**: Index\r\n5. **Drop Last**: False\r\n6. **Group By**: None\r\n\r\n\r\n### Python\r\n\r\n```\r\nfrom brightics.function.extraction import one_hot_encoder\r\nres = one_hot_encoder(table=inputs[0],\r\n                      input_cols=['species'],\r\n                      prefix='col_name',\r\n                      prefix_list=None,\r\n                      suffix='index',\r\n                      n_values='auto',\r\n                      categorical_features='all',\r\n                      handle_unknown='error',\r\n                      drop_last=False,\r\n                      group_by=None)\r\ndf, model = res['out_table'], res['model']\r\n```\r\nIn this python script, sample_iris data is used to apply one hot encoder. The data table with one-hot encoded vectors appended as columns is returned as the output table. The generated model is afterward applied to another data set via One Hot Encoder Model function. \r\n",

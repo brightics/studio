@@ -8,13 +8,23 @@
         "func": "brightics.function.textanalytics$gsdmm",
         "name": "brightics.function.textanalytics$gsdmm",
         "context": "python",
-        "label": {"en": "GSDMM", "ko": "한글 - GSDMM"},
+        "label": {
+            "en": "GSDMM", 
+            "ko": "GSDMM"
+        },
         "description": "GSDMM stands for collapsed Gibbs Sampling algorithm for the Dirichlet Multinomial Mixture model. This function classifies given short text documents into clusters in which documents share the same topic. It is recommended to perform pre-process for the input, such as converting letters into lower case, removing stop-words, stemming for words, removing words with too high or too low frequencies, etc. This pre-process should be performed carefully to get better results.\n\nInput column should be in an array type containing tokenized terms. K is an upper bound of the number of topics, so if true number of topics is larger than K, it may not work properly as expected. Increasing number of iterations for running LDA model would give you stable results.\n\n+ Reference: Yin & Wang, 2014",
-        "tags": [
-            "gsdmm",
-            "topic modeling",
-            "short text topic modeling"
+        "tags": {
+            "en": [
+                "gsdmm",
+                "topic modeling",
+                "short text topic modeling"
         ],
+        "ko": [
+            "GSDMM",
+            "토픽 모델링",
+            "짧은 텍스트 토픽 모델링"
+        ]
+    },
         "version": "3.6",
         "inputs": {
             "table": ""
@@ -155,7 +165,9 @@
                 "placeHolder": "50 (value >= 1)"
             }
         ],
-        "summary": {"en": "This function classifies given short text documents into clusters in which documents share the same topic.", "ko": "한글 - This function classifies given short text documents into clusters in which documents share the same topic."}
+        "summary": {
+            "en": "This function classifies given short text documents into clusters in which documents share the same topic.", 
+            "ko": "주어진 짧은 텍스트 문서를 동일한 주제를 공유하는 문서 클러스터로 분류합니다."}
     },
     "md": {
         "en": "# GSDMM\nThis function classifies given short text documents into clusters in which documents share the same topic.\n\n## Description\nGSDMM stands for collapsed Gibbs Sampling algorithm for the Dirichlet Multinomial Mixture model. This function classifies given short text documents into clusters in which documents share the same topic. It is recommended to perform pre-process for the input, such as converting letters into lower case, removing stop-words, stemming for words, removing words with too high or too low frequencies, etc. This pre-process should be performed carefully to get better results.\n\nInput column should be in an array type containing tokenized terms. K is an upper bound of the number of topics, so if true number of topics is larger than K, it may not work properly as expected. Increasing number of iterations for running LDA model would give you stable results.\n\nReference\n+ Yin, Jianhua, and Jianyong Wang. \"A dirichlet multinomial mixture model-based approach for short text clustering.\" Proceedings of the 20th ACM SIGKDD international conference on Knowledge discovery and data mining. 2014.\n\n## Properties\n### VA\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) Data including text documents.\n#### OUTPUT\n1. **out_table**: (Table) Topic classification result attached to the input table.\n2. **topic_table**: (Table) Table which consists of each topic's vocabulary and weights.\n3. **model**: (Model) Trained GSDMM model.\n#### PARAMETER\n1. **Input Column**<b style=\"color:red\">*</b>:  Text data column to select as an input. Data type should be of string array type.\n\n2. **Topic Column Name**: Column name for topic modeling result.\n\n3. **K**: Upper bound of the number of topics that will be contained in the entire documents. It should be greater than or equal to two.\n\n4. **Alpha**: Alpha, one of the parameters for GSDMM. It relates to the prior probability of a document choosing a cluster (completeness). If alpha gets larger, so does the probability of a document choosing an empty cluster. It should be greater than or equal to zero.\n\n5. **Beta**: Beta, one of the parameters for GSDMM. It relates to homogeneity. If beta gets larger, so does the probability of a cluster containing mixed topics. It should be greater than or equal to zero.\n\n6. **Number of Terminologies**: Maximum number of words to be shown for each topic. It should be greater than or equal to two.\n\n7. **Iterations**: Maximum number of iterations you want to run your model. It should be at least one.\n\n\n### Python\n#### USAGE\n\n```\ngsdmm(table = , input_col = , topic_name = , K = , alpha = , beta = , num_topic_words = , max_iter = )\n```\n\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) Data including text documents.\n#### OUTPUT\n1. **out_table**: (Table) Topic classification result attached to the input table.\n2. **topic_table**: (Table) Table which consists of each topic's vocabulary and weights.\n3. **model**: (Model) Result model.\n#### PARAMETER\n1. **input_col**<b style=\"color:red\">*</b>:  Text data column to select as an input. Data type should be of string array type.\n\t* Type: *str*\n2. **topic_name**: Column name for topic modeling result.\n\t* Type: *str*\n\t* Default value: 'topic'\n3. **K**: Upper bound of the number of topics that will be contained in the entire documents. It should be greater than or equal to two.\n\t* Type: *int*\n\t* Default / Range: 10 (value >= 2)\n4. **alpha**: Alpha, one of the parameters for GSDMM. It relates to the prior probability of a document choosing a cluster (completeness). If alpha gets larger, so does the probability of a document choosing an empty cluster. It should be greater than or equal to zero.\n\t* Type: *double*\n\t* Default / Range: 0.1 (value >= 0)\n5. **beta**: Beta, one of the parameters for GSDMM. It relates to homogeneity. If beta gets larger, so does the probability of a cluster containing mixed topics. It should be greater than or equal to zero.\n\t* Type: *double*\n\t* Default / Range: 0.1 (value >= 0)\n6. **num_topic_words**: Maximum number of words to be shown for each topic. It should be greater than or equal to two.\n\t* Type: *int*\n\t* Default / Range: 3 (value >= 2)\n7. **max_iter**: Maximum number of iterations you want to run your model. It should be at least one.\n\t* Type: *int*\n\t* Default / Range: 50 (value >= 1)\n\n\n## Example\n### VA\n\n**<a href=\"/api/va/v2/help/downloads/brightics.function.textanalytics$gsdmm/example-model/GSDMM.json\" download>[Sample Model]</a>**\n\n<img src=\"/api/va/v2/help/images/brightics.function.textanalytics$gsdmm/gsdmm.png\"  width=\"800px\" style=\"border: 1px solid gray\" >\n\nIn this tutorial workflow, sample_LatentDirichletAllocation data is used to make topic model and get the result. The result includes assigned topic and contributions of each word to assigned topic. The parameter settings used in the function are shown below.\n\n++Parameters++\n1. **Input Column**<b style=\"color:red\">*</b>: tokenized_text\n2. **Topic Column Name**: topic\n3. **K**: 10\n4. **Alpha**: 0.1\n5. **Beta**: 0.1\n6. **Number of Terminologies**: 3\n7. **Iterations**: 50\n\n\n\n### Python\n\n```\nfrom brightics.function.textanalytics import gsdmm\ninput_table = inputs[0]\nresult = gsdmm(table=input_table, input_col='tokenized_text',\n              topic_name='topic', K=10, alpha=0.1, beta=0.1,\n              max_iter=50, num_topic_words=3)\noutput = result['out_table']\n```\nIn this tutorial workflow, sample_LatentDirichletAllocation data is used to make topic model and get the result. The result includes assigned topic and contributions of each word to assigned topic. The parameter settings used in the function are shown below.\n\n\n",
