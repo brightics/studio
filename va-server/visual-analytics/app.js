@@ -2,13 +2,10 @@
 require('dotenv').config();
 
 global.__basedir = __dirname;
-
-const args = require('yargs').argv;
 global.__BRTC_ARGS = {
-    user_id: args.user_id || 'brightics@samsung.com',
-    access_token: args.access_token || 'ACCESS_TOKEN',
+    user_id: 'brightics@samsung.com',
+    access_token: 'ACCESS_TOKEN',
 };
-
 global.__REQ_fs = require('fs');
 global.__REQ_path = require('path');
 global.__REQ_request = require('request');

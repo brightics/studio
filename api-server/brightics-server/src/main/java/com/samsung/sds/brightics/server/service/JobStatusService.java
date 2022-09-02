@@ -28,6 +28,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
@@ -62,6 +63,7 @@ public class JobStatusService {
     BrtcJobModelRepository brtcJobModelRepository;
     @Autowired
     BrtcJobLegacyRepository brtcJobLegacyRepository;
+    @Lazy
     @Autowired
     JobService jobService;
     @Autowired
