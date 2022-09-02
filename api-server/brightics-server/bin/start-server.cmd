@@ -8,6 +8,8 @@ SET USER_ID=%1
 SET ACCESS_TOKEN=%2
 SET PATH=%PATH%;%BRIGHTICS_HOME%\lib\graphviz\bin;%BRIGHTICS_SERVER_HOME%
 SET HADOOP_HOME=%BRIGHTICS_HOME%\lib\hadoop
+SET PYTHONPATH=%BRIGHTICS_HOME%\brightics-server\functions\python
+SET BRIGHTICS_PYTHON_PATH=%BRIGHTICS_HOME%\lib\python\python.exe
 
 if "%USER_ID%"=="" (
 	ECHO Please enter USER_ID
@@ -22,7 +24,7 @@ if "%ACCESS_TOKEN%"=="" (
 
 SET _JAVA_OPTIONS=
 SET GC_OPTS=-XX:+UseConcMarkSweepGC -verbose:gc --Xloggc:"%BRIGHTICS_SERVER_HOME%gc.out" -XX:+CMSClassUnloadingEnabled
-SET JAVA_OPTS=-Xms1g -Xmx2g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError -Djava.net.preferIPv4Stack=true -Djava.io.tmpdir="%BRIGHTICS_SERVER_HOME%tmp" -Dbrightics.local.token=%ACCESS_TOKEN% -Dbrightics.local.user=%USER_ID% -Dfile.encoding=utf-8 
+SET JAVA_OPTS=-Xms1g -Xmx2g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError -Djava.net.preferIPv4Stack=true -Djava.io.tmpdir="%BRIGHTICS_SERVER_HOME%tmp" -Dbrightics.local.token=%ACCESS_TOKEN% -Dbrightics.local.user=%USER_ID% -Dfile.encoding=utf-8 -Djava.library.path=%HADOOP_HOME%\bin
 SET MAIN=org.springframework.boot.loader.JarLauncher -Dspring.config.location="%BRIGHTICS_SERVER_HOME%BOOT-INF\classes\" 
 
 IF EXIST "%BRIGHTICS_SERVER_HOME%tmp" (

@@ -11,12 +11,13 @@ get_abs_script_path
 export appdir
 export BRIGHTICS_SERVER_HOME=$appdir
 export BRIGHTICS_DATA_ROOT=$BRIGHTICS_SERVER_HOME/data
+export HADOOP_HOME=$BRIGHTICS_PACKAGES_HOME/lib/hadoop
 
 PIDFILE=brightics-server.pid
 
 GC_OPTS="-XX:+UseConcMarkSweepGC -verbose:gc -XX:+PrintGCTimeStamps -Xloggc:$appdir/gc.out -XX:+CMSClassUnloadingEnabled "
 
-JAVA_OPTS="-Xms1g -Xmx2g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError -Djava.net.preferIPv4Stack=true -Djava.io.tmpdir=$BRIGHTICS_SERVER_HOME/tmp -Dbrightics.local.user=$1 -Dbrightics.local.token=$2 -Dfile.encoding=utf-8"
+JAVA_OPTS="-Xms1g -Xmx2g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError -Djava.net.preferIPv4Stack=true -Djava.io.tmpdir=$BRIGHTICS_SERVER_HOME/tmp -Dbrightics.local.user=$1 -Dbrightics.local.token=$2 -Dfile.encoding=utf-8 -Djava.library.path=%HADOOP_HOME%\bin"
 
 DEBUG_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=6007"
 
