@@ -538,7 +538,7 @@
 
               if (modelType) {
                 // var funcSpec = FunctionSpecManager.getFunctionSpecByFunc(func);
-                var funcSpec = Brightics.VA.Implementation[modelType].Functions[func];
+                var funcSpec = Brightics.VA.Core.Functions.Library[func] || Brightics.VA.Implementation[modelType].Functions[func];
                 if (funcSpec && funcSpec.defaultFnUnit) {
                   context = funcSpec.context || funcSpec.defaultFnUnit.context || context;
                   if (funcSpec.category === 'control' || funcSpec.category === 'process') {
@@ -555,7 +555,13 @@
                   } else if (funcSpec.defaultFnUnit.func === 'addFunctionColumnsPython') {
                     operator = 'brightics.function.extraction$add_function_columns';
                   }
-                  label = funcSpec.defaultFnUnit.display.label;
+
+                  if(funcSpec.defaultFnUnit.label && funcSpec.defaultFnUnit.label[locale]) {
+                      label = funcSpec.defaultFnUnit.label[locale];
+                  } else {
+                      label = funcSpec.defaultFnUnit.display.label;
+                  }
+
                 } else {
                   funcSpec = func2spec[func];
                   if (!funcSpec) return;
@@ -853,22 +859,17 @@
       }
     });
 
-    //초기 Cookie 값으로 redirect 하기 위한 로직
-    if (originParam.context === 'python'|| originParam.context === 'r') {
-      if (language === 'kr') {
-        if (!originParam.lang) {
-          originParam.lang = language;
-          window.location.href = window.location.pathname + '?' + queryStr(originParam);
-        }
-      } else {
-        if (originParam.lang) {
-          delete originParam.lang;
-          window.location.href = window.location.pathname + '?' + queryStr(originParam);
-        }
-      }
-    } else {
-      $('.language').hide();
-    }
+      // if (language === 'kr') {
+      //   if (!originParam.lang) {
+      //     originParam.lang = language;
+      //     window.location.href = window.location.pathname + '?' + queryStr(originParam);
+      //   }
+      // } else {
+      //   if (originParam.lang) {
+      //     delete originParam.lang;
+      //     window.location.href = window.location.pathname + '?' + queryStr(originParam);
+      //   }
+      // }
   };
 
   window.onload = function () {

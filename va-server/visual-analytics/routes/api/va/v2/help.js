@@ -152,7 +152,7 @@ var renderDBContentFunctionHelper = function(req, res, operation, targetFunc, la
         var dbContentMarkDown = JSON.parse(cont.markdown);
         if (dbContentMarkDown[lang]){
           dbContentMd = dbContentMarkDown[lang];
-        } else if(dbContentMarkDown["en"] && dbContentMarkDown["en"]!==''){
+        } else if(dbContentMarkDown["en"]){
           dbContentMd = dbContentMarkDown["en"];
         } else if( typeof dbContentMarkDown ==='string'){
           dbContentMd = dbContentMarkDown;
@@ -352,7 +352,7 @@ const getBase64SampleImage = function(req, res) {
       var imType = base64Image.split(",")[0];
       var type = imType.split(":")[1].split(";")[0];
       var format = imType.split(":")[1].split(";")[1];
-      var img = Buffer.from(im, format);
+      let img = Buffer.from(im, format);
       res.writeHead(200, {
         "Content-Type": type,
         "Content-Length": img.length
