@@ -28,13 +28,13 @@ console.log('--- BEGIN DECRYPT CONFIG ---');
 
 const dec = (_val) => {
     let val = _val;
-    const matched = _val.match(/ENC\([^\(]+\)/g);
-    for (var i in matched) {
-        var input = matched[i].substring(4, matched[i].length - 1);
+    const matched = _val.match(/ENC\([^\(]+\)/g) || '';
+    for (var match of matched) {
+        var input = match.substring(4, match.length - 1);
         var decrypted = jasypt.decrypt(input, 'BRTC_PASS');
         if (decrypted) {
             console.log('> SUCCESS DECRYPT : ' + input);
-            val = val.replace(matched[i], decrypted);
+            val = val.replace(match, decrypted);
         } else {
             console.log('> FAIL DECRYPT');
         }
