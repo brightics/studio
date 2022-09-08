@@ -1,6 +1,6 @@
 const router = __REQ_express.Router();
 
-const listFunctionFavorite = function (req, res) {
+const listFunctionFavorite = async function (req, res) {
   __BRTC_DAO.function.favorite.select({}, function (err) {
     __BRTC_ERROR_HANDLER.sendServerError(res, err);
   }, function (result) {
@@ -8,34 +8,22 @@ const listFunctionFavorite = function (req, res) {
   });
 };
 
-const createFunctionFavrite = function (req, res) {
-  __BRTC_DAO.function.favorite.has(req.params, function (err) {
-    __BRTC_ERROR_HANDLER.sendServerError(res, err);
-  }, function (result) {
-    if(result[0]['COUNT(*)'] === 0) {
-      __BRTC_DAO.function.favorite.create(req.params, function (err) {
-        __BRTC_ERROR_HANDLER.sendServerError(res, err);
-      }, function (result) {
-        res.json(result);
-      });
-    }
-    else {
-      res.status(200).send();
-    }
-  });
-};
 
-const deleteFunctionFavrite = function (req, res) {
-  __BRTC_DAO.function.favorite.delete(req.params, function (err) {
+const updateFunctionFavorite = async function (req, res) {
+  const {functions} = req.body
+  try {
+    await __BRTC_DAO.function.favorite.deleteAll();
+    if(Array.isArray(functions) && functions.length > 0) {
+      await __BRTC_DAO.function.favorite.create({ids: functions});
+    }
+    res.status(200).send();
+  }catch (err){
     __BRTC_ERROR_HANDLER.sendServerError(res, err);
-  }, function (result) {
-    res.json(result);
-  });
+  }
 };
 
 
 router.get('/functions/favorite', listFunctionFavorite);
-router.get('/functions/favorite/:id/create', createFunctionFavrite);
-router.get('/functions/favorite/:id/delete', deleteFunctionFavrite);
+router.put('/functions/favorite', updateFunctionFavorite);
 
 module.exports = router;

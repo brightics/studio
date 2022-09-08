@@ -101,11 +101,11 @@
 
           $item.click(function () {
             if(_this.options.favorites.has(funcItem.func)) {
-              _this.switchFunctionFavorite(funcItem.func, 'delete');
+              // _this.switchFunctionFavorite(funcItem.func, 'delete');
               _this.options.favorites.delete(funcItem.func);
             }
             else {
-              _this.switchFunctionFavorite(funcItem.func, 'create');
+              // _this.switchFunctionFavorite(funcItem.func, 'create');
               _this.options.favorites.add(funcItem.func);
             }
             $item.attr('type', _this.options.favorites.has(funcItem.func) ? 'on' : 'off');
@@ -150,27 +150,27 @@
     });
   };
 
-  FunctionFavoriteDialog.prototype.switchFunctionFavorite = function (func, type) {
-    var option = {
-      url: `api/vastudio/v3/functions/favorite/${func}/${type}`,
-      type: 'GET',
+  FunctionFavoriteDialog.prototype.handleOkClicked = function () {
+    const _this = this;
+    const option = {
+      url: `api/vastudio/v3/functions/favorite`,
+      type: 'PUT',
       contentType: 'application/json; charset=utf-8',
-      blocking: false
+      data: JSON.stringify({functions: this.options.favorites || []}),
     };
 
-    return new Promise(function (resolve, _reject) {
-        $.ajax(option).done(function (data) {
-        }).fail(function () {
-            resolve([])
-        });
+    $.ajax(option).done(function (data) {
+      Brightics.VA.Dialogs.Dialog.prototype.handleOkClicked.call(_this);
+    }).fail(function (err) {
+      Brightics.VA.Dialogs.Dialog.prototype.handleCancelClicked.call(_this);
     });
   };
 
-  FunctionFavoriteDialog.prototype.createDialogButtonBar = function ($parent) {
-    Brightics.VA.Dialogs.Dialog.prototype.createDialogButtonBar.call(this, $parent);
-    this.$cancelButton.hide();
-    this.$okButton.val('Close');
-  };
+  // FunctionFavoriteDialog.prototype.createDialogButtonBar = function ($parent) {
+  //   Brightics.VA.Dialogs.Dialog.prototype.createDialogButtonBar.call(this, $parent);
+  //   this.$cancelButton.hide();
+  //   this.$okButton.val('Close');
+  // };
 
   Brightics.VA.Core.Dialogs.FunctionFavoriteDialog = FunctionFavoriteDialog;
 

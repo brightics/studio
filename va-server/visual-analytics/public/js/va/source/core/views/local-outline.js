@@ -32,12 +32,14 @@
     };
 
     let transform = function (item) {
-        let status = self.editor.getStatus(item.type === 'fn' ? item.fn.fid : item.model.mid);
+        const self = this;
+        const id = item.type === 'fn' ? item.fn.fid : item.model.mid;
+        let status = self.editor.getStatus(id);
         let ret = {
             type: item.type,
             id: id,
             items: item.items.map(function (_item) {
-                return transform(_item);
+                return transform.call(self, _item);
             })
         };
 
@@ -61,7 +63,7 @@
             child.parent = ret;
         });
 
-        self.id2item[ret.id] = ret;
+        this.id2item[ret.id] = ret;
         return ret;
     };
 
@@ -75,7 +77,7 @@
 
         self.id2item = {};
 
-        return [transform(localOutline)];
+        return [transform.call(self, localOutline)];
     };
 
     LocalOutline.prototype.refresh = function (target, args) {
