@@ -8,8 +8,8 @@ CREATE TABLE brtc_function_favorite (
   id text NOT NULL
 )`;
 const FUNCTION_FAVORITE_CHECK = 'SELECT COUNT(*) FROM brtc_function_favorite WHERE id=$1';
-const FUNCTION_FAVORITE_CREATE = 'INSERT INTO brtc_function_favorite (id) VALUES ($1)';
-const FUNCTION_FAVORITE_DELETE = 'DELETE FROM brtc_function_favorite WHERE id=$1';
+const FUNCTION_FAVORITE_CREATE_MANY = 'INSERT INTO brtc_function_favorite (id) VALUES ';
+const FUNCTION_FAVORITE_DELETE_ALL = 'DELETE FROM brtc_function_favorite';
 const FUNCTION_FAVORITE_SELECT  = 'SELECT * FROM brtc_function_favorite';
 
 module.exports = {
@@ -33,10 +33,15 @@ module.exports = {
         return query(FUNCTION_FAVORITE_CHECK, [opt.id], errCallback, doneCallback);
       },
       create: function (opt, errCallback, doneCallback) {
-        return query(FUNCTION_FAVORITE_CREATE, [opt.id], errCallback, doneCallback);
+        const ids = opt.ids;
+        let valuesSql = [];
+        for (let i = 0; i < ids.length; i++) {
+          valuesSql.push('($' + (i + 1) + ')');
+        }
+        return query(FUNCTION_FAVORITE_CREATE_MANY + valuesSql.join(', '), ids, errCallback, doneCallback);
       },
-      delete: function (opt, errCallback, doneCallback) {
-        return query(FUNCTION_FAVORITE_DELETE, [opt.id], errCallback, doneCallback);
+      deleteAll: function (opt, errCallback, doneCallback) {
+        return query(FUNCTION_FAVORITE_DELETE_ALL, [], errCallback, doneCallback);
       },
       select: function (opt, errCallback, doneCallback) {
         return query(FUNCTION_FAVORITE_SELECT, [], errCallback, doneCallback);
