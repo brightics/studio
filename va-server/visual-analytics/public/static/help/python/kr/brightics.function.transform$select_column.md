@@ -1,4 +1,4 @@
-# Select Column
+## Format
 Select specified columns from an input table.
 인풋 테이블로부터 지정된 컬럼만을 추출하는 함수
 

@@ -1,4 +1,4 @@
-# Create Table
+## Format
 입력 데이터로부터 테이블 생성하는 함수
 
 ## Description

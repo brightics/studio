@@ -1,4 +1,4 @@
-# Fast Query Executor
+## Format
 This function returns a SQL Query result.
 
 ## Description

@@ -1,4 +1,4 @@
-# Load from VDB
+## Format
 브라이틱스 VDB 저장소에서 데이터를 불러온다.
 
 ## Description

@@ -1,4 +1,4 @@
-# Load from VDB
+## Format
 Load data from the Brightics VDB.
 
 ## Description

@@ -1,4 +1,4 @@
-# Query Executor
+## Format
 
 This function returns value for executed SQL Query. 
 

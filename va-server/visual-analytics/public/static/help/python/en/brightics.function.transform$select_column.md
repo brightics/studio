@@ -1,4 +1,4 @@
-# Select Column
+## Format
 Select specified columns from an input table.
 
 ## Description
