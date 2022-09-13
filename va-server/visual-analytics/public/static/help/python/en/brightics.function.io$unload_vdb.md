@@ -1,4 +1,4 @@
-# Unload to VDB
+## Format
 This function writes a table or a file in the Brightics VDB.
 
 ## Description

@@ -1,5 +1,4 @@
-# Query Executor
-
+## Format
 이 함수는 실행된 SQL 쿼리에 대한 값을 반환한다.
 
 ## Description

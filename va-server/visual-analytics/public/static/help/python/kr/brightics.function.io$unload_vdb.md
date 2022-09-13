@@ -1,4 +1,4 @@
-# Unload to VDB
+## Format
 이 함수는 테이블을 브라이틱스 VDB에 파일 또는 테이블 형태로 저장한다.
 
 ## Description

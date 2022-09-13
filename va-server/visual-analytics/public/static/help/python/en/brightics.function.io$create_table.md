@@ -1,4 +1,4 @@
-# Create Table
+## Format
 This function crate a table from the input values.
 
 ## Description

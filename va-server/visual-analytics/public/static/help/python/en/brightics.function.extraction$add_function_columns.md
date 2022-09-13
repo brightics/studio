@@ -1,4 +1,4 @@
-# Add Function Columns
+## Format
 Adds new columns to input table by using sql expressions.
 
 ## Description
