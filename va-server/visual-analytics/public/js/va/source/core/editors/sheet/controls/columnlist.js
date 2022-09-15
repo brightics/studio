@@ -230,9 +230,9 @@
         var _this = this;
 
         var selectedItems = mode === 'all' ? this.options.items : this.options.selectedItems;
-        selectedItems.length > 0 ? this.$emptyUnit.hide() : this.$emptyUnit.show();        
+        selectedItems.length > 0 ? this.$emptyUnit.hide() : this.$emptyUnit.show();
         this.setEmptyUnitHeight();
-        if (mode !== 'all') this.sortSelectedItems();       
+        if (mode !== 'all') this.sortSelectedItems();
 
         let config = {
             itemHeight: this.options.height,
@@ -244,7 +244,7 @@
         };
 
         if (config.total > 0 && !this.list) {
-            this.$columnList.css('position', 'relative');            
+            this.$columnList.css('position', 'relative');
             this.list = HyperList.create(this.$columnList[0], config);
         } else if (this.list) {
             this.list.refresh(this.$columnList[0], config);

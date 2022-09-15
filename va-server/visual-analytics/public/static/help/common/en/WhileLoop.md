@@ -1,3 +1,6 @@
+## Format
+This function performs iterations while satisfying the condition.
+
 ## Description
 This functions that perform iterations while satisfying the condition.
 
