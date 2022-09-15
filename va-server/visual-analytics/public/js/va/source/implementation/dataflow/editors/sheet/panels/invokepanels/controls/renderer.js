@@ -42,12 +42,16 @@
 
 
     UdfInvokeControlRenderer.prototype.createColumnSelectorRenderer = function (spec) {
-        var _this = this;
-        var id = spec.id;
-        var renderer = function () {
-            var value = _this._getValueByParamId(id) || '';
-            var control = _this._getControlByParamId(id);
-            control.setSelectedItems([value]);
+        const _this = this;
+        const id = spec.id;
+        let renderer = function () {
+            const value = _this._getValueByParamId(id) || [];
+            const control = _this._getControlByParamId(id);
+            if(spec.multiple){
+                control.setSelectedItems(value);
+            } else {
+                control.setSelectedItems([value]);
+            }
         };
         return renderer;
     };

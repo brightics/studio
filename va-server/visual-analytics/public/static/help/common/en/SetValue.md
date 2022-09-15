@@ -1,3 +1,6 @@
+## Format
+Set variable value.
+
 ## Description
 This function that change global variables
 
