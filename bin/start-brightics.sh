@@ -12,16 +12,24 @@ echo
 echo '> Brightics for *NIX'
 echo
 
+BPY=lib/brightics_python_env/bin/python
+AU=$($BPY lib/etc/updater.py cu 2>/dev/null)
+if [ "$AU" == "ua" ]; then
+  read -p "There is an update available. Do you want to update now? " -n 1 -r
+  echo
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    $BPY lib/etc/updater.py d 2>/dev/null
+    rm -rf ./tmp
+  fi
+fi
+
 USER_ID=brightics@samsung.com
 ACCESS_TOKEN=ACCESS_TOKEN
 BRIGHTICS_PACKAGES_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
-# Check requirements
-command -v java >/dev/null 2>&1 || { echo >&2 "Java is missing. Ensure it is installed and placed in your PATH."; exit 1; }
-command -v python >/dev/null 2>&1 || { echo >&2 "Python is missing. Ensure it is installed and placed in your PATH."; exit 1; }
-command -v node >/dev/null 2>&1 || { echo >&2 "Node.js is missing. Ensure Visual-analytics is installed."; exit 1; }
+export JAVA_HOME=$BRIGHTICS_PACKAGES_HOME/lib/java
 
-source $BRIGHTICS_PACKAGES_HOME/lib/brightics_python_env/bin/activate
+source $BRIGHTICS_PACKAGES_HOME/lib/brightics_python_env/lib/python3.7/venv/scripts/common/activate
 
 # Brightics Server
 cd $BRIGHTICS_PACKAGES_HOME/brightics-server
@@ -29,6 +37,6 @@ cd $BRIGHTICS_PACKAGES_HOME/brightics-server
 
 # Visual Analytics
 cd $BRIGHTICS_PACKAGES_HOME/visual-analytics
-node app.js --user_id $USER_ID --access_token $ACCESS_TOKEN &>/dev/null &
+$BRIGHTICS_PACKAGES_HOME/lib/nodejs/bin/node app.js &>/dev/null &
 echo $! > va.pid
 
