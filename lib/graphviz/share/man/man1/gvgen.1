@@ -1,10 +1,13 @@
-.TH GC 1 "27 March 2008"
+.TH GVGEN 1 "5 June 2012"
 .SH NAME
 gvgen \- generate graphs
 .SH SYNOPSIS
 .B gvgen
 [
-.B \-d?
+.B \-dv?
+]
+[
+.BI -i n
 ]
 [
 .BI -c n
@@ -28,7 +31,22 @@ gvgen \- generate graphs
 .BI -b x,y
 ]
 [
+.BI -B x,y
+]
+[
+.BI -m n
+]
+[
+.BI -M x,y
+]
+[
 .BI -p n
+]
+[
+.BI -r x,y
+]
+[
+.BI -R x
 ]
 [
 .BI -s n
@@ -37,13 +55,28 @@ gvgen \- generate graphs
 .BI -S n
 ]
 [
+.BI -S n,d
+]
+[
 .BI -t n
+]
+[
+.BI -t d,n
 ]
 [
 .BI -T x,y
 ]
 [
+.BI -T x,y,u,v
+]
+[
 .BI -w n
+]
+[
+.BI -n prefix
+]
+[
+.BI -N name
 ]
 [
 .BI -o outfile
@@ -90,9 +123,33 @@ Generate a complete \fIx\fP by \fIy\fP bipartite graph.
 This will have \fIx+y\fP vertices and
 \fIx*y\fP edges.
 .TP
+.BI \-B " x,y"
+Generate an \fIx\fP by \fIy\fP ball, i.e., an \fIx\fP by \fIy\fP cylinder
+with two "cap" nodes closing the ends. 
+This will have \fIx*y + 2\fP vertices
+and \fI2*x*y + y\fP edges.
+.TP
+.BI \-m " n"
+Generate a triangular mesh with \fIn\fP vertices on a side.
+This will have \fI(n+1)*n/2\fP vertices
+and \fI3*(n-1)*n/2\fP edges.
+.TP
+.BI \-M " x,y"
+Generate an x by y Moebius strip.
+This will have \fIx*y\fP vertices
+and \fI2*x*y - y\fP edges.
+.TP
 .BI \-p " n"
 Generate a path on \fIn\fP vertices.
 This will have \fIn-1\fP edges.
+.TP
+.BI \-r " x,y"
+Generate a random graph.
+The number of vertices will be the largest value of the form \fI2^n-1\fP less than or
+equal to \fIx\fP. Larger values of \fIy\fP increase the density of the graph.
+.TP
+.BI \-R " x"
+Generate a random rooted tree on \fIx\fP vertices.
 .TP
 .BI \-s " n"
 Generate a star on \fIn\fP vertices.
@@ -100,22 +157,47 @@ This will have \fIn-1\fP edges.
 .TP
 .BI \-S " n"
 Generate a Sierpinski graph of order \fIn\fP.
-This will have \fI3*(3^(n-1) - 1)/2\fP vertices and
+This will have \fI3*(3^(n-1) + 1)/2\fP vertices and
 \fI3^n\fP edges.
+.TP
+.BI \-S " n,d"
+Generate a \fId\fP-dimensional Sierpinski graph of order \fIn\fP.
+At present, \fId\fP must be 2 or 3.
+For d equal to 3, there will be \fI4*(4^(n-1) + 1)/2\fP vertices and
+\fI6 * 4^(n-1)\fP edges.
 .TP
 .BI \-t " n"
 Generate a binary tree of height \fIn\fP.
 This will have \fI2^n-1\fP vertices and
 \fI2^n-2\fP edges.
 .TP
+.BI \-t " h,n"
+Generate a n-ary tree of height \fIh\fP.
+.TP
 .BI \-T " x,y"
+.TP
+.BI \-T " x,y,u,v"
 Generate an \fIx\fP by \fIy\fP torus.
 This will have \fIx*y\fP vertices and
 \fI2*x*y\fP edges.
+If \fIu\fP and \fIv\fP are given, they specify twists of that amount in
+the horizontal and vertical directions, respectively.
 .TP
 .BI \-w " n"
 Generate a path on \fIn\fP vertices.
 This will have \fIn-1\fP edges.
+.TP
+.BI \-i " n"
+Generate \fIn\fP graphs of the requested type. At present, only available if 
+the \fB-R\fP flag is used. 
+.TP
+.BI \-n " prefix"
+Normally, integers are used as node names. If \fIprefix\fP is specified,
+this will be prepended to the integer to create the name.
+.TP
+.BI \-N " name"
+Use \fIname\fP as the name of the graph.
+By default, the graph is anonymous.
 .TP
 .BI \-o " outfile"
 If specified, the generated graph is written into the file
@@ -124,6 +206,9 @@ Otherwise, the graph is written to standard out.
 .TP
 .B \-d
 Make the generated graph directed.
+.TP
+.B \-v
+Verbose output.
 .TP
 .B \-?
 Print usage information.

@@ -1,6 +1,3 @@
-/* $Id$ $Revision$ */
-/* vim:set shiftwidth=4 ts=8: */
-
 /*************************************************************************
  * Copyright (c) 2011 AT&T Intellectual Property 
  * All rights reserved. This program and the accompanying materials
@@ -8,18 +5,19 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
- * Contributors: See CVS logs. Details at http://www.graphviz.org/
+ * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef TEXTSPAN_H
-#define TEXTSPAN_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#define GV_TEXTFONT_FLAGS_WIDTH 7
+
 /* Bold, Italic, Underline, Sup, Sub, Strike */
-/* Stored in textfont_t.flags, which is 7 bits, so full */
+/* Stored in textfont_t.flags, which is GV_TEXTFONT_FLAGS_WIDTH bits, so full */
 /* Probably should be moved to textspan_t */
 #define HTML_BF   (1 << 0)
 #define HTML_IF   (1 << 1)
@@ -50,8 +48,9 @@ extern "C" {
 	char*  color;
 	PostscriptAlias *postscript_alias;
 	double size;
-	unsigned int flags:7;  /* HTML_UL, HTML_IF, HTML_BF, etc. */
-	unsigned int cnt:(sizeof(unsigned int) * 8 - 7);   /* reference count */
+	unsigned int flags:GV_TEXTFONT_FLAGS_WIDTH; // HTML_UL, HTML_IF, HTML_BF, etc.
+	unsigned int cnt:(sizeof(unsigned int) * 8 - GV_TEXTFONT_FLAGS_WIDTH);
+	  ///< reference count
     } textfont_t;
 
     /* atomic unit of text emitted using a single htmlfont_t */
@@ -67,5 +66,4 @@ extern "C" {
 
 #ifdef __cplusplus
 }
-#endif
 #endif
