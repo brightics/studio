@@ -1206,6 +1206,7 @@
     };
 
     PropertiesPanel.prototype.onInputsChange = function (inputs) {
+        let compoundCommand;
         if (this.FnUnitUtils.hasMeta(this.options.fnUnit)) {
             if (!this.isInputsChanged(inputs)) return;
 
@@ -1216,7 +1217,7 @@
                 }
             };
 
-            let compoundCommand = new Brightics.VA.Core.CompoundCommand(this);
+            compoundCommand = new Brightics.VA.Core.CompoundCommand(this);
             var changeInputsCommand = new Brightics.VA.Core.Editors.Diagram.Commands.ChangeInputsCommand(this, commandOption);
             compoundCommand.add(changeInputsCommand);
         } else {
@@ -1233,7 +1234,7 @@
                 ref: tableList
             };
 
-            let compoundCommand = new Brightics.VA.Core.CompoundCommand(this);
+            compoundCommand = new Brightics.VA.Core.CompoundCommand(this);
             var changeInTableCommand = new Brightics.VA.Core.Editors.Diagram.Commands.ChangeIntableCommand(this, commandOption);
             compoundCommand.add(changeInTableCommand);
         }

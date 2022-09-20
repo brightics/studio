@@ -69,8 +69,8 @@
         var _this = this;
         $parent.append('' +
             '<ul>' +
-            '     <li>Search Functions</li>' +
-            '     <li>All Functions</li>' +
+            '     <li>' + Brightics.locale.common.searchFunctions + '</li>' +
+            '     <li>' + Brightics.locale.common.allFunctions + '</li>' +
             '</ul>' +
             '<div class="brtc-va-dialogs-selectfnunit-tab-searchfunctions"></div>' +
             '<div class="brtc-va-dialogs-selectfnunit-tab-allfunctions brtc-style-border-box"></div>'

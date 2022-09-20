@@ -14,6 +14,7 @@
 
   FunctionFavoriteDialog.prototype._initOptions = function () {
     Brightics.VA.Dialogs.Dialog.prototype._initOptions.call(this);
+    this.initialFavorit = [...this.options.favorites];
 
     this.dialogOptions.width = 760;
     this.dialogOptions.height = 840;
@@ -85,35 +86,25 @@
     var $functionListControl = $('<div class = "brtc-va-views-palette-fnunit-list"></div>');
     var functions = funcGroup.functions;
 
-    if (funcGroup.key === 'udf') {
-      // this._appendUdfFunctions($functionListControl, functions);
-    } else {
-      $.each(functions, function (_index, funcItem) {
-        if (funcItem.visible) {
-          var clazz = _this.options.modelType;
-          var $item;
-          if (funcItem.deletable) {
-            var closeCallBack = _this._deleteUdfCallBack.bind(_this, funcItem);
-            $item = Utils.WidgetUtils.createPaletteUDFItem($functionListControl, funcItem.func, clazz, closeCallBack);
-          } else {
-            $item = Utils.WidgetUtils.createPaletteItem($functionListControl, funcItem.func, clazz);
-          }
+    $.each(functions, function (_index, funcItem) {
+      if (funcItem.visible) {
+        var clazz = _this.options.modelType;
+        var $item;
+          $item = Utils.WidgetUtils.createPaletteItem($functionListControl, funcItem.func, clazz);
 
-          $item.click(function () {
-            if(_this.options.favorites.has(funcItem.func)) {
-              // _this.switchFunctionFavorite(funcItem.func, 'delete');
-              _this.options.favorites.delete(funcItem.func);
-            }
-            else {
-              // _this.switchFunctionFavorite(funcItem.func, 'create');
-              _this.options.favorites.add(funcItem.func);
-            }
-            $item.attr('type', _this.options.favorites.has(funcItem.func) ? 'on' : 'off');
-          });
+        $item.click(function () {
+          if(_this.options.favorites.has(funcItem.func)) {
+            _this.options.favorites.delete(funcItem.func);
+          }
+          else {
+            _this.options.favorites.add(funcItem.func);
+          }
           $item.attr('type', _this.options.favorites.has(funcItem.func) ? 'on' : 'off');
-        }
-      });
-    }
+        });
+        $item.attr('type', _this.options.favorites.has(funcItem.func) ? 'on' : 'off');
+        $item.attr('fn-id', funcItem.func);
+      }
+    });
 
     var totalCount = $functionListControl.find('.brtc-va-views-palette-fnunit-content').length;
     var hiddenCount = $functionListControl.find('.brtc-va-views-palette-fnunit.brtc-va-fnunit-category-none').length;
@@ -124,8 +115,7 @@
       '       <div class="brtc-va-views-palette-fnunit-type">' + Utils.WidgetUtils.convertHTMLSpecialChar(funcGroup.label) + '</div>' +
       '   </div>' +
       '</div>');
-    if (funcGroup.key !== 'udf' &&
-      totalCount === hiddenCount) {
+    if (totalCount === hiddenCount || totalCount === 0) {
       $navBar.addClass('brtc-va-palette-display-none');
       $functionListControl.addClass('brtc-va-palette-display-none');
     }
@@ -150,6 +140,13 @@
     });
   };
 
+  FunctionFavoriteDialog.prototype._renderFunctions = function (selectedFnList) {
+    const fnMap = {};
+    selectedFnList.forEach(fn => {fnMap[fn] = true});
+    
+
+  };
+
   FunctionFavoriteDialog.prototype.handleOkClicked = function () {
     const _this = this;
     const option = {
@@ -166,11 +163,34 @@
     });
   };
 
-  // FunctionFavoriteDialog.prototype.createDialogButtonBar = function ($parent) {
-  //   Brightics.VA.Dialogs.Dialog.prototype.createDialogButtonBar.call(this, $parent);
-  //   this.$cancelButton.hide();
-  //   this.$okButton.val('Close');
-  // };
+  FunctionFavoriteDialog.prototype.createResetButton = function ($parent) {
+    this.$resetButton = $('<input type="button" class="brtc-va-dialogs-buttonbar-cancel" value="' + Brightics.locale.common.reset + '" style="float:left" />');
+    $parent.append(this.$resetButton);
+    this.$resetButton.jqxButton({
+      theme: Brightics.VA.Env.Theme
+    });
+
+    const initFnMap = {};
+    this.initialFavorit.forEach((fn) => {
+      initFnMap[fn] = true;
+    })
+
+    this.$resetButton.click(() => {
+      const fnUnitWrappers = this.$navigator.find('.brtc-va-views-palette-fnunit');
+      let fnId, $fn;
+      for(let fnWrapper of fnUnitWrappers){
+        $fn = $(fnWrapper);
+        fnId = $fn.attr('fn-id');
+        $fn.attr('type', initFnMap[fnId] ? 'on' : 'off');
+      }
+      this.options.favorites = new Set(this.initialFavorit);
+    })
+  };
+
+  FunctionFavoriteDialog.prototype.createDialogButtonBar = function ($parent) {
+    Brightics.VA.Dialogs.Dialog.prototype.createDialogButtonBar.call(this, $parent);
+    this.createResetButton($parent);
+  };
 
   Brightics.VA.Core.Dialogs.FunctionFavoriteDialog = FunctionFavoriteDialog;
 

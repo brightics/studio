@@ -247,6 +247,20 @@
         }
         Studio.getPreference().preferenceChanged(Object.keys(Brightics.VA.SettingStorage.TEMP || {}));
         Brightics.VA.Dialogs.Dialog.prototype.handleOkClicked.call(this);
+
+        const settingLocale = Brightics.VA.SettingStorage.TEMP.tmpLocale === '한국어' ? 'ko' : 'en';
+        const currentLang = Brightics.VA.SettingStorage.getCurrentLanguage();
+
+        const closeHandler = function (dialogResult) {
+            if (dialogResult.OK) {
+                $(window).unbind('beforeunload');
+                Brightics.VA.SettingStorage.setLanguage(settingLocale);
+                window.location.href = window.location.href;
+            }
+        };
+        if(settingLocale !== currentLang) {
+            Brightics.VA.Core.Utils.WidgetUtils.openConfirmDialog(Brightics.locale.sentence.S0006, closeHandler);
+        }
     };
 
     SettingDialog.prototype.destroy = function () {
