@@ -1,6 +1,3 @@
-/* $Id$ $Revision$ */
-/* vim:set shiftwidth=4 ts=8: */
-
 /*************************************************************************
  * Copyright (c) 2011 AT&T Intellectual Property 
  * All rights reserved. This program and the accompanying materials
@@ -8,14 +5,13 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
- * Contributors: See CVS logs. Details at http://www.graphviz.org/
+ * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
 /* geometric functions (e.g. on points and boxes) with application to, but
- * no specific dependance on graphs */
+ * no specific dependence on graphs */
 
-#ifndef GV_ARITH_H
-#define GV_ARITH_H
+#pragma once
 
 /* for sincos */
 #ifndef _GNU_SOURCE
@@ -23,9 +19,6 @@
 #endif
 
 #include <limits.h>
-#ifdef HAVE_VALUES_H
-#include <values.h>
-#endif
 #include <math.h>
 
 #ifdef __cplusplus
@@ -42,33 +35,12 @@ extern "C" {
 #endif
 #define MAX(a,b)	((a)>(b)?(a):(b))
 
-#ifdef ABS
-#undef ABS
-#endif
-#define ABS(a)		((a) >= 0 ? (a) : -(a))
-
 #define AVG(a,b)	((a + b) / 2)
 #define SGN(a)		(((a)<0)? -1 : 1)
 #define CMP(a,b)	(((a)<(b)) ? -1 : (((a)>(b)) ? 1 : 0))
 
-#ifndef INT_MAX
-#define	INT_MAX		((int)(~(unsigned)0 >> 1))
-#endif
-
-#ifndef INT_MIN
-#define INT_MIN		(-INT_MAX - 1)
-#endif
-
-#ifndef MAXSHORT
-#define	MAXSHORT	(0x7fff)
-#endif
-
 #ifndef MAXDOUBLE
 #define MAXDOUBLE	1.7976931348623157e+308
-#endif
-
-#ifndef MAXFLOAT
-#define MAXFLOAT	((float)3.40282347e+38)
 #endif
 
 #ifdef BETWEEN
@@ -98,6 +70,4 @@ extern "C" {
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

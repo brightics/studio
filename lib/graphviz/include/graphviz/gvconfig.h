@@ -1,23 +1,16 @@
-/* $Id: gvconfig.h,v 1.4 2009/06/03 01:10:53 ellson Exp $ $Revision: 1.4 $ */
-/* vim:set shiftwidth=4 ts=8: */
-
-/**********************************************************
-*      This software is part of the graphviz package      *
-*                http://www.graphviz.org/                 *
-*                                                         *
-*            Copyright (c) 1994-2004 AT&T Corp.           *
-*                and is licensed under the                *
-*            Common Public License, Version 1.0           *
-*                      by AT&T Corp.                      *
-*                                                         *
-*        Information and Software Systems Research        *
-*              AT&T Research, Florham Park NJ             *
-**********************************************************/
+/*************************************************************************
+ * Copyright (c) 2011 AT&T Intellectual Property 
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: Details at https://graphviz.org
+ *************************************************************************/
 
 /* Header used by plugins */
 
-#ifndef GVCONFIG_H
-#define GVCONFIG_H
+#pragma once
 
 #include "gvplugin.h"
 
@@ -25,9 +18,10 @@
 extern "C" {
 #endif
 
-extern void gvconfig_plugin_install_from_library(GVC_t * gvc, char *path, gvplugin_library_t *library);
+extern void gvconfig_plugin_install_from_library(GVC_t * gvc,
+                                                 char *package_path,
+                                                 gvplugin_library_t *library);
 
 #ifdef __cplusplus
 }
 #endif
-#endif				/* GVCONFIG_H */

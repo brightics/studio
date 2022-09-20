@@ -1,6 +1,3 @@
-/* $Id$ $Revision$ */
-/* vim:set shiftwidth=4 ts=8: */
-
 /*************************************************************************
  * Copyright (c) 2011 AT&T Intellectual Property 
  * All rights reserved. This program and the accompanying materials
@@ -8,13 +5,12 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
- * Contributors: See CVS logs. Details at http://www.graphviz.org/
+ * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
 /* Header used by plugins */
 
-#ifndef GVPLUGIN_H
-#define GVPLUGIN_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -37,7 +33,7 @@ extern "C" {
 			has an id that is different from the "ps" type
 			in the same package */
 	const char *type;	/* a string name, such as "png" or "ps" that
-			distinguishes different types withing the same
+			distinguishes different types within the same
 			 (renderer in this case) */
 	int quality;    /* an arbitrary integer used for ordering plugins of
 			the same type from different packages */
@@ -60,4 +56,3 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#endif				/* GVPLUGIN_H */

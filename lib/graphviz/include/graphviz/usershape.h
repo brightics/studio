@@ -1,6 +1,3 @@
-/* $Id$ $Revision$ */
-/* vim:set shiftwidth=4 ts=8: */
-
 /*************************************************************************
  * Copyright (c) 2011 AT&T Intellectual Property 
  * All rights reserved. This program and the accompanying materials
@@ -8,13 +5,13 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
- * Contributors: See CVS logs. Details at http://www.graphviz.org/
+ * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef USERSHAPE_H
-#define USERSHAPE_H
+#pragma once
 
 #include "cdt.h"
+#include <stdbool.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,14 +31,26 @@ extern "C" {
 	IMAGESCALE_BOTH    /* scale image to fit without regard for aspect ratio */
     } imagescale_t;
 
+    typedef enum {
+        IMAGEPOS_TOP_LEFT,      /* top left */
+        IMAGEPOS_TOP_CENTER,    /* top center */
+        IMAGEPOS_TOP_RIGHT,     /* top right */
+        IMAGEPOS_MIDDLE_LEFT,   /* middle left */
+        IMAGEPOS_MIDDLE_CENTER, /* middle center (true center, the default)*/
+        IMAGEPOS_MIDDLE_RIGHT,  /* middle right */
+        IMAGEPOS_BOTTOM_LEFT,   /* bottom left */
+        IMAGEPOS_BOTTOM_CENTER, /* bottom center */
+        IMAGEPOS_BOTTOM_RIGHT   /* bottom right */
+    } imagepos_t;
+
     typedef struct usershape_s usershape_t;
 
     struct usershape_s {
 	Dtlink_t link;
 	const char *name;
 	int macro_id;
-	boolean must_inline;
-	boolean nocache;
+	bool must_inline;
+	bool nocache;
 	FILE *f;
 	imagetype_t type;
 	char *stringtype;
@@ -53,5 +62,4 @@ extern "C" {
 
 #ifdef __cplusplus
 }
-#endif
 #endif

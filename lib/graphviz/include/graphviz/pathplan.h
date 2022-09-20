@@ -1,5 +1,7 @@
-/* $Id$ $Revision$ */
-/* vim:set shiftwidth=4 ts=8: */
+/**
+ * @file
+ * @brief finds and smooths shortest paths
+ */
 
 /*************************************************************************
  * Copyright (c) 2011 AT&T Intellectual Property 
@@ -8,13 +10,10 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
- * Contributors: See CVS logs. Details at http://www.graphviz.org/
+ * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-
-
-#ifndef _PATH_INCLUDE
-#define _PATH_INCLUDE
+#pragma once
 
 #include "pathgeom.h"
 
@@ -22,31 +21,37 @@
 extern "C" {
 #endif
 
+#ifdef GVDLL
+#ifdef PATHPLAN_EXPORTS
+#define PATHPLAN_API __declspec(dllexport)
+#else
+#define PATHPLAN_API __declspec(dllimport)
+#endif
+#endif
 
-#if defined(_BLD_pathplan) && defined(__EXPORT__)
-#   define extern __EXPORT__
+#ifndef PATHPLAN_API
+#define PATHPLAN_API /* nothing */
 #endif
 
 /* find shortest euclidean path within a simple polygon */
-    extern int Pshortestpath(Ppoly_t * boundary, Ppoint_t endpoints[2],
+    PATHPLAN_API int Pshortestpath(Ppoly_t * boundary, Ppoint_t endpoints[2],
 			     Ppolyline_t * output_route);
 
 /* fit a spline to an input polyline, without touching barrier segments */
-    extern int Proutespline(Pedge_t * barriers, int n_barriers,
+    PATHPLAN_API int Proutespline(Pedge_t * barriers, int n_barriers,
 			    Ppolyline_t input_route,
 			    Pvector_t endpoint_slopes[2],
 			    Ppolyline_t * output_route);
 
 /* utility function to convert from a set of polygonal obstacles to barriers */
-    extern int Ppolybarriers(Ppoly_t ** polys, int npolys,
+    PATHPLAN_API int Ppolybarriers(Ppoly_t ** polys, int npolys,
 			     Pedge_t ** barriers, int *n_barriers);
 
 /* function to convert a polyline into a spline representation */
-    extern void make_polyline(Ppolyline_t line, Ppolyline_t* sline);
+    PATHPLAN_API void make_polyline(Ppolyline_t line, Ppolyline_t* sline);
 
-#undef extern
+#undef PATHPLAN_API
 
 #ifdef __cplusplus
 }
-#endif
 #endif
