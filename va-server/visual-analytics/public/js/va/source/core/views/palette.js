@@ -27,10 +27,11 @@
             if (_this.options.completeCallback) {
                 _this.options.completeCallback();
             }
+            _this.applyFilter();
         });
 
         this.searchValue = '';
-        this.favorite = false;
+        this.favorite = Brightics.VA.SettingStorage.getCurrentFavorite();
         this.functionsList = [];
         this.functionFavorite = new Set();
     }
@@ -92,9 +93,16 @@
             var expanded = expandedIndexes.indexOf(index) >= 0;
             var title = $(tabs[index]).find('.brtc-va-views-palette-fnunit-type');
             title = title && title.length > 0 ? $($(tabs[index]).find('.brtc-va-views-palette-fnunit-type')[0]).text() : ''
-            if ( title.trim() === 'UDF') return;
-            $(container).css('display', expanded && visibleElements.length > 0 ? 'block' : 'none');
-            $(container).prev().css('display', visibleElements.length > 0 ? 'block' : 'none');
+            if ( title.trim() === 'UDF' && _this.favorite === false) {
+                $(container).css('display', 'block');
+                $(container).prev().css('display', 'block');
+            } else {
+                $(container).css('display', expanded && visibleElements.length > 0 ? 'block' : 'none');
+                $(container).prev().css('display', visibleElements.length > 0 ? 'block' : 'none');
+            }
+            if (title.trim() === 'UDF'){
+                $(container).find('.brtc-va-views-palette-header-button').css('display', _this.favorite ? 'none' : 'block');
+            }
         });
 
         this.$mainControl.find('.brtc-va-views-palette-navigator-wrapper').perfectScrollbar('update');
@@ -137,7 +145,7 @@
         const $ctxMenu = $('' +
             '<div class="brtc-va-editors-sheet-panels-propertiespanel-header-ctxmenu">' +
             '   <ul>' +
-            '       <li action="edit">Edit</li>' +
+            '       <li action="edit">' + Brightics.locale.common.edit + '</li>' +
             '   </ul>' +
             '</div>');
         $header.append($ctxMenu);
@@ -156,7 +164,7 @@
             var $el = $(event.args);
             if ($el.attr('action') == 'edit') {
                 new Brightics.VA.Core.Dialogs.FunctionFavoriteDialog($(document.body), {
-                    title: 'Edit Function Favorite',
+                    title: Brightics.locale.sentence.S0007,
                     paletteData: _this.paletteData,
                     modelType: _this.options.modelType,
                     favorites: _this.favoriteMap,
@@ -178,23 +186,28 @@
 
     Palette.prototype.createContextControl = function () {
         const _this = this;
+        const FAVORITE_ON = 'favorite_on';
+        const FAVORITE_OFF = 'favorite_off';
+
 
         const $favorite_label = $(`
             <div class="brtc-va-views-palette-favorite-label">
-                <div class="brtc-va-views-palette-favorite-icon" type="favorite_off"></div>
-                <div class="brtc-va-views-palette-favorite-text">Favorite</div>
+                <div class="brtc-va-views-palette-favorite-icon" type=${this.favorite ? FAVORITE_ON : FAVORITE_OFF}></div>
+                <div class="brtc-va-views-palette-favorite-text">${Brightics.locale.common.favorite}</div>
             </div>
         `);
         const $favorite_menu = $(`<div class="brtc-va-views-palette-favorite-icon" type="menu"></div>`);
 
         $favorite_label.find('.brtc-va-views-palette-favorite-icon').click(function () {
-            if (this.getAttribute('type') === 'favorite_on') {
-                this.setAttribute('type', 'favorite_off');
+            if (this.getAttribute('type') === FAVORITE_ON) {
+                this.setAttribute('type', FAVORITE_OFF);
                 _this.favorite = false;
+                Brightics.VA.SettingStorage.setFavorite(false);
                 _this.applyFilter();
             } else {
-                this.setAttribute('type', 'favorite_on');
+                this.setAttribute('type', FAVORITE_ON);
                 _this.favorite = true;
+                Brightics.VA.SettingStorage.setFavorite(true);
                 _this.applyFilter();
             }
         });
@@ -368,8 +381,8 @@
         var _this = this;
         var $udfButtonControl = $('' +
             '   <div class="brtc-va-views-palette-header-button">' +
-            '       <button class="brtc-va-controls-palette-create"><div class="brtc-va-icon"></div>Create UDF</button>' +
-            '       <button class="brtc-va-controls-palette-import"><div class="brtc-va-icon"></div>Import UDF</button>' +
+            '       <button class="brtc-va-controls-palette-create"><div class="brtc-va-icon"></div>' + Brightics.locale.common.createUDF + '</button>' +
+            '       <button class="brtc-va-controls-palette-import"><div class="brtc-va-icon"></div>' + Brightics.locale.common.importUDF + '</button>' +
             '   </div>');
 
         $parent.append($udfButtonControl);
@@ -393,7 +406,7 @@
             // import Dialog 생성
             new Brightics.VA.Core.Dialogs.ImportUDFDialog(_this.$mainControl, {
                 fileType: 'AddonFunction',
-                title: 'Import UDF',
+                title: Brightics.locale.common.importUDF,
                 close: function (result) {
                     if (result.OK) {
                         Utils.WidgetUtils.openInformationDialog('Imported successfully new UDF');
@@ -463,8 +476,9 @@
             '       <div class="brtc-va-views-palette-fnunit-type">' + Utils.WidgetUtils.convertHTMLSpecialChar(funcGroup.label) + '</div>' +
             '   </div>' +
             '</div>');
-        if (funcGroup.key !== 'udf' &&
-            totalCount === hiddenCount) {
+        if ((funcGroup.key !== 'udf' && totalCount === hiddenCount) ||
+            (funcGroup.key === 'udf' && totalCount === 0 && this.favorite === true)
+        ) {
             $navBar.addClass('brtc-va-palette-display-none');
             $functionListControl.addClass('brtc-va-palette-display-none');
         }

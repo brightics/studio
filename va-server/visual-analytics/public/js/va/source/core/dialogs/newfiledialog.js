@@ -117,7 +117,8 @@
             return;
         }
 
-        var url = 'api/va/v2/studio/templates/' + modelType;
+        const lang = Brightics.VA.SettingStorage.getCurrentLanguage();
+        var url = `api/va/v2/studio/templates/${modelType}?lang=${lang}`;
         var opt = {
             url: url,
             type: 'GET',

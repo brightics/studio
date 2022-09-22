@@ -45,11 +45,12 @@
         const _this = this;
         const id = spec.id;
         let renderer = function () {
-            const value = _this._getValueByParamId(id) || [];
             const control = _this._getControlByParamId(id);
             if(spec.multiple){
+                const value = _this._getValueByParamId(id) || [];
                 control.setSelectedItems(value);
             } else {
+                const value = _this._getValueByParamId(id) || "";
                 control.setSelectedItems([value]);
             }
         };

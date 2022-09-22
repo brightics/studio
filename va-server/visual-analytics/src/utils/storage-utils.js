@@ -14,8 +14,14 @@ const StorageUtils = {
   getCurrentLanguage: function () {
     return StorageUtils.getValue('common.locale');
   },
+  getCurrentFavorite: function () {
+    return Boolean(StorageUtils.getValue('common.favorite'));
+  },
   setLanguage: function (lang) {
     StorageUtils.setValue('common.locale', lang);
+  },
+  setFavorite: function (favorite) {
+    StorageUtils.setValue('common.favorite', favorite ? true : '');
   },
   setValue: function (key, value) {
     if (typeof (Storage) !== 'undefined') {
@@ -43,6 +49,7 @@ const StorageUtils = {
   DEFAULT_SETTINGS: {
     'common.scroll.indicate.mouseover': 'true',
     'common.locale': 'ko',
+    'common.favorite': '',
     'common.document.useonline': 'false',
     'common.document.onlinedocurl': '',
     'common.persist.mode': 'storage-mode',

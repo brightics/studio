@@ -33,37 +33,47 @@ router.get('/palette/:modelType', function (req, res) {
 
 router.get('/templates/:modelType', function (req, res) {
     try {
-        var modelType = req.params.modelType,
+        let modelType = req.params.modelType,
             templates = [], contents = {},
+            lang = req.query.lang,
             path = './public/static/model-template/' + modelType + '/';
 
         if (typeof modelType === 'undefined') {
             res.send([]);
         }
 
-        __REQ_fs.readdir(path, function (err, files) {
-            if (err) __BRTC_ERROR_HANDLER.sendError(res, 40, 'Invalid model type: ' + modelType);
-            for (var i = 0; i < files.length; i++) {
-                if (!files[i].endsWith('.json')) continue;
+        if(!__REQ_fs.existsSync(path + lang + '/' )) {
+            lang = 'en'
+        }
+        path = path + lang + '/';
 
-                contents = JSON.parse(__REQ_fs.readFileSync(path + files[i], 'utf8'));
-                if (contents.title === 'Default') {
-                    templates.splice(0, 0, {
-                        name: contents.title,
-                        description: contents.description || '',
-                        contents: contents
-                        // ,thumbnail: path + files[i].split('.json')[0] + '.png'
-                    });
-                } else {
-                    templates.push({
-                        name: contents.title,
-                        description: contents.description || '',
-                        contents: contents,
-                        thumbnail: '/static/model-template/' + modelType + '/' + files[i].split('.json')[0] + '.png'
-                    })
+        __REQ_fs.readdir(path, function (err, files) {
+            try {
+                if (err) __BRTC_ERROR_HANDLER.sendError(res, 40, 'Invalid model type: ' + modelType);
+                for (var i = 0; i < files.length; i++) {
+                    if (!files[i].endsWith('.json')) continue;
+
+                    contents = JSON.parse(__REQ_fs.readFileSync(path + files[i], 'utf8'));
+                    if (contents.title === 'Default') {
+                        templates.splice(0, 0, {
+                            name: contents.title,
+                            description: contents.description || '',
+                            contents: contents
+                            // ,thumbnail: path + files[i].split('.json')[0] + '.png'
+                        });
+                    } else {
+                        templates.push({
+                            name: contents.title,
+                            description: contents.description || '',
+                            contents: contents,
+                            thumbnail: '/static/model-template/' + modelType + '/' + lang + '/' + files[i].split('.json')[0] + '.png'
+                        })
+                    }
                 }
+                res.send(templates);
+            }catch (e) {
+                res.send(templates);
             }
-            res.send(templates);
         });
     } catch (err) {
         res.send([]);

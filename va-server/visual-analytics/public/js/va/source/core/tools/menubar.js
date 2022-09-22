@@ -33,7 +33,6 @@
             '           <div class="brtc-va-tools-menubar-notice-default"></div>' +
             '           <div class="brtc-va-tools-menubar-notice-new"></div>' +
             '       </div>' +
-            '       <div class="brtc-va-tools-menubar-language" title="Language"></div>' +
             '       <div class="brtc-va-tools-menubar-setting" title="Settings"></div>' +
             '       <div class="brtc-va-tools-menubar-myprofile" title="Profile"></div>' +
             '       <div class="brtc-va-tools-menubar-logout" title="Logout">Logout</div>' +
@@ -49,7 +48,6 @@
         this.createLogoButton();
         this.createEditorHeader();
         this.createSideBarButton();
-        this.createLanguageButton();
         this.createManagementButton();
         this.createMyProfileButton();
         this.createLogoutButton();
@@ -94,56 +92,6 @@
             });
         });
 
-    };
-
-    MenuBar.prototype.createLanguageButton = function () {
-        const $control = this.$mainControl.find('.brtc-va-tools-menubar-language');
-        const currentLang = Brightics.VA.SettingStorage.getCurrentLanguage();
-
-        const $menu = $(
-         `<div class="brtc-va-tools-menubar-language-items">
-             <ul>
-                <li selected="${currentLang === 'ko'}" lang="ko">한국어</li>
-                <li selected="${currentLang === 'en'}" lang="en">English</li>
-             </ul>
-          </div>`);
-
-        $control.append($menu);
-
-        const $ctxMenu = $menu.jqxMenu({
-            theme: Brightics.VA.Env.Theme,
-            width: '70px',
-            height: '20px',
-            autoOpenPopup: false,
-            popupZIndex: 50000,
-            mode: 'popup',
-            animationHideDuration: 0,
-            animationShowDuration: 0
-        });
-
-
-
-        $ctxMenu.on('itemclick', function (event) {
-            const $el = $(event.args);
-            const lang = $el.attr('lang');
-
-            const closeHandler = function (dialogResult) {
-                if (dialogResult.OK) {
-                    $(window).unbind('beforeunload');
-                    Brightics.VA.SettingStorage.setLanguage(lang);
-                    window.location.href = window.location.href;
-                }
-            };
-            if(lang !== currentLang) {
-                Brightics.VA.Core.Utils.WidgetUtils.openConfirmDialog(Brightics.locale.sentence.S0006, closeHandler);
-            }
-        });
-
-        $control.click((event) => {
-            const left = $(event.target).offset().left - 9;
-            const top = $(event.target).offset().top + $(event.target).height() - 4;
-            $ctxMenu.jqxMenu('open', left, top);
-        });
     };
 
     MenuBar.prototype.createMyProfileButton = function () {
