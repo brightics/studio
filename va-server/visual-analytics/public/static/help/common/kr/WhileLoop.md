@@ -1,35 +1,35 @@
 ## Format
-특정한 조건을 만족시키면서 작업을 정해진 횟수만큼 반복합니다.
+조건을 만족시키면서 반복하는 기능입니다.
 
 ## Description
-This functions that perform iterations while satisfying the condition.
+이 함수는 조건을 만족시키면서 반복하는 기능입니다.
 
 ## Properties
-1. **Expression**<b style='color:red'>*</b>: Expression.
-6. **Index Variable**: Index variable
+1. **Expression**<b style='color:red'>*</b>: 표현식
+2. **Index Variable**: 인덱스 변수
 
 ## Input Data
-WhileLoop Model analyze based on data from WhileLoop Load function.
+WhileLoop 모델은 WhileLoop Load 함수의 데이터를 기반으로 분석합니다.
 
 <div style="width:800px; height:509px; border:1px solid #EEEEEE; background-image: url('static/help/common/WhileLoop1.png'); margin-left: 25px; margin-bottom: 25px;"></div>
 
-To use data from self-upper model, you have to drag and drop WhileLoop Load function from 'Selected Data' into Diagram editor.
+Self-upper 모델의 데이터를 사용하려면 'Selected Data'에서 WhileLoop Load 기능을 Diagram 편집기로 끌어다 놓아야 합니다.
 
 <div style="width:800px; height:509px; border:1px solid #EEEEEE; background-image: url('static/help/common/WhileLoop2.png'); margin-left: 25px; margin-bottom: 25px;"></div>
 
 ## Return Data
-This model analyze data from WhileLoop Load function created in Sub Model.
+이 모델은 Sub Model에서 생성된 WhileLoop Load 함수의 데이터를 분석합니다.
 
 <div style="width:800px; height:600px; border:1px solid #EEEEEE; background-image: url('static/help/common/WhileLoop3.png'); margin-left: 25px; margin-bottom: 25px;"></div>
 
-Click function that contains the data you want to deliver to self-upper model. In this case, It would be Statistic Summary function. Click it.
+자체 상위 모델에 전달하려는 데이터가 포함된 클릭 기능입니다. 이 경우 통계 요약 기능이 됩니다. 클릭하세요.
 
 <div style="width:800px; height:600px; border:1px solid #EEEEEE; background-image: url('static/help/common/WhileLoop4.png'); margin-left: 25px;margin-bottom: 25px;"></div>
 
-To deliver data from model itself to self-upper model, you have to drag and drop Statistic Summary function from 'Out Data List' into Selected Data'
+모델 자체에서 자체 상위 모델로 데이터를 전달하려면 'Out Data List'에서 Statistic Summary 기능을 Selected Data로 드래그 앤 드롭해야 합니다.
 
 <div style="width:800px; height:600px; border:1px solid #EEEEEE; background-image: url('static/help/common/WhileLoop5.png'); margin-left: 25px;margin-bottom: 25px;"></div>
 
-When invoking WhileLoop Model from self-upper model, Statistic Summary function will be used as a output data of flow function.
+자체 상위 모델에서 WhileLoop 모델을 호출할 때 Statistic Summary 함수는 흐름 함수의 출력 데이터로 사용됩니다.
 
 <div style="width:800px; height:600px; border:1px solid #EEEEEE; background-image: url('static/help/common/WhileLoop6.png'); margin-left: 25px;margin-bottom: 25px;"></div>
