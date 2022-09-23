@@ -84,15 +84,16 @@ def postprocess_(table, feature_cols, label_col, classifier, fit_intercept):
     for i in range(len(classes)):
         classes_dict[classes[i]] = i
     tmp_label = np.array([classes_dict[i] for i in label])
-    likelihood = 1
+    log_likelihood = 0
     for i in range(len(table)):
-        likelihood *= prob_trans[tmp_label[i]][i]
+        log_likelihood += np.log(prob_trans[tmp_label[i]][i])
     if fit_intercept:
         k = len(feature_names) + 1
     else:
         k = len(feature_names)
-    aic = 2 * k - 2 * np.log(likelihood)
-    bic = np.log(len(table)) * k - 2 * np.log(likelihood)
+    aic = 2 * k - 2 * log_likelihood
+    bic = np.log(len(table)) * k - 2 * log_likelihood
+
     if is_binary:
         if fit_intercept:
             x_design = np.hstack([np.ones((features.shape[0], 1)), features])
@@ -100,7 +101,7 @@ def postprocess_(table, feature_cols, label_col, classifier, fit_intercept):
             x_design = features.values
         v = np.product(prob, axis=1)
         x_design_modi = (x_design.T * v).T
-        cov_logit = np.linalg.inv(np.dot(x_design_modi.T, x_design))
+        cov_logit = np.linalg.pinv(np.dot(x_design_modi.T, x_design))
         std_err = np.sqrt(np.diag(cov_logit))
         if fit_intercept:
             logit_params = np.insert(coefficients, 0, intercept)
@@ -117,7 +118,7 @@ def postprocess_(table, feature_cols, label_col, classifier, fit_intercept):
         for i in range(len(classes)):
             v = prob.T[i] * (1 - prob.T[i])
             x_design_modi = (x_design.T * v).T
-            cov_logit = np.linalg.inv(np.dot(x_design_modi.T, x_design))
+            cov_logit = np.linalg.pinv(np.dot(x_design_modi.T, x_design))
             std_err.append(np.sqrt(np.diag(cov_logit)))
         std_err = np.array(std_err)
 
