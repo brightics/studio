@@ -93,7 +93,6 @@ def postprocess_(table, feature_cols, label_col, classifier, fit_intercept):
         k = len(feature_names)
     aic = 2 * k - 2 * log_likelihood
     bic = np.log(len(table)) * k - 2 * log_likelihood
-
     if is_binary:
         if fit_intercept:
             x_design = np.hstack([np.ones((features.shape[0], 1)), features])
