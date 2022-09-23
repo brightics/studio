@@ -82,7 +82,7 @@ def _tokenize_for_summarize(text):
     len_doc = len(tokenized_table)
 
     # Tokenizer afterprocess
-    tokenized_sentence = ([' '.join(tokenized_table[i]) for i in range(len_doc)])
+    tokenized_sentence = ([' '.join(map(str, tokenized_table[i])) for i in range(len_doc)])
 
     return tokenized_sentence, splitted_array, len_doc
 

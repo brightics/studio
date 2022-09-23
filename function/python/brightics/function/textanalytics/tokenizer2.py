@@ -124,7 +124,7 @@ def _tokenizer_kor2(table, input_cols, hold_cols=None, new_col_prefix='tokenized
     else:
         out_table = pd.concat([table[hold_cols], tokenized_table], axis=1)
 
-    return {'out_table': out_table}
+    return {'out_table': out_table.astype('str')}
 
 
 def doc_list_stemming_eng(word_tok_list):
