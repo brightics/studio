@@ -132,7 +132,7 @@
 
         if (selection[0] instanceof Brightics.VA.Implementation.Visual.Editors.Diagram.Figures.BaseContentUnit) {
 
-            for (const type of Brightics.VA.Implementation.Visual.CONTENT_TYPE) {
+            for (const type in Brightics.VA.Implementation.Visual.CONTENT_TYPE) {
                 if (this.optionViewer[type]) this.optionViewer[type].hideOption();
             }
             if (!this.optionViewer[selection[0].options.content.type])
