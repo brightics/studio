@@ -596,10 +596,12 @@
         this.$navigator.jqxNavigationBar('destroy');
         this.$mainControl.find('.brtc-va-views-palette-navigator-wrapper').append('<div class="brtc-va-views-palette-navigator"></div>');
         this.$navigator = this.$mainControl.find('.brtc-va-views-palette-navigator');
+        this.favorite = Brightics.VA.SettingStorage.getCurrentFavorite();
 
         var promises = [];
         promises.push(this.getPaletteData());
         promises.push(this.getUdfData());
+        promises.push(this.getFunctionFavorite());
 
         Promise.all(promises).then(function () {
             // _this.createControls();
