@@ -99,7 +99,7 @@ FlexLayout.prototype.createContents = function () {
 FlexLayout.prototype.createLayout = function () {
     var $parent = this.$mainControl.children('.bcharts-tethys-layout');
     var hCnt, vCnt, chartCnt;
-    if (this.options.pagination.enable) {
+    if (this.options.pagination && this.options.pagination.enable) {
         if (this.options.layout.flexData.width.indexOf('px') != -1) {
             hCnt = Math.floor(this.$mainControl.innerWidth() / parseInt(this.options.layout.flexData.width.replace('px', '')));
         } else {
