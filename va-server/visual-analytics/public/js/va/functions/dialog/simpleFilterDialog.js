@@ -145,14 +145,15 @@
                         break;
                     }
                 }
+                if(type !== 'remove'){
+                    var $target = $parent.closest('.brtc-va-editors-sheet-controls-propertycontrol-deck');
+                    var index = $target.index();
 
-                var $target = this.renderedItems[this.selectedItems[0]].closest('.brtc-va-editors-sheet-controls-propertycontrol-deck');
-                var index = $target.index();
-
-                _this.control.operators[index].jqxDropDownList({
+                    _this.control.operators[index].jqxDropDownList({
                         disabled: false,
                         source: _this.operandSource[_type]
                     });
+                }
             }
         };
 
