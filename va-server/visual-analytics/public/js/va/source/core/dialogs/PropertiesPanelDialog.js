@@ -201,7 +201,8 @@
             }
         };
         control.getValue = function () {
-            return this.jqxDropDownList('getSelectedItem').value;
+            const control = this.jqxDropDownList('getSelectedItem');
+            return control !== null ? control.value : '';
         };
         control.setDisable = function () {
             this.jqxDropDownList({disabled: true});
