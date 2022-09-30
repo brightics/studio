@@ -263,7 +263,7 @@
                     }
                 }
                 if (event === 'close') {
-                    if (_this.changedItems.length > 0) {
+                    if (Object.keys(_this.changedItems).length > 0) {
                         _this.executeSortRuleCommand();
                         _this.updateIndexNumber();
                     }
@@ -328,7 +328,7 @@
 
         // Position Index
         var $indexColumn = $newRow.find('.brtc-va-editors-sheet-controls-propertycontrol-number');
-        var position = this.$rowContainer.find('.brtc-va-editors-sheet-controls-propertycontrol-row').length + 1;
+        var position = this.$rowContainer.find('.brtc-va-editors-sheet-controls-propertycontrol-row').length;
         $indexColumn.text(position + '');
         $newRow.find('.brtc-va-editors-sheet-controls-propertycontrol-hover-drag-element-wrapper').attr('title', position + '');
 
