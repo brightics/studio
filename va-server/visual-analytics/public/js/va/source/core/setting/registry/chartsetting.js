@@ -36,7 +36,6 @@
         Brightics.VA.Setting.BaseSetting.prototype.createContents.call(this, $parent);
 
         this.createFormatterControl();
-        this.createSingleRowPivotControl();
         this.createCustomColorPalettes();
     };
 
@@ -395,7 +394,6 @@
     ChartSetting.prototype.render = function () {
         this.renderNumberControl();
         this.renderUseControl();
-        this.renderPivotControl();
     };
 
     ChartSetting.prototype.getPlatteStateStore = function () {

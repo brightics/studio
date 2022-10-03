@@ -595,8 +595,6 @@
                 panelTitle: panelTitle
             }
         }).then(function (dataIndex) {
-            modelEditor.notifyReportDataAdded();
-
             var fnUnit = modelEditor.options.editorInput.getContents().getFnUnitById(_this.dataInfo.fid);
             Brightics.VA.Core.Utils.ModelUtils.carvePersist(fnUnit, true);
 

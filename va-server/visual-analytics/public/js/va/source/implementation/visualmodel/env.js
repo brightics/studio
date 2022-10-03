@@ -82,8 +82,7 @@
     };
 
     root.Brightics.VA.Implementation.Visual.Functions =
-        library.extendFunctions(['load', 'refine', 'loadFromStaging', 'loadFromAlluxio', 'loadFromLocal', 'loadFromRdb', 'loadFromHdfs', 'bigDataScatter',
-            'bigDataLine', 'bigDataBar', 'bigDataBoxPlot', 'bigDataColumn', 'bigDataPie']);
+        library.extendFunctions(['load', 'refine', 'loadFromStaging', 'loadFromAlluxio', 'loadFromLocal', 'loadFromRdb', 'loadFromHdfs']);
 
     root.Brightics.VA.Implementation.Visual.defaultModel = {
         type: root.Brightics.VA.Implementation.Visual.Clazz,

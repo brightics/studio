@@ -186,7 +186,7 @@ module.exports = {
     publishingTitle: "이름",
     datasourceEdit: "데이터소스 수정",
     help: "도움말",
-    setTo: "로 연결",
+    setTo: "연결",
     updateContents: "공유 정보 수정",
     dataSourceLabel: "데이터소스명",
     setAsVariable: "변수로 연결",

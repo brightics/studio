@@ -112,7 +112,7 @@
         }
 
         for (var index in this.variableList) {
-            var $variableElement = $('<div class="element">' + this.variableList[index] + Brightics.locale.common.setTo + '</div>');
+            var $variableElement = $(`<div class="element"> ${Brightics.locale.common.setTo} ${this.variableList[index]}</div>`);
             $variableElement.attr('title', this.variableList[index]);
             $variableElement.attr('type', this.getModel().variables[this.variableList[index]]['variable-type']);
             this.$contents.find('.brtc-va-global-variable-list.element-wrapper').append($variableElement);

@@ -410,6 +410,7 @@
                     target = $rows[i];
 
                     columnList = $(target).data('columnList');
+                    if(typeof columnList === 'undefined') continue;
                     columnList.setItems(this.columnData);
                     columnList.setSelectedItems([paramColumns[i]]);
 
@@ -433,6 +434,7 @@
                     target = $rows[i];
 
                     columnList = $(target).data('columnList');
+                    if(typeof columnList === 'undefined') continue;
                     columnList.setItems(this.columnData);
                     columnList.setSelectedItems([paramColumns[i]]);
 
@@ -540,9 +542,11 @@
     };
 
     PythonSortProperties.prototype.getColumnType = function (column) {
-        return this.columnData.find(function (data) {
+        let _column = this.columnData.find(function (data) {
             return data.name == column
-        }).type;
+        });
+
+        return _column ? _column.type : '';
         // for (var i in this.columnData) {
         //     if (this.columnData[i].name === column) return this.columnData[i].type;
         // }
