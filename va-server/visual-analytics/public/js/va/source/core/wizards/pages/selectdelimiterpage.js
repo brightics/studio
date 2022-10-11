@@ -63,7 +63,7 @@
             '   </div>' +
             '   <div class="step03">' +
             '       <span class="brtc-va-icon step disabled"></span>' +
-            '       <p class="step disabled"><strong>03</strong>' + Brightics.locale.common.setColumnDataFormat + '</p>' +
+            '       <p class="step disabled"><strong>03</strong>' + Brightics.locale.common.setColumnDataType + '</p>' +
             '   </div>');
         $parent.append(this.$wizardHeader);
     };

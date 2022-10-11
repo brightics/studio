@@ -130,8 +130,9 @@ module.exports = {
     columnnameandtype: "Column name and type",
     searchName: "Search Name",
     replace: "Replace",
-    searchFormat: "Search Format",
+    searchType: "Search Type",
     selectFunction: "Select Function" ,
+    setColumnDataType: "Set Column Data Type",
 
     recommendations: "Recommendations",
     searchFunctions: "Search Functions",
