@@ -435,8 +435,10 @@
                     return state.colorSet[state.index];
                 },
                 canSaveAs: function () {
+                    const input = state.input.trim();
+                    if(!input)  return false;
                     return state.colorSet.filter(function (e) {
-                        return e.name === state.input;
+                        return e.name === input;
                     }).length === 0;
                 },
                 isDefaultPalette: function () {
@@ -515,7 +517,7 @@
                     };
                 case 'saveOkClicked':
                     var newColorSet = state.colorSet.concat([{
-                        name: state.input,
+                        name: state.input.trim(),
                         colors: state.tempPalette.slice()
                     }]);
                     return {
