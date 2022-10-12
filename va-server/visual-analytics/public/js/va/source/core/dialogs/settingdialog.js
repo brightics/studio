@@ -258,7 +258,7 @@
                 window.location.href = window.location.href;
             }
         };
-        if(settingLocale !== currentLang) {
+        if(Brightics.VA.SettingStorage.TEMP.tmpLocale && settingLocale !== currentLang) {
             Brightics.VA.Core.Utils.WidgetUtils.openConfirmDialog(Brightics.locale.sentence.S0006, closeHandler);
         }
     };
