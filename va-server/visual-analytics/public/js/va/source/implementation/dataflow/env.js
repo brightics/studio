@@ -7,7 +7,7 @@
 
     root.Brightics.VA.Implementation.DataFlow = {
         Clazz: 'data',
-        Label: 'Data Flow',
+        Label: Brightics.locale.common.dataFlow,
         Launcher: {},
         Validator: {},
         Editors: {

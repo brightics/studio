@@ -65,7 +65,7 @@
         var report = this.getEditor().getModel().report;
         var editorPage = this.getEditor().getDiagramEditorPage();
         $parent.append($('' +
-            '<div class="brtc-style-margin-bottom-5">Page Background</div>' +
+            '<div class="brtc-style-margin-bottom-5">' + Brightics.locale.visual.pageBackground + '</div>' +
             ''));
 
         this.optionControl = Brightics.Chart.Adonis.Component.Widgets.Factory.createColorPickerWidget($parent, {
@@ -82,7 +82,7 @@
 
     PageOptionViewer.prototype.createPageSizeContainer = function ($parent) {
 
-        $parent.append($('<div class="brtc-style-margin-bottom-5">Page Size</div>'));
+        $parent.append($('<div class="brtc-style-margin-bottom-5">' + Brightics.locale.visual.pageSize + '</div>'));
 
         var $pageSizeControlContainer = $('<div class="brtc-va-controls-options-viewer-page-size-container"></div>');
         $parent.append($pageSizeControlContainer);

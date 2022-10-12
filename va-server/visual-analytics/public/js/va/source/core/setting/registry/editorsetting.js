@@ -41,7 +41,7 @@
 
         this.$autoConnectControl = this._createCheckBox(this.$mainControl, {
             settingId: _this.getSettingId('autoConnect'),
-            label: "Link adjacent function(s) automatically.",
+            label: Brightics.locale.sentence.S0011,
             // tagList: ['data', 'deeplearning']
             tagList: ['data']
         });
@@ -52,7 +52,7 @@
 
         this.$minimapControl = this._createCheckBox(this.$mainControl, {
             settingId: _this.getSettingId('minimap'),
-            label: "Show mini map when open a editor.",
+            label: Brightics.locale.sentence.S0012,
             tagList: ['data', 'realtime', 'deeplearning']
         });
     };
@@ -67,20 +67,20 @@
         // });
         this.$doubleClickControl = $(crel('div', {
             class: 'brtc-va-setting-component-wrapper'
-        }, 'Change operation to add function.'));
+        }, Brightics.locale.sentence.S0013));
         this.$mainControl.append(this.$doubleClickControl);
 
         var $radioDoubleClick = $(crel('div', {
             class: 'brtc-va-editors-sheet-controls-radiobutton-default doubleclick',
             style: 'margin-left: 10px'
-        }, 'Use double click to add function.'));
+        }, Brightics.locale.sentence.S0014));
         this.$doubleClickControl.append($radioDoubleClick);
         $radioDoubleClick.jqxRadioButton({theme: Brightics.VA.Env.Theme});
 
         var $radioClick = $(crel('div', {
             class: 'brtc-va-editors-sheet-controls-radiobutton-default click',
             style: 'margin-left: 10px'
-        }, 'Use click to add function.'));
+        }, Brightics.locale.sentence.S0015));
         this.$doubleClickControl.append($radioClick);
         $radioClick.jqxRadioButton({theme: Brightics.VA.Env.Theme});
 
@@ -97,7 +97,7 @@
 
         this.$variableControl = this._createCheckBox(this.$mainControl, {
             settingId: _this.getSettingId('variable'),
-            label: "Use variable before running.",
+            label: Brightics.locale.sentence.S0016,
             tagList: ['data', 'control', 'realtime']
         });
     };
@@ -107,7 +107,7 @@
 
         this.$dataCountControl = this._createDropDownList(this.$mainControl, {
             settingId: _this.getSettingId('dataCount'),
-            label: 'Default number of rows to show in data panel',
+            label: Brightics.locale.sentence.S0017,
             width: 100,
             list: ['1000', '3000', '5000', '10000', '50000'],
             tagList: ['data', 'realtime'],
@@ -122,10 +122,10 @@
             '<div class="brtc-va-setting-component-wrapper">' +
             '   <div class="' + this._parseSettingIdToClassName(this.getSettingId('useMaximum')) + ' brtc-va-setting-component brtc-style-display-flex brtc-style-align-items-center">' +
             '       <div class="brtc-va-setting-checkbox-content useMaximum"></div>' +
-            '       <div class="brtc-va-setting-checkbox-label brtc-style-setting-label brtc-style-flex-1"> Set maximum number of functions on editor.</div>' +
+            '       <div class="brtc-va-setting-checkbox-label brtc-style-setting-label brtc-style-flex-1">'+Brightics.locale.sentence.S0018+'</div>' +
             '   </div>' +
             '   <div class="' + this._parseSettingIdToClassName(this.getSettingId('maxFuncNum')) + ' brtc-va-setting-component brtc-style-display-flex brtc-style-align-items-center" style="margin-left:  30px;">' +
-            '       <div class="brtc-va-setting-input-content-label">Number</div>' +
+            '       <div class="brtc-va-setting-input-content-label" style="width: 100px">'+Brightics.locale.common.decimalPlace+'</div>' +
             '       <div class="brtc-va-setting-input-content number"></div>' +
             '   </div>' +
             '</div>');
@@ -175,7 +175,7 @@
 
         this.$closePanelControl = this._createCheckBox(this.$mainControl, {
             settingId: _this.getSettingId('closePanelOnClick'),
-            label: "Close an open panel by clicking a blank outside.",
+            label: Brightics.locale.sentence.S0019,
             tagList: ['data']
         });
     };
@@ -277,7 +277,7 @@
     };
 
     EditorSetting.Key = 'setting-editor';
-    EditorSetting.Label = 'Editor';
+    EditorSetting.Label = Brightics.locale.common.editor;
     EditorSetting.index = 2;
 
     Brightics.VA.Setting.Registry[EditorSetting.Key] = EditorSetting;

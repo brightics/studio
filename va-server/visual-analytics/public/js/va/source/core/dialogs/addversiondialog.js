@@ -40,8 +40,8 @@
             '<div class="brtc-va-dialogs-row-flex-layout">' +
             '   <div class="brtc-va-dialogs-contents-label brtc-va-dialogs-contents-label-bold">' + Brightics.locale.common.type + '</div>' +
             '   <div class="brtc-va-dialogs-add-version-radio-group brtc-va-dialogs-row-flex-layout">' +
-            '       <div class="brtc-va-dialogs-add-version-major-radio">Major Version (X.o)</div>' +
-            '       <div class="brtc-va-dialogs-add-version-minor-radio">Minor Version (o.X)</div>' +
+            '       <div class="brtc-va-dialogs-add-version-major-radio">'+ Brightics.locale.common.majorVersion +' (X.o)</div>' +
+            '       <div class="brtc-va-dialogs-add-version-minor-radio">'+ Brightics.locale.common.minorVersion +' (o.X)</div>' +
             '   </div>' +
             '</div>' +
             '<div class="brtc-va-dialogs-row-flex-layout">' +

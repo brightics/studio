@@ -19,7 +19,7 @@
         this.dialogOptions.width = 760;
         this.dialogOptions.height = 480; // 520
     };
-    
+
     DeployModelDialog.prototype.createDialogContentsArea = function ($parent) {
         $parent.addClass('brtc-va-dialogs-editresourcedialog-contents');
 
@@ -137,7 +137,7 @@
         }
 
         if (this.$nameControl.val().trim() === '') {
-            Brightics.VA.Core.Utils.WidgetUtils.openErrorDialog('Please enter name.');
+            Brightics.VA.Core.Utils.WidgetUtils.openErrorDialog(Brightics.locale.sentence.S0020);
             return;
         }
 

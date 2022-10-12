@@ -103,7 +103,7 @@
             });
 
             output.param['train_data'] = dlLoad.fid;
-        } 
+        }
         return contents;
     };
 
@@ -208,7 +208,7 @@
 
         var $fileName = this.$mainControl.find('.brtc-va-dialogs-newfiledialog-name-input');
         if ($fileName.val().trim() === '') {
-            Brightics.VA.Core.Utils.WidgetUtils.openErrorDialog('Please enter name.', function () {
+            Brightics.VA.Core.Utils.WidgetUtils.openErrorDialog(Brightics.locale.sentence.S0020, function () {
                 _this.$nameControl.focus();
             });
             return;
@@ -221,7 +221,7 @@
 
         var fileId = Brightics.VA.Core.Utils.IDGenerator.model.id();
         var description = _this.noteControl.getCode() === '' ? '' : _this.noteControl.getCode();
-        
+
         var fileInfo = new Brightics.VA.Vo.File();
         fileInfo.setFileId(fileId);
         fileInfo.setProjectId(this.options.project.getProjectId());

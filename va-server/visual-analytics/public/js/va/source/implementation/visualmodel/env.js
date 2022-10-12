@@ -7,7 +7,7 @@
 
     root.Brightics.VA.Implementation.Visual = {
         Clazz: 'visual',
-        Label: 'Report',
+        Label: Brightics.locale.common.report,
         Editors: {
             Diagram: {
                 EditorPage: {},

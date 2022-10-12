@@ -89,7 +89,7 @@
             rowsheight: 53,
             columns: [
                 {
-                    text: 'Name',
+                    text: Brightics.locale.common.name,
                     datafield: 'name',
                     align: 'center',
                     cellclassname: 'brtc-grid-cell',
@@ -98,7 +98,7 @@
                     width: '50%'
                 },
                 {
-                    text: 'Size',
+                    text: Brightics.locale.common.size,
                     datafield: 'size',
                     align: 'center',
                     cellclassname: 'brtc-grid-cell',
@@ -107,7 +107,7 @@
                     width: 80
                 },
                 {
-                    text: 'Last Modified Date',
+                    text: Brightics.locale.common.lastModifiedDate,
                     datafield: 'lastModifiedDate',
                     align: 'center',
                     cellclassname: 'brtc-grid-cell',
@@ -214,7 +214,7 @@
     FileList.prototype.createSumArea = function ($parent) {
         this.$sumArea = $('' +
             '<div class="brtc-va-widget-controls-fileList-toolbar-sum">' +
-            '   <span>Total<strong class="brtc-va-widget-controls-fileList-toolbar-sum-count">0</strong></span>' +
+            '   <span>' + Brightics.locale.project.total + '<strong class="brtc-va-widget-controls-fileList-toolbar-sum-count">0</strong></span>' +
             '</div>');
         $parent.append(this.$sumArea);
     };
@@ -295,7 +295,7 @@
             var selectedIndexes = _this.$fileListGrid.jqxGrid('getselectedrowindexes').sort(function (a, b) {
                 return a - b;
             });
-            
+
             for (var i=selectedIndexes.length-1; i>=0; i--) {
                 var data = _this.$fileListGrid.jqxGrid('getrowdata', selectedIndexes[i]);
 

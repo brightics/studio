@@ -214,7 +214,7 @@
             return hasFlag;
         }
     };
-    
+
     ProjectViewer.prototype.getDataFlowUsingTargetDataFlow = function (projectId, fileId) {
         return Studio.getResourceManager().getFiles(projectId)
             .filter(function (file) {
@@ -1253,7 +1253,7 @@
                 });
                 $dialog.find('.brtc-va-dialogs-buttonbar-ok').click(function () {
                     if ($projectName.val().trim() === '') {
-                        Brightics.VA.Core.Utils.WidgetUtils.openErrorDialog('Please enter name.');
+                        Brightics.VA.Core.Utils.WidgetUtils.openErrorDialog(Brightics.locale.sentence.S0020);
                         return;
                     }
                     _this.doCreateProject($projectName.val());
@@ -1419,7 +1419,7 @@
         var _this = this;
         var project = Studio.getResourceManager().getProject(projectId);
         var dlg = new Brightics.VA.Core.Dialogs.EditResourceDialog(this.$mainControl, {
-            title: 'Edit Project',
+            title: Brightics.locale.common.editProject,
             label: project.getLabel(),
             description: project.getDescription(),
             close: function (dialogResult) {
@@ -1556,17 +1556,24 @@
             });
         };
 
-        var contentText = isSingle ?
-            'Are you sure you want to export the ' +
-            Studio.getResourceManager().getFile(projectId, selected[0]).getLabel() + '?' :
-            'Are you sure you want to export the ' + selected.length + ' model(s)?'; // \n ※ Models without an export menu can not be exported.';
+        let contentText;
+
+        if (isSingle) {
+            if (Brightics.VA.SettingStorage.getCurrentLanguage() === 'ko') {
+                contentText = Studio.getResourceManager().getFile(projectId, selected[0]).getLabel() + ' ' + Brightics.locale.sentence.S0025;
+            } else {
+                contentText = Brightics.locale.sentence.S0025 + ' ' + Studio.getResourceManager().getFile(projectId, selected[0]).getLabel() + '?'
+            }
+        } else {
+            contentText = 'Are you sure you want to export the ' + selected.length + ' model(s)?';
+        }
 
         var visualCnt = 0;
         for (var j in selected) {
             var file = Studio.getResourceManager().getFile(projectId, selected[j]);
             if (file && file.getContents().type === 'visual') visualCnt++;
         }
-        var optionText = 'Include the data flow(s) along with the selected model.';
+        var optionText = Brightics.locale.sentence.S0026;
         if (visualCnt > 0) optionText = 'Include the data flow(s) along with the selected report.';
 
         Brightics.VA.Core.Utils.WidgetUtils.openConfirmWithOptionDialog('', contentText, optionText, closeHandler);

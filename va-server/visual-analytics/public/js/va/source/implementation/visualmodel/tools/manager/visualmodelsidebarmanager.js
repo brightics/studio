@@ -19,7 +19,7 @@
         this.layout = {
             dataBox: {
                 id: 'dataBox',
-                label: "Data Box",
+                label: Brightics.locale.visual.dataBox,
                 position: 'left',
                 width: 261,
                 manager: this,
@@ -27,7 +27,7 @@
             },
             objectAndProperties: {
                 id: 'objectAndProperties',
-                label: "Object",
+                label: Brightics.locale.visual.object,
                 position: 'right',
                 width: 338,
                 manager: this,

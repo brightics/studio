@@ -30,7 +30,7 @@
     CommonSetting.prototype.createScrollbarControl = function () {
         this.$scrollbarControl = this._createCheckBox(this.$mainControl, {
             settingId: this.getSettingId('scrollBar'),
-            label: 'Show scroll bar only when the mouse is over on scrollable area. (Show always when unchecked)'
+            label: Brightics.locale.sentence.S0008
         });
     };
 
@@ -38,9 +38,9 @@
     CommonSetting.prototype.createLocaleControl = function () {
         this.$localeControl = this._createDropDownList(this.$mainControl, {
             settingId: 'tmpLocale',
-            label: 'Language : ',
+            label: Brightics.locale.common.language + ' : ',
             width: 100,
-            list: ['한국어', 'English'],
+            list: ['English', '한국어'],
             dropDownHeight: 100
         });
     };
@@ -67,7 +67,7 @@
     };
 
     CommonSetting.Key = 'setting-common';
-    CommonSetting.Label = 'Common';
+    CommonSetting.Label = Brightics.locale.common.common;
     CommonSetting.index = 1;
 
     Brightics.VA.Setting.Registry[CommonSetting.Key] = CommonSetting;
