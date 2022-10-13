@@ -18,7 +18,7 @@
         this.emitter = opt.emitter;
         this.columnOptions = [
             {
-                name: 'Version',
+                name: Brightics.locale.common.version,
                 key: 'version',
                 type: 'string',
                 headerAlign: 'center',
@@ -26,7 +26,7 @@
                 width: 100
             },
             {
-                name: 'Name',
+                name: Brightics.locale.common.name,
                 key: 'label',
                 type: 'string',
                 headerAlign: 'center',
@@ -34,7 +34,7 @@
                 width: 'auto'
             },
             {
-                name: 'Tags',
+                name: Brightics.locale.common.tags,
                 key: 'tags',
                 type: 'string',
                 headerAlign: 'center',
@@ -42,7 +42,7 @@
                 width: 'auto'
             },
             {
-                name: 'Create Time',
+                name: Brightics.locale.common.createTime,
                 key: 'create_time',
                 type: 'date',
                 headerAlign: 'center',
@@ -50,7 +50,7 @@
                 width: 150
             },
             {
-                name: 'Update Time',
+                name: Brightics.locale.common.updateTime,
                 key: 'update_time',
                 type: 'date',
                 headerAlign: 'center',

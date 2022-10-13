@@ -22,16 +22,16 @@
         var _this = this;
         var columnOptions = [
             {
-                name: 'Load',
+                name: Brightics.locale.common.load,
                 key: 'load',
                 dataRenderer: function (index, value) {
                     var $elem = $('<div>Load</div>');
                     $elem.on('mousedown', function (event) {
-                        
+
                         emitter.emit('load', _this.data[event.index]);
                         // emitter.emit('load', event.data);
                         event.stopPropagation();
-                        
+
                         return false;
                     });
                     $elem.addClass(CLASS_BUTTON);

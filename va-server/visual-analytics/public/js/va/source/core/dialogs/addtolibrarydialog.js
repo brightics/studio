@@ -20,12 +20,12 @@
         this.dialogOptions.width = 400;
         this.dialogOptions.height = 300;
     };
-    
+
     AddToLibraryDialog.prototype.createDialogContentsArea = function ($parent) {
         $parent.append('' +
-            '<div class="brtc-va-dialogs-add2lib-library-label">Template</div>' +
+            '<div class="brtc-va-dialogs-add2lib-library-label">' + Brightics.locale.common.template + '</div>' +
             '<div class="brtc-va-dialogs-add2lib-library-selector"></div>' +
-            '<div class="brtc-va-dialogs-add2lib-library-label">Name</div>' +
+            '<div class="brtc-va-dialogs-add2lib-library-label">' + Brightics.locale.common.name + '</div>' +
             '<input type="text" class="brtc-va-dialogs-add2lib-library-name-input" maxlength="80"/>' +
             '<div class="brtc-va-dialogs-add2lib-library-preview"></div>' +
             '');

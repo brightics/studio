@@ -57,13 +57,13 @@
 
         $parent.append($('' +
             '   <div class="fileselect">' +
-            '       <div style="font-size: 13px; font-style: italic; margin-bottom: 20px;">Select data consisting of delimiter-separated values.</div>' +
+            '       <div style="font-size: 13px; font-style: italic; margin-bottom: 20px;">'+ Brightics.locale.sentence.S0021 +'</div>' +
             '       <div class="header">' +
             '           <span>File: </span>' +
             '               <input type="button" id="fileselect-remote" value="Remote" />' +
             '       </div>' +
             '       <div class="contents filename">' +
-            '           <span class="nodata">Select file to upload</span>' +
+            '           <span class="nodata">'+Brightics.locale.common.selectfiletoupload+'</span>' +
             '       </div>' +
             '   </div>' +
             '   <div class="uploadtoselect">' +

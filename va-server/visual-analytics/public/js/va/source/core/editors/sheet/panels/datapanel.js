@@ -455,7 +455,7 @@
         var _this = this;
 
         // var $title = this.$header.find('.brtc-va-editors-sheet-panels-basepanel-header-title');
-        
+
         this.dataSchema = new Brightics.VA.Core.Editors.Sheet.Panels.DataSchema(this.$infoArea, this.options);
         this.dataSchema.hide();
 
@@ -553,7 +553,7 @@
     DataPanel.prototype.createMinMaxToolItem = function ($toolbar) {
         var _this = this;
 
-        this.$minMaxButton = $('<div class="brtc-va-editors-sheet-panels-datapanel-toolitem brtc-va-editors-sheet-panels-datapanel-toolitem-maximize" title="Max/Min"></div>');
+        this.$minMaxButton = $('<div class="brtc-va-editors-sheet-panels-datapanel-toolitem brtc-va-editors-sheet-panels-datapanel-toolitem-maximize" title="' + Brightics.locale.panel.maxMin + '"></div>');
         this.$minMaxButton.attr('maximize', 'false');
         $toolbar.append(this.$minMaxButton);
 
@@ -588,19 +588,19 @@
 
     DataPanel.prototype.createArrangeToolItem = function ($toolbar) {
         var _this = this;
-        var $arrangeEvenly = $('<div class="brtc-va-editors-sheet-panels-datapanel-toolitem brtc-va-editors-sheet-panels-datapanel-toolitem-arrange-evenly" title="Evenly"></div>');
+        var $arrangeEvenly = $('<div class="brtc-va-editors-sheet-panels-datapanel-toolitem brtc-va-editors-sheet-panels-datapanel-toolitem-arrange-evenly" title="' + Brightics.locale.panel.evenly + '"></div>');
         $toolbar.append($arrangeEvenly);
         $arrangeEvenly.on('click', function (event) {
             _this.dataWorksheet.arrange('evenly');
         });
 
-        var $arrangeStacked = $('<div class="brtc-va-editors-sheet-panels-datapanel-toolitem brtc-va-editors-sheet-panels-datapanel-toolitem-arrange-stacked" title="Horizontal"></div>');
+        var $arrangeStacked = $('<div class="brtc-va-editors-sheet-panels-datapanel-toolitem brtc-va-editors-sheet-panels-datapanel-toolitem-arrange-stacked" title="' + Brightics.locale.panel.horizontal + '"></div>');
         $toolbar.append($arrangeStacked);
         $arrangeStacked.on('click', function (event) {
             _this.dataWorksheet.arrange('horizontal');
         });
 
-        var $arrangeSideBySide = $('<div class="brtc-va-editors-sheet-panels-datapanel-toolitem brtc-va-editors-sheet-panels-datapanel-toolitem-arrange-side-by-side" title="Vertical"></div>');
+        var $arrangeSideBySide = $('<div class="brtc-va-editors-sheet-panels-datapanel-toolitem brtc-va-editors-sheet-panels-datapanel-toolitem-arrange-side-by-side" title="' + Brightics.locale.panel.vertical + '"></div>');
         $toolbar.append($arrangeSideBySide);
         $arrangeSideBySide.on('click', function (event) {
             _this.dataWorksheet.arrange('vertical');
@@ -609,7 +609,7 @@
 
     DataPanel.prototype.createPopupToolItem = function ($toolbar) {
         var _this = this;
-        var $popup = $('<div class="brtc-va-editors-sheet-panels-datapanel-toolitem brtc-va-editors-sheet-panels-datapanel-toolitem-popup" title="Pop up Chart" target="popupChart"></div>');
+        var $popup = $('<div class="brtc-va-editors-sheet-panels-datapanel-toolitem brtc-va-editors-sheet-panels-datapanel-toolitem-popup" title="' + Brightics.locale.panel.popupChart + '" target="popupChart"></div>');
         $toolbar.append($popup);
 
         var _makePageOptionArray = function () {
@@ -686,7 +686,7 @@
     };
 
     DataPanel.prototype.createDownloadItem = function ($toolbar) {
-        var $download = $('<div class="brtc-va-editors-sheet-panels-datapanel-toolitem brtc-va-editors-sheet-panels-datapanel-toolitem-download" title="Download"></div>');
+        var $download = $('<div class="brtc-va-editors-sheet-panels-datapanel-toolitem brtc-va-editors-sheet-panels-datapanel-toolitem-download" title="' + Brightics.locale.panel.download + '"></div>');
         $toolbar.append($download);
         var _this = this;
         $download.click(function (event) {
@@ -779,7 +779,7 @@
         var _this = this;
         this.columnSettings= new Brightics.VA.Core.Editors.Sheet.Controls.ColumnSettings(this.$mainControl, {
             options: this.options,
-            changed: function (event, data) { 
+            changed: function (event, data) {
                 var command = _this.createSetDisplayColumnsCommand(data)
                 _this.executeCommand(command);
             }
@@ -826,7 +826,7 @@
     DataSchema.prototype.createSetDisplayColumnsCommand = function (data) {
         if (!this.options.fnUnit.display.columns) this.options.fnUnit.display.columns = {};
         var setDisplayColumnsCommand = new Brightics.VA.Core.Editors.Diagram.Commands.SetDisplayColumnsCommand(this, {
-            columns: this.options.fnUnit.display.columns,            
+            columns: this.options.fnUnit.display.columns,
             newColumns: data.columns,
             tableId: data.tableId,
             panelType: this.panelType

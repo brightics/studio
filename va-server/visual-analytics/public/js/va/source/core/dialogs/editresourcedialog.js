@@ -66,9 +66,9 @@
 
     EditResourceDialog.prototype.handleOkClicked = function () {
         const nameVal = this.$nameControl.val().trim();
-        
+
         if (nameVal === '') {
-            Brightics.VA.Core.Utils.WidgetUtils.openErrorDialog('Please enter name.');
+            Brightics.VA.Core.Utils.WidgetUtils.openErrorDialog(Brightics.locale.sentence.S0020);
             return;
         } else if (nameVal.indexOf('\"') > -1) {
             Brightics.VA.Core.Utils.WidgetUtils.openErrorDialog('Cannot use " in function name.');

@@ -237,7 +237,7 @@
             };
 
             const requiredValidator = (val) => {
-                if (val.trim().length === 0) return 'Required field';
+                if (val.trim().length === 0) return Brightics.locale.common.requiredInputs;
                 return '';
             };
 
@@ -318,13 +318,13 @@
             const viewTarget = data.datasourceType === 'RDB' ? 'RDB' : 'Cloud';
             const viewMap = {
                 RDB: [
-                    createInputPair('datasourceName', 'Name', data.datasourceName, {
+                    createInputPair('datasourceName', Brightics.locale.common.name, data.datasourceName, {
                         option: {
                             disabled: readOnly
                         }
                     }),
-                    createInputPair('ip', 'IP', data.ip),
-                    createInputPair('port', 'Port', data.port, {
+                    createInputPair('ip', Brightics.locale.datasource.ip, data.ip),
+                    createInputPair('port', Brightics.locale.datasource.port, data.port, {
                         validator: (val) => {
                             const num = '01234567890';
                             if (requiredValidator(val)) return requiredValidator(val);
@@ -335,27 +335,27 @@
                             return '';
                         }
                     }),
-                    createDropdownPair('dbType', 'DB Type', dbTypes, data.dbType),
-                    createInputPair('dbName', 'DB Name', data.dbName),
-                    createInputPair('userName', 'User Name', data.userName),
-                    createInputPair('password', 'Password', data.password, {option: {type: 'password'}})
+                    createDropdownPair('dbType', Brightics.locale.datasource.dbType, dbTypes, data.dbType),
+                    createInputPair('dbName', Brightics.locale.datasource.dbName, data.dbName),
+                    createInputPair('userName', Brightics.locale.common.userName, data.userName),
+                    createInputPair('password', Brightics.locale.common.password, data.password, {option: {type: 'password'}})
                 ],
                 Cloud: [
-                    createInputPair('datasourceName', 'Name', data.datasourceName, {
+                    createInputPair('datasourceName', Brightics.locale.common.name, data.datasourceName, {
                         option: {
                             disabled: readOnly
                         }
                     }),
-                    createDropdownPair('cloudType', 'Cloud Type', [
+                    createDropdownPair('cloudType', Brightics.locale.datasource.cloudType, [
                         S3
                     ], data.cloudType || S3),
-                    createInputPair('accessKeyId', 'Access Key ID', data.accessKeyId),
-                    createInputPair('secretAccessKey', 'Secret Access Key', data.secretAccessKey, {
+                    createInputPair('accessKeyId', Brightics.locale.datasource.accessKeyId, data.accessKeyId),
+                    createInputPair('secretAccessKey', Brightics.locale.datasource.secretAccessKey, data.secretAccessKey, {
                         option: {
                             type: 'password'
                         }
                     }),
-                    createInputPair('bucketName', 'Bucket Name', data.bucketName)
+                    createInputPair('bucketName', Brightics.locale.datasource.bucketName, data.bucketName)
                 ]
             };
 
@@ -379,13 +379,13 @@
                     crel('div', {class: 'datasource-management-view__button-area'},
                         crel('div', {class: 'datasource-management-view__left-button-area'},
                             crel('button', {class: 'datasource-management-view__delete-button'},
-                                'Delete')
+                                Brightics.locale.common.delete)
                         ),
                         crel('div', {class: 'datasource-management-view__right-button-area'},
                             crel('button', {class: 'datasource-management-view__cancel-button'},
-                                'Cancel'),
+                                Brightics.locale.common.cancel),
                             crel('button', {class: 'datasource-management-view__save-button'},
-                                'Save')
+                                Brightics.locale.common.save)
                         )
                     )
                 )
@@ -500,7 +500,7 @@
             crel('div', {class: 'datasource-managemenet-view__wrapper'},
                 crel('div', {class: 'datasource-management-view__upper-button-area'},
                     crel('button', {class: 'datasource-management-view__new-connection-button'},
-                    Brightics.locale.common.newConnection + '▼')
+                    Brightics.locale.datasource.newConnection + '▼')
                 ),
                 crel(
                     'div', {class: 'datasource-managemenet-view'},

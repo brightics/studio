@@ -45,7 +45,7 @@
     RenameDialog.prototype.handleOkClicked = function () {
         var newName = this.$nameControl.val().trim();
         if (newName.length == 0) {
-            Brightics.VA.Core.Utils.WidgetUtils.openErrorDialog('Please enter name.');
+            Brightics.VA.Core.Utils.WidgetUtils.openErrorDialog(Brightics.locale.sentence.S0020);
             return;
         }
         //"."가 2개이상 연속되면 Error 발생

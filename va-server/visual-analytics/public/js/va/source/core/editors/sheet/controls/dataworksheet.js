@@ -217,7 +217,7 @@
         this.options.worksheet.toolbar = {
             menu: {
                 multichart: {
-                    title: 'MultiChart',
+                    title: Brightics.locale.chart.multichart,
                     click: function () {
                         var panel = this;
                         _this._handleOpenMultiChart(panel);
@@ -231,14 +231,21 @@
                     }
                 },
                 setting: {
+                    title: Brightics.locale.chart.settings,
                     click: function () {
                         var panel = this;
                         _this._handleChartSettings(panel);
                     }
                 },
-                duplicate: {},
-                details: {},
-                close: {}
+                duplicate: {
+                    title: Brightics.locale.common.duplicate,
+                },
+                details: {
+                    title: Brightics.locale.chart.details,
+                },
+                close: {
+                    title: Brightics.locale.common.close,
+                }
             }
         };
 
@@ -256,7 +263,7 @@
 
         var guide = {
             message: 'Set data options using Chart Setting Button.',
-            onClick: callback    
+            onClick: callback
         };
         return guide;
     };

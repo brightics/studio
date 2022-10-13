@@ -46,7 +46,7 @@
             '<div class="brtc-va-setting-component-wrapper">' +
             '   <div class="' + this._parseSettingIdToClassName(this.getSettingId('use')) + ' brtc-va-setting-component brtc-style-display-flex brtc-style-align-items-center">' +
             '       <div class="brtc-va-setting-checkbox-content use"></div>' +
-            '       <div class="brtc-va-setting-checkbox-label brtc-style-setting-label brtc-style-flex-1">Use default table format  (will be applied after screen refresh)</div>' +
+            '       <div class="brtc-va-setting-checkbox-label brtc-style-setting-label brtc-style-flex-1">'+Brightics.locale.sentence.S0009+'</div>' +
             '   </div>' +
             '   <div class="' + this._parseSettingIdToClassName(this.getSettingId('number')) + ' brtc-va-setting-component brtc-style-display-flex brtc-style-align-items-center">' +
             '       <div class="brtc-style-display-none" brtc-va-setting-component brtc-style-display-flex brtc-style-align-items-center">' +
@@ -54,7 +54,7 @@
             '           <div class="brtc-va-setting-input-content number integer"></div>' +
             '       </div>' +
             '       <div class="brtc-va-setting-component brtc-style-display-flex brtc-style-align-items-center">' +
-            '           <div class="brtc-va-setting-input-content-label">Number</div>' +
+            '           <div class="brtc-va-setting-input-content-label" style="width: 100px">'+Brightics.locale.common.decimalPlace+'</div>' +
             '           <div class="brtc-va-setting-input-content number double"></div>' +
             '       </div>' +
             '   </div>' +
@@ -155,7 +155,7 @@
         var $controlWrapper = $('' +
             '<div class="brtc-va-setting-component-wrapper" style="margin-top: 20px;">' +
             '   <div class="' + this._parseSettingIdToClassName(this.getSettingId('palette')) + ' brtc-va-setting-component brtc-style-display-flex brtc-style-align-items-center">' +
-            '       <div class="brtc-va-setting-checkbox-label brtc-style-setting-label brtc-style-flex-1"> Configure custom color palettes. </div>' +
+            '       <div class="brtc-va-setting-checkbox-label brtc-style-setting-label brtc-style-flex-1">'+ Brightics.locale.sentence.S0010 +'</div>' +
             '       <div class="brtc-va-setting-checkbox-content colors"></div>' +
             '</div>');
 
@@ -582,7 +582,7 @@
     };
 
     ChartSetting.Key = 'setting-chart';
-    ChartSetting.Label = 'Chart';
+    ChartSetting.Label = Brightics.locale.common.chart;
     ChartSetting.index = 3;
 
     Brightics.VA.Setting.Registry[ChartSetting.Key] = ChartSetting;

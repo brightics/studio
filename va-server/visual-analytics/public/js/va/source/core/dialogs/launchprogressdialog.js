@@ -346,73 +346,69 @@
         this.$mainControl.find('.jqx-window-close-button-background').css('visibility', 'visible');
         this.$okButton.css('display', 'block');
         this.$cancelButton.css('display', 'none');
+
+        const renderProgress = (_status) => {
+            this.$mainControl.find('.brtc-va-dialogs-launch-progress-proc[status="PROCESSING"] > .brtc-va-dialogs-launch-progress-proc-status').text(this._statusLabel(_status));
+            this.$mainControl.find('.brtc-va-dialogs-launch-progress-proc[status="PROCESSING"]').attr('status', _status);
+            this.$mainControl.find('.brtc-va-dialogs-launch-progress-func[status="PROCESSING"] > .brtc-va-dialogs-launch-progress-func-status').text(this._statusLabel(_status));
+            this.$mainControl.find('.brtc-va-dialogs-launch-progress-func[status="PROCESSING"]').attr('status', _status);
+
+            this.$mainControl.find('.brtc-va-dialogs-launch-progress-proc[status="WAIT"] > .brtc-va-dialogs-launch-progress-proc-status').text(this._statusLabel(_status));
+            this.$mainControl.find('.brtc-va-dialogs-launch-progress-proc[status="WAIT"]').attr('status', _status);
+            this.$mainControl.find('.brtc-va-dialogs-launch-progress-func[status="WAIT"] > .brtc-va-dialogs-launch-progress-func-status').text(this._statusLabel(_status));
+            this.$mainControl.find('.brtc-va-dialogs-launch-progress-func[status="WAIT"]').attr('status', _status);
+        }
+
         if (status === 'FAIL') {
             this.errorMessage = message ? message : '';
             this.errorDetailMessage = detailMessage ? detailMessage : '';
 
-            if (this.errorMessage.indexOf('SparkException:') == 0 ||
-                this.errorMessage.indexOf('NoClassDefFoundError:') == 0) {
-
-                this.errorMessage = Brightics.locale.common.unexpectedErrorMsg;
-
-            } else if (this.errorMessage.indexOf('Exception:') == 0) {
-                // if (this.errorMessage.indexOf('Exception: Proper conditional statement should be entered.') == 0) {
-                //     this.errorMessage = 'Proper conditional statement should be entered.';
-                // } else {
-                this.errorMessage = Brightics.locale.common.unexpectedErrorMsg;
-                // }
-
-            } else if (this.errorMessage.indexOf('AnalysisException:') == 0) {
-
-                this.errorMessage = this.errorMessage.substring(18, this.errorMessage.length).trim();
-
-            } else if (this.errorMessage.indexOf('InvalidInputException:') == 0) {
-
-                this.errorMessage = Brightics.locale.common.inputNotExistMsg;
-
-            } else if (this.errorMessage.indexOf('FileNotFoundException:') == 0) {
-
-                this.errorMessage = Brightics.locale.common.datasourceNotExistMsg;
-
-            } else if (this.errorMessage == '{"result":"Cannot execute the flow. It contains invalid contents.","resultCode":1100}') {
-
-                this.errorMessage = Brightics.locale.common.notExecuteFlowMsg;
-
-            } else if (this.errorMessage == Brightics.locale.common.requiredParamCondition + '.\n' + Brightics.locale.common.requiredParamCondition + '.') {
-
-                this.errorMessage = Brightics.locale.common.requiredParamCondition + '.';
-
-            } else if (this.errorMessage.startsWith('/home/brightics/brightics/packages/brightics-agent/repo/BRIGHTICS/script') && this.errorMessage.indexOf('error: not found') > 0) {
-
-                this.errorMessage = Brightics.locale.common.invalidScriptContents;
-            } else if (this.errorMessage === "'in-table' is not of Array[String] type.") {
-                this.errorMessage = Brightics.locale.common.requiredInputs;
-
-            } else if (this.errorMessage === "Error: Invalid tid ") {
-                this.errorMessage = Brightics.locale.common.requiredInputs;
-            } else if (this.errorMessage == 'The size of \'fs-paths\' must be 1.') {
-                this.errorMessage = Brightics.locale.common.requiredParamInputPath + '.';
-            }
-
-            this.$mainControl.find('.brtc-va-dialogs-launch-progress-proc[status="PROCESSING"] > .brtc-va-dialogs-launch-progress-proc-status').text(this._statusLabel(status));
-            this.$mainControl.find('.brtc-va-dialogs-launch-progress-proc[status="PROCESSING"]').attr('status', status);
-            this.$mainControl.find('.brtc-va-dialogs-launch-progress-func[status="PROCESSING"] > .brtc-va-dialogs-launch-progress-func-status').text(this._statusLabel(status));
-            this.$mainControl.find('.brtc-va-dialogs-launch-progress-func[status="PROCESSING"]').attr('status', status);
-
-            this.$mainControl.find('.brtc-va-dialogs-launch-progress-proc[status="WAIT"] > .brtc-va-dialogs-launch-progress-proc-status').text(this._statusLabel(status));
-            this.$mainControl.find('.brtc-va-dialogs-launch-progress-proc[status="WAIT"]').attr('status', status);
-            this.$mainControl.find('.brtc-va-dialogs-launch-progress-func[status="WAIT"] > .brtc-va-dialogs-launch-progress-func-status').text(this._statusLabel(status));
-            this.$mainControl.find('.brtc-va-dialogs-launch-progress-func[status="WAIT"]').attr('status', status);
+            // if (this.errorMessage.indexOf('SparkException:') == 0 ||
+            //     this.errorMessage.indexOf('NoClassDefFoundError:') == 0) {
+            //
+            //     this.errorMessage = Brightics.locale.common.unexpectedErrorMsg;
+            //
+            // } else if (this.errorMessage.indexOf('Exception:') == 0) {
+            //     // if (this.errorMessage.indexOf('Exception: Proper conditional statement should be entered.') == 0) {
+            //     //     this.errorMessage = 'Proper conditional statement should be entered.';
+            //     // } else {
+            //     this.errorMessage = Brightics.locale.common.unexpectedErrorMsg;
+            //     // }
+            //
+            // } else if (this.errorMessage.indexOf('AnalysisException:') == 0) {
+            //
+            //     this.errorMessage = this.errorMessage.substring(18, this.errorMessage.length).trim();
+            //
+            // } else if (this.errorMessage.indexOf('InvalidInputException:') == 0) {
+            //
+            //     this.errorMessage = Brightics.locale.common.inputNotExistMsg;
+            //
+            // } else if (this.errorMessage.indexOf('FileNotFoundException:') == 0) {
+            //
+            //     this.errorMessage = Brightics.locale.common.datasourceNotExistMsg;
+            //
+            // } else if (this.errorMessage == '{"result":"Cannot execute the flow. It contains invalid contents.","resultCode":1100}') {
+            //
+            //     this.errorMessage = Brightics.locale.common.notExecuteFlowMsg;
+            //
+            // } else if (this.errorMessage == Brightics.locale.common.requiredParamCondition + '.\n' + Brightics.locale.common.requiredParamCondition + '.') {
+            //
+            //     this.errorMessage = Brightics.locale.common.requiredParamCondition + '.';
+            //
+            // } else if (this.errorMessage.startsWith('/home/brightics/brightics/packages/brightics-agent/repo/BRIGHTICS/script') && this.errorMessage.indexOf('error: not found') > 0) {
+            //
+            //     this.errorMessage = Brightics.locale.common.invalidScriptContents;
+            // } else if (this.errorMessage === "'in-table' is not of Array[String] type.") {
+            //     this.errorMessage = Brightics.locale.common.requiredInputs;
+            //
+            // } else if (this.errorMessage === "Error: Invalid tid ") {
+            //     this.errorMessage = Brightics.locale.common.requiredInputs;
+            // } else if (this.errorMessage == 'The size of \'fs-paths\' must be 1.') {
+            //     this.errorMessage = Brightics.locale.common.requiredParamInputPath + '.';
+            // }
+            renderProgress(status);
         } else if (status === 'ABORT') {
-            this.$mainControl.find('.brtc-va-dialogs-launch-progress-proc[status="PROCESSING"] > .brtc-va-dialogs-launch-progress-proc-status').text(this._statusLabel(status));
-            this.$mainControl.find('.brtc-va-dialogs-launch-progress-proc[status="PROCESSING"]').attr('status', status);
-            this.$mainControl.find('.brtc-va-dialogs-launch-progress-func[status="PROCESSING"] > .brtc-va-dialogs-launch-progress-func-status').text(this._statusLabel(status));
-            this.$mainControl.find('.brtc-va-dialogs-launch-progress-func[status="PROCESSING"]').attr('status', status);
-
-            this.$mainControl.find('.brtc-va-dialogs-launch-progress-proc[status="WAIT"] > .brtc-va-dialogs-launch-progress-proc-status').text(this._statusLabel(status));
-            this.$mainControl.find('.brtc-va-dialogs-launch-progress-proc[status="WAIT"]').attr('status', status);
-            this.$mainControl.find('.brtc-va-dialogs-launch-progress-func[status="WAIT"] > .brtc-va-dialogs-launch-progress-func-status').text(this._statusLabel(status));
-            this.$mainControl.find('.brtc-va-dialogs-launch-progress-func[status="WAIT"]').attr('status', status);
+            renderProgress(status);
         } else if (status === 'SUCCESS') {
             if (this.$checkboxDiv.val() === true) this.handleOkClicked();
         }
