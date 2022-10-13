@@ -115,13 +115,18 @@
                     }
                 },
                 setting: {
+                    title: Brightics.locale.chart.settings,
                     click: function () {
                         var panel = this;
                         _this._handleChartSettings(panel);
                     }
                 },
-                duplicate: {},
-                close: {}
+                duplicate: {
+                    title: Brightics.locale.common.duplicate,
+                },
+                close: {
+                    title: Brightics.locale.common.close,
+                }
             }
         };
 

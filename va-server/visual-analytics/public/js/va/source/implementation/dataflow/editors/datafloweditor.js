@@ -38,7 +38,7 @@
                     _this.modelLayoutManager.handleAppendTemplate(opt);
                 }
             },
-            title: 'Add to Template'
+            title: Brightics.locale.common.addToTemplate
         });
     };
 

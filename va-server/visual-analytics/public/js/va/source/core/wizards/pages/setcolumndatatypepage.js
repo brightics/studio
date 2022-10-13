@@ -65,7 +65,7 @@
             '   </div>' +
             '   <div class="step03">' +
             '       <span class="brtc-va-icon step normal selected"></span>' +
-            '       <p class="step normal selected"><strong>03</strong>'+Brightics.locale.common.setColumnDataFormat+'</p>' +
+            '       <p class="step normal selected"><strong>03</strong>'+Brightics.locale.common.setColumnDataType+'</p>' +
             '   </div>'));
     };
 
@@ -119,7 +119,7 @@
             '           </div>' +
             '           <div class="brtc-va-change-type-row">' +
             '               <div class="brtc-va-change-type-label-wrapper">' +
-            '                   <div class="brtc-va-change-type-label">'+Brightics.locale.common.format+'</div>' +
+            '                   <div class="brtc-va-change-type-label">'+Brightics.locale.common.type+'</div>' +
             '               </div>' +
             '               <div class="brtc-va-change-type-search-input-wrapper">' +
             '                   <input type="search" class="brtc-va-change-type-search-input" tabIndex="105"/>' +
@@ -248,7 +248,7 @@
             theme: Brightics.VA.Env.Theme,
             width: 255,
             height: 28,
-            placeHolder: Brightics.locale.common.searchFormat
+            placeHolder: Brightics.locale.common.searchType
         });
 
         this.$typeSearchInput.on('change', function (event) {

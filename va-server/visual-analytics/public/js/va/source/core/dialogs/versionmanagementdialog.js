@@ -90,8 +90,7 @@
     };
 
     VersionManagementDialog.prototype.openLoadQuestionDialog = function (callback) {
-        var msg = 'Current model contents will be overwritten by this version and cannot be recovered. Are you sure?';
-        Utils.WidgetUtils.openQuestionDialog(msg, callback);
+        Utils.WidgetUtils.openQuestionDialog(Brightics.locale.sentence.S0024, callback);
     };
 
     VersionManagementDialog.prototype.createDialogButtonBar = function ($parent) {

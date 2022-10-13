@@ -205,7 +205,7 @@
                                 });
                         } catch (err) {
                             $fileName.empty();
-                            $fileName.append($('<span class="brtc-va-icon brtc-va-dialogs-dataupload error">File Type Error : json type can be entered only.</span>'));
+                            $fileName.append($('<span class="brtc-va-icon brtc-va-dialogs-dataupload error">' + Brightics.locale.sentence.S0023 + '</span>'));
                             Brightics.VA.Core.Utils.WidgetUtils.openErrorDialog('Invalid Project(.json) File.');
                         }
                     } else {
@@ -229,7 +229,7 @@
         var _this = this;
 
         if (this.$fileSelectPage.find('.nodata').length > 0) {
-            Brightics.VA.Core.Utils.WidgetUtils.openErrorDialog('Please select file to upload.', function () {
+            Brightics.VA.Core.Utils.WidgetUtils.openErrorDialog(Brightics.locale.sentence.S0022, function () {
                 _this.$fileSelectPage.find('#fileselect-local').focus();
             });
             return;
@@ -241,7 +241,7 @@
             return;
         }
         if (_this.$nameControl.val().trim() === '') {
-            Brightics.VA.Core.Utils.WidgetUtils.openErrorDialog('Please enter name.', function () {
+            Brightics.VA.Core.Utils.WidgetUtils.openErrorDialog(Brightics.locale.sentence.S0020, function () {
                 _this.$nameControl.focus();
             });
             return;

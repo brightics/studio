@@ -49,7 +49,7 @@
             '   </div>' +
             '   <div class="step03">' +
             '       <span class="brtc-va-icon step disabled"></span>' +
-            '       <p class="step disabled"><strong>03</strong>'+Brightics.locale.common.setColumnDataFormat+'</p>' +
+            '       <p class="step disabled"><strong>03</strong>'+Brightics.locale.common.setColumnDataType+'</p>' +
             '   </div>');
         $parent.append(this.$wizardHeader);
     };
@@ -62,7 +62,7 @@
 
         $parent.append($('' +
             '   <div class="fileselect">' +
-            '       <div style="font-size: 13px; font-style: italic; margin-bottom: 20px;">Select data consisting of delimiter-separated values.</div>' +
+            '       <div style="font-size: 13px; font-style: italic; margin-bottom: 20px;">'+ Brightics.locale.sentence.S0021 +'</div>' +
             '       <div class="header">' +
             '           <span>'+Brightics.locale.common.file+': </span>' +
             '               <input for="brtc-va-wizardpage-dataupload-contents-fileselectpage-ex-filename" type="button" id="fileselect-local" value="'+Brightics.locale.common.local+'" />' +
@@ -130,12 +130,12 @@
             if ($(this)[0] && $(this)[0].files[0]) {
                 _this.options.wizard.triggerEvent('changeData', true);
                 _this.options.wizard.result.file = $(this)[0].files[0];
-    
+
                 _this.options.wizard.result.fileName = _this.options.wizard.result.file.name;
                 if (!window.FileReader) {
                     _this.options.wizard.result.fileName = $(this).val().split('/').pop().split('\\').pop();  // 파일명만 추출
                 }
-    
+
                 if (!Brightics.VA.Core.Utils.InputValidator.isValid.type4(_this.options.wizard.result.fileName)) {
                     _this.alertInvalid();
                     _this.options.wizard.$btnNext.jqxButton({disabled: true});
@@ -143,7 +143,7 @@
                     _this.handleLocalFileSelected(event);
                     _this.options.wizard.$btnNext.jqxButton({disabled: false});
                 }
-            } 
+            }
         });
     };
 

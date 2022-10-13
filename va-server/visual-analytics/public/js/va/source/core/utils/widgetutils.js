@@ -256,7 +256,7 @@
             }
 
             $fnUnitControl.attr('title', options.label);
-            
+
             $fnUnitControl.find('.brtc-va-views-palette-fnunit-icon').attr('context', context || 'scala');
             $fnUnitControl.find('.brtc-va-views-palette-fnunit-label').text(options.label);
 
@@ -549,8 +549,8 @@
         openQuestionDialog: function (message, closeCallback) {
             this.createCommonConfirmDialog($('body'), {
                 type: 'info',
-                okLabel: 'Yes',
-                cancelLabel: 'No',
+                okLabel: Brightics.locale.common.yes,
+                cancelLabel: Brightics.locale.common.no,
                 isCancel: true,
                 contentText: message,
                 close: closeCallback

@@ -84,7 +84,7 @@
 
     ClipboardExplorer.prototype._addTemplateLabel = function ($parent, template) {
         var functions = template.contents.functions;
-        var labelText = functions.length === 1 ? '1 function' : functions.length + ' functions';
+        var labelText = functions.length === 1 ? '1 ' + Brightics.locale.clipboard.function : functions.length + ' ' + Brightics.locale.clipboard.functions;
         var size = template.width + ' x ' + template.height;
 
         $parent.append(labelText + '<br>' + size);
