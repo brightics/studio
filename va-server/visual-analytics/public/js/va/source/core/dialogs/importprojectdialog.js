@@ -217,7 +217,7 @@
                 _this.refresh();
             }
         } else {
-            $fileName.append($('<span class="brtc-va-icon brtc-va-dialogs-dataupload error">File Type Error : json type can be entered only.</span>'));
+            $fileName.append($('<span class="brtc-va-icon brtc-va-dialogs-dataupload error">' + Brightics.locale.sentence.S0023 + '</span>'));
         }
     };
 

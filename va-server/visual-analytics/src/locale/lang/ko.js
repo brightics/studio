@@ -270,7 +270,7 @@ module.exports = {
     cloudType: "클라우드 유형",
     accessKeyId: "액세스 키 ID",
     secretAccessKey: "보안 액세스 키",
-    bucketName: "버킷 네임",
+    bucketName: "버킷 이름",
     ip: "IP",
     port: "포트",
     dbType: "DB 유형",

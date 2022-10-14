@@ -110,7 +110,7 @@
     BasePanel.prototype.createMinMaxToolItem = function ($toolbar) {
         var _this = this;
 
-        this.$minMaxButton = $('<div class="brtc-va-editors-sheet-panels-datapanel-toolitem brtc-va-editors-sheet-panels-datapanel-toolitem-maximize" title="Max/Min"></div>');
+        this.$minMaxButton = $('<div class="brtc-va-editors-sheet-panels-datapanel-toolitem brtc-va-editors-sheet-panels-datapanel-toolitem-maximize" title="' + Brightics.locale.panel.maxMin + '"></div>');
         this.$minMaxButton.attr('maximize', 'false');
         $toolbar.append(this.$minMaxButton);
 
