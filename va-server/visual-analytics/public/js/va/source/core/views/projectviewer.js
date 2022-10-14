@@ -834,7 +834,7 @@
                     });
                 }
             },
-            title: fileType === 'data' ? Brightics.locale.common.createNewData : Brightics.locale.common.createNewVisual,
+            title: fileType === 'Model' ? Brightics.locale.common.createNewData : Brightics.locale.common.createNewVisual,
         });
     };
 

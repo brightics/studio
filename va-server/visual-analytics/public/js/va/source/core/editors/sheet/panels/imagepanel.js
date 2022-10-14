@@ -53,7 +53,7 @@
 
     ImagePanel.prototype.createPopupToolItem = function ($toolbar) {
         var _this = this;
-        var $popup = $('<div class="brtc-va-editors-sheet-panels-datapanel-toolitem brtc-va-editors-sheet-panels-datapanel-toolitem-popup" title="Pop up Chart" target="popupChart"></div>');
+        var $popup = $('<div class="brtc-va-editors-sheet-panels-datapanel-toolitem brtc-va-editors-sheet-panels-datapanel-toolitem-popup" title="' + Brightics.locale.panel.popupChart + '" target="popupChart"></div>');
         $toolbar.append($popup);
 
         $popup.click(
