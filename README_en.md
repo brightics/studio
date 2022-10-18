@@ -1,4 +1,4 @@
-# Brightics Studio v1.2
+# Brightics Studio v1.3
 
 [![Version](https://img.shields.io/github/v/release/brightics/studio)](https://github.com/brightics/studio/releases)
 [![Release Date](https://img.shields.io/github/release-date/brightics/studio)](https://github.com/brightics/studio/releases)
