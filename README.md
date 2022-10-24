@@ -1,4 +1,4 @@
-# Brightics Studio v1.2
+# Brightics Studio v1.3
 
 [![Version](https://img.shields.io/github/v/release/brightics/studio)](https://github.com/brightics/studio/releases)
 [![Release Date](https://img.shields.io/github/release-date/brightics/studio)](https://github.com/brightics/studio/releases)
@@ -121,7 +121,7 @@
 ## Contact us
 ---
 Brightics Studio가 마음에 드셨다면 사용 후기와 피드백 부탁드립니다.  
-또는 Brightics Studio 사용 중 궁금한 사항이 있으시면 주저하지 마시고 brightics@samsung.com으로 연락주세요.
+또는 Brightics Studio 사용 중 궁금한 사항이 있으시면 주저하지 마시고 brightics.cs@samsung.com으로 연락주세요.
 
 ## License
 ---
