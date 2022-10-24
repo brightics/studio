@@ -1,4 +1,4 @@
-# Brightics Studio v1.2
+# Brightics Studio v1.3
 
 [![Version](https://img.shields.io/github/v/release/brightics/studio)](https://github.com/brightics/studio/releases)
 [![Release Date](https://img.shields.io/github/release-date/brightics/studio)](https://github.com/brightics/studio/releases)
@@ -121,7 +121,7 @@ You can install Brightics Studio using a release file or a docker image.
 ## Contact us
 ---
 If you like to use Brightics Studio, please let us know your usage and feedback.  
-Or you have questions while using Brightics Studio, don't hesitate and feel free to contact brightics@samsung.com
+Or you have questions while using Brightics Studio, don't hesitate and feel free to contact brightics.cs@samsung.com
 
 ## License
 ---
