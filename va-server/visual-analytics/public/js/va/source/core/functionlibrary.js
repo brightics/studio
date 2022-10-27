@@ -2,7 +2,7 @@
     'use strict';
 
     var root = this;
-
+    const currentLang = Brightics.VA.SettingStorage.getCurrentLanguage();
     root.Brightics.VA.Core.Functions.Library = {
         init: function () {
             for (const [fnId, fn] of Object.entries(this)) {
@@ -32,8 +32,9 @@
 
                 // Tag로 못 찾은 경우, Label로 한번 더 검색 (UDF의 경우 ver로 검색이 안되기 때문에 로직 추가)
                 if (!findFlag && this[key] && this[key].defaultFnUnit && this[key].defaultFnUnit.display && this[key].defaultFnUnit.display.label) {
-                    var displayLabel = this[key].defaultFnUnit.display.label;
-                    for (var i in tags) {
+                    let displayLabel = (this[key].defaultFnUnit.label && this[key].defaultFnUnit.label[currentLang]) ? this[key].defaultFnUnit.label[currentLang] : this[key].defaultFnUnit.display.label;
+
+                    for (let i in tags) {
                         if (displayLabel.toLowerCase().indexOf(tags[i].toLowerCase()) > -1) {
                             list.push(key);
                             break;

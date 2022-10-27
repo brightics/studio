@@ -14,6 +14,7 @@
     limitations under the License.
 """
 
+from .profile_table import profile_table
 from .correlation import correlation
 from .pairplot import pairplot
 from .anova import bartletts_test
