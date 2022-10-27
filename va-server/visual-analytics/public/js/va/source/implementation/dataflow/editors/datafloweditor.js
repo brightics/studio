@@ -10,8 +10,8 @@
     var TabChannel = brtc_require('TabChannel');
 
     function DataFlowEditor(parentId, options) {
+        this._migrateDefaultLocaleLabel(options);
         Brightics.VA.Core.Editors.ModelEditor.call(this, parentId, options);
-
         this.initUDFChangeListener();
         this.initTemplateChangeListener();
         this.initTabChannel();
@@ -54,6 +54,43 @@
             Studio.getClipboardManager().addFunctionToClipboard(opt);
         }
     };
+
+
+    DataFlowEditor.prototype._migrateDefaultLocaleLabel = function (options) {
+        let contents = options.editorInput.data.contents;
+        if(contents && contents.functions) {
+            contents.functions.forEach(f => this._setDefaultLocaleLabel(f))
+        }
+
+        const innerModelsId = Object.keys(contents.innerModels);
+
+        for(let innerId of innerModelsId){
+            let innerContents = contents.innerModels[innerId];
+            if(innerContents && innerContents.functions) {
+                innerContents.functions.forEach(f => this._setDefaultLocaleLabel(f))
+            }
+        }
+    };
+
+    DataFlowEditor.prototype._setDefaultLocaleLabel = function (func) {
+        const currentLang = Brightics.VA.SettingStorage.getCurrentLanguage();
+        const lib = Brightics.VA.Core.Functions.Library;
+        const otherLang = currentLang === 'ko' ? 'en' : 'ko';
+
+        try {
+            if(func.display && func.display.label && lib[func.func]) {
+                let currentLabel = func.display.label;
+                let defaultFnUnit = lib[func.func].defaultFnUnit;
+                let defaultLabel = defaultFnUnit.label;
+                if(defaultLabel && currentLabel === defaultLabel[otherLang]){
+                    func.display.label = defaultLabel[currentLang];
+                }
+            }
+        } catch (e) {
+            console.warn(e);
+        }
+    }
+
 
     DataFlowEditor.prototype.initUDFChangeListener = function () {
         var _this = this;

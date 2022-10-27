@@ -106,13 +106,19 @@
     }
     root.Brightics.VA.Implementation.DataFlow.Utils.AddonFunctionUtil = {
         addFunction: function (addonFunction) {
-            let contents = typeof addonFunction.contents === 'string' ? JSON.parse(addonFunction.contents) : addonFunction.contents;
-            var id = addonFunction.id;
-            if (contents.isFunction === false || Brightics.VA.Implementation.DataFlow.Functions[id]) return;
+            let originalContents = typeof addonFunction.contents === 'string' ? JSON.parse(addonFunction.contents) : addonFunction.contents;
+            let originalLabel;
+            if(typeof originalContents.label === 'object') {
+                originalLabel = {...originalContents.label};
+            }else {
+                originalLabel = originalContents.label;
+            }
+            const id = addonFunction.id;
+            if (originalContents.isFunction === false || Brightics.VA.Implementation.DataFlow.Functions[id]) return;
 
-            contents = Brightics.VA.Core.Utils.CommonUtils.configureFn(contents);
+            let contents = Brightics.VA.Core.Utils.CommonUtils.configureFn(originalContents);
 
-            var functionSpec = {
+            let functionSpec = {
                 'category': contents.category,
                 'defaultFnUnit': {
                     'func': id,
@@ -125,7 +131,8 @@
                         },
                         'sheet': {}
                     },
-                    'meta': contents.meta
+                    'meta': contents.meta,
+                    'label': originalLabel
                 },
                 'description': contents.description,
                 'tags': contents.tags,
