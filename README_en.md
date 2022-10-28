@@ -16,6 +16,8 @@
 [[English](README_en.md)]
 [[한국어](README.md)]
 
+MacOS / Linux users can use Brightics Studio by following the installation guide below.
+
 ## Overview
 
 ---
@@ -42,7 +44,7 @@ You can install Brightics Studio using a release file or a docker image.
 ### Prerequisite
 #
 * Some functions which interact with database need client libraries such as [Oracle Instant Client](http://www.oracle.com/technetwork/database/database-technologies/instant-client/overview/index.html)
-* It may not work on devices based on Apple M1 processor. You can use the Brightics Studio Docker image by referring to [Docker Support](#docker-support).
+* You can use the Brightics Studio Docker image by referring to [Installation - docker](#installation---docker).
 
 
 ### Installation - release file
@@ -55,7 +57,7 @@ You can install Brightics Studio using a release file or a docker image.
 
       ```
       BrighticsStudio-\<version\>-\<os name\>.exe : for windows
-      BrighticsStudio-\<version\>-\<os name\>.sh : for linux and mac
+      BrighticsStudio-\<version\>-\<os name\>.sh : for linux (Ubuntu)
       ```
       
       Details of the directory is as follows:
@@ -75,7 +77,7 @@ You can install Brightics Studio using a release file or a docker image.
       ```
       Brightics-Studio-Launcher.exe : Launcher for windows
       start-brightics.cmd : for windows
-      start-brightics.sh : for linux and mac
+      start-brightics.sh : for linux (Ubuntu)
       ```
         
       > **Notes**
@@ -99,29 +101,33 @@ You can install Brightics Studio using a release file or a docker image.
       Brightics Studio pops up on Chrome browser after launching start-brightics.cmd (or start-brightics.sh).   
       Please go to http://127.0.0.1:3000 manually to use Brightics Studio if it does not pop up automatically.
 
-
-  * **Optional** : macOS users have to install [graphviz](http://graphviz.org/download/) using [Homebrew](https://brew.sh/) to plot tree figures of Decision Tree.  
-  However, if it is not easy to install it just skip it.
-      ```
-      brew install graphviz
-      ```
-
 ### Installation - docker
 #
   * Docker
 
       Install [Docker](https://www.docker.com/get-started/) in user's working environment.
+	  <img src="docs/images/docker.png"></img>
 
 
   * Docker Image  
 
-      Docker image is available on [Docker Hub](https://hub.docker.com/r/brightics/studio). Move to [Docker Hub](https://hub.docker.com/r/brightics/studio) page and follow the instructions to install.
+      Docker image is available on [Docker Hub](https://hub.docker.com/r/brightics/studio).
 
+      Run
+      ```
+      $ docker volume create brightics
+      $ docker run -d -p 3000:3000 --privileged=true -v brightics:/brightics-studio/userdata --name brightics brightics/studio:latest
+      ```      
+
+      Stop
+      ```
+      $ docker stop brightics
+      ```      
 
 ## Contact us
 ---
 If you like to use Brightics Studio, please let us know your usage and feedback.  
-Or you have questions while using Brightics Studio, don't hesitate and feel free to contact brightics@samsung.com
+Or you have questions while using Brightics Studio, don't hesitate and feel free to contact brightics.cs@samsung.com
 
 ## License
 ---
