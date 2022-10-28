@@ -16,6 +16,8 @@
 [[English](README_en.md)]
 [[한국어](README.md)]
 
+MacOS / Linux 사용자는 본 문서 하단의 설치 가이드를 따라 진행하시면 Brightics Studio를 사용하실 수 있습니다.
+
 ## Overview
 
 ---
