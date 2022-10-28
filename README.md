@@ -16,6 +16,8 @@
 [[English](README_en.md)]
 [[한국어](README.md)]
 
+MacOS / Linux 사용자는 본 문서 하단의 설치 가이드를 따라 진행하시면 Brightics Studio를 사용하실 수 있습니다.
+
 ## Overview
 
 ---
@@ -43,7 +45,7 @@
 ### Prerequisite
 #
 * 데이터베이스와 상호 작용하는 일부 기능에는 [Oracle Instant Client](http://www.oracle.com/technetwork/database/database-technologies/instant-client/overview/index.html) 와 같은 클라이언트 라이브러리가 필요합니다.
-* Apple M1 processor 기반 장치에서는 동작하지 않을 수 있습니다. [Docker Support](#docker-support)를 참고하여 Brightics Studio Docker 이미지를 사용할 수 있습니다.
+* [Installation - docker](#installation---docker)를 참고하여 Brightics Studio Docker 이미지를 사용할 수 있습니다.
 
 ### Installation - release file
 #
@@ -55,7 +57,7 @@
 
       ```
       BrighticsStudio-\<version\>-\<os name\>.exe : for windows
-      BrighticsStudio-\<version\>-\<os name\>.sh : for linux and mac
+      BrighticsStudio-\<version\>-\<os name\>.sh : for linux (Ubuntu)
       ```  
   
       디렉토리의 세부 사항은 다음과 같습니다:  
@@ -74,7 +76,7 @@
       ```
       Brightics-Studio-Launcher.exe : Launcher for windows
       start-brightics.cmd : for windows
-      start-brightics.sh : for linux and mac
+      start-brightics.sh : for linux (Ubuntu)
       ```
 
       > **Notes**
@@ -87,36 +89,37 @@
 
       새 버전이 출시되면 아래 파일을 최신 버전의 brightics-studio로 이동하여 데이터와 프로젝트를 유지해야 합니다.
       
-        ```
-        /brightics-studio/visual-analytics/brightics.db
-        /brightics-studio/brightics-server/data/*
-        ```
+      ```
+      /brightics-studio/visual-analytics/brightics.db
+      /brightics-studio/brightics-server/data/*
+      ```
 
   * Run
 
       Brightics Studio는 start-brightics.cmd(또는 start-brightics.sh) 실행 후 Chrome 브라우저에 팝업됩니다. 
-
       Brightics Studio가 자동으로 팝업되지 않는 경우 수동으로 http://127.0.0.1:3000 으로 이동하여 Brightics Studio를 사용하십시오.  
-
-      ※ macOS 에서 http://127.0.0.1:3000에 접속이 되지 않는 경우 [Brightics AI 포탈 FAQ](https://www.brightics.ai/community/FAQ) 의 "Brightics Studio Mac 버전 설치 오류가 발생합니다."를 확인해주세요.
-      
-  * **Optional** : macOS 사용자는 [Homebrew](https://brew.sh/) 를 사용하여 [graphviz](http://graphviz.org/download/) 를 설치해야 Decision Tree의 트리 그림을 그릴 수 있습니다.   
-  하지만 설치가 쉽지 않다면 넘어가도 됩니다.
-      ```
-      brew install graphviz
-      ```  
-  
     
 ### Installation - docker
 #
   * Docker
 
       작업환경에 [Docker](https://www.docker.com/get-started/)를 설치합니다. 
+      <img src="docs/images/docker.png"></img>
 
   * Docker Image  
 
-      Brightics Studio Docker 이미지는 [Docker Hub](https://hub.docker.com/r/brightics/studio) 에서 제공됩니다. [Docker Hub](https://hub.docker.com/r/brightics/studio) 페이지로 이동하여 지시에 따라 설치합니다.
+      Brightics Studio Docker 이미지는 [Docker Hub](https://hub.docker.com/r/brightics/studio) 에서 제공됩니다.
+      
+      실행
+      ```
+      $ docker volume create brightics
+      $ docker run -d -p 3000:3000 --privileged=true -v brightics:/brightics-studio/userdata --name brightics brightics/studio:latest
+      ```      
 
+      중지
+      ```
+      $ docker stop brightics
+      ```      
 
 ## Contact us
 ---
