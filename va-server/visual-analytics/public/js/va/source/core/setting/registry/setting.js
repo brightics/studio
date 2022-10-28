@@ -122,7 +122,8 @@
             list = options.list,
             tagList = options.tagList || [],
             width = options.width || 100,
-            dropDownHeight = options.dropDownHeight;
+            dropDownHeight = options.dropDownHeight,
+            description = options.description;
 
         var $control = $('' +
             '<div class="brtc-va-setting-component-wrapper">' +
@@ -133,6 +134,10 @@
             '</div>');
 
         $target.append($control);
+
+        if(description) {
+            $control.append(`<div class="brtc-style-setting-label">${description}</div>`);
+        }
         
         $control.find('.brtc-va-setting-dropdownlist-label').text(label);
 
