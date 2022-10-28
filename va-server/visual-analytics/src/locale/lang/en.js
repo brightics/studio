@@ -334,7 +334,7 @@ module.exports = {
     S0024	: "Current model contents will be overwritten by this version and cannot be recovered. Are you sure?",
     S0025	: "Are you sure you want to export the",
     S0026	: "Include the data flow(s) along with the selected model.",
-    S0027	: "",
+    S0027	: "※ Functions that have been renamed by the user are not subject to language conversion.",
     S0028	: "",
     S0029	: "",
     S0030	: "",

@@ -34,14 +34,14 @@
         });
     };
 
-
     CommonSetting.prototype.createLocaleControl = function () {
         this.$localeControl = this._createDropDownList(this.$mainControl, {
             settingId: 'tmpLocale',
             label: Brightics.locale.common.language + ' : ',
             width: 100,
             list: ['English', '한국어'],
-            dropDownHeight: 100
+            dropDownHeight: 100,
+            description: Brightics.locale.sentence.S0027
         });
     };
 
