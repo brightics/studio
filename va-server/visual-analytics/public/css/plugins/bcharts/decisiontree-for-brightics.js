@@ -307,7 +307,7 @@
             // .size([width, height])
                 .nodeSize([this.nodeFigure.width + this.nodeFigure.hDistance, this.nodeFigure.height + this.nodeFigure.vDistance])
                 .separation(function (a, b) {
-                    return 1;
+                    return a.parent == b.parent ? 1 : 1;
                 });
             this.d3chart.component = this.decisionTree;
 
@@ -363,12 +363,12 @@
                     lineHeight = 1.1, // ems
                     y = text.attr("y"),
                     dy = parseFloat(text.attr("dy"));
-                text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+                var tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
 
                 for (var i in words) {
                     if (words[i] != '') {
                         if (words[i].length > 20) words[i] = words[i].substring(0, 17) + '...';
-                        text.append("tspan").attr("x", 0).attr("y", y).attr("dy", lineNumber * lineHeight + dy + "em").text(words[i]);
+                        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", lineNumber * lineHeight + dy + "em").text(words[i]);
                         lineNumber++;
                     }
                 }
@@ -391,11 +391,11 @@
                 var lineHeight = 1.1; // ems
                 var y = text.attr("y");
                 var dy = parseFloat(text.attr("dy"));
-                text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+                var tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
                 var maxWidth = 0;
                 for (var i in words) {
                     if (words[i] != '') {
-                        const tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", lineNumber * lineHeight + dy + "em").text(words[i]);
+                        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", lineNumber * lineHeight + dy + "em").text(words[i]);
                         maxWidth = Math.max(maxWidth, tspan.node().getComputedTextLength());
                         lineNumber++;
                     }
@@ -432,6 +432,7 @@
 
             var linkWidth = this.options.plotOptions.decisionTree.style.link.width;
             var linkColor = this.options.plotOptions.decisionTree.style.link.color;
+            var linkOpacity = this.options.plotOptions.decisionTree.style.link.opacity;
             this.d3chart.nodeTooltip.html(options.tooltip.formatter.bind(this));
 
 
@@ -521,7 +522,7 @@
                 });
 
 
-            nodeEnter.append("text")
+            var rootNodeText = nodeEnter.append("text")
                 .attr('class', 'rootNode')
                 .attr("dy", ".35em")
                 .style("stroke-width", 1)
@@ -537,7 +538,7 @@
                     if (d.rectHeight) {
                         y = y - d.rectHeight;
                     }
-                    return y;
+                    return d.children || d.children ? y : y;
                 })
                 .text(function (d) {
                     if (d.depth == 1) {
@@ -563,7 +564,7 @@
                     if (d.rectHeight) {
                         y = d.rectHeight / 2
                     }
-                    return -y;
+                    return d.children || d.children ? -y : -y;
                 })
                 .attr("text-anchor", 'middle')
                 .text(function (d) {
@@ -628,6 +629,10 @@
                     }
                 }).call(_this._wrap.bind(this));
 
+            var root_text_element = nodeUpdate.select("text.nodeText");
+            var root_textWidth = root_text_element.node() ? root_text_element.node().getComputedTextLength() + 10 : 0;
+
+
             nodeUpdate.select('rect.rootNode')
                 .attr("width", function (d, i) {
                     if (_this.options.plotOptions.decisionTree.label.normal.show) {
@@ -688,7 +693,7 @@
                     if (d.rectHeight) {
                         y = y - d.rectHeight;
                     }
-                    return y;
+                    return d.children || d.children ? y : y;
                 })
                 .text(function (d) {
                         if (d.depth == 1) {
@@ -767,6 +772,8 @@
                 .append("g")
                 .attr('class', 'linktext')
                 .attr("transform", function (d) {
+                    var portion = (d.x < d.parent.x) ? 4 / 5 : 3 / 5;
+
                     return "translate(" +
                         d.x + "," +
                         (d.y - 50) + ")";
@@ -1047,14 +1054,18 @@
 
         DecisionTreeForBrighticsDataExtractor.prototype._pushNodes = function (row, rowIndex) {
             var id = Number.parseInt(row[this.nodeIdIndex]);
-            let node;
             if (this.groupByColumnIndex !== -1) {
+                var groupKeys = [];
+                for (var i in this.groupByColumnIndex) {
+                    groupKeys.push(row[this.groupByColumnIndex[i]]);
+                }
+
                 var groupKey = row[this.groupByColumnIndex];
 
                 var nodeId = groupKey + '::' + id;
 
                 this._nodes[nodeId] = {};
-                node = this._nodes[nodeId];
+                var node = this._nodes[nodeId];
                 node.name = nodeId;
                 if (row[this.isLeafIndex] == false) {
                     node.leaf = [groupKey + '::' + (id * 2), groupKey + '::' + (id * 2 + 1)];
@@ -1063,7 +1074,7 @@
                 }
             } else {
                 this._nodes[id] = {};
-                node = this._nodes[id];
+                var node = this._nodes[id];
                 node.name = id;
 
                 if (row[this.isLeafIndex] == false) {
