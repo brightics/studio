@@ -16893,6 +16893,7 @@ LayersControl.prototype._createDeleteButton = function ($component, layerIndex) 
         var callbackParam = {
             plotOptions: {
                 map: {
+                    ..._this.options.chartOption.plotOptions.map,
                     layers: _this.layers
                 }
             }
@@ -16933,6 +16934,7 @@ LayersControl.prototype._createColumnSelectorContent = function ($component, col
             var callbackParam = {
                 plotOptions: {
                     map: {
+                        ..._this.options.chartOption.plotOptions.map,
                         layers: _this.layers
                     }
                 }
