@@ -8,4 +8,3 @@ cd $BRIGHTICS_PACKAGES_HOME/brightics-server
 
 # Visual Analytics
 kill -9 `cat  $BRIGHTICS_PACKAGES_HOME/visual-analytics/va.pid`
-

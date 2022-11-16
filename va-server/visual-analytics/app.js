@@ -2,13 +2,10 @@
 require('dotenv').config();
 
 global.__basedir = __dirname;
-
-const args = require('yargs').argv;
 global.__BRTC_ARGS = {
-    user_id: args.user_id || 'brightics@samsung.com',
-    access_token: args.access_token || 'ACCESS_TOKEN',
+    user_id: 'brightics@samsung.com',
+    access_token: 'ACCESS_TOKEN',
 };
-
 global.__REQ_fs = require('fs');
 global.__REQ_path = require('path');
 global.__REQ_request = require('request');
@@ -106,27 +103,27 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // module static path
-app.use(subPathUrl + '/', __REQ_express.static(__REQ_path.join(__dirname, 'public')));
+
+app.use('/', __REQ_express.static(__REQ_path.join(__dirname, 'public')));
 app.use(__REQ_express.static(__REQ_path.join(__dirname, 'public')));
 
-app.use(subPathUrl + '*/js/plugins/echarts', __REQ_express.static(__dirname + '/node_modules/echarts/dist/'));
-app.use(subPathUrl + '*/js/plugins/echarts-stat', __REQ_express.static(__dirname + '/node_modules/echarts-stat/dist/'));
+app.use('*/js/plugins/echarts', __REQ_express.static(__dirname + '/node_modules/echarts/dist/'));
+app.use('*/js/plugins/echarts-stat', __REQ_express.static(__dirname + '/node_modules/echarts-stat/dist/'));
 
-app.use(subPathUrl + '*/js/plugins/d3', __REQ_express.static(__dirname + '/node_modules/d3/build/'));
-app.use(subPathUrl + '*/js/plugins/d3-tip', __REQ_express.static(__dirname + '/node_modules/d3-tip/'));
+app.use('*/js/plugins/d3', __REQ_express.static(__dirname + '/node_modules/d3/build/'));
+app.use('*/js/plugins/d3-tip', __REQ_express.static(__dirname + '/node_modules/d3-tip/'));
 
-app.use(subPathUrl + '*/js/plugins/babel-polyfill', __REQ_express.static(__dirname + '/node_modules/babel-polyfill/dist/'));
-app.use(subPathUrl + '*/js/plugins/css.escape', __REQ_express.static(__dirname + '/node_modules/css.escape/'));
+app.use('*/js/plugins/babel-polyfill', __REQ_express.static(__dirname + '/node_modules/babel-polyfill/dist/'));
+app.use('*/js/plugins/css.escape', __REQ_express.static(__dirname + '/node_modules/css.escape/'));
 
-app.use(subPathUrl + '*/js/va', __REQ_express.static(__REQ_path.join(__dirname, 'public') + '/js/va/'));
-app.use(subPathUrl + '*/js/admin', __REQ_express.static(__REQ_path.join(__dirname, 'public') + '/js/admin/'));
-app.use(subPathUrl + '*/js/tools', __REQ_express.static(__REQ_path.join(__dirname, 'public') + '/js/tools/'));
-app.use(subPathUrl + '*/js/plugins', __REQ_express.static(__REQ_path.join(__dirname, 'public') + '/js/plugins/'));
+app.use('*/js/va', __REQ_express.static(__REQ_path.join(__dirname, 'public') + '/js/va/'));
+app.use('*/js/admin', __REQ_express.static(__REQ_path.join(__dirname, 'public') + '/js/admin/'));
+app.use('*/js/tools', __REQ_express.static(__REQ_path.join(__dirname, 'public') + '/js/tools/'));
+app.use('*/js/plugins', __REQ_express.static(__REQ_path.join(__dirname, 'public') + '/js/plugins/'));
 
-app.use(subPathUrl + '*/css', __REQ_express.static(__REQ_path.join(__dirname, 'public') + '/css/'));
-app.use(subPathUrl + '*/font-awesome', __REQ_express.static(__REQ_path.join(__dirname, 'public') + '/font-awesome/'));
-
-app.use(subPathUrl + '*/toolkit/static', __REQ_express.static(__REQ_path.join(__dirname, 'public') + '/static/toolkit'));
+app.use('*/css', __REQ_express.static(__REQ_path.join(__dirname, 'public') + '/css/'));
+app.use('*/font-awesome', __REQ_express.static(__REQ_path.join(__dirname, 'public') + '/font-awesome/'));
+app.use('*/toolkit/static', __REQ_express.static(__REQ_path.join(__dirname, 'public') + '/static/toolkit'));
 
 app.use(session({
     cookie: {
@@ -173,6 +170,7 @@ router.use('/api/va/v2/analytics', validateToken, require('./routes/api/va/v2/an
 router.use('/api/va/v2/datasources', validateToken, require('./routes/api/va/v2/datasources'));
 router.use('/api/va/v2/data', validateToken, require('./routes/api/va/v2/data'));
 router.use('/api/va/v2/schedules', validateToken, require('./routes/api/va/v2/schedules'));
+router.use('/api/va/v2/help/function/static/help', __REQ_express.static(__REQ_path.join(__dirname, 'public') + '/static/help'));
 router.use('/api/va/v2/help', validateToken, require('./routes/api/va/v2/help'));
 router.use('/api/va/v2/convert', validateToken, require('./routes/api/va/v2/convert'));
 
@@ -229,9 +227,9 @@ app.use(function (error, req, res, next) {
 
 // error handlers, catch 404 and forward to error handler
 app.use(function (req, res, next) {
-    if (req.url.startsWith(subPathUrl + '/api') || req.url.startsWith(subPathUrl + '/auth')) {
-        if (__BRTC_CONF['use-login-page']) res.redirect(subPathUrl + '/auth/brightics-user'); // Account Login 페이지로 이동
-        else res.redirect(subPathUrl + '/'); // Index 페이지로 이동
+    if (req.url.startsWith('/api') || req.url.startsWith('/auth')) {
+        if (__BRTC_CONF['use-login-page']) res.redirect('/auth/brightics-user'); // Account Login 페이지로 이동
+        else res.redirect('/'); // Index 페이지로 이동
     } else {
         res.status(404);
         res.render('error', { message: 'The requested URL ' + req.originalUrl + ' was not found on this server.' });
@@ -290,11 +288,11 @@ var server = http.createServer(app).listen(__BRTC_CONF.port, __BRTC_CONF.host ||
     __BRTC_DAO.role.permission.checkSchema(handleError, handleSuccess);
     __BRTC_DAO.permission.checkSchema(handleError, handleSuccess);
     __BRTC_DAO.publishreport.checkSchema(handleError, handleSuccess);
-    __BRTC_DAO.function.label.checkSchema(handleError, handleSuccess);
     __BRTC_DAO.file.version.checkSchema(handleError, handleSuccess);
     __BRTC_DAO.addon_function.checkSchema(handleError, handleSuccess);
     __BRTC_DAO.tools_project.checkSchema(handleError, handleSuccess);
     __BRTC_DAO.tools_function.checkSchema(handleError, handleSuccess);
+    __BRTC_DAO.function.favorite.checkSchema(handleError, handleSuccess);
 });
 
 server.timeout = 2 * 60 * 60 * 1000;

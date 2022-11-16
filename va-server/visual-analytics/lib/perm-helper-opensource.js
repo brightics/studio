@@ -1,5 +1,3 @@
-var request = __REQ_request;
-
 var events = require('events');
 var extend = require('extend');
 

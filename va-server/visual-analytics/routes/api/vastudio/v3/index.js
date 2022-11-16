@@ -12,6 +12,7 @@ router.use(__BRTC_TOKEN_VALIDATOR.validateToken, require('./projects/project-mem
 router.use(require('./report/publish'));
 router.use(__BRTC_TOKEN_VALIDATOR.validateToken, require('./report/publishreports'));
 router.use(__BRTC_TOKEN_VALIDATOR.validateToken, require('./toolkit/index'));
+router.use(require('./functions/favorite'));
 
 router.post('/permissions', __BRTC_TOKEN_VALIDATOR.validateToken, function (req, res) {
     __BRTC_PERM_HELPER.queryPermissions(req, req.body.resource_types, function (error) {

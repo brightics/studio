@@ -26,7 +26,10 @@ from statsmodels.graphics.tsaplots import plot_pacf
 from statsmodels.tsa.stattools import acf
 from statsmodels.tsa.stattools import pacf
 import pandas as pd
+import matplotlib
+matplotlib.rcParams['axes.unicode_minus'] = False
 from matplotlib import pyplot as plt
+from brightics.common.data_export import PyPlotData, PyPlotMeta
 
 
 def autocorrelation(table, group_by=None, **params):
@@ -35,44 +38,46 @@ def autocorrelation(table, group_by=None, **params):
     param_validation_check = [greater_than_or_equal_to(params, 1, 'nlags'),
                               from_under(params, 0.0, 1.0, 'conf_level')]
     validate(*param_validation_check)
-    
+
     if group_by is not None:
         grouped_model = _function_by_group(_autocorrelation, table, group_by=group_by, **params)
         return grouped_model
     else:
         return _autocorrelation(table, **params)
 
-    
+
 def _autocorrelation(table, input_col, nlags=20, conf_level=0.95):
     data = table[input_col]
-    
+
+    figs = PyPlotData()
+
     plt.figure()
     plot_acf(data, lags=nlags, alpha=1 - conf_level)
-    fig_plt_acf = plt2MD(plt)
+    figs.addpltfig('fig_plt_acf', plt)
     plt.clf()
-    
+
     plt.figure()
     plot_pacf(data, lags=nlags, alpha=1 - conf_level)
-    fig_plt_pacf = plt2MD(plt)
+    figs.addpltfig('fig_plt_pacf', plt)
     plt.clf()
-    
+
     acf_ret = acf(data, nlags=nlags, alpha=1 - conf_level)
     pacf_ret = pacf(data, nlags=nlags, alpha=1 - conf_level)
-    
+
     result_table1 = pd.DataFrame([])
     result_table1['lag'] = list(range(nlags + 1))
     result_table1['ACF'] = acf_ret[0]
-    
+
     if conf_level is not None:
         result_table1['%g%% confidence Interval' % (conf_level * 100)] = [str((acf_ret[1][i][0], acf_ret[1][i][1]))  for i in range(nlags + 1)]
-    
+
     result_table2 = pd.DataFrame([])
     result_table2['lag'] = list(range(nlags + 1))
     result_table2['PACF'] = pacf_ret[0]
-    
+
     if conf_level is not None:
         result_table2['%g%% confidence Interval' % (conf_level * 100)] = [str((pacf_ret[1][i][0], pacf_ret[1][i][1])) for i in range(nlags + 1)]
-    
+
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""# Autocorrelation / Partial Autocorrelation Result"""))
     rb.addMD(strip_margin("""
@@ -92,12 +97,14 @@ def _autocorrelation(table, input_col, nlags=20, conf_level=0.95):
     |
     |{result_table2}
     |
-    """.format(image1=fig_plt_acf, result_table1=pandasDF2MD(result_table1, num_rows=nlags + 1), image2=fig_plt_pacf, result_table2=pandasDF2MD(result_table2, num_rows=nlags + 1))))
+    """.format(image1=figs.getMD('fig_plt_acf'), result_table1=pandasDF2MD(result_table1, num_rows=nlags + 1),
+               image2=figs.getMD('fig_plt_pacf'), result_table2=pandasDF2MD(result_table2, num_rows=nlags + 1))))
 
     model = _model_dict('autocorrelation')
     model['autocorrelation_table'] = result_table1
     model['partial_autocorrelation_table'] = result_table2
     model['_repr_brtc_'] = rb.get()
-        
-    return {'model':model}
+    model['figures'] = figs.tojson()
+
+    return {'model': model}
     

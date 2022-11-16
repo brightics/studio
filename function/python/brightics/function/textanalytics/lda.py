@@ -112,7 +112,10 @@ def _lda4(table, input_col, topic_name='topic', num_voca=1000, num_topic=5, num_
 
     # pyLDAvis
     prepared_data = ldavis.prepare(lda_model, term_count, tf_vectorizer)
-    html_result = pyLDAvis.prepared_data_to_html(prepared_data)
+    html_result = pyLDAvis.prepared_data_to_html(prepared_data,
+                                                 d3_url="/js/plugins/pyldavis/d3.v3.min.js",
+                                                 ldavis_url="/js/plugins/pyldavis/ldavis.v1.0.0.js",
+                                                 ldavis_css_url="/css/plugins/pyldavis/ldavis.v1.0.0.css")
 
     # generate report
     params = {'Input column': input_col,

@@ -16,8 +16,9 @@
 
 import pandas as pd
 import numpy as np
+import matplotlib
+matplotlib.rcParams['axes.unicode_minus'] = False
 import matplotlib.pyplot as plt
-from sklearn.isotonic import IsotonicRegression
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.utils import check_required_parameters
 from brightics.common.groupby import _function_by_group
@@ -27,6 +28,7 @@ from brightics.common.repr import plt2MD
 from brightics.common.repr import BrtcReprBuilder
 from brightics.common.repr import strip_margin
 from brightics.common.exception import BrighticsFunctionException as BFE
+from brightics.common.data_export import PyPlotData, PyPlotMeta
 
 
 def isotonic_regression_train(table, group_by=None, **params):
@@ -41,21 +43,48 @@ def isotonic_regression_train(table, group_by=None, **params):
         return _isotonic_regression_train(table, **params)
 
 
-def _isotonic_regression_train(table, feature_col, label_col, increasing=True):
+def preprocess_(feature_col, label_col):
     if feature_col == label_col:
-        raise BFE.from_errors([{'0100': '{} is deplicate in Feature column and Label column'.format(feature_col)}])
+        raise BFE.from_errors([{'0100': '{} is duplicate in Feature column and Label column'.format(feature_col)}])
+    preprocess_result = {'estimator_class': IsotonicRegression,
+                         'estimator_params': ['increasing']}
+    return preprocess_result
+
+
+def postprocess_(table, feature_col, label_col, regressor):
     features = table[feature_col]
     label = table[label_col]
-    isotonic_model = IsotonicRegression(increasing=increasing)
-    isotonic_model.fit(features, label)
-    predict = isotonic_model.predict(features)
+    predict = regressor.predict(features)
 
     plt.figure()
     plt.plot(label, 'r.-')
     plt.plot(predict, 'b.-')
     plt.xlabel('Samples')
     plt.legend(['True label', 'Predicted'])
-    fig_actual_predict = plt2MD(plt)
+
+    figs = PyPlotData()
+    figs.addpltfig('fig_actual_predict', plt)
+
+    postprocess_result = {'update_md': {'Predicted vs Actual': figs.getMD('fig_actual_predict')},
+                          'type': 'isotonic_regression_model',
+                          'figs': figs}
+
+    return postprocess_result
+
+
+def _isotonic_regression_train(table, feature_col, label_col, increasing=True):
+    if feature_col == label_col:
+        raise BFE.from_errors([{'0100': '{} is duplicate in Feature column and Label column'.format(feature_col)}])
+    features = table[feature_col]
+    label = table[label_col]
+
+    preprocess_(feature_col, label_col)
+    isotonic_model = IsotonicRegression(increasing=increasing, out_of_bounds="clip" )
+    isotonic_model.fit(features, label)
+
+    postprocess_result = postprocess_(table, feature_col, label_col, isotonic_model)
+    fig_actual_predict = postprocess_result['update_md']['Predicted vs Actual']
+
     get_param = isotonic_model.get_params()
 
     rb = BrtcReprBuilder()
@@ -72,6 +101,8 @@ def _isotonic_regression_train(table, feature_col, label_col, increasing=True):
     model['label_col'] = label_col
     model['parameters'] = get_param
     model['regressor'] = isotonic_model
+    model['figures'] = postprocess_result['figs'].tojson()
+
     return {"model": model}
 
 

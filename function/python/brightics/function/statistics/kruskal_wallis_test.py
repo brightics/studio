@@ -61,13 +61,10 @@ def _kruskal_wallis_test(table, response_cols, factor_col, nan_policy='propagate
         result[name] = dict()
         result[name]['Statistics'] = stat
         result[name]['P value'] = pval
-        
+    tmp_result = pd.DataFrame({'data': group_name, 'df': df, 'test_statistics': stats, 'p_value': pvals})  
     rb.addMD(strip_margin("""
     | {table}
-    """.format(table=pandasDF2MD(pd.DataFrame({'': group_name, 
-                                                'Degree of Freedom': df, 
-                                                'Test Statistics': stats, 
-                                                'P value': pvals})))))
+    """.format(table=pandasDF2MD(tmp_result))))
     result['_repr_brtc_'] = rb.get()
-        
+    result['result'] = tmp_result    
     return {'result': result}

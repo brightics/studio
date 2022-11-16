@@ -1,4 +1,4 @@
-# Create Table
+## Format
 This function crate a table from the input values.
 
 ## Description
@@ -13,10 +13,8 @@ This function crate a table from the input values.
 1. **out_table**: (Table) Table with selected columns.
 #### PARAMETER
 1. **edit** : The first row are the column names. Column names should consist of alphabets, numbers, and "_". The column names should start with an alphabet letter. The other rows are the input data.
-2. **Columns** : After entering the input data, choose the type for each column.
-3. **data-array** : Array[Array[Any]] The input data. Each array in the whole array is a row.
-4. **column-types** : Array[String] The column types.
-5. **column-names** : Array[String] The column names.
+2. **Columns**<b style="color:red">*</b> : After entering the input data, choose the type for each column.
+
 
 
 
@@ -27,5 +25,5 @@ This function crate a table from the input values.
 
 <img src="/static/help/python/sample_model_img/create_table.PNG"  width="800px" style="border: 1px solid gray" >
 
-<br>In this tutorial workflow, A dummy table with the columns 'col1', 'col2', 'col3' is created.
+<br>In this tutorial workflow, A dummy table with the columns 'c1', 'c2' is created.
 

@@ -18,21 +18,25 @@ from brightics.common.utils import check_required_parameters
 from pandasql import sqldf
 from brightics.function.transform import sql_execute
 from brightics.common.repr import strip_margin
+import random
 
 
 def add_expression_column(table, new_cols, formulas, expr_type='sqlite'):
     _table = table.copy()
-    
-    for nc, f in zip(new_cols, formulas):      
+
+    for nc, f in zip(new_cols, formulas):
         if expr_type == 'sqlite':
+            random_id = str(random.randint(1000, 10000))
+            new_val = 'new_val_' + random_id
+            row_num = 'row_num_' + random_id
             query = strip_margin('''
-            | SELECT {f} AS new_val FROM #{{DF(0)}}
-            |'''.format(f=f))
+            | SELECT {new_val} from (select *, rowid as {row_num}, {f} as {new_val} from #{{DF(0)}} order by {row_num})
+            |'''.format(f=f, new_val=new_val, row_num=row_num))
             _table[nc] = sql_execute(table, query)['out_table']
         else:
             _table[nc] = _table.eval(f, engine=expr_type)
-        
-    return {'out_table':_table}
+
+    return {'out_table': _table}
 
 
 def add_expression_column_if(table, **params):

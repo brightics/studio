@@ -24,11 +24,10 @@ def delete_missing_data(table, **params):
 
 def _delete_missing_data(table, input_cols, how='any', row_or_column="index", missing_ratio=0):
     if row_or_column == 'index':
-        subset = input_cols
         length = len(input_cols)
     else:
-        subset = None
         length = table.shape[0]
+
     if missing_ratio != 0:
         max_na = missing_ratio * length
         if max_na != int(max_na):
@@ -37,5 +36,10 @@ def _delete_missing_data(table, input_cols, how='any', row_or_column="index", mi
             thresh = length - int(max_na) + 1
     else:
         thresh = length
-    out_table = table.dropna(subset=subset, how=how, axis=row_or_column, thresh=thresh)
+
+    if row_or_column == 'index':
+        out_table = table.dropna(subset=input_cols, how=how, axis=row_or_column, thresh=thresh)
+    else:
+        drop_cols = [col for col in input_cols if thresh > length - table[col].isnull().sum()]
+        out_table = table.drop(columns=drop_cols, inplace=False)
     return {'out_table': out_table}

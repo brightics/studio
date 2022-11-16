@@ -2,7 +2,7 @@ var router = __REQ_express.Router();
 var request = __REQ_request;
 
 
-const coreResponseHandler = (req, res) => {
+const coreResponseHandler = (res) => {
     return function (error, response, body) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
@@ -59,7 +59,7 @@ var deleteDeploy = function (req, res) {
 var getAllDeploy = function (req, res) {
     var options = __BRTC_CORE_SERVER.createRequestOptions('GET', '/api/core/v2/deploys/all');
     __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-    request(options, coreResponseHandler(req, res));
+    request(options, coreResponseHandler(res));
 };
 
 var getDownloadDeploy = function (req, res) {
@@ -71,7 +71,7 @@ var getDownloadDeploy = function (req, res) {
 
         var options = __BRTC_CORE_SERVER.createRequestOptions('GET', '/api/core/v2/deploy/' + target + '/' + deployId + '/' + registerUserId + '/' + version);
         __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
-        request(options, coreResponseHandler(req, res));
+        request(options, coreResponseHandler(res));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_DEPLOY_UPDATE, task);
 };

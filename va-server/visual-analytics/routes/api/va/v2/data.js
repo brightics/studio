@@ -71,8 +71,7 @@ const parseStagingData = function (body) {
     if (arrColIndexes.length > 0) {
         for (let r in resultSet.data) {
             let row = resultSet.data[r];
-            for (let a in arrColIndexes) {
-                let idx = arrColIndexes[a];
+            for (let idx of arrColIndexes) {
                 if (row[idx].length > 10) {
                     row[idx].splice(10, row[idx].length - 10);
                 }
@@ -714,6 +713,35 @@ router.get('/staging/query', __BRTC_ERROR_HANDLER.checkParams(['user', 'mid', 't
             // var markdown = require( "markdown" ).markdown;
             const jsonBody = JSON.parse(body);
 
+            if (jsonBody.type === 'table') return res.json(parseStagingData(body));
+            else return res.json(jsonBody.data);
+        } catch (err) {
+            return __BRTC_ERROR_HANDLER.sendServerError(res, err);
+        }
+    });
+});
+
+router.get('/staging/schema', __BRTC_ERROR_HANDLER.checkParams(['key']), function (req, res) {
+    const compile = mf.compile('/api/core/v2/data/schema?key={key}');
+    const url = compile({
+        key: req.query.key
+    });
+    let options = __BRTC_CORE_SERVER.createRequestOptions('GET', url);
+    __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
+    options.timeout = 30 * 1000;
+    request(options, function (error, response, body) {
+        if (error) {
+            return __BRTC_ERROR_HANDLER.sendServerError(res, error);
+        }
+        const statusCode = response.statusCode;
+        if(statusCode === 401){
+            return __BRTC_ERROR_HANDLER.unAuthenticatedError(req, res);
+        } else if (statusCode !== 200) {
+            return __BRTC_ERROR_HANDLER.sendMessage(res, __BRTC_ERROR_HANDLER.parseError(body));
+        }
+        try {
+            // var markdown = require( "markdown" ).markdown;
+            const jsonBody = JSON.parse(body);
             if (jsonBody.type === 'table') return res.json(parseStagingData(body));
             else return res.json(jsonBody.data);
         } catch (err) {

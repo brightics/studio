@@ -1,6 +1,5 @@
 import os
 import multiprocessing.pool
-import json
 
 import cv2
 import pandas as pd
@@ -145,7 +144,6 @@ def write_to_dataset(table, root_path, partition_cols=None, **kwargs):
         pq.write_table(table, brtc_data_utils.make_data_path(full_path), **kwargs)
 
 
-import pickle
 from brightics.common.utils import time_usage
 
 

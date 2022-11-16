@@ -29,7 +29,7 @@ const defaultDBHandler = (req, res, withAgentId) => {
     };
 };
 
-const dbHandlerWithoutParse = (req, res) => {
+const dbHandlerWithoutParse = (res) => {
     return function (error, response, body) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
@@ -138,7 +138,7 @@ var createAgent = function (req, res, nex) {
         var options = __BRTC_CORE_SERVER.createRequestOptions('PUT', '/api/core/v2/agent');
         __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
         options.body = JSON.stringify(req.body);
-        request(options, dbHandlerWithoutParse(req, res));
+        request(options, dbHandlerWithoutParse(res));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_AGENT_CREATE, task);
 };
@@ -149,7 +149,7 @@ var UpdateAgent = function (req, res, nex) {
         var options = __BRTC_CORE_SERVER.createRequestOptions('POST', '/api/core/v2/agent');
         __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
         options.body = JSON.stringify(req.body);
-        request(options, dbHandlerWithoutParse(req, res));
+        request(options, dbHandlerWithoutParse(res));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_AGENT_UPDATE, task);
 };
@@ -266,7 +266,7 @@ var addAgentUser = function (req, res, nex) {
         __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
         options.body = JSON.stringify(req.body);
         // options.body = req.body;
-        request(options, dbHandlerWithoutParse(req, res));
+        request(options, dbHandlerWithoutParse(res));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.PERM_AGENT_UPDATE, task);
 };

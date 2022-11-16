@@ -38,48 +38,39 @@ var createToolsProject = function (req, res) {
 };
 
 var getToolsProject = function (req, res) {
-    var task = function (permissions) {
-        var opt = {
-            id: req.params.tpid
-        };
-        __BRTC_DAO.tools_project.selectById(opt, function (err) {
-            __BRTC_ERROR_HANDLER.sendServerError(res, err)
-        }, function (result) {
-            res.json(result)
-        })
+    var opt = {
+        id: req.params.tpid
     };
-    task();
+    __BRTC_DAO.tools_project.selectById(opt, function (err) {
+        __BRTC_ERROR_HANDLER.sendServerError(res, err)
+    }, function (result) {
+        res.json(result)
+    })
 };
 
 var updateToolsProject = function (req, res) {
-    var task = function (permissions) {
-        var opt = {
-            id: req.params.tpid,
-            label: req.body.label,
-            description: __BRTC_TOOLS_SANITIZE_HTML.sanitizeHtml(req.body.description),
-            updater: req.apiUserId || 'brightics@samsung.com'
-        };
-        __BRTC_DAO.tools_project.update(opt, function (err) {
-            __BRTC_ERROR_HANDLER.sendServerError(res, err)
-        }, function (result) {
-            res.json(result)
-        })
+    var opt = {
+        id: req.params.tpid,
+        label: req.body.label,
+        description: __BRTC_TOOLS_SANITIZE_HTML.sanitizeHtml(req.body.description),
+        updater: req.apiUserId || 'brightics@samsung.com'
     };
-    task();
+    __BRTC_DAO.tools_project.update(opt, function (err) {
+        __BRTC_ERROR_HANDLER.sendServerError(res, err)
+    }, function (result) {
+        res.json(result)
+    })
 };
 
 var deleteToolsProject = function (req, res) {
-    var task = function (permissions) {
-        var opt = {
-            id: req.params.tpid
-        };
-        __BRTC_DAO.tools_project.delete(opt, function (err) {
-            __BRTC_ERROR_HANDLER.sendServerError(res, err)
-        }, function (result) {
-            res.json(result)
-        })
+    var opt = {
+        id: req.params.tpid
     };
-    task();
+    __BRTC_DAO.tools_project.delete(opt, function (err) {
+        __BRTC_ERROR_HANDLER.sendServerError(res, err)
+    }, function (result) {
+        res.json(result)
+    })
 };
 
 router.get('/tps', listToolsProjects);

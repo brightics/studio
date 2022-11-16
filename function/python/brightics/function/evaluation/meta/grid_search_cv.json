@@ -1,0 +1,225 @@
+{
+    "script": {
+        "type": "",
+        "content": ""
+    },
+    "specJson": {
+        "category": "evaluation",
+        "func": "brightics.function.evaluation$grid_search_cv",
+        "name": "brightics.function.evaluation$grid_search_cv",
+        "context": "python",
+        "label": "Grid Search CV",
+        "summary": "Perform Grid Search and Cross Validation for classification/regression train functions.",
+        "tutorialLink": "",
+        "description": "Grid search, or a parameter sweep, is one of traditional ways of performing hyper-parameter optimization. This method is simply an exhaustive searching through a manually specified subset of the hyper-parameter space of a learning algorithm. A grid search algorithm must be guided by some performance metric, typically measured by cross-validation on the training set or evaluation on a held-out validation set. Since the parameter space of a machine learner may include real-valued or unbounded value spaces for certain parameters, manually set bounds and discretization may be necessary before applying grid search.\n\nReference\n+ <https://en.wikipedia.org/wiki/Hyperparameter_optimization#Grid_search>",
+        "tags": [
+            "cross validate",
+            "grid search"
+        ],
+        "version": "3.6",
+        "inputs": {
+            "table": ""
+        },
+        "outputs": {
+            "model": ""
+        },
+        "meta": {
+            "table": {
+                "type": "table",
+                "desc": "Input data set to be trained."
+            },
+            "model": {
+                "type": "model",
+                "desc": "Result of a grid search."
+            }
+        },
+        "params": [
+            {
+                "id": "perform_cv",
+                "label": "Perform CV",
+                "description": "Whether to perform a cross validation.",
+                "visibleOption": [],
+                "control": "BooleanRadio",
+                "validation": [],
+                "globalVariable": false,
+                "defaultValue": true
+            },
+            {
+                "id": "cv_n_splits",
+                "label": "K-Fold for CV",
+                "description": "Number of splits for cross validation. It should be bigger than or equal to 2.",
+                "visibleOption": [
+                    {
+                        "id": "perform_cv",
+                        "value": true
+                    }
+                ],
+                "control": "InputBox",
+                "validation": [],
+                "mandatory": false,
+                "globalVariable": false,
+                "placeHolder": "3 (value >= 2)",
+                "type": "Integer",
+                "defaultValue": "",
+                "min": 2
+            },
+            {
+                "id": "cv_scoring",
+                "label": "Scoring for CV",
+                "description": "Scoring metric for a cross validation. Accuracy for classification, F1, Precision, and Recall for binary classification, R2 and Negative MSE for regression are available.",
+                "visibleOption": [
+                    {
+                        "id": "perform_cv",
+                        "value": true
+                    }
+                ],
+                "control": "RadioButton",
+                "validation": [],
+                "globalVariable": false,
+                "type": "String",
+                "items": [
+                    {
+                        "label": "Accuracy",
+                        "value": "accuracy",
+                        "default": true,
+                        "item": ""
+                    },
+                    {
+                        "label": "F1",
+                        "value": "f1",
+                        "default": false,
+                        "item": ""
+                    },
+                    {
+                        "label": "Precision",
+                        "value": "precision",
+                        "default": false,
+                        "item": ""
+                    },
+                    {
+                        "label": "Recall",
+                        "value": "recall",
+                        "default": false,
+                        "item": ""
+                    },
+                    {
+                        "label": "R2",
+                        "value": "r2",
+                        "default": false,
+                        "item": ""
+                    },
+                    {
+                        "label": "Negative MSE",
+                        "value": "neg_mean_squared_error",
+                        "default": false,
+                        "item": ""
+                    }
+                ]
+            },
+            {
+                "id": "cv_shuffle",
+                "label": "Shuffled CV",
+                "description": "Whether to perform shuffled cross validation.",
+                "visibleOption": [
+                    {
+                        "id": "perform_cv",
+                        "value": true
+                    }
+                ],
+                "control": "BooleanRadio",
+                "validation": [],
+                "globalVariable": false,
+                "defaultValue": false
+            },
+            {
+                "id": "cv_stratify",
+                "label": "Stratified CV",
+                "description": "Whether to perform stratified cross validation.",
+                "visibleOption": [
+                    {
+                        "id": "perform_cv",
+                        "value": true
+                    }
+                ],
+                "control": "BooleanRadio",
+                "validation": [],
+                "globalVariable": false,
+                "defaultValue": false
+            },
+            {
+                "id": "cv_seed",
+                "label": "Seed for CV",
+                "description": "Random seed for a shuffled cross validation.",
+                "visibleOption": [
+                    {
+                        "script": "return #perform_cv# == true && #cv_shuffle# == true;"
+                    }
+                ],
+                "control": "InputBox",
+                "validation": [],
+                "mandatory": false,
+                "globalVariable": false,
+                "placeHolder": "",
+                "type": "Integer",
+                "defaultValue": ""
+            },
+            {
+                "id": "gcv_top_n",
+                "label": "Top N",
+                "description": "Number of hyperparameter sets with best performance.",
+                "visibleOption": [],
+                "control": "InputBox",
+                "validation": [],
+                "mandatory": false,
+                "globalVariable": false,
+                "placeHolder": "20",
+                "type": "Integer",
+                "defaultValue": ""
+            },
+            {
+                "id": "target_gscv_func",
+                "label": "Target Grid Search CV function",
+                "description": "",
+                "visibleOption": [
+                    {
+                        "id": "cv_n_splits",
+                        "value": -999999999999999
+                    }
+                ],
+                "control": "InputBox",
+                "validation": [],
+                "mandatory": false,
+                "globalVariable": false,
+                "placeHolder": "",
+                "type": "String",
+                "defaultValue": ""
+            },
+            {
+                "id": "spec_json",
+                "label": "Spec Json",
+                "description": "",
+                "visibleOption": [
+                    {
+                        "id": "cv_n_splits",
+                        "value": -999999999999999
+                    }
+                ],
+                "control": "InputBox",
+                "validation": [],
+                "mandatory": false,
+                "globalVariable": false,
+                "placeHolder": "",
+                "type": "String",
+                "defaultValue": ""
+            }
+        ],
+        "pythonMultiEnvVisible": false
+    },
+    "md": {
+        "en": "# Grid Search CV\nPerform Grid Search and Cross Validation for classification/regression train functions.\n\n## Description\nGrid search, or a parameter sweep, is one of traditional ways of performing hyper-parameter optimization. This method is simply an exhaustive searching through a manually specified subset of the hyper-parameter space of a learning algorithm. A grid search algorithm must be guided by some performance metric, typically measured by cross-validation on the training set or evaluation on a held-out validation set. Since the parameter space of a machine learner may include real-valued or unbounded value spaces for certain parameters, manually set bounds and discretization may be necessary before applying grid search.\n\nReference\n+ <https://en.wikipedia.org/wiki/Hyperparameter_optimization#Grid_search>\n\n## Properties\n### VA\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) Input data set to be trained.\n#### OUTPUT\n1. **model**: (Model) Result of a grid search.\n#### PARAMETER\n1. **Perform CV**: Whether to perform a cross validation.\n2. **K-Fold for CV**: Number of splits for cross validation. It should be bigger than or equal to 2.\n3. **Scoring for CV**: Scoring metric for a cross validation. Accuracy for classification, F1, Precision, and Recall for binary classification, R2 and Negative MSE for regression are available.\n4. **Shuffled CV**: Whether to perform shuffled cross validation.\n5. **Stratified CV**: Whether to perform stratified cross validation.\n6. **Seed for CV**: Random seed for a shuffled cross validation.\n7. **Top N**: Number of hyperparameter sets with best performance.\n\n### Python\n#### USAGE\n\n```\ngrid_search_cv(table = , perform_cv = True, cv_n_splits = , cv_scoring = , cv_shuffle = False, cv_stratify = False, cv_seed = , gcv_top_n = )\n```\n\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) Input data set to be trained.\n#### OUTPUT\n1. **model**: (Model) Result of a grid search.\n#### PARAMETER\n1. **perform_cv**: Whether to perform a cross validation.\n\t* Type: *bool*\n\t* Default value: True \n2. **cv_n_splits**: Number of splits for cross validation. It should be bigger than or equal to 2.\n\t* Type: *int*\n\t* Default / Range: 3 (value >= 2)\n3. **cv_scoring**: Scoring metric for a cross validation. Accuracy for classification, F1, Precision, and Recall for binary classification, R2 and Negative MSE for regression are available.\n\t* Type: *str*\n\t* Default / Range: accuracy ( accuracy | f1 | precision | recall | r2 | neg_mean_squared_error )\n4. **cv_shuffle**: Whether to perform shuffled cross validation.\n\t* Type: *bool*\n\t* Default value: False \n5. **cv_stratify**: Whether to perform stratified cross validation.\n\t* Type: *bool*\n\t* Default value: False \n6. **cv_seed**: Random seed for a shuffled cross validation.\n\t* Type: *int*\n\t* Default value: None\n7. **gcv_top_n**: Number of hyperparameter sets with best performance.\n\t* Type: *int*\n\t* Default value: 20\n",
+        "kr": "# Grid Search CV\n이 함수는 분류/회귀 함수에 대한 그리드 서치(grid search)를 수행한다.\n\n## Description\n그리드 서치는 하이퍼 파라미터를 최적화하는 고전적인 방법들 중의 하나이다. 학습 알고리즘이 주어져 있을 때, 그 알고리즘의 하이퍼 파라미터 공간에서 직접 설정한 부분집합들에 대해 가능한 모든 경우들을 전부 탐색하는 식으로 최적화가 이루어진다. 그리드 서치 알고리즘은 퍼포먼스를 측정할 수 있는 값이 주어져야만 하는데 보통 학습 셋에 대한 교차 검증 혹은 미리 홀드아웃한 검증 셋에 대한  평가 값을 쓴다. 기계 학습 알고리즘의 파라미터 공간은 특정 파라미터의 경우 실수 값을 가지거나 그 값의 범위가 제한되어있지 않을 수 있으므로, 그리드 서치를 진행하기 전에 파라미터 값의 범위를 제한하고 미리 탐색할 부분집합을 지정하는 과정이 필요할 수 있다.\n\nReference\n+ <https://en.wikipedia.org/wiki/Hyperparameter_optimization#Grid_search>\n\n## Properties\n### VA\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) 학습에 사용할 데이터셋.\n#### OUTPUT\n1. **model**: (Model) 그리드 서치를 수행했을 때 가장 평가 값이 높은 모델.\n#### PARAMETER\n1. **Perform CV**: 교차 검증을 수행할지의 여부.\n2. **K-Fold for CV**: 교차 검증을 위한 split 갯수. 2 이상의 값을 입력해야 한다.\n3. **Scoring for CV**: 검증에 사용할 점수 척도(scoring metric). 분류의 경우 Accuracy를, 이진 분류의 경우 F1, Precision, Recall을, 회귀의 경우 R2, Negative MSE를 사용할 수 있다.\n4. **Shuffled CV**: Shuffled cross validation을 수행할지의 여부.\n5. **Stratified CV**: Stratified cross validation을 수행할지의 여부.\n6. **Seed for CV**: Shuffled cross validation에서 사용할 시드값.\n7. **Top N**: 결과를 보여줄 가장 성능이 좋은 하이퍼 파라미터 셋의 수.\n\n### Python\n#### USAGE\n\n```\ngrid_search_cv(table = , perform_cv = True, cv_n_splits = , cv_scoring = , cv_shuffle = False, cv_stratify = False, cv_seed = , gcv_top_n = )\n```\n\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) 학습에 사용할 데이터셋.\n#### OUTPUT\n1. **model**: (Model) 그리드 서치를 수행했을 때 가장 평가 값이 높은 모델.\n#### PARAMETER\n1. **perform_cv**: 교차 검증을 수행할지의 여부.\n\t* Type: *bool*\n\t* Default value: True \n2. **cv_n_splits**: 교차 검증을 위한 split 갯수. 2 이상의 값을 입력해야 한다.\n\t* Type: *int*\n\t* Default / Range: 3 (value >= 2)\n3. **cv_scoring**: 검증에 사용할 점수 척도(scoring metric). 분류의 경우 accuracy를, 이진 분류의 경우 f1, precision, recall을, 회귀의 경우 r2, neg_mean_squared_error를 사용할 수 있다.\n\t* Type: *str*\n\t* Default / Range: accuracy ( accuracy | f1 | precision | recall | r2 | neg_mean_squared_error )\n4. **cv_shuffle**: Shuffled cross validation을 수행할지의 여부.\n\t* Type: *bool*\n\t* Default value: False \n5. **cv_stratify**: Stratified cross validation을 수행할지의 여부.\n\t* Type: *bool*\n\t* Default value: False \n6. **cv_seed**: Shuffled cross validation에서 사용할 시드값.\n\t* Type: *int*\n\t* Default value: None\n7. **gcv_top_n**: 결과를 보여줄 가장 성능이 좋은 하이퍼 파라미터 셋의 수.\n\t* Type: *int*\n\t* Default value: 20\n"
+    },
+    "exampleModels": [],
+    "sampleImages": [],
+    "scriptExamples": []
+}

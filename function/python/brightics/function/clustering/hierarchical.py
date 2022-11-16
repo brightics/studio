@@ -18,6 +18,8 @@ from sklearn.cluster import AgglomerativeClustering as SKAgglomerativeClustering
 from scipy.cluster.hierarchy import dendrogram
 from brightics.common.repr import BrtcReprBuilder, strip_margin, plt2MD
 import numpy as np
+import matplotlib
+matplotlib.rcParams['axes.unicode_minus'] = False
 import matplotlib.pyplot as plt
 
 

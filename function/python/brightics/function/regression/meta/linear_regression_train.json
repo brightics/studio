@@ -8,15 +8,26 @@
         "func": "brightics.function.regression$linear_regression_train",
         "name": "brightics.function.regression$linear_regression_train",
         "context": "python",
-        "label": "Linear Regression Train",
+        "label": {
+            "en": "Linear Regression Train", 
+            "ko": "선형회귀 학습"
+        },
         "description": "Linear regression attempts to model the relationship between a scalar variable and one or more explanatory variables by fitting a linear equation to observed data. For example, one might want to relate the weights of individuals to their heights using a linear regression model.\n\nLinear regression was the first type of regression analysis to be studied rigorously, and to be used extensively in practical applications. This is because models which depend linearly on their unknown parameters are easier to fit than models which are non-linearly related to their parameters and because the statistical properties of the resulting estimators are easier to determine.\n\nReference\n+ <https://en.wikipedia.org/wiki/Linear_regression>\n+ <http://www.stat.yale.edu/Courses/1997-98/101/linreg.htm>\n+ <https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html>",
-        "tags": [
-            "linear",
-            "regression",
-            "linear regression",
-            "linear regression train",
-            "train"
-        ],
+        "tags": {
+            "en": [
+                "linear",
+                "regression",
+                "linear regression",
+                "linear regression train",
+                "train"
+            ],
+            "ko": [
+                "선형",
+                "회귀",
+                "선형회귀",
+	            "학습"
+            ]
+        },
         "version": "3.6",
         "inputs": {
             "table": ""
@@ -79,7 +90,8 @@
                 "mandatory": false,
                 "items": [],
                 "columnType": [],
-                "defaultValue": true
+                "defaultValue": true,
+                "hpo": true
             },
             {
                 "id": "is_vif",
@@ -91,12 +103,13 @@
                 "mandatory": false,
                 "items": [],
                 "columnType": [],
-                "defaultValue": false
+                "defaultValue": false,
+                "hpo": true
             },
             {
                 "id": "vif_threshold",
                 "label": "VIF Threshold",
-                "description": "If each feature's VIF value is greater than `VIF Threshold`, the model doen't use that feature to predict. This option is available only if `VIF` is set to True.",
+                "description": "If each feature's VIF value is greater than `VIF Threshold`, the model doesn't use that feature to predict. This option is available only if `VIF` is set to True.",
                 "visibleOption": [
                     {
                         "id": "is_vif",
@@ -110,7 +123,8 @@
                 "columnType": [],
                 "type": "Double",
                 "min": 1,
-                "placeHolder": "10 (1 <= value)"
+                "placeHolder": "10 (1 <= value)",
+                "hpo": true
             },
             {
                 "id": "group_by",
@@ -126,14 +140,22 @@
                 "rowCount": 5
             }
         ],
-        "summary": "This function trains a linear regression model.",
+        "gridSearchCV": false,
+        "crossValidator": true,
+        "summary": {
+            "en": "This function trains a linear regression model.", 
+            "ko": "선형 회귀 분석 모델을 학습시킵니다."
+        },
         "tutorialLink": "https://www.brightics.ai/docs/ai/s1.0/tutorials/84_py_Simple_Linear_Regression?type=insight"
     },
-    "md": "\n# Linear Regression Train\nThis function trains a linear regression model.\n\n## Description\nLinear regression attempts to model the relationship between a scalar variable and one or more explanatory variables by fitting a linear equation to observed data. For example, one might want to relate the weights of individuals to their heights using a linear regression model.\n\nLinear regression was the first type of regression analysis to be studied rigorously, and to be used extensively in practical applications. This is because models which depend linearly on their unknown parameters are easier to fit than models which are non-linearly related to their parameters and because the statistical properties of the resulting estimators are easier to determine.\n\nReference\n+ <https://en.wikipedia.org/wiki/Linear_regression>\n+ <http://www.stat.yale.edu/Courses/1997-98/101/linreg.htm>\n+ <https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html>\n\n\n## Properties\n### VA\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) Training data in a Table. It must contain at least one column for labels.\n#### OUTPUT\n1. **model** : (Model) Trained Linear Regression model.\n#### PARAMETER\n1. **Feature Columns**<b style=\"color:red\">*</b>: Feature column names. Only values in numeric type are possible.\n\n2. **Label column**<b style=\"color:red\">*</b>: The column designated for the labels of data. It should be numeric type as it is for regression.\n\n3. **Fit Intercept**: Whether to calculate the intercept for this model. If set to False, no intercept will be used in calculations (i.e. data is expected to be centered).\n\t* Available Options : `True`, `False`\n4. **VIF**: Whether to use the VIF method for feature selection to remove multicollinearity. VIF quantifies the severity of multicollinearity in an ordinary least squares regression analysis.\n\t* Available Options : `True`, `False`\n5. **VIF Threshold**: If each feature's VIF value is greater than `VIF Threshold`, the model doen't use that feature to predict. This option is available only if `VIF` is set to True.\n\n6. **Group By**: Columns to group by.\n\n\n### Python\n#### USAGE\n\n```\nlinear_regression_train(table, feature_cols, label_col, fit_intercept=True, is_vif=True, vif_threshold=10, group_by=None)\n```\n\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) Training data in a Table. It must contain at least one column for labels.\n#### OUTPUT\n1. **model** : (Model) Trained Linear Regression model.\n#### PARAMETER\n1. **feature_cols**<b style=\"color:red\">*</b>: Feature column names. Only values in numeric type are possible.\n\t* Type: *list[str]*\n2. **label_col**<b style=\"color:red\">*</b>: The column designated for the labels of data. It should be numeric type as it is for regression.\n\t* Type: *str*\n3. **fit_intercept**: Whether to calculate the intercept for this model. If set to False, no intercept will be used in calculations (i.e. data is expected to be centered).\n\t* Type: *bool*\n\t* Default / Range: True \n4. **is_vif**: Whether to use the VIF method for feature selection to remove multicollinearity. VIF quantifies the severity of multicollinearity in an ordinary least squares regression analysis.\n\t* Type: *bool*\n\t* Default / Range: False \n5. **vif_threshold**: If each feature's VIF value is greater than `vif_threshold`, the model doen't use that feature to predict. This option is available only if `is_vif` is set to True.\n\t* Type: *float*\n\t* Default / Range: 10 (1 <= value)\n6. **group_by**: Columns to group by.\n\t* Type: *list[str]*\n\n## Example\n### VA\n**<a href=\"https://www.brightics.ai/docs/ai/s1.0/tutorials/84_py_Simple_Linear_Regression?type=insight\" target=\"_blank\">[Related Tutorial]</a>**\n\n\n**<a href=\"/api/va/v2/help/downloads/brightics.function.regression$linear_regression_train/example-model/brightics.function.regression$linear_regression.json\" download>[Sample Model]</a>**\n\n\n<img src=\"/api/va/v2/help/images/brightics.function.regression$linear_regression_train/brightics.function.regression$linear_regression_train.PNG\"  width=\"800px\" style=\"border: 1px solid gray\" >\n\n\n<br>In this tutorial workflow, sample_iris data is used to train a linear regression.\nThe generated model is afterward applied to a test data set to predict the value of _petal\\_width_ , by using Linear Regression Predict function. The parameter settings used in the function are shown below. \n\n##### ++Parameters++\n1. **Feature Columns**<b style='color:red'>*</b> : sepal_length, sepal_width\n2. **Label Column**<b style='color:red'>*</b> : petal_width\n3. **Fit Intercept** : True\n4. **VIF** : True\n5. **VIF Threshold** : 10\n6. **Group By** : None\n\n\n### Python\n```\nfrom brightics.function.regression import linear_regression_train\ninput_table = inputs[0]\nresult = linear_regression_train(table=input_table,\n                              feature_cols=['sepal_length', 'sepal_width'],\n                              label_col='petal_width',\n                              fit_intercept=True,\n                              is_vif=True,\n                              vif_threshold=10,\n                              group_by=None)\noutput = result['model']\n```\n\n<br>In this python script, sample_iris data is used to train a linear regression. The generated model is afterward applied to a test data set to predict the value of _petal\\_width_ , by using Linear Regression Predict function.\n",
+    "md": {
+        "en": "# Linear Regression Train\nThis function trains a linear regression model.\n\n## Description\nLinear regression attempts to model the relationship between a scalar variable and one or more explanatory variables by fitting a linear equation to observed data. For example, one might want to relate the weights of individuals to their heights using a linear regression model.\n\nLinear regression was the first type of regression analysis to be studied rigorously, and to be used extensively in practical applications. This is because models which depend linearly on their unknown parameters are easier to fit than models which are non-linearly related to their parameters and because the statistical properties of the resulting estimators are easier to determine.\n\nReference\n+ <https://en.wikipedia.org/wiki/Linear_regression>\n+ <http://www.stat.yale.edu/Courses/1997-98/101/linreg.htm>\n+ <https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html>\n\n\n## Properties\n### VA\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) Training data in a Table. It must contain at least one column for labels.\n#### OUTPUT\n1. **model** : (Model) Trained Linear Regression model.\n#### PARAMETER\n1. **Feature Columns**<b style=\"color:red\">*</b>: Feature column names. Only values in numeric type are possible.\n\n2. **Label column**<b style=\"color:red\">*</b>: The column designated for the labels of data. It should be numeric type as it is for regression.\n\n3. **Fit Intercept**: Whether to calculate the intercept for this model. If set to False, no intercept will be used in calculations (i.e. data is expected to be centered).\n\n4. **VIF**: Whether to use the VIF method for feature selection to remove multicollinearity. VIF quantifies the severity of multicollinearity in an ordinary least squares regression analysis.\n\n5. **VIF Threshold**: If each feature's VIF value is greater than `VIF Threshold`, the model doesn't use that feature to predict. This option is available only if `VIF` is set to True.\n\n6. **Group By**: Columns to group by.\n\n\n### Python\n#### USAGE\n\n```\nlinear_regression_train(table = , feature_cols = , label_col = , fit_intercept = true, is_vif = false, vif_threshold = , group_by = )\n```\n\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) Training data in a Table. It must contain at least one column for labels.\n#### OUTPUT\n1. **model** : (Model) Trained Linear Regression model.\n#### PARAMETER\n1. **feature_cols**<b style=\"color:red\">*</b>: Feature column names. Only values in numeric type are possible.\n\t* Type: *list[str]*\n2. **label_col**<b style=\"color:red\">*</b>: The column designated for the labels of data. It should be numeric type as it is for regression.\n\t* Type: *str*\n3. **fit_intercept**: Whether to calculate the intercept for this model. If set to False, no intercept will be used in calculations (i.e. data is expected to be centered).\n\t* Type: *bool*\n\t* Default / Range: True \n4. **is_vif**: Whether to use the VIF method for feature selection to remove multicollinearity. VIF quantifies the severity of multicollinearity in an ordinary least squares regression analysis.\n\t* Type: *bool*\n\t* Default / Range: False \n5. **vif_threshold**: If each feature's VIF value is greater than `vif_threshold`, the model doesn't use that feature to predict. This option is available only if `is_vif` is set to True.\n\t* Type: *float*\n\t* Default / Range: 10 (1 <= value)\n6. **group_by**: Columns to group by.\n\t* Type: *list[str]*\n\n## Example\n### VA\n**<a href=\"https://www.brightics.ai/docs/ai/s1.0/tutorials/84_py_Simple_Linear_Regression?type=insight\" target=\"_blank\">[Related Tutorial]</a>**\n\n\n**<a href=\"/api/va/v2/help/downloads/brightics.function.regression$linear_regression_train/example-model/brightics.function.regression$linear_regression.json\" download>[Sample Model]</a>**\n\n\n<img src=\"/api/va/v2/help/images/brightics.function.regression$linear_regression_train/brightics.function.regression$linear_regression_train.PNG\"  width=\"800px\" style=\"border: 1px solid gray\" >\n\n\n<br>In this tutorial workflow, sample_iris data is used to train a linear regression.\nThe generated model is afterward applied to a test data set to predict the value of _petal\\_width_ , by using Linear Regression Predict function. The parameter settings used in the function are shown below. \n\n##### ++Parameters++\n1. **Feature Columns**<b style='color:red'>*</b> : sepal_length, sepal_width, petal_length\n2. **Label Column**<b style='color:red'>*</b> : petal_width\n3. **Fit Intercept** : True\n4. **VIF** : False\n5. **Group By** : None\n\n\n### Python\n```\nfrom brightics.function.regression import linear_regression_train\ninput_table = inputs[0]\nresult = linear_regression_train(table=input_table,\n                              feature_cols=['sepal_length', 'sepal_width'],\n                              label_col='petal_width',\n                              fit_intercept=True,\n                              is_vif=True,\n                              vif_threshold=10,\n                              group_by=None)\noutput = result['model']\n```\n\n<br>In this python script, sample_iris data is used to train a linear regression. The generated model is afterward applied to a test data set to predict the value of _petal\\_width_ , by using Linear Regression Predict function.\n",
+        "kr": "# 선형회귀 학습\n\n이 기능은 선형 회귀 분석 모델로 학습하는 기능이다.\n\n## Description\n\n선형 회귀 분석이란, 설명 번수(X)와 종속변수(=결과변수=label, Y) 사이의 관계를 \"선형\"이라고 가정하고 관계를 찾는 것(Modeling)을 말한다.\n예를 들어, 개인의 체중을 키와 연관하여 관계를 분석할 때 이 기능을 사용할 수 있다. (Y= aX + b, Y=키, X= 몸무게)\n\n선형 회귀 분석은 실제 연구분야에서 광범위하게 사용하고 있다.\n자연이나 사회현상을 분석하는데 선형 분석을 활용하면 더욱 쉽게 접근 할 수 있기 때문이다.\n실제로 설명변수와(X) 결과변수(Y)의 관계를 모르는 상태에서 비선형 (예 - X의 N차 방정식형태)으로 가정하는 것은 문제를 더욱 어렵게 만드는 경우가 많다.\n\n\n참고자료\n+ <https://en.wikipedia.org/wiki/Linear_regression>\n+ <http://www.stat.yale.edu/Courses/1997-98/101/linreg.htm>\n+ <https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html>\n\n\n## Properties\n### VA\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) 학습하고자 하는 대상. 최소 하나의 label(결과변수, 예측대상, Y)를 포함해야 한다.\n\n#### OUTPUT\n1. **model** : (Model) 학습한 선형회귀 모델\n\n\n   학습 : 여러개의 X, Y 값을 대입해서, 가장 적당한 모델(선형결합함수)를 찾는 것\n\n\n#### PARAMETER\n\n1. **Feature Columns**<b style=\"color:red\">*</b>: 설명변수 : 설명변수(X)를 선택(1개 이상) 선형결합이므로 설명변수는 숫자형만 가능 (문자형 String 불가)\n\n2. **Label column**<b style=\"color:red\">*</b>: 설명변수(X) 들의 선형결합에 의해 예측할 결과(Y)컬럼 선택(수치형)\n\n3. **Fit Intercept**: (절편) 예측 모델의 절편(상수항) 유무 선택\t\n    * Available Options : \n       `True` : 절편(상수항) 이 있음. (예 - Y=aX+bX2+cX3 + d , 함수가 (0.d) 를 지남)   \n       `False` : 절편(상수항)이 없음. (예- Y=aX+bX2+cX3 형태, 함수가 정점(0.0)을 지난다)\n\n\n4. **VIF** : 분산팽창계수(variance inflation factor). 설명변수 간에 연관성이 높아서 (다중공선성 ↑) 변수들끼리 서로 간섭을 받아 오히려 해석을 잘못하거나 설명력이 떨어지는 경우를 제거할 것인지 선택한다. \n\n             예) 설명변수 간 연관성이 높아서 해석이 잘못되는 경우\n                 X1= 몸무게 X2= 다이어트  Y=키\n                 몸무게가 큰사람이 다이어트를 하는 경우가 많다.\n                 몸무게가 클수록 키가 큰편이다.\n                 키가 크면 다이어트를 많이 한다(오류)\n\n * 구체적으로, VIF는 각 함수들의 연관성을 파악하기 위해 설명변수끼리 방정식을 세워 예측한 값을 제곱한 값이며 이 값이 threshold로 설정한 값보다 큰 변수를 제거할지 여부를 선택한다. \n\n\t* Available Options : \n       `True` : 설명변수 간 연관성이 높은 (다중공선성이 높은) 변수를 제거 한다   \n       `False` : 다중공선성을 무시 한다.\n\n5. **VIF Threshold**: 연관성 높은 설명변수를 제거하기로 선택 한 경우 (VIF 를 True 로 선택)\n                     설명변수를 제거하는 기준 설정 (보통 VIF 가 10 이상인 경우 다중공선성이 높다고 판단한다)\n\n6. **Group By**: 설명변수를 묶어서 모델링 할 것인지 선택\n        예) 설명변수를 group by 하는 경우\n            학생 학년 별 발사이즈와 키의 상관관계\n            학생 학년= group by 대상\n\n\n### Python\n#### USAGE\n\n```\nlinear_regression_train(table = , feature_cols = , label_col = , fit_intercept = , is_vif = , vif_threshold = , group_by = )\n```\n\n#### INPUT\n1. **table**<b style=\"color:red\">*</b>: (Table) 학습하고자 하는 대상 최소 하나의 label(결과변수, 예측대상, Y)를 포함해야 한다.\n#### OUTPUT\n1. **model** : (Model) 학습한 선형회귀 모델\n#### PARAMETER\n1. **feature_cols**<b style=\"color:red\">*</b>: 설명변수(X)명 작성(1개 이상, 형태는 리스트만 가능) 설명변수 타입은 숫자형(문자형 String 불가)\n\t* Type: *list[str]*\n2. **label_col**<b style=\"color:red\">*</b>: 설명변수(X) 들의 선형결합에 의해 예측할 결과(Y)컬럼 선택(수치형)\n\t* Type: *str*\n3. **fit_intercept**: (절편) 예측 모델의 절편(상수항) 유무 선택. 따로 조건을 정하지 않으면 상수항이 있는 것으로 계산.\n\t* Type: *bool*\n\t* Default / Range: True (True | False) \n\t\n4. **is_vif**: 설명변수 간에 연관성이 높아서 (다중공선성 ↑) 변수들끼리 서로 간섭을 받아 오히려 해석을 잘못하거나 설명력이 떨어지는 경우를 제거할 것인지 선택. 따로 조건을 정하지 않으면 연광성 높은 변수를 제거하지 않는 것으로 간주함.\n\t* Type: *bool*\n\t* Default / Range: False (True | False)\n\n5. **vif_threshold**: 연관성 높은 설명변수를 제거하기로 선택 한 경우 (VIF 를 True 로 선택). 설명변수를 제거하는 기준 설정 (보통 VIF 가 10 이상인 경우 다중공선성이 높다고 판단한다). 따로 조건을 작성하지 않으면 is_vif = True 일 때 vif_threshold = 10 으로 계산 함.\n\t* Type: *float*\n\t* Default / Range: 10 (1 <= value)\n\n6. **group_by**: 묶어서 모델링할 설명변수 선택계산 할 것인지 선택\n\t* Type: *list[str]*\n\n\n## Example\n### VA\n**<a href=\"https://www.brightics.ai/docs/ai/s1.0/tutorials/84_py_Simple_Linear_Regression?type=insight\" target=\"_blank\">[Related Tutorial]</a>**\n\n**<a href=\"/api/va/v2/help/downloads/brightics.function.regression$linear_regression_train/example-model/brightics.function.regression$linear_regression.json\" download>[Sample Model]</a>**\n\n<img src=\"/api/va/v2/help/images/brightics.function.regression$linear_regression_train/brightics.function.regression$linear_regression_train.PNG\"  width=\"800px\" style=\"border: 1px solid gray\" >\n\n\n<br>이 튜토리얼은 붓꽃(iris) 데이터를 이용해서 선형 회귀 모델을 만든다.\n    X= 꽃받침의 길이(sepal_length), 꽂받침의 넓이(sepal_width), 꽃잎의 길이 (petal_length)\n    Y= 꽃잎의 길이(_petal\\_width_)\n    생성 된 모델은 이후 선형 회귀 예측 함수로 사용되어 _petal\\_width_ 값을 예측(predict)하기 위해 테스트 데이터 세트에 적용된다.\n    이 기능에 사용 된 파라미터 설정은 다음과 같다.\n\n\n##### ++Parameters++\n1. **Feature Columns**<b style='color:red'>*</b> (설명변수): sepal_length, sepal_width, petal_length\n2. **Label Column**<b style='color:red'>*</b> (종속변수) : petal_width\n3. **Fit Intercept** (정편): True\n4. **VIF** (다중공선성 높은 변수 제거여부) : False\n5. **Group By** (설명변수 grouping 대상) : None\n\n\n### Python\n동일한 조건으로 Python script로 작성하면 아래와 같다.\n```\nfrom brightics.function.regression import linear_regression_train\ninput_table = inputs[0]\nresult = linear_regression_train(table=input_table,\n                              feature_cols=['sepal_length', 'sepal_width'],\n                              label_col='petal_width',\n                              fit_intercept=True,\n                              is_vif=True,\n                              vif_threshold=10,\n                              group_by=None)\noutput = result['model']\n```\n<br>"
+    },
     "exampleModels": [
         {
             "fileName": "brightics.function.regression$linear_regression.json",
-            "label": "test model",
+            "label": "Linear Regression",
             "contents": {
                 "type": "files",
                 "data": [
@@ -142,11 +164,11 @@
                         "data": {
                             "id": "mxh8w5v76xqpmc7f",
                             "project_id": "p2gubqqf2m433kw5",
-                            "label": "test model",
+                            "label": "Linear Regression",
                             "contents": {
                                 "mid": "mxh8w5v76xqpmc7f",
                                 "type": "data",
-                                "title": "test model",
+                                "title": "Linear Regression",
                                 "functions": [
                                     {
                                         "persist-mode": "auto",

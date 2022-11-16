@@ -42,19 +42,43 @@ def pls_regression_train(table, group_by=None, **params):
         return _pls_regression_train(table, **params)
 
 
+def preprocess_():
+    preprocess_result = {'estimator_class': PLS,
+                         'estimator_params': ['n_components', 'scale', 'max_iter', 'tol']}
+    return preprocess_result
+
+
+def postprocess_(table, feature_cols, label_cols, regressor):
+    _, features = check_col_type(table, feature_cols)
+    _, labels = check_col_type(table, label_cols)
+
+    predict = regressor.predict(features)
+    _mean_absolute_error = mean_absolute_error(labels, predict)
+    _mean_squared_error = mean_squared_error(labels, predict)
+    _r2_score = r2_score(labels, predict)
+    result_table = pd.DataFrame.from_dict([
+        ['Metric', ['Mean Absolute Error', 'Mean Squared Error', 'R2 Score']],
+        ['Score', [_mean_absolute_error, _mean_squared_error, _r2_score]]
+    ])
+
+    postprocess_result = {'update_md': {'Summary': pandasDF2MD(result_table)},
+                          'update_model_etc': {'mean_absolute_error': _mean_absolute_error,
+                                               'mean_squared_error': _mean_squared_error,
+                                               'r2_score': _r2_score},
+                          'type': 'pls_regression_model'}
+    return postprocess_result
+
+
 def _pls_regression_train(table, feature_cols, label_cols, n_components=2, scale=True, max_iter=500, tol=1e-6):
     pls_model = PLS(n_components=n_components, scale=scale, max_iter=max_iter, tol=tol)
     _, features = check_col_type(table, feature_cols)
     _, labels = check_col_type(table, label_cols)
+
     pls_model.fit(features, labels)
-    predict = pls_model.predict(features)
-    _mean_absolute_error = mean_absolute_error(labels, predict)
-    _mean_squared_error = mean_squared_error(labels, predict)
-    _r2_score = r2_score(labels, predict)
-    result_table = pd.DataFrame.from_items([
-        ['Metric', ['Mean Absolute Error', 'Mean Squared Error', 'R2 Score']],
-        ['Score', [_mean_absolute_error, _mean_squared_error, _r2_score]]
-    ])
+
+    postprocess_result = postprocess_(table, feature_cols, label_cols, pls_model)
+    summary = postprocess_result['update_md']['Summary']
+
     label_name = {
         'n_components': 'Number of components',
         'scale': "Scale",
@@ -62,7 +86,7 @@ def _pls_regression_train(table, feature_cols, label_cols, n_components=2, scale
         'tol': 'Tolerance'
     }
     get_param = pls_model.get_params()
-    param_table = pd.DataFrame.from_items([
+    param_table = pd.DataFrame.from_dict([
         ['Parameter', list(label_name.values())],
         ['Value', [get_param[x] for x in list(label_name.keys())]]
     ])
@@ -72,19 +96,19 @@ def _pls_regression_train(table, feature_cols, label_cols, n_components=2, scale
     | {result}
     | ### Parameters
     | {list_parameters}
-    """.format(result=pandasDF2MD(result_table), list_parameters=pandasDF2MD(param_table)
+    """.format(result=summary, list_parameters=pandasDF2MD(param_table)
                )))
     model = _model_dict('pls_regression_model')
+    update_model_etc = postprocess_result['update_model_etc']
+    model.update(update_model_etc)
     model['feature_cols'] = feature_cols
     model['label'] = label_cols
-    model['mean_absolute_error'] = _mean_absolute_error
-    model['mean_squared_error'] = _mean_squared_error
-    model['r2_score'] = _r2_score
     model['max_iter'] = max_iter
     model['tol'] = tol
-    model['pls_model'] = pls_model
+    model['regressor'] = pls_model
     model['_repr_brtc_'] = rb.get()
     return {'model': model}
+
 
 def pls_regression_predict(table, model, **params):
     check_required_parameters(_pls_regression_predict,
@@ -96,10 +120,14 @@ def pls_regression_predict(table, model, **params):
 
 
 def _pls_regression_predict(table, model, prediction_col='prediction'):
+    # migration logic
+    if 'pls_model' in model:
+        model['regressor'] = model['pls_model']
+
     result = table.copy()
     feature_cols = model['feature_cols']
     _, features = check_col_type(result, feature_cols)
-    pls_model = model['pls_model']
+    pls_model = model['regressor']
     prediction = pls_model.predict(features)
     for i in range(prediction.shape[-1]):
         result[prediction_col+"_{}".format(i)] = prediction[:, i]

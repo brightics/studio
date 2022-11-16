@@ -23,8 +23,8 @@ class BrighticsCoreException(Exception):
         self.message = message
         
     def add_detail_message(self, detailed_cause):
-    	self.detailed_cause = detailed_cause
-    	return self
+        self.detailed_cause = detailed_cause
+        return self
 
 class BrighticsFunctionException(Exception):
     def __init__(self, code, params=None):

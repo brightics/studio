@@ -151,7 +151,7 @@ def _svd_model(table, model, new_column_name='projected_'):
     for i in range(col):
         new_col_names.append(new_column_name + str(i))
     
-    svd_result = safe_sparse_dot(table[input_cols], right_singular_vectors)
+    svd_result = safe_sparse_dot(table[input_cols].to_numpy(), right_singular_vectors.to_numpy())
     out_table = pd.concat([table.reset_index(drop=True), pd.DataFrame(data=svd_result, columns=[new_col_names])], axis=1)
     out_table.columns = table.columns.values.tolist() + new_col_names
 

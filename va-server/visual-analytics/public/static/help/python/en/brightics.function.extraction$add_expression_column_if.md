@@ -12,18 +12,19 @@ This function generates a new column based on a given formula.
 1. **table**<b style="color:red">*</b>: (Table) Data in a Table.
 
 #### OUTPUT
-1. **table**: (Table) Output table. It contains the input table columns and a new column based on a given formula. 
+1. **out_table**: (Table) Output table. It contains the input table columns and a new column based on a given formula. 
 
 #### PARAMETER
-1. **Add Column**<b style="color:red">*</b>:
+1. **Add Column**<b style="color:red">*</b>: Settings for adding new columns.
    - **New Column Name**<b style="color:red">*</b> : Name of the new column to be added.
    - **New Column Type**<b style="color:red">*</b> : Type of the new column.
    - **Expression Type**<b style="color:red">*</b> : Type of the expression.
    - **Condition**<b style="color:red">*</b> : Condition Expressions and values.
 
 ### Python
-```python
-add_expression_column_if(table, expr_type = "sqlite", new_col, conditions, values, else_value)
+#### USAGE
+```
+add_expression_column_if(table = , expr_type = , new_col = , conditions = , values = , else_value = )
 ```
 
 #### INPUT
@@ -47,7 +48,6 @@ add_expression_column_if(table, expr_type = "sqlite", new_col, conditions, value
 
 ## Example
 ### VA
-**<a href="https://www.brightics.ai/docs/ai/v3.6/tutorials/101_derived_variables_month_weekday?type=insight" target="_blank">[Related Tutorial]</a>**
 
 **<a href="/static/help/python/sample_model/add_column.json" download>[Sample Model]</a>**
 
@@ -56,11 +56,10 @@ add_expression_column_if(table, expr_type = "sqlite", new_col, conditions, value
 In the tutorial workflow, sample_iris data is used as input of Add Column function. The output of this function is an output table in which a new column is added according to a given formula. The parameter settings used in the function are shown below.
 
 ++Parameters++
-1. **new_col**: isVirginica
-2. **expr_type**: sqlite
-3. **conditions**: species == 'virginica'
-4. **values**: True
-5. **else_value**: False
+1. **New Column Name**<b style="color:red">*</b>: isVirginica
+2. **New Column Type**<b style="color:red">*</b>: String
+3. **Expression Type**<b style="color:red">*</b>: SQLite
+4. **Condition**<b style="color:red">*</b>: species == 'virginica'
 
 
 ### Python

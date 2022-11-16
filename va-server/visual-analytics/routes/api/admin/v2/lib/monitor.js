@@ -4,10 +4,7 @@
 var router = __REQ_express.Router();
 var request = __REQ_request;
 
-var MessageFormat = require('messageformat');
-var mf = new MessageFormat('en');
-
-const coreResponseHandler = (req, res) => {
+const coreResponseHandler = (res) => {
     return function (error, response, body) {
         if (error) {
             __BRTC_ERROR_HANDLER.sendServerError(res, error);
@@ -57,7 +54,7 @@ var getResourceInfo = function (req, res, nex) {
         var options = __BRTC_MONITOR_SERVER.createRequestOptions('GET', '/api/monitor/v3/resource/info');
         __BRTC_MONITOR_SERVER.setBearerToken(options, req.accessToken);
         options.body = JSON.stringify(req.body);
-        request(options, coreResponseHandler(req, res));
+        request(options, coreResponseHandler(res));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.MONITORING, task);
 };
@@ -67,7 +64,7 @@ var getResourcePids = function (req, res, nex) {
         var options = __BRTC_MONITOR_SERVER.createRequestOptions('GET', '/api/monitor/v3/resource/pids');
         __BRTC_MONITOR_SERVER.setBearerToken(options, req.accessToken);
         options.body = JSON.stringify(req.body);
-        request(options, coreResponseHandler(req, res));
+        request(options, coreResponseHandler(res));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.MONITORING, task);
 };
@@ -77,7 +74,7 @@ var getResourceStatus = function (req, res, nex) {
         var options = __BRTC_MONITOR_SERVER.createRequestOptions('GET', '/api/monitor/v3/resource/status?time=' + req.query.time);
         __BRTC_MONITOR_SERVER.setBearerToken(options, req.accessToken);
         options.body = JSON.stringify(req.body);
-        request(options, coreResponseHandler(req, res));
+        request(options, coreResponseHandler(res));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.MONITORING, task);
 };
@@ -88,7 +85,7 @@ var getRunningJobUser = function (req, res, nex) {
         var options = __BRTC_MONITOR_SERVER.createRequestOptions('GET', '/api/monitor/v3/job/user?time=' + req.query.time);
         __BRTC_MONITOR_SERVER.setBearerToken(options, req.accessToken);
         options.body = JSON.stringify(req.body);
-        request(options, coreResponseHandler(req, res));
+        request(options, coreResponseHandler(res));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.MONITORING, task);
 };
@@ -98,7 +95,7 @@ var getJobStatus = function (req, res, nex) {
         var options = __BRTC_MONITOR_SERVER.createRequestOptions('GET', '/api/monitor/v3/job/status?time=' + req.query.time);
         __BRTC_MONITOR_SERVER.setBearerToken(options, req.accessToken);
         options.body = JSON.stringify(req.body);
-        request(options, coreResponseHandler(req, res));
+        request(options, coreResponseHandler(res));
     };
     _executeInPermission(req, res, __BRTC_PERM_HELPER.PERMISSIONS.MONITORING, task);
 };

@@ -25,9 +25,8 @@ import numpy as np
 import scipy
 import scipy.sparse
 
-import implicit.cuda
 
-from implicit import _als
+from implicit.cpu import _als
 from .recommender_base import MatrixFactorizationBase
 from implicit.utils import check_blas_config, nonzeros
 
@@ -75,19 +74,9 @@ class AlternatingLeastSquares(MatrixFactorizationBase):
     """
 
     def __init__(self, factors=100, regularization=0.01, dtype=np.float32,
-                 use_native=True, use_cg=False, use_gpu=implicit.cuda.HAS_CUDA,
-                 iterations=15, calculate_training_loss=False, num_threads=0,seed = None):
+                 use_native=True, use_cg=False, use_gpu=False,
+                 iterations=15, calculate_training_loss=False, num_threads=0, seed = None):
         super(AlternatingLeastSquares, self).__init__()
-
-        # currently there are some issues when training on the GPU when some of the warps
-        # don't have full factors. Round up to be warp aligned.
-        # TODO: figure out where the issue is (best guess is in the
-        # the 'dot' function in 'implicit/cuda/utils/cuh)
-        if use_gpu and factors % 32:
-            padding = 32 - factors % 32
-            log.warning("GPU training requires factor size to be a multiple of 32."
-                        " Increasing factors from %i to %i.", factors, factors + padding)
-            factors += padding
 
         # parameters on how to factorize
         self.factors = factors
@@ -162,9 +151,6 @@ class AlternatingLeastSquares(MatrixFactorizationBase):
         self._item_norms = None
         self._YtY = None
 
-        if self.use_gpu:
-            return self._fit_gpu(Ciu, Cui, show_progress)
-
         solver = self.solver
 
         log.debug("Running %i ALS iterations", self.iterations)
@@ -190,45 +176,6 @@ class AlternatingLeastSquares(MatrixFactorizationBase):
 
         if self.calculate_training_loss:
             log.info("Final training loss %.4f", loss)
-
-    def _fit_gpu(self, Ciu_host, Cui_host, show_progress=True):
-        """ specialized training on the gpu. copies inputs to/from cuda device """
-        if not implicit.cuda.HAS_CUDA:
-            raise ValueError("No CUDA extension has been built, can't train on GPU.")
-
-        if self.dtype == np.float64:
-            log.warning("Factors of dtype float64 aren't supported with gpu fitting. "
-                        "Converting factors to float32")
-            self.item_factors = self.item_factors.astype(np.float32)
-            self.user_factors = self.user_factors.astype(np.float32)
-
-        Ciu = implicit.cuda.CuCSRMatrix(Ciu_host)
-        Cui = implicit.cuda.CuCSRMatrix(Cui_host)
-        X = implicit.cuda.CuDenseMatrix(self.user_factors.astype(np.float32))
-        Y = implicit.cuda.CuDenseMatrix(self.item_factors.astype(np.float32))
-
-        solver = implicit.cuda.CuLeastSquaresSolver(self.factors)
-        log.debug("Running %i ALS iterations", self.iterations)
-        with tqdm.tqdm(total=self.iterations, disable=not show_progress) as progress:
-            for iteration in range(self.iterations):
-                s = time.time()
-                solver.least_squares(Cui, X, Y, self.regularization, self.cg_steps)
-                progress.update(.5)
-                solver.least_squares(Ciu, Y, X, self.regularization, self.cg_steps)
-                progress.update(.5)
-
-                if self.fit_callback:
-                    self.fit_callback(iteration, time.time() - s)
-
-                if self.calculate_training_loss:
-                    loss = solver.calculate_loss(Cui, X, Y, self.regularization)
-                    progress.set_postfix({"loss": loss})
-
-        if self.calculate_training_loss:
-            log.info("Final training loss %.4f", loss)
-
-        X.to_host(self.user_factors)
-        Y.to_host(self.item_factors)
 
     def recalculate_user(self, userid, user_items):
         return user_factor(self.item_factors, self.YtY,

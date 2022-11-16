@@ -85,7 +85,7 @@ def _discretize_quantile(table, input_col, num_of_buckets=2, out_col_name='bucke
         bucket_list.append("{left}{lower}, {upper}]".format(left=left, lower=buckets[i], upper=buckets[i + 1]))  # 'buckets' is tuple type data.  
    
     # Build model
-    result = pd.DataFrame.from_items([ 
+    result = pd.DataFrame.from_dict([
         ['bucket number', index_list],
         ['buckets', bucket_list],
         ['count', cnt_list]

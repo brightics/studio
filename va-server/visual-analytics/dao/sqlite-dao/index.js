@@ -17,8 +17,8 @@ module.exports = extend(true, {},
     require('./lib/permission'),
     require('./lib/user-resource-role'),
     require('./lib/publish-report'),
-    require('./lib/function-label'),
     require('./lib/addon-function'),
     require('./lib/tools-function'),
-    require('./lib/tools-project')
+    require('./lib/tools-project'),
+    require('./lib/function-favorite')
 );

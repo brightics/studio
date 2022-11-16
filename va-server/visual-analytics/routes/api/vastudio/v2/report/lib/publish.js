@@ -1,4 +1,3 @@
-var request = __REQ_request;
 var router = __REQ_express.Router();
 
 var subPath = __BRTC_CONF['sub-path'] || '';

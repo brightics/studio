@@ -56,7 +56,7 @@ const PERMISSION_RESOURCE_TYPE_SELECT_BY_USERID = getQuery(stmt, 'PERMISSION_RES
 const PERMISSION_CREATE = getQuery(stmt, 'PERMISSION_CREATE');
 
 const onEmpty = (errCallback, doneCallback, result) => {
-    query(DDL_CREATE_PERMISSION_TABLE, [], errCallback, function () {
+    query(DDL_CREATE_PERMISSION_TABLE, [], errCallback, async function () {
         var records = [];
         records.push(['perm_proj_create', 'project', 'Create a project']);
         records.push(['perm_proj_read', 'project', 'Read a project']);
@@ -121,7 +121,7 @@ const onEmpty = (errCallback, doneCallback, result) => {
         records.push(['perm_udf_create', 'udf', 'Create user defined function']);
         records.push(['perm_udf_delete', 'udf', 'Delete user defined function']);
 
-        batchUpdate(PERMISSION_CREATE, records);
+        await batchUpdate(PERMISSION_CREATE, records);
 
         if (doneCallback) doneCallback(result.rows, result, DDL_CREATE_PERMISSION_TABLE, []);
     });
@@ -160,8 +160,7 @@ module.exports = {
                         batchUpdate(PERMISSION_DELETE_DEFAULT, [['monitoring']]);
                     }
 
-
-                    if (doneCallback) doneCallback(result.rows, result, DDL_CHECK_TABLE, ['brtc_permission']);
+                    doneCallback(result.rows, result, DDL_CHECK_TABLE, ['brtc_permission']);
                 });
 
                 query('select * from brtc_permission where resource_type = \'datasource\'', [], errCallback, batch([

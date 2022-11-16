@@ -47,8 +47,7 @@ var parseStagingData = function (body) {
     if (arrColIndexes.length > 0) {
         for (var r in resultSet.data) {
             var row = resultSet.data[r];
-            for (var a in arrColIndexes) {
-                var idx = arrColIndexes[a];
+            for (var idx of arrColIndexes) {
                 if (row[idx].length > 10) {
                     row[idx].splice(10, row[idx].length - 10);
                 }
@@ -245,9 +244,9 @@ var knoxPublishAuth = function (req, res, next) {
     //     }
     // }
 
-    var checkPermission = (data, res) => {
+    var checkPermission = (data) => {
         var pr = new Promise((resolve, reject) => {
-            const check = (httpResponse, body) => {
+            const check = (body) => {
                 return parseInt(body.returnCode) === 200;
             };
 
@@ -280,7 +279,7 @@ var knoxPublishAuth = function (req, res, next) {
                 },
                 function (err, httpResponse) {
                     var body = parseResponse(httpResponse);
-                    if (err || !check(httpResponse, body)) return reject(err);
+                    if (err || !check(body)) return reject(err);
                     return resolve(body);
                 }
             );
@@ -299,7 +298,7 @@ var knoxPublishAuth = function (req, res, next) {
 
     var sso = require('../../lib/sso-decrypt');
     var data = sso.decrypt(totaldata, remoteAddress);
-    checkPermission(data, req)
+    checkPermission(data)
         .then(() => next())
         .catch(() => next('Permission Denied'));
     return undefined;

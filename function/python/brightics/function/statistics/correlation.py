@@ -19,11 +19,14 @@ from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate, greater_than, greater_than_or_equal_to
+import matplotlib
 
+matplotlib.rcParams['axes.unicode_minus'] = False
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy import stats
 import pandas as pd
+from brightics.common.data_export import PyPlotData, PyPlotMeta
 
 
 def correlation(table, group_by=None, **params):
@@ -39,12 +42,11 @@ def correlation(table, group_by=None, **params):
 
 
 def _correlation(table, vars, method='pearson', display_plt=True, height=2.5, corr_prec=2):
-
     size = len(vars)
     result_arr = []
     cov_xy = table[vars].cov()
 
-    for i in range(size): 
+    for i in range(size):
         for j in range(i):
             cov_temp = cov_xy[vars[i]][vars[j]]
             if method == 'pearson':
@@ -53,16 +55,17 @@ def _correlation(table, vars, method='pearson', display_plt=True, height=2.5, co
                 r, p = stats.spearmanr(table[vars[i]], table[vars[j]])
             else:
                 r, p = stats.kendalltau(table[vars[i]], table[vars[j]])
-                
-            result_arr.append([vars[i], vars[j], r, p, cov_temp])    
-            
+
+            result_arr.append([vars[i], vars[j], r, p, cov_temp])
+
     df_result = pd.DataFrame(result_arr, columns=['x', 'y', 'corr', 'p_value', 'cov'])
 
-    rb = BrtcReprBuilder()    
+    res = dict()
+    rb = BrtcReprBuilder()
     if display_plt:
         s_default = plt.rcParams['lines.markersize'] ** 2.
         scatter_kws = {"s": s_default * height / 6.4}
-        
+
         def corr(x, y, **kwargs):
             if kwargs['method'] == 'pearson':
                 r, p = stats.pearsonr(x, y)
@@ -70,7 +73,7 @@ def _correlation(table, vars, method='pearson', display_plt=True, height=2.5, co
                 r, p = stats.spearmanr(x, y)
             else:
                 r, p = stats.kendalltau(x, y)
-            
+
             p_stars = ''
             if p <= 0.05:
                 p_stars = '*'
@@ -78,25 +81,28 @@ def _correlation(table, vars, method='pearson', display_plt=True, height=2.5, co
                 p_stars = '**'
             if p <= 0.001:
                 p_stars = '***'
-                
+
             corr_text = '{:.{prec}f}'.format(r, prec=corr_prec)
             font_size = abs(r) * 15 * 2 / corr_prec + 5
             ax = plt.gca()
             ax.annotate(corr_text, [.5, .5, ], xycoords="axes fraction",
                         ha='center', va='center', fontsize=font_size * height)
             ax.annotate(p_stars, xy=(0.65, 0.6), xycoords=ax.transAxes, color='red', fontsize=17 * height)
-         
+
         g = sns.PairGrid(table, vars=vars, height=height)
         g.map_diag(sns.distplot)
         if method == 'pearson':
             g.map_lower(sns.regplot, scatter_kws=scatter_kws)
         else:
-            g.map_lower(sns.regplot, lowess=True, scatter_kws=scatter_kws) 
+            g.map_lower(sns.regplot, lowess=True, scatter_kws=scatter_kws)
         g.map_upper(corr, method=method)
-        
-        fig_corr = plt2MD(plt)
+
+        figs = PyPlotData()
+        figs.addpltfig('fig_corr', plt)
         plt.clf()
-        
+
+        figs.compile()
+
         rb.addMD(strip_margin(
             """ ## Correlation Results
             | ### Correlation Matrix
@@ -104,22 +110,21 @@ def _correlation(table, vars, method='pearson', display_plt=True, height=2.5, co
             |
             | ### Correlation Table
             | {table}
-            """.format(fig_corr=fig_corr, table=pandasDF2MD(df_result))))
-        
-        params = {'vars':vars, 'method':method, 'height':height}
-        
+            """.format(fig_corr=figs.getMD('fig_corr'), table=pandasDF2MD(df_result))))
+
+        params = {'vars': vars, 'method': method, 'height': height}
+        res['figures'] = figs.tojson()
     else:
         rb.addMD(strip_margin(
             """ ## Correlation Results
             | ### Correlation Table
             | {table}
             """.format(table=pandasDF2MD(df_result))))
-        
-        params = {'vars':vars, 'method':method}       
-    
-    res = dict()
+
+        params = {'vars': vars, 'method': method}
+
     res['params'] = params
     res['corr_table'] = df_result
     res['_repr_brtc_'] = rb.get()
-    
+
     return {'result': res}

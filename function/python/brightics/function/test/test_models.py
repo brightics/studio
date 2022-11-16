@@ -82,13 +82,11 @@ def _run_model(model_str):
             break
         elif status == 'FAIL':
             raise Exception(response_get['errorInfo'])
-            break
         elif status == 'PROCESSING' and time.time() - start > TIME_LIMIT:
             function_processing = response_get['processes'][0]['functions'][-1]
             label = function_processing['label']
             minutes, seconds = divmod(time.time() - function_processing['begin'] / 1000, 60)
             raise Exception('{} is running. ( {:02d} m {:02d} s )'.format(label, int(minutes), int(seconds)))
-            break
 
 
 def _run_model_file(filename, out_f):

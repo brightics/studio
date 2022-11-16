@@ -259,7 +259,7 @@ def _statistic_summary_original(table, input_cols, statistics, percentile_amount
         if 'variance' == st:
             data['variance'] = [brtc_stats.var_samp(_table[x]) for x in input_cols]
         if 'stddev' == st:
-            data['stddev'] = [brtc_stats.std(_table[x]) for x in input_cols]
+            data['stddev'] = [brtc_stats.std_samp(_table[x]) for x in input_cols]
         if 'skewness' == st:
             data['skewness'] = [brtc_stats.skewness(_table[x]) for x in input_cols]
         if 'kurtosis' == st:
