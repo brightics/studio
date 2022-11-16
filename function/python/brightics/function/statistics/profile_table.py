@@ -36,12 +36,22 @@ def profile_table(table, group_by=None, **params):
         return _profile_table(table, **params)
 
 
-def _profile_table(table, minimal=False):
+def _profile_table(table, minimal=False, sampling=10000):
     rb = BrtcReprBuilder()
+
+    row_count = len(table)
+    if row_count > sampling:
+        table = table.sample(sampling)
 
     profile = pd_profiling.ProfileReport(table,
         minimal=minimal,
-        plot={"dpi": 200, "image_format": "png"}
+        plot={"dpi": 200, "image_format": "png"},
+        correlations={
+            "auto": {"calculate": False},
+            "kendall": {"calculate": False},
+            "phi_k": {"calculate": False},
+            "cramers": {"calculate": False},
+        },
     )
 
     profile.config.html.navbar_show = False
