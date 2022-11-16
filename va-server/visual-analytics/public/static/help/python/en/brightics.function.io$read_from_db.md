@@ -11,7 +11,7 @@ This function reads all records from selected database by executing SQL.
 #### INPUT
 This function has no input data.
 #### OUTPUT
-1. **table**: table
+1. **table**: (Table) output table
 #### PARAMETER
 1. **Data Source**<b style="color:red">*</b>: Predefined data source. List of data sources can be updated from Datasource Management dialogue on GUI.
 1. **Query Statement**<b style="color:red">*</b>: SQL query to execute in a selected database. All records from this query will be fetched.

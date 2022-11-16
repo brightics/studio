@@ -50,10 +50,11 @@ def unload(table, partial_path, mode="overwrite"):
     path = path if path[0].startswith('/') else '/' + path
     path = data_utils.make_data_path_from_key(path)
     if not could_delete_path(path):
-        raise_runtime_error('Please check a path String and a type of path. Cannot use a root of directory for the path.')
+        raise_runtime_error(
+            'Please check a path String and a type of path. Cannot use a root of directory for the path.')
     if os.path.isdir(path):
         shutil.rmtree(path)
-    if mode=="append":
+    if mode == "append":
         try:
             old_frame = table_reader.read_parquet(path)
             new_frame = pd.concat([old_frame, table], axis=0, ignore_index=True)
@@ -70,7 +71,7 @@ def write_csv(table, path, mode='overwrite'):
     dir_ = os.path.dirname(path)
     if not os.path.exists(dir_):
         os.makedirs(dir_)
-    if mode=='append':
+    if mode == 'append':
         try:
             old_frame = pd.read_csv(path)
             new_frame = pd.concat([old_frame, table], axis=0, ignore_index=True)
@@ -97,10 +98,15 @@ def unload_model(path, **params):
     param = linked['param']
 
     def getDataFromInputs(data):
-        for k, v in params.items():
-            if k is data:
-                return v
-        return {}
+        _data = params.get(data)
+        if _data is None:
+            _data = {}
+        return _data
+
+        # for k, v in params.items():
+        #     if k is data:
+        #         return v
+        # return {}
 
     if 'model' in outputs:
         model = getDataFromInputs(outputs['model'])
@@ -123,7 +129,7 @@ def unload_model(path, **params):
             sample_table = model_table['table_1']
             groups = sample_table[group_by].drop_duplicates().values
             group_keys = np.array([_group_key_from_list(row) for row in groups])
-            group_key_dict = {k:v.tolist() for k, v in zip(group_keys, groups)}
+            group_key_dict = {k: v.tolist() for k, v in zip(group_keys, groups)}
             model = {
                 '_grouped_data': _grouped_data(group_by=group_by, group_key_dict=group_key_dict)
             }
@@ -142,7 +148,7 @@ def unload_model(path, **params):
         os.makedirs(dir_)
     with open(path, 'wb') as fp:
         json.dump(data_json.to_json(model, for_redis=True), codecs.getwriter('utf-8')(fp), ensure_ascii=False)
-    return {'model' : model}
+    return {'model': model}
 
 
 def _grouped_data(group_by, group_key_dict):
@@ -192,6 +198,7 @@ def _unload_model(model, linked, param):
         out_model[k] = v
     return out_model
 
+
 def write_to_s3(table, datasource, object_key):
     client = boto3.client(
         's3',
@@ -206,10 +213,10 @@ def write_to_s3(table, datasource, object_key):
 
 
 def write_to_s3_2(table, object_key, access_key_id, secret_access_key, bucket_name):
-    datasource = {'accessKeyId':access_key_id, 'secretAccessKey':secret_access_key, 'bucketName':bucket_name}
+    datasource = {'accessKeyId': access_key_id, 'secretAccessKey': secret_access_key, 'bucketName': bucket_name}
     write_to_s3(table, datasource, object_key)
 
-    
+
 def write_to_db(table, **params):
     check_required_parameters(_write_to_db, params, ['table'])
     return _write_to_db(table, **params)

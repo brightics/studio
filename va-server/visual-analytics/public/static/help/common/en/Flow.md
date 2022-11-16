@@ -1,3 +1,6 @@
+## Format
+This function calls the workflow model.
+
 ## Description
 This function calls the Data Model.
 

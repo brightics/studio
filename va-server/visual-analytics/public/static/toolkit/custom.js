@@ -265,8 +265,8 @@
             var changeHandler = function () {
                 $(window).trigger('mousedown');
                 var checked = [];
-                for (var i in items) {
-                    itemKey = 'check-box.' + items[i].value;
+                for (var item of items) {
+                    itemKey = 'check-box.' + item.value;
                     if (_this.$elements[itemKey].val() === true) {
                         checked.push(_this.$elements[itemKey].data('tag'));
                     }
@@ -274,33 +274,30 @@
                 var command = _this.createSetParameterValueCommand('check-box', checked);
                 _this.executeCommand(command);
             };
-            for (var i in items) {
-                itemKey = 'check-box.' + items[i].value;
+            for (var item of items) {
+                itemKey = 'check-box.' + item.value;
                 _this.$elements[itemKey] = $('<div class="brtc-va-editors-sheet-controls-propertycontrol-checkbox"></div>');
-                _this.$elements[itemKey].text(items[i].label);
-                _this.$elements[itemKey].data('tag', items[i].value);
+                _this.$elements[itemKey].text(item.label);
+                _this.$elements[itemKey].data('tag', item.value);
                 _this.$elements['check-box'].append(_this.$elements[itemKey]);
                 _this.controls[itemKey] = _this.createCheckBox(_this.$elements[itemKey], {}, 'brtc-va-editors-sheet-controls-width-12')
                 _this.$elements[itemKey].on('change', changeHandler);
             }
             $selectAllButton.on('click', function (event) {
-                for (var i in items) {
-                    itemKey = 'check-box.' + items[i].value;
+                var checked = [];
+                for (var item of items) {
+                    itemKey = 'check-box.' + item.value;
                     _this.$elements[itemKey].off('change', changeHandler);
                     _this.$elements[itemKey].jqxCheckBox({checked: true});
                     _this.$elements[itemKey].on('change', changeHandler);
-                }
-                var checked = [];
-                for (var i in items) {
-                    itemKey = 'check-box.' + items[i].value;
                     checked.push(_this.$elements[itemKey].data('tag'));
                 }
                 var command = _this.createSetParameterValueCommand('check-box', checked);
                 _this.executeCommand(command);
             });
             $clearAllButton.on('click', function (event) {
-                for (var i in items) {
-                    itemKey = 'check-box.' + items[i].value;
+                for (var item of items) {
+                    itemKey = 'check-box.' + item.value;
                     _this.$elements[itemKey].off('change', changeHandler);
                     _this.$elements[itemKey].jqxCheckBox({checked: false});
                     _this.$elements[itemKey].on('change', changeHandler);
@@ -317,8 +314,8 @@
         var values = _this.options.fnUnit['param']['check-box'];
         var items = [{"label":"Label1","value":"value1","default":true},{"label":"Label2","value":"value2","default":true},{"label":"Label3","value":"value3","default":false}];
         var itemKey;
-        for (var i in items) {
-            itemKey = 'check-box.' + items[i].value;
+        for (var item of items) {
+            itemKey = 'check-box.' + item.value;
             if ($.inArray(_this.$elements[itemKey].data('tag'), values) > -1) {
                 _this.$elements[itemKey].jqxCheckBox({checked: true});
             } else {

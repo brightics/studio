@@ -17,6 +17,8 @@
 from random import randint
 import pandas as pd
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
+import matplotlib
+matplotlib.rcParams['axes.unicode_minus'] = False
 import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
 
@@ -29,6 +31,7 @@ from brightics.common.repr import strip_margin
 from brightics.function.utils import _model_dict
 from brightics.common.repr import dict2MD
 from brightics.common.repr import plt2MD
+from brightics.common.data_export import PyPlotData, PyPlotMeta
 
 
 def doc2vec(table, **params):
@@ -118,7 +121,8 @@ def _doc2vec(table, input_col, dm=1, vector_size=100, window=10, min_count=1,
     for word, pos in df.iterrows():
         ax.annotate(word, pos, fontsize=80)
     plt.show()
-    fig = plt2MD(plt)
+    figs = PyPlotData()
+    figs.addpltfig('fig', plt)
     plt.clf()
 
     rb = BrtcReprBuilder()
@@ -134,13 +138,14 @@ def _doc2vec(table, input_col, dm=1, vector_size=100, window=10, min_count=1,
     |
     | ### Parameters
     | {params}
-    """.format(length=length, topn=topn, topn_words=topn_words, fig=fig, params=dict2MD(params))))
+    """.format(length=length, topn=topn, topn_words=topn_words, fig=figs.getMD('fig'), params=dict2MD(params))))
 
     model = _model_dict('doc2vec_model')
     model['params'] = params
     model['d2v'] = d2v
     model['_repr_brtc_'] = rb.get()
     model['hash_val(Brightics)'] = hashfxn('Brightics')
+    model['figures'] = figs.tojson()
 
     out_table1 = table.copy()
     out_table1['document_vectors'] = [

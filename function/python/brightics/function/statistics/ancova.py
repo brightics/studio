@@ -23,6 +23,8 @@ from brightics.common.validation import validate
 from brightics.common.validation import from_under
 
 import seaborn as sns
+import matplotlib
+matplotlib.rcParams['axes.unicode_minus'] = False
 import matplotlib.pyplot as plt
 from pingouin import ancova as pg_ancova
 import numpy as np

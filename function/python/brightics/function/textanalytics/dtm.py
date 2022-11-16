@@ -113,7 +113,10 @@ def _dtm(table, input_col, topic_name='topic', num_topic=5, num_topic_word=10, m
 
     doc_topic, topic_term, doc_lengths, term_frequency, vocab = dtm_model.dtm_vis(corpus, vis_time)
     prepared_data = plv.prepare(topic_term, doc_topic, doc_lengths, vocab, term_frequency, sort_topics=False)
-    html_result = plv.prepared_data_to_html(prepared_data)
+    html_result = plv.prepared_data_to_html(prepared_data,
+                                            d3_url="/js/plugins/pyldavis/d3.v3.min.js",
+                                            ldavis_url="/js/plugins/pyldavis/ldavis.v1.0.0.js",
+                                            ldavis_css_url="/css/plugins/pyldavis/ldavis.v1.0.0.css")
 
     params = {'Input column': input_col,
               'Topic column name': topic_name,
@@ -232,7 +235,10 @@ def _dim(table, input_col, topic_name='topic', num_topic=5, num_topic_word=10, m
 
     doc_topic, topic_term, doc_lengths, term_frequency, vocab = dtm_model.dtm_vis(corpus, vis_time)
     prepared_data = plv.prepare(topic_term, doc_topic, doc_lengths, vocab, term_frequency, sort_topics=False)
-    html_result = plv.prepared_data_to_html(prepared_data)
+    html_result = plv.prepared_data_to_html(prepared_data,
+                                            d3_url="/js/plugins/pyldavis/d3.v3.min.js",
+                                            ldavis_url="/js/plugins/pyldavis/ldavis.v1.0.0.js",
+                                            ldavis_css_url="/css/plugins/pyldavis/ldavis.v1.0.0.css")
 
     params = {'Input column': input_col,
               'Topic column name': topic_name,

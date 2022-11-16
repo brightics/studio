@@ -29,7 +29,7 @@ def synonym_converter_user_dict(table, **params):
     return _synonym_converter(table, **params)
     
 
-def _synonym_converter(table, input_cols, hold_cols=None, default_dict=False, synonym_list=None, prefix='synonym', user_dict=None):
+def _synonym_converter(table, input_cols, hold_cols=None, default_dict=False, synonym_list=None, prefix='synonym_removed', user_dict=None):
 
     if hold_cols is not None:
         hold_table = pd.DataFrame()

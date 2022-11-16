@@ -20,6 +20,7 @@ from brightics.common.groupby import _function_by_group
 from brightics.common.utils import check_required_parameters
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import validate
+from brightics.common.validation import greater_than_or_equal_to
 from brightics.common.validation import from_under
 
 import pandas as pd
@@ -31,7 +32,9 @@ def ljung_box_test(table, group_by=None, **params):
     check_required_parameters(_ljung_box_test, params, ['table'])
     
     params = get_default_from_parameters_if_required(params, _ljung_box_test)
-    
+    param_validation_check = [greater_than_or_equal_to(params, 1, 'lags')]
+
+    validate(*param_validation_check)
     if group_by is not None:
         return _function_by_group(_ljung_box_test, table, group_by=group_by, **params)
     else:
@@ -44,12 +47,12 @@ def _ljung_box_test(table, input_cols, lags=None):
     rb.addMD("""## Ljung Box test Result""")
     
     for input_col in input_cols:
-        lbvalue, pvalue = acorr_ljungbox(x=table[input_col], lags=lags)
+        res = acorr_ljungbox(x=table[input_col], lags=lags)
         
         lb_res = dict()
-        lb_res['lags'] = range(1, len(lbvalue) + 1)
-        lb_res['test statistic'] = lbvalue
-        lb_res['p-value based on chi-square distribution'] = pvalue
+        lb_res['lags'] = range(1, len(res['lb_stat']) + 1)
+        lb_res['test_statistic'] = res['lb_stat']
+        lb_res['p_value'] = res['lb_pvalue']
         lb_res = pd.DataFrame(lb_res)
             
         rb.addMD(strip_margin("""

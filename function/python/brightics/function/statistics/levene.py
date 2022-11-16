@@ -40,7 +40,7 @@ def levenes_test(table, group_by=None, **params):
 
 def _levenes_test(table, response_cols, factor_col, center='median', proportiontocut=0.05):
     groups = table[factor_col].unique()
-    
+
     data_list = []
     stat_list = []
     p_list = []
@@ -52,16 +52,21 @@ def _levenes_test(table, response_cols, factor_col, center='median', proportiont
         data_list.append(data)
         stat_list.append(stat_levene)
         p_list.append(p_levene)
-        
-    result_table = pd.DataFrame.from_items([ 
-        ['data', data_list],
-        ['estimate', stat_list],
-        ['p_value', p_list] 
-    ])
-    
+
+    # result_table = pd.DataFrame.from_items([
+    #     ['data', data_list],
+    #     ['estimate', stat_list],
+    #     ['p_value', p_list]
+    # ])
+    result_table = pd.DataFrame({
+        'data': data_list,
+        'estimate': stat_list,
+        'p_value': p_list
+    })
+
     result = _model_dict('levenes_test_model')
     result['result_table'] = result_table
-    
+
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
     ## Levene's Test Result
@@ -70,7 +75,7 @@ def _levenes_test(table, response_cols, factor_col, center='median', proportiont
     |
     | {result_table}
     """.format(result_table=pandasDF2MD(result_table))))
-    
+
     result['_repr_brtc_'] = rb.get()
-        
+
     return {'result': result}

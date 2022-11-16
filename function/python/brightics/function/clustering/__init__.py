@@ -26,5 +26,8 @@ from .gaussian_mixture import gaussian_mixture_predict
 from .mean_shift import mean_shift
 from .mean_shift import mean_shift_predict
 from .clustering_predict import clustering_predict
+from .clustering_predict import clustering_predict2
 from .agglomerative_clustering import agglomerative_clustering
+from .agglomerative_clustering import agglomerative_clustering_predict
 from .spectral_clustering import spectral_clustering
+from .spectral_clustering import spectral_clustering_predict

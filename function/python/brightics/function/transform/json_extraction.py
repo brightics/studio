@@ -27,15 +27,16 @@ def _key(prev_key, sep, new_key):
     if prev_key is None:
         return new_key
     else:
-        return "{prev_key}{sep}{new_key}".format(prev_key=prev_key, sep=sep, new_key=new_key)
-    
+        return "{prev_key}{sep}{new_key}".format(prev_key=prev_key, sep=sep,
+                                                 new_key=new_key)
+
 
 def _flattenable(obj):
     try:
         json.dumps(obj)
     except:
         return False
-    
+
     return True
 
 
@@ -46,7 +47,8 @@ def _flatten(obj, key=None, flattened_dict=None, sep='__'):
         for obj_key in obj:
             if not obj_key.startswith('_'):
                 _flatten(obj[obj_key], _key(key, sep, obj_key), flattened_dict)
-    elif isinstance(obj, set) or isinstance(obj, numpy.ndarray) or isinstance(obj, tuple):
+    elif isinstance(obj, set) or isinstance(obj, numpy.ndarray) or isinstance(
+            obj, tuple):
         flattened_dict[key] = list(obj)
     elif _flattenable(obj):
         flattened_dict[key] = obj
@@ -58,9 +60,9 @@ def flatten_json(model, **params):
     if '_grouped_data' in model:
         return _function_by_group(_flatten_json, model=model, **params)
     else:
-        return _flatten_json(model=model, **params)      
-    
-    
+        return _flatten_json(model=model, **params)
+
+
 def _flatten_json(model, sep='__'):
     result = pd.DataFrame.from_dict([_flatten(model, sep=sep)])
     if result.empty:
@@ -71,13 +73,13 @@ def _flatten_json(model, sep='__'):
 def get_element_from_dict(d, key_list):
     if not isinstance(d, dict):
         raise Exception('not a dictionary.')
-    
+
     for key in key_list:
         try:
             d = d[key]
         except Exception as e:
             print(e)
-    
+
     return d
 
 
@@ -86,18 +88,55 @@ def get_table(model, **params):
     if '_grouped_data' in model and params['group_only'] is False:
         return _function_by_group(_get_table, model=model, **params)
     else:
-        return _get_table(model=model, **params)    
+        return _get_table(model=model, **params)
 
 
-def _get_table(model, key_list, index_column=False, index_column_name=None, group_only=False):
+def _get_table(model, key_list, index_column=False, index_column_name=None,
+               group_only=False):
     if not key_list:
         raise Exception('Key is a required parameter.')
     table = get_element_from_dict(model, key_list)
     if not isinstance(table, pd.DataFrame):
         raise Exception('item is not a DataFrame.')
-    if index_column:
-        table = table.reset_index()
-        if index_column_name is not None:
-            table.rename(columns={'index': index_column_name}, inplace=True)
-    return {'table': table}
 
+    input_cols = table.columns
+    out_table = table.copy()
+
+    # convert object column value to string.
+    for col in input_cols:
+        if table[col].dtype == 'object':
+            new_data = []
+            for data in table[col]:
+                new_data.append(str(data))
+            out_table[col] = new_data
+
+    if index_column:
+        out_table = out_table.reset_index()
+        if index_column_name is not None:
+            out_table.rename(columns={'index': index_column_name}, inplace=True)
+    return {'table': out_table}
+
+
+def get_image(model, **params):
+    check_required_parameters(_get_image, params, ['model'])
+    if '_grouped_data' in model and params['group_only'] is False:
+        return _function_by_group(_get_image, model=model, **params)
+    else:
+        return _get_image(model=model, **params)
+
+
+def _get_image(model, key_list, group_only=False):
+    if not key_list:
+        raise Exception('Key is a required parameter.')
+    if len(key_list) == 1:
+        key_list = ['figures'] + key_list
+    else:
+        key_list = key_list[:3] + ['figures', key_list[-1]]
+
+    image = get_element_from_dict(model, key_list)
+
+    if not image.startswith('data:image/png;base64,'):
+        raise Exception(f'Item referenced by `{key_list[-1]}` is not an image.')
+    image = f'![image]({image})'
+    model = {'_repr_brtc_': {'contents': [{'text': image, 'type': 'md'}]}}
+    return {'image': model}

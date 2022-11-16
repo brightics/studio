@@ -14,6 +14,11 @@
     limitations under the License.
 """
 
+import sys
+import six
+import joblib
+sys.modules['sklearn.externals.six'] = six
+sys.modules['sklearn.externals.joblib'] = joblib
 from .timeseries_decomposition import timeseries_decomposition
 from .unit_root_test import unit_root_test
 from .autocorrelation import autocorrelation

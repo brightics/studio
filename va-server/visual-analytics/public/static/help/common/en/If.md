@@ -1,3 +1,6 @@
+## Format
+This function executes a branch based on a condition.
+
 ## Description
 This function that executes a branch based on a condition.
 

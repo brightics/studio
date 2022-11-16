@@ -45,6 +45,9 @@ def var_samp(a): return np.nanvar(a, ddof=1)
 def std(a): return np.nanstd(a)
 
 
+def std_samp(a): return np.nanstd(a, ddof=1)
+
+
 def skewness(a): return scipy.stats.skew(a)
 
 

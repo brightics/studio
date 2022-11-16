@@ -4,7 +4,6 @@ This function returns value for executed SQL Query.
 
 ## Description
 This function returns value for executed SQL Query. For a description of core functions, see <https://www.sqlite.org/index.html>. UDF(User defined function)s are introduced below: 
-
 ### Aggregate Functions
 
 #### variance, var_pop
@@ -208,9 +207,7 @@ This function returns value for executed SQL Query. For a description of core fu
 ### Python
 #### USAGE
 ```
-from brightics.function.transform import sql_execute
-res = sql_execute(tables = ,query = )
-res['out_table']
+sql_execute(tables = ,query = )
 ```
 
 #### OUTPUT

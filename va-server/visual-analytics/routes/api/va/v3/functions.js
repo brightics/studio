@@ -27,7 +27,7 @@ const getFileListbyType = async (dirs = [], type = '') => {
     return files
 };
 
-const DBLoadPromise = (req, res, palette) => new Promise((resolve, reject) => {
+const DBLoadPromise = (req, palette) => new Promise((resolve, reject) => {
     const options = __BRTC_API_SERVER.createRequestOptions('GET', '/api/vastudio/v3/udfs');
     __BRTC_API_SERVER.setBearerToken(options, req.accessToken);
     request(options, function (error, response) {
@@ -41,10 +41,9 @@ const DBLoadPromise = (req, res, palette) => new Promise((resolve, reject) => {
                     const item = {func: name, visible: true, deletable: fn.creator === req.user.id ? true : false}
                     const category = JSON.parse(fn.contents).category
                     const list = palette.filter(p => p.key === category)
-                    // const action =
-                    list.reduce((s, i) => s || !i.functions.some(obj => obj.func === name), false) ?
-                        list.map(obj => obj.functions.push(item)) && `success ${name}` :
-                        `fail ${name}`;
+                    if(list.reduce((s, i) => s || !i.functions.some(obj => obj.func === name), false)) {
+                        list.map(obj => obj.functions.push(item));
+                    }
                 })
                 resolve(list);
             } else {
@@ -62,14 +61,12 @@ const JSLoader = (palette, list) => {
             const name = fileName[1];
             const item = {func: name, visible: true};
             const list = palette.filter(p => p.key === category)
-            // const action =
-            list.reduce((s, i) => s || !i.functions.some(obj => obj.func === name), false) ?
-                list.map(obj => obj.functions.push(item)) && `success ${name}` :
-                `fail ${name}`;
-            // console.log(action)
+            if(list.reduce((s, i) => s || !i.functions.some(obj => obj.func === name), false)) {
+                list.map(obj => obj.functions.push(item));
+            }
         });
 };
-const getFileContentsViaCorePromise = (req, res) => new Promise((resolve, reject) => {
+const getFileContentsViaCorePromise = (req) => new Promise((resolve, reject) => {
     const options = __BRTC_CORE_SERVER.createRequestOptions('GET', '/api/core/v3/function/meta');
     __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
     request(options, function (error, response) {
@@ -86,11 +83,11 @@ const getFileContentsViaCorePromise = (req, res) => new Promise((resolve, reject
     })
 });
 
-const JSONLoader = async (req, res) => {
-    return await getFileContentsViaCorePromise(req, res);
+const JSONLoader = async (req) => {
+    return await getFileContentsViaCorePromise(req);
 }
 
-const getFileContentViaCorePromise = (req, res) => new Promise((resolve, reject) => {
+const getFileContentViaCorePromise = (req) => new Promise((resolve, reject) => {
     const options = __BRTC_CORE_SERVER.createRequestOptions('GET', '/api/core/v3/function/meta/' + req.params.func);
     __BRTC_CORE_SERVER.setBearerToken(options, req.accessToken);
     request(options, function (error, response) {
@@ -110,19 +107,19 @@ const getFileContentViaCorePromise = (req, res) => new Promise((resolve, reject)
     })
 });
 
-const JSONLoaderbyFunction = async (req, res) => {
-    return await getFileContentViaCorePromise(req, res);
+const JSONLoaderbyFunction = async (req) => {
+    return await getFileContentViaCorePromise(req);
 }
 
 // returning value : Promise
-const makeCustomPalette = async (req, res, palette) => {
+const makeCustomPalette = async (req, palette) => {
     const list = Object
         .entries(locations)
         .map(entry => getFileListbyType(entry[1], entry[0]))
     const [js_chunks] = await Promise.all(list)
     // done[0]은 js묶음, done[1]은 json묶음
     JSLoader(palette, js_chunks);
-    const [fileContents, dbContents] = await Promise.all([JSONLoader(req, res), DBLoadPromise(req, res, palette)])
+    const [fileContents, dbContents] = await Promise.all([JSONLoader(req), DBLoadPromise(req, palette)])
     return {
         palette,
         fileContents: fileContents || [],
@@ -133,7 +130,7 @@ const makeCustomPalette = async (req, res, palette) => {
 // returning value : Promise
 exports.makePalette = async (req, res, palette = [], type = 'data') => {
     if (type === 'data') {
-        const result = await makeCustomPalette(req, res, palette)
+        const result = await makeCustomPalette(req, palette)
         return result;
     }
     return undefined;
@@ -149,7 +146,7 @@ exports.getPaletteModelType = (req, res, modelType = '') =>
 // returning value : Promise
 exports.getPalette = function (req, res) {
     const palette = getPaletteByModelType('data')
-    return makeCustomPalette(req, res, palette)
+    return makeCustomPalette(req, palette)
 };
 
 // router function for express
@@ -157,14 +154,14 @@ exports.getPalette = function (req, res) {
 //       다른 async지원을 충분히 가능하도록 express에서 지원을 할때 전환 필요 or
 //       자체 asyncnify나 promisify을 구현 할 필요가 있다.
 exports.listFunctions = function (req, res) {
-    Promise.resolve(JSONLoader(req, res))
+    Promise.resolve(JSONLoader(req))
         .then(s => {
             res.send(s.map(e => e.specJson))
         })
 };
 
 exports.getFunctionbyFunc = function (req, res) {
-    Promise.resolve(JSONLoaderbyFunction(req, res))
+    Promise.resolve(JSONLoaderbyFunction(req))
         .then(s => {
             res.send(s.specJson)
         })

@@ -1,5 +1,4 @@
 var request = __REQ_request;
-var router = __REQ_express.Router();
 
 var _executeInPermission = function (req, res, perm, task) {
     var permHandler = __BRTC_PERM_HELPER.checkPermission(req, [__BRTC_PERM_HELPER.PERMISSION_RESOURCE_TYPES.DEPLOY], perm);

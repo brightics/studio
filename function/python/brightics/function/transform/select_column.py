@@ -15,6 +15,9 @@
 """
 
 from brightics.common.utils import check_required_parameters
+from brightics.common.validation import raise_runtime_error
+import pandas as pd
+import numpy as np
 
 
 def select_column(table, **params):
@@ -23,16 +26,20 @@ def select_column(table, **params):
 
 
 def _select_column(table, input_cols, output_cols=None, output_types=None):
-    
     type_dict = {
-        'int':'int32',
-        'long':'int64',
-        'double':'float64',
-        'boolean':'bool',
-        'string':'str'
-        }
-    
-    _table = table.copy()
+        'int': 'int32',
+        'long': 'int64',
+        'double': 'float64',
+        'boolean': 'bool',
+        'string': 'str',
+        'int[]': 'int32[]',
+        'long[]': 'int64[]',
+        'double[]': 'float64[]',
+        'boolean[]': 'bool[]',
+        'string[]': 'str[]'
+    }
+
+    out_table = pd.DataFrame({})
     
     if output_cols is None:
         _output_cols = input_cols
@@ -40,17 +47,30 @@ def _select_column(table, input_cols, output_cols=None, output_types=None):
         _output_cols = output_cols
         
     if output_types is None:
-        _output_types = [_table[x].dtype for x in input_cols]
+        _output_types = [table[x].dtype for x in input_cols]
     else:
-        _output_types = [type_dict[x] for x in output_types]
-        
+        _output_types = [type_dict.get(x) for x in output_types]
+
     _input_size = min(len(input_cols), len(_output_cols), len(_output_types))
-    print(_input_size)
     _input_cols = input_cols[:_input_size]
     _output_cols = _output_cols[:_input_size]
     _output_types = _output_types[:_input_size]
-    
+
     for i, c in enumerate(_input_cols):
-        _table[_output_cols[i]] = _table[c].astype(_output_types[i])
-    
-    return {'out_table':_table[_output_cols]}
+        if output_types is None:
+            out_table[_output_cols[i]] = table[c]
+        else:
+            col_type = _output_types[i]
+            if col_type[-2:] != '[]':
+                if table[c].map(lambda x: isinstance(x, (list, np.ndarray))).all():
+                    raise_runtime_error(
+                        "Array type column {} cannot be cast to a non-array type column {}.".format(c, col_type))
+                out_table[_output_cols[i]] = table[c].astype(col_type)
+            else:
+                if not table[c].map(lambda x: isinstance(x, (list, np.ndarray))).all():
+                    raise_runtime_error(
+                        "Non-array type column {} cannot be cast to an array type column {}.".format(c, col_type))
+                col = [np.array(arr).astype(col_type[:-2]) for arr in table[c]]
+                out_table[_output_cols[i]] = col
+
+    return {'out_table': out_table}

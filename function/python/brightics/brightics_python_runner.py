@@ -29,10 +29,7 @@ import matplotlib
 matplotlib.use("agg")
 import multiprocessing
 multiprocessing.set_start_method('spawn', True)
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
+from io import StringIO
 
 current_dir_path = os.path.dirname(os.path.realpath(__file__))
 brightics_python_root_dir = os.path.abspath(os.path.join(current_dir_path, os.pardir))

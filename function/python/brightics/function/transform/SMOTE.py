@@ -30,6 +30,7 @@ import pandas as pd
 import numpy as np
 
 
+
 def SMOTE(table, group_by=None, **params):
     check_required_parameters(_SMOTE, params, ['table'])
     params = get_default_from_parameters_if_required(params, _SMOTE)
@@ -52,13 +53,7 @@ def _SMOTE(table, label_col, sampling_strategy='not majority', seed=None, k_neig
     lab_encoder = preprocessing.LabelEncoder()
     y_encoder = lab_encoder.fit_transform(y)
 
-    if (kind == 'svm'):
-        svc_model = svm.SVC()
-    else:
-        svc_model = None
-
-    sm = SMOTE_LIB(sampling_strategy=sampling_strategy, random_state=seed, k_neighbors=k_neighbors, m_neighbors=m_neighbors,
-                    out_step=out_step, kind=kind, svm_estimator=svc_model, n_jobs=n_jobs)
+    sm = SMOTE_LIB(sampling_strategy=sampling_strategy, random_state=seed, k_neighbors=k_neighbors, n_jobs=n_jobs)
     
     X_res, y_res = sm.fit_resample(features, y_encoder)
     y_decoder = lab_encoder.inverse_transform(y_res)

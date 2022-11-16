@@ -23,7 +23,7 @@ const cb = (res) => {
     };
 };
 
-const reponseHandler = (req, res) => {
+const reponseHandler = (res) => {
     return function (error, response, body) {
         if (error) {
             return res.status(400).json(JSON.parse(body));
@@ -54,7 +54,7 @@ var listUsers = function (req, res) {
     }
     var options = __BRTC_ACCOUNT_SERVER.createRequestOptions('GET', url);
     __BRTC_ACCOUNT_SERVER.setBearerToken(options, req.accessToken);
-    request(options, reponseHandler(req, res));
+    request(options, reponseHandler(res));
 
     // function (error, response, body) {
     // if (error) {
@@ -67,7 +67,7 @@ var listUsers = function (req, res) {
 var getUserById = function (req, res) {
     var options = __BRTC_ACCOUNT_SERVER.createRequestOptions('GET', ACC_URL_USER_PREFIX + '/' + req.params.userId);
     __BRTC_ACCOUNT_SERVER.setBearerToken(options, req.accessToken);
-    request(options, reponseHandler(req, res));
+    request(options, reponseHandler(res));
     // function (error, response, body) {
     //     if (error) {
     //         return res.status(400).json(JSON.parse(body));

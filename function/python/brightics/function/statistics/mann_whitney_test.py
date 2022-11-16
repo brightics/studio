@@ -61,10 +61,12 @@ def _mann_whitney_test(table, response_col, factor_col, use_continuity=True):
         result[name] = dict()
         result[name]['Statistics'] = stat
         result[name]['P value'] = pval
-        
+    
+    tmp_result = pd.DataFrame({'data': group_name, 'test_statistics': stats, 'p_value': pvals})
+    
     rb.addMD(strip_margin("""
     | {table}
-    """.format(table=pandasDF2MD(pd.DataFrame({'': group_name, 'Test Statistics': stats, 'P Value': pvals})))))
+    """.format(table=pandasDF2MD(tmp_result))))
     result['_repr_brtc_'] = rb.get()
-        
+    result['result'] = tmp_result    
     return {'result': result}

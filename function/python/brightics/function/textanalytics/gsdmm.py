@@ -116,7 +116,10 @@ def _gsdmm(table, input_col, topic_name='topic', K=10, alpha=0.1, beta=0.1, max_
         term_frequency = [vocab_count.get(word) for word in vocab_set]
 
         prepared_data = pyLDAvis.prepare(topic_term_dists, doc_topic_dists, doc_lengths, vocab_set, term_frequency)
-        html_result = pyLDAvis.prepared_data_to_html(prepared_data)
+        html_result = pyLDAvis.prepared_data_to_html(prepared_data,
+                                                     d3_url="/js/plugins/pyldavis/d3.v3.min.js",
+                                                     ldavis_url="/js/plugins/pyldavis/ldavis.v1.0.0.js",
+                                                     ldavis_css_url="/css/plugins/pyldavis/ldavis.v1.0.0.css")
 
     # generate report
     params = {'Input column': input_col,

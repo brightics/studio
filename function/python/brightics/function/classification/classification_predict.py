@@ -27,40 +27,74 @@ import numpy as np
 
 
 def classification_predict(table, model, prediction_col='prediction', prob_prefix='probability',
-                                 output_log_prob=False, log_prob_prefix='log_probability', thresholds=None,
-                                 suffix='index'):
+                           output_log_prob=False, log_prob_prefix='log_probability', thresholds=None,
+                           suffix='index'):
     if '_grouped_data' in model:
         tmp_model = model['_grouped_data']['data']
         tmp_model = list(tmp_model.values())[0]
     else:
         tmp_model = model
+
     if 'logistic_regression_model' in tmp_model['_type'] or 'one_vs' in tmp_model['_type']:
-        return logistic_regression_predict(table=table, model=model, prediction_col=prediction_col, prob_prefix=prob_prefix,
-                                 output_log_prob=output_log_prob, log_prob_prefix=log_prob_prefix, thresholds=thresholds,
-                                 suffix=suffix)
+        return logistic_regression_predict(
+            table=table, model=model, 
+            prediction_col=prediction_col, prob_prefix=prob_prefix,
+            output_log_prob=output_log_prob, log_prob_prefix=log_prob_prefix, 
+            thresholds=thresholds, suffix=suffix
+            )
+
     if tmp_model['_type'] == 'svc_model':
-        return svm_classification_predict(table=table, model=model, prediction_col=prediction_col, prob_prefix=prob_prefix,
-                                 display_log_prob=output_log_prob, log_prob_prefix=log_prob_prefix, thresholds=thresholds,
-                                 suffix=suffix)
+        return svm_classification_predict(
+            table=table, model=model, 
+            prediction_col=prediction_col, prob_prefix=prob_prefix,
+            display_log_prob=output_log_prob, log_prob_prefix=log_prob_prefix, 
+            thresholds=thresholds, suffix=suffix
+            )
+
     if tmp_model['_type'] == 'decision_tree_model':
         if 'method' in tmp_model and tmp_model['method'] == 'classification':
-            return decision_tree_classification_predict(table=table, model=model, prediction_col=prediction_col)
+            return decision_tree_classification_predict(
+                table=table, model=model, 
+                prediction_col=prediction_col, prob_col_prefix=prob_prefix, 
+                display_log_prob=output_log_prob, log_prob_prefix=log_prob_prefix, suffix=suffix
+                )
+
     if 'tree_classification' in tmp_model['_type']:
-        return decision_tree_classification_predict(table=table, model=model, prediction_col=prediction_col)
+        return decision_tree_classification_predict(
+            table=table, model=model, 
+            prediction_col=prediction_col, prob_col_prefix=prob_prefix, 
+            display_log_prob=output_log_prob, log_prob_prefix=log_prob_prefix, suffix=suffix
+            )
+
     if tmp_model['_type'] == 'random_forest_model':
         if 'method' in tmp_model and tmp_model['method'] == 'classification':
-            return random_forest_classification_predict(table=table, model=model, pred_col_name=prediction_col)
+            return random_forest_classification_predict(
+                table=table, model=model, 
+                pred_col_name=prediction_col, prob_col_prefix=prob_prefix, 
+                display_log_prob=output_log_prob, log_prob_prefix=log_prob_prefix, suffix=suffix
+                )
+
     if 'forest_classification' in tmp_model['_type'] or 'gbt_classification' in tmp_model['_type']:
-        return random_forest_classification_predict(table=table, model=model, pred_col_name=prediction_col)
+        return random_forest_classification_predict(
+            table=table, model=model, 
+            pred_col_name=prediction_col, prob_col_prefix=prob_prefix, 
+            display_log_prob=output_log_prob, log_prob_prefix=log_prob_prefix, suffix=suffix
+            )
+
     if tmp_model['_type'] == 'naive_bayes_model':
-        return naive_bayes_predict(table=table, model=model, prediction_col=prediction_col, prob_prefix=prob_prefix,
-                                 display_log_prob=output_log_prob, log_prob_prefix=log_prob_prefix, suffix=suffix)
+        return naive_bayes_predict(
+            table=table, model=model, 
+            prediction_col=prediction_col, prob_prefix=prob_prefix,
+            display_log_prob=output_log_prob, log_prob_prefix=log_prob_prefix, suffix=suffix
+            )
+
     if tmp_model['_type'] == 'ada_boost_classification_model':
         return ada_boost_classification_predict(
             table=table, model=model,
             pred_col_name=prediction_col,
             prob_col_prefix=prob_prefix, suffix=suffix
         )
+
     if tmp_model['_type'] == 'mlp_classification_model':
         return mlp_classification_predict(
             table=table, model=model,
@@ -70,6 +104,7 @@ def classification_predict(table, model, prediction_col='prediction', prob_prefi
             log_prob_prefix=log_prob_prefix,
             suffix=suffix, thresholds=thresholds
         )
+
     if tmp_model['_type'] == 'xgb_classification_model':
         return xgb_classification_predict(
             table=table, model=model,
@@ -77,4 +112,5 @@ def classification_predict(table, model, prediction_col='prediction', prob_prefi
             probability_col=prob_prefix,
             suffix=suffix, thresholds=thresholds
         )
+
     raise_runtime_error('''It is not supported yet.''')

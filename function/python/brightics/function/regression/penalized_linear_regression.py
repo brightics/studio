@@ -22,16 +22,65 @@ from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.validation import raise_runtime_error
 from brightics.common.validation import validate, greater_than_or_equal_to, less_than_or_equal_to, greater_than, from_to
 from brightics.common.classify_input_type import check_col_type
+from brightics.common.data_export import PyPlotData, PyPlotMeta
 
 import pandas as pd
 import numpy as np
 import seaborn as sns
 import statsmodels.api as sm
+import matplotlib
+matplotlib.rcParams['axes.unicode_minus'] = False
 import matplotlib.pyplot as plt
 from pandas import Series
 from sklearn.linear_model import Lasso, Ridge, ElasticNet
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
+from sklearn.base import BaseEstimator, RegressorMixin
+
+
+class PenalizedLinearRegressor(BaseEstimator, RegressorMixin):
+    def __init__(self, regression_type='ridge', alpha=1.0, fit_intercept=True, max_iter=1000, tol=0.0001, l1_ratio=0.5,
+                 random_state=None):
+        self.regression_type = regression_type
+        self.alpha = alpha
+        self.fit_intercept = fit_intercept
+        self.max_iter = max_iter
+        self.tol = tol
+        self.l1_ratio = l1_ratio
+        self.random_state = random_state
+        if regression_type == 'ridge':
+            self.model_ = Ridge(alpha=self.alpha,
+                                fit_intercept=self.fit_intercept,
+                                max_iter=self.max_iter,
+                                tol=self.tol,
+                                random_state=self.random_state,
+                                solver='auto')
+        elif regression_type == 'lasso':
+            self.model_ = Lasso(alpha=self.alpha,
+                                fit_intercept=self.fit_intercept,
+                                max_iter=self.max_iter,
+                                tol=self.tol,
+                                random_state=self.random_state,
+                                selection='random')
+        elif regression_type == 'elastic_net':
+            self.model_ = ElasticNet(alpha=self.alpha,
+                                     fit_intercept=self.fit_intercept,
+                                     max_iter=self.max_iter,
+                                     tol=self.tol,
+                                     random_state=self.random_state,
+                                     l1_ratio=self.l1_ratio,
+                                     selection='random')
+        else:
+            raise_runtime_error("Please check 'regression_type'.")
+
+    def fit(self, X, y):
+        self.results_ = self.model_.fit(X, y)
+        self.coef_ = self.results_.coef_
+        self.intercept_ = self.results_.intercept_
+        return self
+
+    def predict(self, X):
+        return self.results_.predict(X)
 
 
 def penalized_linear_regression_train(table, group_by=None, **params):
@@ -49,105 +98,128 @@ def penalized_linear_regression_train(table, group_by=None, **params):
         return _penalized_linear_regression_train(table, **params)
 
     
+def preprocess_():
+    preprocess_result = {'estimator_class': PenalizedLinearRegressor,
+                         'estimator_params': ['regression_type', 'alpha', 'fit_intercept', 'max_iter', 'tol',
+                                              'l1_ratio', 'random_state']}
+    return preprocess_result
+
+
+def postprocess_(table, feature_cols, label_col, regressor, fit_intercept):
+    feature_names, features = check_col_type(table, feature_cols)
+    label = table[label_col]
+
+    out_table = table.copy()
+    out_table1 = pd.DataFrame([])
+    out_table1['x_variable_name'] = [variable for variable in feature_names]
+    out_table1['coefficient'] = regressor.fit(features, label).coef_
+    intercept = pd.DataFrame([['intercept', regressor.fit(features, label).intercept_]],
+                             columns=['x_variable_name', 'coefficient'])
+    if fit_intercept:
+        out_table1 = out_table1.append(intercept, ignore_index=True)
+
+    predict = regressor.predict(features)
+    residual = label - predict
+
+    out_table['predict'] = predict
+    out_table['residual'] = residual
+
+    score = {
+        'MSE': mean_squared_error(label, predict),
+        'R2': r2_score(label, predict)
+    }
+
+    figs = PyPlotData()
+    meta = PyPlotMeta('fig_actual_predict',
+                      xlabel='Predicted values for ' + label_col,
+                      ylabel='Actual values for ' + label_col)
+    p1x = np.min(predict)
+    p2x = np.max(predict)
+    meta.scatter(predict, label)
+    meta.plot([p1x, p2x], [p1x, p2x], 'r--')
+    figs.addmeta(meta)
+
+    meta = PyPlotMeta('fig_residual_1',
+                      xlabel='Predicted values for ' + label_col,
+                      ylabel='Residuals')
+    meta.scatter(predict, residual)
+    meta.axhline(0, color='r', linestyle='--')
+    figs.addmeta(meta)
+
+    meta = PyPlotMeta('fig_residual_2', ylabel='Residuals')
+    meta.qqplot_sm(residual, line='s')
+    figs.addmeta(meta)
+
+    meta = PyPlotMeta('fig_residual_3', xlabel='Residuals')
+    meta.distplot_sns(residual)
+    figs.addmeta(meta)
+
+    # checking the magnitude of coefficients
+
+    coef = Series(regressor.coef_, feature_names).sort_values()
+    meta = PyPlotMeta('fig_model_coefficients', title='Model Coefficients')
+    meta.bar(coef.index, coef.values, color='b', align='center')
+    meta.tight_layout()
+    figs.addmeta(meta)
+
+    figs.compile()
+
+
+    postprocess_result = {'update_md': {'Model Parameters': pandasDF2MD(out_table1),
+                                        'Regression Score': dict2MD(score),
+                                        'Predicted vs Actual': figs.getMD('fig_actual_predict'),
+                                        'Fit Diagnostics 1': figs.getMD('fig_residual_1'),
+                                        'Fit Diagnostics 2': figs.getMD('fig_residual_2'),
+                                        'Fit Diagnostics 3': figs.getMD('fig_residual_3'),
+                                        'Magnitude of Coefficients': figs.getMD('fig_model_coefficients')},
+                          'update_model_etc': {'out_table1': out_table1},
+                          'type': 'penalized_linear_regression_model',
+                          'figs': figs}
+
+    return postprocess_result
+
+
 def _penalized_linear_regression_train(table, feature_cols, label_col, regression_type='ridge', alpha=1.0, l1_ratio=0.5, fit_intercept=True, max_iter=1000, tol=0.0001, random_state=None):
     out_table = table.copy()
     feature_names, features = check_col_type(out_table, feature_cols)
     label = out_table[label_col]
-    if regression_type == 'ridge':
-        regression_model = Ridge(alpha=alpha, fit_intercept=fit_intercept, max_iter=None, tol=tol, solver='auto', random_state=random_state)
-    elif regression_type == 'lasso':
-        regression_model = Lasso(alpha=alpha, fit_intercept=fit_intercept, max_iter=max_iter, tol=tol, random_state=random_state, selection='random')
-    elif regression_type == 'elastic_net':
-        regression_model = ElasticNet(alpha=alpha, l1_ratio=l1_ratio, fit_intercept=fit_intercept, max_iter=max_iter, tol=tol, random_state=random_state, selection='random')
-    else:
-        raise_runtime_error("Please check 'regression_type'.")
-    
+    regression_model = PenalizedLinearRegressor(regression_type=regression_type, alpha=alpha,
+                                                fit_intercept=fit_intercept, max_iter=max_iter, tol=tol,
+                                                l1_ratio=l1_ratio, random_state=random_state)
+
     regression_model.fit(features, label)
-    
-    out_table1 = pd.DataFrame([])
-    out_table1['x_variable_name'] = [variable for variable in feature_names]
-    out_table1['coefficient'] = regression_model.fit(features, label).coef_
-    intercept = pd.DataFrame([['intercept', regression_model.fit(features, label).intercept_]], columns=['x_variable_name', 'coefficient'])
-    if fit_intercept == True:
-        out_table1 = out_table1.append(intercept, ignore_index=True)
-        
-    predict = regression_model.predict(features)
-    residual = label - predict
-    
-    out_table['predict'] = predict
-    out_table['residual'] = residual
+
+    postprocess_result = postprocess_(table, feature_cols, label_col, regression_model, fit_intercept)
+    update_md = postprocess_result['update_md']
+    model_params = update_md['Model Parameters']
+    score = update_md['Regression Score']
+    fig_actual_predict = update_md['Predicted vs Actual']
+    fig_residual_1 = update_md['Fit Diagnostics 1']
+    fig_residual_2 = update_md['Fit Diagnostics 2']
+    fig_residual_3 = update_md['Fit Diagnostics 3']
+    fig_model_coefficients = update_md['Magnitude of Coefficients']
 
     if regression_type == 'elastic_net':
         params = {
-        
-        'Feature Columns' : feature_names,
-        'Label Column' : label_col,
-        'Regression Type': regression_type,
-        'Regularization (Penalty Weight)' : alpha,
-        'L1 Ratio': l1_ratio,
-        'Fit Intercept' : fit_intercept,
-        'Maximum Number of Iterations' : max_iter,
-        'Tolerance' : tol
-        
+            'Feature Columns': feature_names,
+            'Label Column': label_col,
+            'Regression Type': regression_type,
+            'Regularization (Penalty Weight)': alpha,
+            'L1 Ratio': l1_ratio,
+            'Fit Intercept': fit_intercept,
+            'Maximum Number of Iterations': max_iter,
+            'Tolerance': tol
         }
     else:
         params = {
-        
-        'Feature Columns' : feature_names,
-        'Label Column' : label_col,
-        'Regression Type': regression_type,
-        'Regularization (Penalty Weight)' : alpha,
-        'Fit Intercept' : fit_intercept,
-        'Maxium Number of Iterations' : max_iter,
-        'Tolerance' : tol
-        
+            'Feature Columns': feature_names,
+            'Label Column': label_col,
+            'Regression Type': regression_type,
+            'Regularization (Penalty Weight)': alpha,
+            'Fit Intercept': fit_intercept,
+            'Maxium Number of Iterations': max_iter,
+            'Tolerance': tol
         }
-    
-    score = {
-        'MSE' : mean_squared_error(label, predict),
-        'R2' : r2_score(label, predict)
-    }
-
-    plt.figure()
-    plt.scatter(predict, label)
-    plt.xlabel('Predicted values for ' + label_col)
-    plt.ylabel('Actual values for ' + label_col)
-    x = predict
-    p1x = np.min(x)
-    p2x = np.max(x)
-    plt.plot([p1x, p2x], [p1x, p2x], 'r--')
-    fig_actual_predict = plt2MD(plt)
-    plt.clf()
-
-    plt.figure()
-    plt.scatter(predict, residual)
-    plt.xlabel('Predicted values for ' + label_col)
-    plt.ylabel('Residuals')
-    plt.axhline(y=0, color='r', linestyle='--')
-    fig_residual_1 = plt2MD(plt)
-    plt.clf()
-
-    plt.figure()
-    sm.qqplot(residual, line='s')
-    plt.ylabel('Residuals')
-    fig_residual_2 = plt2MD(plt)
-    plt.clf()
-
-    plt.figure()
-    sns.distplot(residual)
-    plt.xlabel('Residuals')
-    fig_residual_3 = plt2MD(plt)
-    plt.clf()
-    
-    # checking the magnitude of coefficients
-    
-    plt.figure()
-    predictors = feature_names
-    coef = Series(regression_model.coef_, predictors).sort_values()
-    coef.plot(kind='bar', title='Model Coefficients')
-    plt.tight_layout()
-    fig_model_coefficients = plt2MD(plt)
-    plt.clf()
 
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
@@ -162,7 +234,7 @@ def _penalized_linear_regression_train(table, feature_cols, label_col, regressio
     | ### Regression Score
     | {score}
     |
-    """.format(params=dict2MD(params), out_table1=pandasDF2MD(out_table1), score=dict2MD(score))))
+    """.format(params=dict2MD(params), out_table1=model_params, score=score)))
     rb.addMD(strip_margin("""
     |
     | ### Predicted vs Actual
@@ -187,13 +259,14 @@ def _penalized_linear_regression_train(table, feature_cols, label_col, regressio
     model['feature_cols'] = feature_cols
     model['label_col'] = label_col
     model['regression_type'] = regression_type
-    model['regression_model'] = regression_model
+    model['regressor'] = regression_model
     model['parameters'] = params
-    model['model_parameters'] = out_table1
+    model['model_parameters'] = postprocess_result['update_model_etc']['out_table1']
     model['prediction_residual'] = out_table
     model['_repr_brtc_'] = rb.get()
+    model['figures'] = postprocess_result['figs'].tojson()
 
-    return {'model' : model}
+    return {'model': model}
 
 
 def penalized_linear_regression_predict(table, model, **params):
@@ -205,10 +278,14 @@ def penalized_linear_regression_predict(table, model, **params):
 
 
 def _penalized_linear_regression_predict(table, model, prediction_col='prediction'):
+    # migration logic
+    if 'regression_model' in model:
+        model['regressor'] = model['regression_model']
+
     result = table.copy()
     feature_cols = model['feature_cols']
     feature_names, features = check_col_type(result, feature_cols)
-    regression_model = model['regression_model']
+    regression_model = model['regressor']
     prediction = regression_model.predict(features)
     
     result[prediction_col] = prediction

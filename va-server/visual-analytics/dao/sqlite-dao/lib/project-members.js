@@ -100,7 +100,6 @@ const doWhilst = (opt, getArgs, qry, errCallback, doneCallback) => {
             query(qry, getArgs(opt, count),
                 (err) => {
                     count++;
-                    console.log(err);
                     next(null, affected);
                 },
                 (result) => {

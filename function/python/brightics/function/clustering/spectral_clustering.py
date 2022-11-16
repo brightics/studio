@@ -17,6 +17,8 @@
 import pandas as pd
 from sklearn.cluster import SpectralClustering
 from brightics.common.repr import BrtcReprBuilder, strip_margin, dict2MD, plt2MD
+import matplotlib
+matplotlib.rcParams['axes.unicode_minus'] = False
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 import numpy as np
@@ -31,6 +33,7 @@ from brightics.common.validation import validate
 from brightics.common.validation import greater_than_or_equal_to, greater_than, all_elements_greater_than, raise_runtime_error
 from brightics.common.repr import pandasDF2MD
 from brightics.common.classify_input_type import check_col_type
+from brightics.common.data_export import PyPlotData, PyPlotMeta
 
 
 def _spectral_clustering_samples_plot(labels, table, input_cols, n_samples, n_clusters, colors):
@@ -51,9 +54,9 @@ def _spectral_clustering_samples_plot(labels, table, input_cols, n_samples, n_cl
         for idx in range(len(sample)):
             plt.plot(x, sample[idx], color='grey', linewidth=1)
     plt.tight_layout()
-    fig_samples = plt2MD(plt)
-    plt.clf()
-    return fig_samples
+    # fig_samples = plt2MD(plt)
+    # plt.clf()
+    # return fig_samples
 
 
 def _spectral_clustering_pca_plot(labels, pca2_model, pca2, n_clusters, colors):
@@ -61,31 +64,31 @@ def _spectral_clustering_pca_plot(labels, pca2_model, pca2, n_clusters, colors):
         plt.scatter(pca2[:, 0][labels == i], pca2[:, 1][labels == i], color=color)
 
     plt.tight_layout()
-    fig_pca = plt2MD(plt)
-    plt.clf()
-    return fig_pca
+    # fig_pca = plt2MD(plt)
+    # plt.clf()
+    # return fig_pca
 
 
 def spectral_clustering(table, group_by=None, **params):
     check_required_parameters(_spectral_clustering, params, ['table'])
-    
+
     params = get_default_from_parameters_if_required(params, _spectral_clustering)
-    
+
     if group_by is not None:
         grouped_model = _function_by_group(_spectral_clustering, table, group_by=group_by, **params)
         return grouped_model
     else:
         return _spectral_clustering(table, **params)
-    
+
 
 def _spectral_clustering(table, input_cols, prediction_col='prediction', n_clusters=8, eigen_solver=None, random_state=None, n_init=10, gamma=1.0, affinity='rbf', n_neighbors=10, eigen_tol=0.0, assign_labels='kmeans', degree=3, coef0=1):
     feature_names, inputarr = check_col_type(table, input_cols)
-        
+
     _eigen_solver = None if eigen_solver == 'None' else eigen_solver
     sc = SpectralClustering(n_clusters=n_clusters, eigen_solver=_eigen_solver, random_state=random_state, n_init=n_init, gamma=gamma, affinity=affinity, n_neighbors=n_neighbors, eigen_tol=eigen_tol, assign_labels=assign_labels, degree=degree, coef0=coef0)
-    
+
     sc.fit(inputarr)
-    
+
 
     label_name = {
         'n_clusters': 'N Clusters',
@@ -100,22 +103,33 @@ def _spectral_clustering(table, input_cols, prediction_col='prediction', n_clust
         'degree': 'Degree',
         'coef0': 'Zero Coefficient'}
     get_param = sc.get_params()
-    param_table = pd.DataFrame.from_items([
+    param_table = pd.DataFrame.from_dict([
         ['Parameter', list(label_name.values())],
         ['Value', [get_param[x] for x in list(label_name.keys())]]
     ])
-    
+
     # cluster_centers = sc.cluster_centers_
     labels = sc.labels_
     colors = cm.nipy_spectral(np.arange(n_clusters).astype(float) / n_clusters)
-    
+
     if len(feature_names) > 1:
         pca2_model = PCA(n_components=2).fit(inputarr)
         pca2 = pca2_model.transform(inputarr)
-    fig_samples = _spectral_clustering_samples_plot(labels, table, input_cols, 100, n_clusters, colors) if len(table.index) > 100 else _spectral_clustering_samples_plot(labels, table, input_cols, None, n_clusters, colors)
-    
+
+    figs = PyPlotData()
+    plt.figure()
+    # fig_samples = _spectral_clustering_samples_plot(labels, table, input_cols, 100, n_clusters, colors) if len(table.index) > 100 else _spectral_clustering_samples_plot(labels, table, input_cols, None, n_clusters, colors)
+    _len = 100 if len(table.index) > 100 else None
+    _spectral_clustering_samples_plot(labels, table, input_cols, _len, n_clusters, colors)
+    figs.addpltfig('fig_samples', plt)
+    plt.clf()
+
     if len(feature_names) > 1:
-        fig_pca = _spectral_clustering_pca_plot(labels, pca2_model, pca2, n_clusters, colors)
+        plt.figure()
+        # fig_pca = _spectral_clustering_pca_plot(labels, pca2_model, pca2, n_clusters, colors)
+        _spectral_clustering_pca_plot(labels, pca2_model, pca2, n_clusters, colors)
+        figs.addpltfig('fig_pca', plt)
+        plt.clf()
         rb = BrtcReprBuilder()
         rb.addMD(strip_margin("""
         | ## Spectral Clustering Result
@@ -124,7 +138,9 @@ def _spectral_clustering(table, input_cols, prediction_col='prediction', n_clust
         | {fig_pca}
         | ### Parameters
         | {params}
-        """.format(fig_samples=fig_samples, fig_pca=fig_pca, params=pandasDF2MD(param_table))))
+        """.format(fig_samples=figs.getMD('fig_samples'),
+                   fig_pca=figs.getMD('fig_pca'),
+                   params=pandasDF2MD(param_table))))
     else:
         rb = BrtcReprBuilder()
         rb.addMD(strip_margin("""
@@ -133,13 +149,33 @@ def _spectral_clustering(table, input_cols, prediction_col='prediction', n_clust
         | {fig_samples}
         | ### Parameters
         | {params}
-        """.format(fig_samples=fig_samples, params=pandasDF2MD(param_table))))
-    
+        """.format(fig_samples=figs.getMD('fig_samples'), params=pandasDF2MD(param_table))))
+
     model = _model_dict('spectral_clustering')
     model['model'] = sc
     model['input_cols'] = input_cols
     model['_repr_brtc_'] = rb.get()
-    
+    model['figures'] = figs.tojson()
+
     out_table = table.copy()
     out_table[prediction_col] = labels
     return {'out_table':out_table, 'model':model}
+
+
+def spectral_clustering_predict(table, model, **params):
+    check_required_parameters(_spectral_clustering_predict, params, ['table', 'model'])
+    if '_grouped_data' in model:
+        return _function_by_group(_spectral_clustering_predict, table, model, **params)
+    else:
+        return _spectral_clustering_predict(table, model, **params)
+
+
+def _spectral_clustering_predict(table, model, prediction_col='prediction'):
+    sc_model = model['model']
+    input_cols = model['input_cols']
+    _, inputarr = check_col_type(table, input_cols)
+    predict = sc_model.fit_predict(inputarr)
+    out_table = table.copy()
+    out_table[prediction_col] = predict
+
+    return {'out_table':out_table}

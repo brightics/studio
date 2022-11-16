@@ -14,6 +14,8 @@
     limitations under the License.
 """
 
+import matplotlib
+matplotlib.rcParams['axes.unicode_minus'] = False
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.metrics import confusion_matrix
@@ -33,6 +35,7 @@ from brightics.common.validation import validate
 from brightics.common.validation import greater_than
 from brightics.common.utils import get_default_from_parameters_if_required
 from brightics.common.classify_input_type import check_col_type
+from brightics.common.data_export import PyPlotData, PyPlotMeta
 
 
 def naive_bayes_train(table, group_by=None, **params):
@@ -47,30 +50,90 @@ def naive_bayes_train(table, group_by=None, **params):
         return _naive_bayes_train(table, **params)
 
 
-def _naive_bayes_train(table, feature_cols, label_col, alpha=1.0, fit_prior=True, class_prior=None):
-    feature_names, features = check_col_type(table, feature_cols)
+def preprocess_(table, label_col, class_prior):
     label = table[label_col]
     label_encoder = preprocessing.LabelEncoder()
     label_encoder.fit(label)
-    label_correspond = label_encoder.transform(label)
+    label = label_encoder.transform(label)
 
     if class_prior is not None:
         tmp_class_prior = [0] * len(class_prior)
-        for elems in class_prior: 
+        for elems in class_prior:
             tmp = elems.split(":")
             tmp_class_prior[label_encoder.transform([tmp[0]])[0]] = float(tmp[1])
         class_prior = tmp_class_prior
 
-    nb_model = MultinomialNB(alpha, fit_prior, class_prior)
-    nb_model.fit(features, label_correspond)
-    class_log_prior = nb_model.class_log_prior_
-    feature_log_prob_ = nb_model.feature_log_prob_
+    preprocess_result = {'update_param': {"class_prior": class_prior},
+                         'etc': {'label_encoder': label_encoder,
+                                 'label': label},
+                         'estimator_class': MultinomialNB,
+                         'estimator_params': ['alpha', 'fit_prior', 'class_prior']}
+    return preprocess_result
+
+
+def postprocess_(table, feature_cols, classifier, label_encoder, label):
+    feature_names, features = check_col_type(table, feature_cols)
+
+    class_log_prior = classifier.class_log_prior_
+    feature_log_prob_ = classifier.feature_log_prob_
     tmp_result = np.hstack((list(map(list, zip(*[label_encoder.classes_] + [class_log_prior]))), (feature_log_prob_)))
     column_names = ['labels', 'pi']
     for feature_col in feature_names:
         column_names += ['theta_' + feature_col]
     result_table = pd.DataFrame.from_records(tmp_result, columns=column_names)
-    prediction_correspond = nb_model.predict(features)
+    prediction_correspond = classifier.predict(features)
+
+    cnf_matrix = confusion_matrix(label, prediction_correspond)
+
+    figs = PyPlotData()
+    classes = label_encoder.classes_
+    tick_marks = np.arange(len(classes))
+    meta = PyPlotMeta('fig_confusion_matrix',
+                      title='Confusion matrix',
+                      xlabel='Predicted value',
+                      ylabel='True value',
+                      xticks={'ticks': tick_marks, 'labels': classes, 'rotation':45},
+                      yticks={'ticks': tick_marks, 'labels': classes})
+    meta.imshow(cnf_matrix, **{'interpolation':'nearest', 'cmap':plt.cm.Blues})
+    thresh = cnf_matrix.max() / 2.
+    for i, j in itertools.product(range(cnf_matrix.shape[0]), range(cnf_matrix.shape[1])):
+        meta.text(j, i, format(cnf_matrix[i, j], 'd'),
+                  horizontalalignment="center",
+                  color="white" if cnf_matrix[i, j] > thresh else "black")
+    meta.colorbar()
+    meta.tight_layout()
+
+    figs.addmeta(meta)
+    figs.compile()
+
+    accuracy = classifier.score(features, label) * 100
+
+    postprocess_result = {'update_model': {'label_encoder': label_encoder},
+                          'update_md': {'Summary': pandasDF2MD(result_table),
+                                        'Predicted vs Actual': figs.getMD('fig_confusion_matrix'),
+                                        'Accuracy': accuracy},
+                          'type': 'naive_bayes_model',
+                          'figs': figs}
+
+    return postprocess_result
+
+
+def _naive_bayes_train(table, feature_cols, label_col, alpha=1.0, fit_prior=True, class_prior=None):
+    feature_names, features = check_col_type(table, feature_cols)
+
+    preprocess_result = preprocess_(table, label_col, class_prior)
+    class_prior = preprocess_result['update_param']['class_prior']
+    label_encoder = preprocess_result['etc']['label_encoder']
+    label = preprocess_result['etc']['label']
+
+    nb_model = MultinomialNB(alpha, fit_prior, class_prior)
+    nb_model.fit(features, label)
+
+    postprocess_result = postprocess_(table, feature_cols, nb_model, label_encoder, label)
+    update_md = postprocess_result['update_md']
+    summary = update_md['Summary']
+    fig_confusion_matrix = update_md['Predicted vs Actual']
+    accuracy = update_md['Accuracy']
 
     get_param = dict()
     get_param['Lambda'] = alpha
@@ -78,14 +141,6 @@ def _naive_bayes_train(table, feature_cols, label_col, alpha=1.0, fit_prior=True
     get_param['Fit Class Prior Probability'] = fit_prior
     get_param['Feature Columns'] = feature_names
     get_param['Label Column'] = label_col
-
-    cnf_matrix = confusion_matrix(label_correspond, prediction_correspond)
-
-    plt.figure()
-    _plot_confusion_matrix(cnf_matrix, classes=label_encoder.classes_,
-                      title='Confusion Matrix')
-    fig_confusion_matrix = plt2MD(plt)
-    accuracy = nb_model.score(features, label_correspond) * 100
 
     rb = BrtcReprBuilder()
     rb.addMD(strip_margin("""
@@ -99,20 +154,21 @@ def _naive_bayes_train(table, feature_cols, label_col, alpha=1.0, fit_prior=True
     | {image1}
     | #### Accuacy = {accuracy}%
     |
-    """.format(image1=fig_confusion_matrix, accuracy=accuracy, result_table=pandasDF2MD(result_table), table_parameter=dict2MD(get_param))))
+    """.format(image1=fig_confusion_matrix, accuracy=accuracy, result_table=summary,
+               table_parameter=dict2MD(get_param))))
 
     model = _model_dict('naive_bayes_model')
     model['features'] = feature_cols
     model['label_col'] = label_col
     model['label_encoder'] = label_encoder
-    model['nb_model'] = nb_model
+    model['classifier'] = nb_model
     model['_repr_brtc_'] = rb.get()
+    model['figures'] = postprocess_result['figs'].tojson()
 
-    return {'model' : model}
+    return {'model': model}
 
 
-def _plot_confusion_matrix(cm, classes,
-                          title='Confusion matrix'):
+def _plot_confusion_matrix(cm, classes, title='Confusion matrix'):
 
     plt.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
     plt.title(title)
@@ -150,6 +206,8 @@ def _naive_bayes_predict(table, model, suffix, display_log_prob=False, predictio
     feature_names, features = check_col_type(table, feature_cols)
     if 'nb_model' in model:
         nb_model = model['nb_model']
+    elif 'classifier' in model:
+        nb_model = model['classifier']
     else:
         model_table = model['table_1']
         if model_table.model_type[0] == 'multinomial':
@@ -179,7 +237,7 @@ def _naive_bayes_predict(table, model, suffix, display_log_prob=False, predictio
     result = table
     result[prediction_col] = prediction
 
-    if display_log_prob == True:
+    if display_log_prob:
         log_prob = nb_model.predict_log_proba(features)
         logprob_cols = ['{prefix}_{suffix}'.format(prefix=log_prob_prefix, suffix=suffix) for suffix in suffixes]
         logprob_df = pd.DataFrame(data=log_prob, columns=logprob_cols)

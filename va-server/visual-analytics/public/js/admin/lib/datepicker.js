@@ -380,46 +380,25 @@
                 dayPeriod = validHours.dayPeriod;
             }
 
-            switch (true) {
-                case /@/.test(result):
-                    result = result.replace(/@/, date.getTime());
-                case /aa/.test(result):
-                    result = result.replace(boundary('aa'), dayPeriod);
-                case /AA/.test(result):
-                    result = result.replace(boundary('AA'), dayPeriod.toUpperCase());
-                case /dd/.test(result):
-                    result = result.replace(boundary('dd'), d.fullDate);
-                case /d/.test(result):
-                    result = result.replace(boundary('d'), d.date);
-                case /DD/.test(result):
-                    result = result.replace(boundary('DD'), locale.days[d.day]);
-                case /D/.test(result):
-                    result = result.replace(boundary('D'), locale.daysShort[d.day]);
-                case /mm/.test(result):
-                    result = result.replace(boundary('mm'), d.fullMonth);
-                case /m/.test(result):
-                    result = result.replace(boundary('m'), d.month + 1);
-                case /MM/.test(result):
-                    result = result.replace(boundary('MM'), this.loc.months[d.month]);
-                case /M/.test(result):
-                    result = result.replace(boundary('M'), locale.monthsShort[d.month]);
-                case /ii/.test(result):
-                    result = result.replace(boundary('ii'), d.fullMinutes);
-                case /i/.test(result):
-                    result = result.replace(boundary('i'), d.minutes);
-                case /hh/.test(result):
-                    result = result.replace(boundary('hh'), fullHours);
-                case /h/.test(result):
-                    result = result.replace(boundary('h'), hours);
-                case /yyyy/.test(result):
-                    result = result.replace(boundary('yyyy'), d.year);
-                case /yyyy1/.test(result):
-                    result = result.replace(boundary('yyyy1'), decade[0]);
-                case /yyyy2/.test(result):
-                    result = result.replace(boundary('yyyy2'), decade[1]);
-                case /yy/.test(result):
-                    result = result.replace(boundary('yy'), d.year.toString().slice(-2));
-            }
+            if(/@/.test(result))    result = result.replace(/@/, date.getTime());
+            if(/aa/.test(result))   result = result.replace(boundary('aa'), dayPeriod);
+            if(/AA/.test(result))   result = result.replace(boundary('AA'), dayPeriod.toUpperCase());
+            if(/dd/.test(result))   result = result.replace(boundary('dd'), d.fullDate);
+            if(/d/.test(result))    result = result.replace(boundary('d'), d.date);
+            if(/DD/.test(result))   result = result.replace(boundary('DD'), locale.days[d.day]);
+            if(/D/.test(result))    result = result.replace(boundary('D'), locale.daysShort[d.day]);
+            if(/mm/.test(result))   result = result.replace(boundary('mm'), d.fullMonth);
+            if(/m/.test(result))    result = result.replace(boundary('m'), d.month + 1);
+            if(/MM/.test(result))   result = result.replace(boundary('MM'), this.loc.months[d.month]);
+            if(/M/.test(result))    result = result.replace(boundary('M'), locale.monthsShort[d.month]);
+            if(/ii/.test(result))   result = result.replace(boundary('ii'), d.fullMinutes);
+            if(/i/.test(result))   result = result.replace(boundary('i'), d.minutes);
+            if(/hh/.test(result))   result = result.replace(boundary('hh'), fullHours);
+            if(/h/.test(result))    result = result.replace(boundary('h'), hours);
+            if(/yyyy/.test(result)) result = result.replace(boundary('yyyy'), d.year);
+            if(/yyyy1/.test(result))    result = result.replace(boundary('yyyy1'), decade[0]);
+            if(/yyyy2/.test(result))    result = result.replace(boundary('yyyy2'), decade[1]);
+            if(/yy/.test(result))   result = result.replace(boundary('yy'), d.year.toString().slice(-2));
 
             return result;
         },
@@ -839,7 +818,6 @@
                 focusedParsed,
                 o = this.opts,
                 newDate,
-                totalDaysInNextMonth,
                 monthChanged = false,
                 yearChanged = false,
                 decadeChanged = false,
@@ -883,11 +861,7 @@
                     break;
             }
 
-            totalDaysInNextMonth = datepicker.getDaysCount(new Date(y,m));
             newDate = new Date(y,m,d);
-
-            // If next month has less days than current, set date to total days in that month
-            if (totalDaysInNextMonth < d) d = totalDaysInNextMonth;
 
             // Check if newDate is in valid range
             if (newDate.getTime() < this.minTime) {
@@ -1261,7 +1235,6 @@
                     this.setPosition();
                 }
             }
-            return val;
         },
 
         get date () {
@@ -1294,8 +1267,6 @@
                 }
                 if (this.elIsInput && this.visible) this.setPosition();
             }
-
-            return val
         },
 
         get view() {
@@ -1635,8 +1606,7 @@
         },
 
         _getYearsHtml: function (date) {
-            var d = dp.getParsedDate(date),
-                decade = dp.getDecade(date),
+            var decade = dp.getDecade(date),
                 firstYear = decade[0] - 1,
                 html = '',
                 i = firstYear;
@@ -1722,7 +1692,7 @@
                 this.d._trigger('clickCell', selectedDate);
             } else if (alreadySelected && this.opts.toggleSelected){
                 this.d.removeDate(selectedDate);
-            } else if (alreadySelected && !this.opts.toggleSelected) {
+            } else if (alreadySelected) {
                 this.d.lastSelectedDate = alreadySelected;
                 if (this.d.opts.timepicker) {
                     this.d.timepicker._setTime(alreadySelected);
@@ -2107,7 +2077,7 @@
                 hours = date;
 
             if (date instanceof Date) {
-                d = dp.getParsedDate(date);
+                d = dp.getParsedDate(d);
                 hours = d.hours;
             }
 

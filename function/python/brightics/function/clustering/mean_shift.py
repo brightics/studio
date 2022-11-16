@@ -17,6 +17,8 @@
 import pandas as pd
 from sklearn.cluster import MeanShift
 from brightics.common.repr import BrtcReprBuilder, strip_margin, dict2MD, plt2MD
+import matplotlib
+matplotlib.rcParams['axes.unicode_minus'] = False
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 import numpy as np
@@ -30,6 +32,7 @@ from brightics.common.validation import validate
 from brightics.common.validation import greater_than_or_equal_to, greater_than, all_elements_greater_than, raise_runtime_error
 from brightics.common.repr import pandasDF2MD
 from brightics.common.classify_input_type import check_col_type
+from brightics.common.data_export import PyPlotData, PyPlotMeta
 
 
 def _mean_shift_centers_plot(input_cols, cluster_centers, colors):
@@ -44,9 +47,6 @@ def _mean_shift_centers_plot(input_cols, cluster_centers, colors):
     for idx, centers in enumerate(cluster_centers):
         plt.plot(x, centers, "o-", label=idx, color=colors[idx])
     plt.tight_layout()
-    fig_centers = plt2MD(plt)
-    plt.clf()
-    return fig_centers
 
 
 def _mean_shift_samples_plot(table, input_cols, n_samples, cluster_centers, colors):
@@ -70,10 +70,7 @@ def _mean_shift_samples_plot(table, input_cols, n_samples, cluster_centers, colo
     for idx, centers in enumerate(cluster_centers):
         plt.plot(x, centers, "o-", linewidth=4, color=colors[idx])
     plt.tight_layout()
-    fig_samples = plt2MD(plt)
-    plt.clf()
-    return fig_samples
-
+    
 
 def _mean_shift_pca_plot(labels, cluster_centers, pca2_model, pca2, colors):
     for i, color in zip(range(len(cluster_centers)), colors):
@@ -82,30 +79,27 @@ def _mean_shift_pca_plot(labels, cluster_centers, pca2_model, pca2, colors):
     pca2_centers = pca2_model.transform(cluster_centers)
     plt.scatter(pca2_centers[:, 0], pca2_centers[:, 1], marker='x', edgecolors=1, s=100, color='red')
     plt.tight_layout()
-    fig_pca = plt2MD(plt)
-    plt.clf()
-    return fig_pca
 
 
 def mean_shift(table, group_by=None, **params):
     check_required_parameters(_mean_shift, params, ['table'])
-    
+
     params = get_default_from_parameters_if_required(params, _mean_shift)
     param_validation_check = [greater_than(params, 0.0, 'bandwidth')]
     validate(*param_validation_check)
-    
+
     if group_by is not None:
         grouped_model = _function_by_group(_mean_shift, table, group_by=group_by, **params)
         return grouped_model
     else:
         return _mean_shift(table, **params)
-    
+
 
 def _mean_shift(table, input_cols, prediction_col='prediction', bandwidth=None, bin_seeding=False, min_bin_freq=1, cluster_all=True):
     feature_names, inputarr = check_col_type(table, input_cols)
-        
+
     ms = MeanShift(bandwidth=bandwidth, bin_seeding=bin_seeding, min_bin_freq=min_bin_freq, cluster_all=cluster_all, n_jobs=1)
-    
+
     ms.fit(inputarr)
 
     label_name = {
@@ -114,25 +108,39 @@ def _mean_shift(table, input_cols, prediction_col='prediction', bandwidth=None, 
         'min_bin_freq': 'Minimum Bin Frequency',
         'cluster_all': 'Cluster All'}
     get_param = ms.get_params()
-    param_table = pd.DataFrame.from_items([
+    param_table = pd.DataFrame.from_dict([
         ['Parameter', list(label_name.values())],
         ['Value', [get_param[x] for x in list(label_name.keys())]]
     ])
-    
+
     cluster_centers = ms.cluster_centers_
     n_clusters = len(cluster_centers)
     colors = cm.nipy_spectral(np.arange(n_clusters).astype(float) / n_clusters)
     labels = ms.labels_
-    
+
     if len(feature_names) > 1:
         pca2_model = PCA(n_components=2).fit(inputarr)
         pca2 = pca2_model.transform(inputarr)
-    
-    fig_centers = _mean_shift_centers_plot(feature_names, cluster_centers, colors)
-    fig_samples = _mean_shift_samples_plot(table, input_cols, 100, cluster_centers, colors) if len(table.index) > 100 else _mean_shift_samples_plot(table, input_cols, None, cluster_centers, colors)
-    
+
+    # fig_centers = _mean_shift_centers_plot(feature_names, cluster_centers, colors)
+    # fig_samples = _mean_shift_samples_plot(table, input_cols, 100, cluster_centers, colors) if len(table.index) > 100 else _mean_shift_samples_plot(table, input_cols, None, cluster_centers, colors)
+
+    figs = PyPlotData()
+    plt.figure()
+    _mean_shift_centers_plot(feature_names, cluster_centers, colors)
+    figs.addpltfig('fig_centers', plt)
+    plt.clf()
+    plt.figure()
+    _mean_shift_samples_plot(table, input_cols, 100, cluster_centers, colors) if len(table.index) > 100 else _mean_shift_samples_plot(table, input_cols, None, cluster_centers, colors)
+    figs.addpltfig('fig_samples', plt)
+    plt.clf()
+
     if len(feature_names) > 1:
-        fig_pca = _mean_shift_pca_plot(labels, cluster_centers, pca2_model, pca2, colors)
+        # fig_pca = _mean_shift_pca_plot(labels, cluster_centers, pca2_model, pca2, colors)
+        plt.figure()
+        _mean_shift_pca_plot(labels, cluster_centers, pca2_model, pca2, colors)
+        figs.addpltfig('fig_pca', plt)
+        plt.clf()
         rb = BrtcReprBuilder()
         rb.addMD(strip_margin("""
         | ## Mean Shift Result
@@ -143,7 +151,10 @@ def _mean_shift(table, input_cols, prediction_col='prediction', bandwidth=None, 
         | {fig_samples}
         | ### Parameters
         | {params}
-        """.format(fig_cluster_centers=fig_centers, fig_pca=fig_pca, fig_samples=fig_samples, params=pandasDF2MD(param_table))))
+        """.format(fig_cluster_centers=figs.getMD('fig_centers'),
+                   fig_pca=figs.getMD('fig_pca'),
+                   fig_samples=figs.getMD('fig_samples'),
+                   params=pandasDF2MD(param_table))))
     else:
         rb = BrtcReprBuilder()
         rb.addMD(strip_margin("""
@@ -154,13 +165,16 @@ def _mean_shift(table, input_cols, prediction_col='prediction', bandwidth=None, 
         | {fig_samples}
         | ### Parameters
         | {params}
-        """.format(fig_cluster_centers=fig_centers, fig_samples=fig_samples, params=pandasDF2MD(param_table))))
-    
+        """.format(fig_cluster_centers=figs.getMD('fig_centers'),
+                   fig_samples=figs.getMD('fig_samples'),
+                   params=pandasDF2MD(param_table))))
+
     model = _model_dict('mean_shift')
     model['model'] = ms
     model['input_cols'] = input_cols
     model['_repr_brtc_'] = rb.get()
-    
+    model['figures'] = figs.tojson()
+
     out_table = table.copy()
     out_table[prediction_col] = labels
     return {'out_table':out_table, 'model':model}
@@ -173,7 +187,7 @@ def mean_shift_predict(table, model, **params):
     else:
         return _mean_shift_predict(table, model, **params)
 
-    
+
 def _mean_shift_predict(table, model, prediction_col='prediction'):
     ms = model['model']
     input_cols = model['input_cols']
@@ -181,5 +195,5 @@ def _mean_shift_predict(table, model, prediction_col='prediction'):
     predict = ms.predict(inputarr)
     out_table = table.copy()
     out_table[prediction_col] = predict
-    
+
     return {'out_table':out_table}

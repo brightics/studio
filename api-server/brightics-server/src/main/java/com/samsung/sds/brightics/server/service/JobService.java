@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import com.samsung.sds.brightics.common.core.exception.BrighticsCoreException;
@@ -57,11 +58,12 @@ public class JobService {
     @Autowired
     private AgentUserService agentUserService;
 
+    @Lazy
     @Autowired
     private JobStatusService jobStatusService;
 
     @Autowired
-    private BeanHolder beanHolder;
+    private TaskService taskService;
 
     private static final Logger logger = LoggerFactory.getLogger(JobService.class);
 
@@ -141,7 +143,7 @@ public class JobService {
             List<String> dljobList = jobRepository.dlJobIdAsTaskid.get(jobId);
             for (String taskId : dljobList) {
                 //TODO add DL stop
-                beanHolder.taskService.stopTask(taskId, "DLPythonScript", "python");
+                taskService.stopTask(taskId, "DLPythonScript", "python");
             }
             jobRepository.dlJobIdAsTaskid.remove(jobId);
         } else {

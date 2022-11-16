@@ -32,6 +32,7 @@ def create_table(col_names=None, data_array=None, type_array=None):
 
     new_data_array = data_array.copy()
     string_to_type = {'int' : int, 'string' : str, 'double' : float}
+    riskyChars = ["=", "+", "-", "@","\t","\r"]
     
     for j in range(0, len(col_names)):
         for i in range(0, len(data_array)):
@@ -42,7 +43,9 @@ def create_table(col_names=None, data_array=None, type_array=None):
                     new_data_array[i][j] = string_to_type[type_array[j]](data_array[i][j])
             else:
                 if data_array[i][j] == None:
-                    new_data_array[i][j] = ''                    
+                    new_data_array[i][j] = ''
+                elif len(data_array[i][j]) > 0 and data_array[i][j][0] in riskyChars:
+                    new_data_array[i][j] = '\'' + data_array[i][j]                    
     
     out_table = pd.DataFrame(new_data_array, columns=col_names)
     

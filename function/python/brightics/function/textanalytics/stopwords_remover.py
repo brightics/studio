@@ -15,7 +15,7 @@
 """
 
 import os
-from nltk.corpus import stopwords
+from pathlib import Path
 import pandas as pd
 import numpy as np
 from brightics.common.utils import check_required_parameters
@@ -51,8 +51,11 @@ def _stopwords_remover(table, input_cols, hold_cols=None, default_dict=False, st
         
     # default dictionary update
     if (default_dict == True):
-        stop_words.update(pd.read_csv('brightics/function/textanalytics/data/stopwords_basic_dictionary_english.csv')['stopwords'].tolist())  # English
-        stop_words.update(pd.read_csv('brightics/function/textanalytics/data/stopwords_basic_dictionary_korean.csv')['stopwords'].tolist())  # Korean
+        data_path = Path(__file__).resolve().parent / 'data'
+        eng_path = data_path / 'stopwords_basic_dictionary_english.csv'
+        kor_path = data_path / 'stopwords_basic_dictionary_korean.csv'
+        stop_words.update(pd.read_csv(eng_path)['stopwords'].tolist())  # English
+        stop_words.update(pd.read_csv(kor_path)['stopwords'].tolist())  # Korean
         
     # user_dict update
     if user_dict is not None:
