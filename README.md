@@ -41,105 +41,170 @@ MacOS / Linux 사용자는 본 문서 하단의 설치 가이드를 따라 진�
 
 릴리즈 파일 혹은 docker 이미지를 이용하여 Brightics Studio를 설치할 수 있습니다.
 
-
 ### Prerequisite
+
 #
-* 데이터베이스와 상호 작용하는 일부 기능에는 [Oracle Instant Client](http://www.oracle.com/technetwork/database/database-technologies/instant-client/overview/index.html) 와 같은 클라이언트 라이브러리가 필요합니다.
-* [Installation - docker](#installation---docker)를 참고하여 Brightics Studio Docker 이미지를 사용할 수 있습니다.
+
+- 데이터베이스와 상호 작용하는 일부 기능에는 [Oracle Instant Client](http://www.oracle.com/technetwork/database/database-technologies/instant-client/overview/index.html) 와 같은 클라이언트 라이브러리가 필요합니다.
+- [Installation - docker](#installation---docker)를 참고하여 Brightics Studio Docker 이미지를 사용할 수 있습니다.
 
 ### Installation - release file
+
 #
-  * Download
 
-      릴리스 파일은 github 릴리스 또는 [다운로드 페이지](https://www.brightics.ai/downloads) 에서 다운로드 할 수 있습니다.
+- Download
 
-      다운로드한 파일을 실행하면 파일이 자동으로 추출됩니다.
+  릴리스 파일은 github 릴리스 또는 [다운로드 페이지](https://www.brightics.ai/downloads) 에서 다운로드 할 수 있습니다.
 
-      ```
-      BrighticsStudio-\<version\>-\<os name\>.exe : for windows
-      BrighticsStudio-\<version\>-\<os name\>.sh : for linux (Ubuntu)
-      ```  
-  
-      디렉토리의 세부 사항은 다음과 같습니다:  
-  
-      ```
-      /brightics-studio/brightics-server : core home
-      /brightics-studio/visual-analytics : GUI home
-      /brightics-studio/lib : external libs
-      ```  
-  
-  * Launch
+  다운로드한 파일을 실행하면 파일이 자동으로 추출됩니다.
 
-      실행하기 전에 아무것도 준비할 필요가 없습니다. 릴리스에는 패키지 자체의 모든 요구 사항이 포함되어 있습니다.        
-      압축을 푼 디렉토리로 이동하여 실행합니다.
+  ```
+  BrighticsStudio-\<version\>-\<os name\>.exe : for windows
+  BrighticsStudio-\<version\>-\<os name\>.sh : for linux (Ubuntu)
+  ```
 
-      ```
-      Brightics-Studio-Launcher.exe : Launcher for windows
-      start-brightics.cmd : for windows
-      start-brightics.sh : for linux (Ubuntu)
-      ```
+  디렉토리의 세부 사항은 다음과 같습니다:
 
-      > **Notes**
-      > 
-      > 설치 경로에 한글이 포함된 경우 Tokenizer(한국어) 기능이 제대로 작동하지 않습니다.   
-      > 이 기능을 사용하기 위해서는 전체 경로에 한글이 포함되지 않은 폴더에 Brightics Studio를 설치해야 합니다.  
+  ```
+  /brightics-studio/brightics-server : core home
+  /brightics-studio/visual-analytics : GUI home
+  /brightics-studio/lib : external libs
+  ```
 
+- Launch
 
-  * Patch
+  실행하기 전에 아무것도 준비할 필요가 없습니다. 릴리스에는 패키지 자체의 모든 요구 사항이 포함되어 있습니다.  
+   압축을 푼 디렉토리로 이동하여 실행합니다.
 
-      새 버전이 출시되면 아래 파일을 최신 버전의 brightics-studio로 이동하여 데이터와 프로젝트를 유지해야 합니다.
-      
-      ```
-      /brightics-studio/visual-analytics/brightics.db
-      /brightics-studio/brightics-server/data/*
-      ```
+  ```
+  Brightics-Studio-Launcher.exe : Launcher for windows
+  start-brightics.cmd : for windows
+  start-brightics.sh : for linux (Ubuntu)
+  ```
 
-  * Run
+  > **Notes**
+  >
+  > 설치 경로에 한글이 포함된 경우 Tokenizer(한국어) 기능이 제대로 작동하지 않습니다.  
+  > 이 기능을 사용하기 위해서는 전체 경로에 한글이 포함되지 않은 폴더에 Brightics Studio를 설치해야 합니다.
 
-      Brightics Studio는 start-brightics.cmd(또는 start-brightics.sh) 실행 후 Chrome 브라우저에 팝업됩니다. 
-      Brightics Studio가 자동으로 팝업되지 않는 경우 수동으로 http://127.0.0.1:3000 으로 이동하여 Brightics Studio를 사용하십시오.  
-    
-### Installation - docker
+- Patch
+
+  새 버전이 출시되면 아래 파일을 최신 버전의 brightics-studio로 이동하여 데이터와 프로젝트를 유지해야 합니다.
+
+  ```
+  /brightics-studio/visual-analytics/brightics.db
+  /brightics-studio/brightics-server/data/*
+  ```
+
+- Run
+
+  Brightics Studio는 start-brightics.cmd(또는 start-brightics.sh) 실행 후 Chrome 브라우저에 팝업됩니다.
+  Brightics Studio가 자동으로 팝업되지 않는 경우 수동으로 http://127.0.0.1:3000 으로 이동하여 Brightics Studio를 사용하십시오.
+
+### Installation - by docker
+
 #
-  * Docker
 
-      작업환경에 [Docker](https://www.docker.com/get-started/)를 설치합니다. 
-      <img src="docs/images/docker.png"></img>
+#### Install Docker
 
-  * Docker Image  
+작업 환경에 docker가 설치되어 있지 않다면 아래의 방법으로 [Docker](https://www.docker.com/get-started/)를 설치합니다.
+<img **src**="docs/images/docker.png"></img>
 
-      Brightics Studio Docker 이미지는 [Docker Hub](https://hub.docker.com/r/brightics/studio) 에서 제공됩니다.
-      
-      실행
-      ```
-      $ docker volume create brightics
-      $ docker run -d -p 3000:3000 --privileged=true -v brightics:/brightics-studio/userdata --name brightics brightics/studio:latest
-      ```      
+- Mac OS
 
-      중지
-      ```
-      $ docker stop brightics
-      ```      
+  - [Homebrew](https://brew.sh/)로 설치하는 방법
+
+    terminal에서 아래의 command를 입력하여 docker를 설치합니다.
+
+    ```
+    $ brew cask install docker       # Install Docker
+    $ open /Applications/Docker.app  # Start Docker
+    ```
+
+    자동으로 docker를 설치함과 동시에 실행되는 것을 확인할 수 있습니다.
+
+    설치 후 terminal에서 version을 확인하는 command로 docker가 잘 설치되었는지 확인합니다.
+
+    ```
+    $ docker --version
+    ```
+
+  - 그 외 다른 방법으로 설치하는 방법
+
+    Docker Document의 [Install Docker for Mac](https://docs.docker.com/desktop/install/mac-install/)을 확인하여 docker를 설치합니다.
+
+#### Run Docker Container
+
+Docker를 설치한 후에는 docker image를 [Docker Hub](https://hub.docker.com/r/brightics/studio) 에서 내려받아 Brightics Studio를 설치, 실행 및 관리할 수 있습니다.
+
+- Create volume
+  terminal에서 아래의 command를 입력하여 Brightics Studio가 실행되는 container를 새로운 volume과 함께 생성합니다.
+
+  ```
+  $ docker volume create brightics
+  ```
+
+  아래의 command를 통해 'brightics'라는 이름의 volume이 잘 생성된 것을 확인합니다.
+
+  ```
+  $ docker volume ls
+  ```
+
+- Create and Run Container
+  아래의 command를 통해 'brightics/studio:latest'라는 docker image를 내려받고, brightics라는 이름의 container를 생성하여 실행시킵니다.
+
+  ```
+  $ docker run -d -p 3000:3000 --privileged=true -v brightics:/brightics-studio/userdata --name brightics brightics/studio:latest
+  ```
+
+  아래의 command를 통해 docker image와 docker container가 정상적으로 작동하고 있는지 확인할 수 있습니다.
+
+  ```
+  $ docker images
+  $ docker ps         # Check that the Status is Up
+  ```
+
+  docker container가 잘 작동하고 있다면 웹 브라우저에서 http://localhost:3000 에 접속합니다.
+
+- Stop and Delete
+  아래의 command를 통해 docker container를 중지시킬 수 있습니다.
+
+  ```
+  $ docker stop brightics
+  ```
+
+  아래의 command를 통해 docker container를 삭제할 수 있습니다.
+
+  ```
+  $ docker rm brightics
+  ```
 
 ## Contact us
+
 ---
+
 Brightics Studio가 마음에 드셨다면 사용 후기와 피드백 부탁드립니다.  
 또는 Brightics Studio 사용 중 궁금한 사항이 있으시면 주저하지 마시고 brightics.cs@samsung.com으로 연락주세요.
 
 ## License
+
 ---
 
 Visual Analytics(Web GUI) project is licensed under the terms of the Brightics Visual Analytics LICENSE, please check Notice below.  
 The others are licensed under the terms of the Apache 2.0 license.
 
 ### Notice
+
 #
+
 Source codes of the Web GUI are not yet fully opened due to some license issues from its submodules.  
 The purpose of personal use for commercial or non-commercial is allowed but only the redistribution is prohibited.  
 See [the documentation about this license](BRIGHTICS_VA_LICENSE) for more details.  
 We are working hard to solve these issues and soon it will be public.
 
 ### Contributors
+
 #
+
 This project exists thanks to all the people who contribute.
 <a href="../../graphs/contributors"><img src="https://opencollective.com/brightics-studio/contributors.svg?width=890&button=false" /></a>
