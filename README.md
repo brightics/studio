@@ -103,23 +103,61 @@ MacOS / Linux 사용자는 본 문서 하단의 설치 가이드를 따라 진�
 #
   * Docker
 
-      작업환경에 [Docker](https://www.docker.com/get-started/)를 설치합니다. 
+      작업환경에 [Docker](https://www.docker.com/get-started/)를 설치 후 실행합니다.
+      <br/><br/>
       <img src="docs/images/docker.png"></img>
+      
+      - Windoews 환경
+      최초 실행 시 경고창의 안내 문구를 따라 Windows PowerShell에 'wsl --update'를 입력 후 실행, 추가 설치를 진행한 뒤 Docker Desktop을 정상적으로 실행합니다.
+
+
 
   * Docker Image  
 
       Brightics Studio Docker 이미지는 [Docker Hub](https://hub.docker.com/r/brightics/studio) 에서 제공됩니다.
+      <br/><br/>
       
-      실행
+      - 최초 실행
+      
+      Windows PowerShell 에 다음을 입력, 실행합니다.
+      
       ```
-      $ docker volume create brightics
-      $ docker run -d -p 3000:3000 --privileged=true -v brightics:/brightics-studio/userdata --name brightics brightics/studio:latest
-      ```      
+      docker volume create brightics
+      docker run -d -p 3000:3000 --privileged=true -v brightics:/brightics-studio/userdata --name brightics brightics/studio:latest
+      ```
+      > **Notes**
+      > 
+      > docker volume create brightics : 'brightics' 이름의 docker volume을 생성  
+      > docker run brightics/studio : 'brightics/studio' docker image를 다운로드 받아서 container 생성  
+      > -d : container를 백그라운드로 실행  
+      > -p : 호스트와 container의 포트를 <호스트 포트>:<container 포트> (ex. 3000:3000)로 연결  
+      > --privileged=true : 호스트의 주요 자원에 접근하도록 container 안에서 호스트의 Linux 커널 기능을 모두 사용  
+      > -v : 앞서 생성한 'brightics' volume을 container에 마운트  
+      > --name : container 이름 설정 (brightics)  
+      <br/>
+      
+      - 재실행, 중지, 다시 시작
+      
+      재실행, 중지, 다시 시작을 원한다면 Windows PowerShell에 다음을 각각 입력, 실행합니다.
+      ```
+      docker restart brightics
+      docker stop brightics
+      docker start brightics
+      ```
+      <br/>
+      
+      - Docker container 및 볼륨 삭제
+      
+      삭제를 원한다면 Windows PowerShell에 다음을 입력, 실행합니다.
+      ```
+      docker rm brightics
+      docker volume rm brightics
+      ```
 
-      중지
-      ```
-      $ docker stop brightics
-      ```      
+  * Run
+
+      'brightics' Docker container가 실행 중인 동안 http://127.0.0.1:3000 으로 이동하여 Brightics Studio를 사용하십시오.  
+
 
 ## Contact us
 ---
