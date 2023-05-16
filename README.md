@@ -98,28 +98,86 @@ MacOS / Linux 사용자는 본 문서 하단의 설치 가이드를 따라 진�
 
       Brightics Studio는 start-brightics.cmd(또는 start-brightics.sh) 실행 후 Chrome 브라우저에 팝업됩니다. 
       Brightics Studio가 자동으로 팝업되지 않는 경우 수동으로 http://127.0.0.1:3000 으로 이동하여 Brightics Studio를 사용하십시오.  
-    
+
 ### Installation - docker
 #
-  * Docker
 
-      작업환경에 [Docker](https://www.docker.com/get-started/)를 설치합니다. 
-      <img src="docs/images/docker.png"></img>
+#### Install Docker
 
-  * Docker Image  
+작업 환경에 docker가 설치되어 있지 않다면 아래의 방법으로 [Docker](https://www.docker.com/get-started/)를 설치합니다.
+<img src="docs/images/docker.png"></img>
 
-      Brightics Studio Docker 이미지는 [Docker Hub](https://hub.docker.com/r/brightics/studio) 에서 제공됩니다.
-      
-      실행
+  * Mac OS
+
+    - [Homebrew](https://brew.sh/)로 설치하는 방법
+
+      terminal에서 아래의 command를 입력하여 docker를 설치합니다.
+
       ```
-      $ docker volume create brightics
-      $ docker run -d -p 3000:3000 --privileged=true -v brightics:/brightics-studio/userdata --name brightics brightics/studio:latest
-      ```      
-
-      중지
+      $ brew cask install docker       # Install Docker
+      $ open /Applications/Docker.app  # Start Docker
       ```
-      $ docker stop brightics
-      ```      
+
+      자동으로 docker를 설치함과 동시에 실행되는 것을 확인할 수 있습니다.
+
+      설치 후 terminal에서 version을 확인하는 command로 docker가 잘 설치되었는지 확인합니다.
+
+      ```
+      $ docker --version
+      ```
+
+    - 그 외 다른 방법으로 설치하는 방법
+
+      Docker Document의 [Install Docker for Mac](https://docs.docker.com/desktop/install/mac-install/)을 확인하여 docker를 설치합니다.
+
+#### Run Docker Container
+
+Docker를 설치한 후에는 docker image를 [Docker Hub](https://hub.docker.com/r/brightics/studio) 에서 내려받아 Brightics Studio를 설치, 실행 및 관리할 수 있습니다.
+
+  * Create volume
+    
+    terminal에서 아래의 command를 입력하여 Brightics Studio가 실행되는 container를 새로운 volume과 함께 생성합니다.
+
+    ```
+    $ docker volume create brightics
+    ```
+
+    아래의 command를 통해 'brightics'라는 이름의 volume이 잘 생성된 것을 확인합니다.
+
+    ```
+    $ docker volume ls
+    ```
+
+  * Create and Run Container
+    
+    아래의 command를 통해 'brightics/studio:latest'라는 docker image를 내려받고, brightics라는 이름의 container를 생성하여 실행시킵니다.
+
+    ```
+    $ docker run -d -p 3000:3000 --privileged=true -v brightics:/brightics-studio/userdata --name brightics brightics/studio:latest
+    ```
+
+    아래의 command를 통해 docker image와 docker container가 정상적으로 작동하고 있는지 확인할 수 있습니다.
+
+    ```
+    $ docker images
+    $ docker ps         # Check that the Status is Up
+    ```
+
+    docker container가 잘 작동하고 있다면 웹 브라우저에서 http://localhost:3000 에 접속합니다.
+
+  * Stop and Delete
+    
+    아래의 command를 통해 docker container를 중지시킬 수 있습니다.
+
+    ```
+    $ docker stop brightics
+    ```
+
+    아래의 command를 통해 docker container를 삭제할 수 있습니다.
+
+    ```
+    $ docker rm brightics
+    ```
 
 ## Contact us
 ---
