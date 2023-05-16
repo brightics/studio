@@ -105,7 +105,7 @@ MacOS / Linux 사용자는 본 문서 하단의 설치 가이드를 따라 진�
 #### Install Docker
 
 작업 환경에 docker가 설치되어 있지 않다면 아래의 방법으로 [Docker](https://www.docker.com/get-started/)를 설치합니다.
-<img **src**="docs/images/docker.png"></img>
+<img src="docs/images/docker.png"></img>
 
   * Mac OS
 
