@@ -39,7 +39,7 @@ MacOS / Linux 사용자는 본 문서 하단의 설치 가이드를 따라 진�
 
 ---
 
-릴리즈 파일 혹은 docker 이미지를 이용하여 Brightics Studio를 설치할 수 있습니다.
+릴리스 파일 혹은 docker 이미지를 이용하여 Brightics Studio를 설치할 수 있습니다.
 
 
 ### Prerequisite
