@@ -124,6 +124,10 @@ You can install Brightics Studio using a release file or a docker image.
       $ docker stop brightics
       ```      
 
+## Security warning
+---
+When Brightics Studio is executed, the web service is executed through the service port (3000), so if it is opened to the Internet without a firewall or access control, data leakage or hacking attempts may occur by accessing from the outside. If you are in an environment where access through the Internet is possible, be sure to set up an appropriate firewall to ensure that access is only allowed from authorized PCs to maintain security.
+
 ## Contact us
 ---
 If you like to use Brightics Studio, please let us know your usage and feedback.  
