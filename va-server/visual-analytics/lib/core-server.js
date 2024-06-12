@@ -122,6 +122,10 @@ const
             type: 'string[]',
             internalType: 'String[]'
         },
+        'array(bigint)': {
+            type: 'number[]',
+            internalType: 'Long[]'
+        },
         'array(double)': {
             type: 'number[]',
             internalType: 'Double[]'
@@ -179,6 +183,10 @@ const
         'array<double>': {
             type: 'number[]',
             internalType: 'Double[]'
+        },
+        'array<bigint>': {
+            type: 'number[]',
+            internalType: 'Long[]'
         },
         'array<long>': {
             type: 'number[]',
