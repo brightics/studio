@@ -130,8 +130,7 @@ When Brightics Studio is executed, the web service is executed through the servi
 
 ## Contact us
 ---
-If you like to use Brightics Studio, please let us know your usage and feedback.  
-Or you have questions while using Brightics Studio, don't hesitate and feel free to contact brightics.cs@samsung.com
+Official support for Brightics Studio has been discontinued starting from the second half of 2025.
 
 ## License
 ---
