@@ -127,8 +127,7 @@ Brightics Studio 를 실행하면 서비스포트(3000)로 웹 서비스가 실�
 
 ## Contact us
 ---
-Brightics Studio가 마음에 드셨다면 사용 후기와 피드백 부탁드립니다.  
-또는 Brightics Studio 사용 중 궁금한 사항이 있으시면 주저하지 마시고 brightics.cs@samsung.com으로 연락주세요.
+Brightics Studio 공식 지원은 2025년 하반기부터 종료되었습니다. 활용에 참고바랍니다.
 
 ## License
 ---
